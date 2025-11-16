@@ -124,36 +124,48 @@ class _MainWindowState extends State<MainWindow> with WindowListener {
           return _buildEmptyState();
         }
 
-        // Android launcher-style grid configuration
-        const columns = 3;
-        const cellSize = 90.0;
+        // Fixed-size grid configuration (like Windows Explorer/Android launcher)
+        // Cards maintain fixed size, window resize only affects how many fit horizontally
+        const cellWidth = 90.0;
+        const cellHeight = 100.0;
         const horizontalPadding = 10.0;
         const verticalPadding = 10.0;
         const spacing = 4.0;
 
-        return Container(
-          color: Theme.of(context).colorScheme.surface,
-          child: GridView.builder(
-            padding: const EdgeInsets.only(
-              left: horizontalPadding,
-              right: horizontalPadding,
-              top: verticalPadding,
-              bottom: verticalPadding,
-            ),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: columns,
-              mainAxisSpacing: spacing,
-              crossAxisSpacing: spacing,
-              childAspectRatio: 1.0,
-            ),
-            itemCount: apps.length,
-            itemBuilder: (context, index) {
-              return AppCard(
-                app: apps[index],
-                onTap: () => _launchApp(apps[index]),
-              );
-            },
-          ),
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            // Debug: Log grid container dimensions
+            debugPrint('═══════════════════════════════════════');
+            debugPrint('[Grid Container] Width: ${constraints.maxWidth.toStringAsFixed(2)}');
+            debugPrint('[Fixed Cell] ${cellWidth}x$cellHeight, Spacing: $spacing');
+            debugPrint('═══════════════════════════════════════');
+
+            return Container(
+              color: Theme.of(context).colorScheme.surface,
+              padding: const EdgeInsets.only(
+                left: horizontalPadding,
+                right: horizontalPadding,
+                top: verticalPadding,
+                bottom: verticalPadding,
+              ),
+              child: SingleChildScrollView(
+                child: Wrap(
+                  spacing: spacing,
+                  runSpacing: spacing,
+                  children: apps.map((app) {
+                    return SizedBox(
+                      width: cellWidth,
+                      height: cellHeight,
+                      child: AppCard(
+                        app: app,
+                        onTap: () => _launchApp(app),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            );
+          },
         );
       },
     );
