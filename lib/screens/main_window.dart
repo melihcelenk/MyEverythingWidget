@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
 import '../models/app_shortcut.dart';
+import '../providers/app_state.dart';
 import '../services/app_launcher_service.dart';
 import '../widgets/custom_title_bar.dart';
 import '../widgets/app_card.dart';
@@ -17,14 +19,12 @@ class MainWindow extends StatefulWidget {
 class _MainWindowState extends State<MainWindow> with WindowListener {
   bool _isAlwaysOnTop = true;
   final _launcherService = AppLauncherService();
-  late List<AppShortcut> _apps;
 
   @override
   void initState() {
     super.initState();
     windowManager.addListener(this);
     _initWindow();
-    _loadApps();
   }
 
   @override
@@ -35,44 +35,6 @@ class _MainWindowState extends State<MainWindow> with WindowListener {
 
   Future<void> _initWindow() async {
     await windowManager.setAlwaysOnTop(_isAlwaysOnTop);
-  }
-
-  void _loadApps() {
-    // Hardcoded apps for MVP
-    _apps = [
-      const AppShortcut(
-        id: '1',
-        name: 'Chrome',
-        iconPath: '',
-        target: 'https://google.com',
-        category: 'Web',
-        type: LaunchType.url,
-      ),
-      const AppShortcut(
-        id: '2',
-        name: 'GitHub',
-        iconPath: '',
-        target: 'https://github.com',
-        category: 'Dev',
-        type: LaunchType.url,
-      ),
-      const AppShortcut(
-        id: '3',
-        name: 'YouTube',
-        iconPath: '',
-        target: 'https://youtube.com',
-        category: 'Media',
-        type: LaunchType.url,
-      ),
-      const AppShortcut(
-        id: '4',
-        name: 'Documents',
-        iconPath: '',
-        target: r'C:\Users',
-        category: 'Files',
-        type: LaunchType.folder,
-      ),
-    ];
   }
 
   Future<void> _toggleAlwaysOnTop() async {
@@ -101,6 +63,7 @@ class _MainWindowState extends State<MainWindow> with WindowListener {
             isAlwaysOnTop: _isAlwaysOnTop,
             onAlwaysOnTopToggle: _toggleAlwaysOnTop,
           ),
+          _buildTabBar(),
           Expanded(
             child: _buildContent(),
           ),
@@ -109,24 +72,100 @@ class _MainWindowState extends State<MainWindow> with WindowListener {
     );
   }
 
+  Widget _buildTabBar() {
+    return Consumer<AppState>(
+      builder: (context, state, child) {
+        return Container(
+          height: 50,
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
+            border: Border(
+              bottom: BorderSide(
+                color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+              ),
+            ),
+          ),
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            itemCount: state.categories.length,
+            itemBuilder: (context, index) {
+              final category = state.categories[index];
+              final isSelected = category == state.selectedCategory;
+
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: ChoiceChip(
+                  label: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(category.icon),
+                      const SizedBox(width: 6),
+                      Text(category.name),
+                    ],
+                  ),
+                  selected: isSelected,
+                  onSelected: (_) => state.selectCategory(category),
+                  showCheckmark: false,
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildContent() {
-    return Container(
-      color: Theme.of(context).colorScheme.surface,
-      padding: const EdgeInsets.all(16),
-      child: GridView.builder(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          crossAxisSpacing: 8,
-          mainAxisSpacing: 8,
-          childAspectRatio: 1.0,
-        ),
-        itemCount: _apps.length,
-        itemBuilder: (context, index) {
-          return AppCard(
-            app: _apps[index],
-            onTap: () => _launchApp(_apps[index]),
-          );
-        },
+    return Consumer<AppState>(
+      builder: (context, state, child) {
+        final apps = state.filteredApps;
+
+        if (apps.isEmpty) {
+          return _buildEmptyState();
+        }
+
+        return Container(
+          color: Theme.of(context).colorScheme.surface,
+          padding: const EdgeInsets.all(16),
+          child: GridView.builder(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
+              childAspectRatio: 1.0,
+            ),
+            itemCount: apps.length,
+            itemBuilder: (context, index) {
+              return AppCard(
+                app: apps[index],
+                onTap: () => _launchApp(apps[index]),
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.inbox_outlined,
+            size: 64,
+            color: Theme.of(context).colorScheme.outline,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'No apps in this category',
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Theme.of(context).colorScheme.outline,
+                ),
+          ),
+        ],
       ),
     );
   }
