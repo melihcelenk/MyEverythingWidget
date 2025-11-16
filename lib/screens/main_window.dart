@@ -85,31 +85,30 @@ class _MainWindowState extends State<MainWindow> with WindowListener {
               ),
             ),
           ),
-          child: ListView.builder(
+          child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            itemCount: state.categories.length,
-            itemBuilder: (context, index) {
-              final category = state.categories[index];
-              final isSelected = category == state.selectedCategory;
-
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: ChoiceChip(
-                  label: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(category.icon),
-                      const SizedBox(width: 6),
-                      Text(category.name),
-                    ],
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            child: Row(
+              children: state.categories.map((category) {
+                final isSelected = category == state.selectedCategory;
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: ChoiceChip(
+                    label: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(category.icon),
+                        const SizedBox(width: 6),
+                        Text(category.name),
+                      ],
+                    ),
+                    selected: isSelected,
+                    onSelected: (_) => state.selectCategory(category),
+                    showCheckmark: false,
                   ),
-                  selected: isSelected,
-                  onSelected: (_) => state.selectCategory(category),
-                  showCheckmark: false,
-                ),
-              );
-            },
+                );
+              }).toList(),
+            ),
           ),
         );
       },
@@ -125,14 +124,26 @@ class _MainWindowState extends State<MainWindow> with WindowListener {
           return _buildEmptyState();
         }
 
+        // Android launcher-style grid configuration
+        const columns = 3;
+        const cellSize = 90.0;
+        const horizontalPadding = 10.0;
+        const verticalPadding = 10.0;
+        const spacing = 4.0;
+
         return Container(
           color: Theme.of(context).colorScheme.surface,
-          padding: const EdgeInsets.all(16),
           child: GridView.builder(
+            padding: const EdgeInsets.only(
+              left: horizontalPadding,
+              right: horizontalPadding,
+              top: verticalPadding,
+              bottom: verticalPadding,
+            ),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              crossAxisSpacing: 8,
-              mainAxisSpacing: 8,
+              crossAxisCount: columns,
+              mainAxisSpacing: spacing,
+              crossAxisSpacing: spacing,
               childAspectRatio: 1.0,
             ),
             itemCount: apps.length,

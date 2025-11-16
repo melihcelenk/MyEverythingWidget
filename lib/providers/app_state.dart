@@ -82,6 +82,46 @@ class AppState extends ChangeNotifier {
         category: 'Web',
         type: LaunchType.url,
       ),
+      const AppShortcut(
+        id: '7',
+        name: 'VS Code',
+        iconPath: '',
+        target: 'https://code.visualstudio.com',
+        category: 'Dev',
+        type: LaunchType.url,
+      ),
+      const AppShortcut(
+        id: '8',
+        name: 'CodePen',
+        iconPath: '',
+        target: 'https://codepen.io',
+        category: 'Dev',
+        type: LaunchType.url,
+      ),
+      const AppShortcut(
+        id: '9',
+        name: 'MDN',
+        iconPath: '',
+        target: 'https://developer.mozilla.org',
+        category: 'Dev',
+        type: LaunchType.url,
+      ),
+      const AppShortcut(
+        id: '10',
+        name: 'Docker Hub',
+        iconPath: '',
+        target: 'https://hub.docker.com',
+        category: 'Dev',
+        type: LaunchType.url,
+      ),
+      const AppShortcut(
+        id: '11',
+        name: 'NPM',
+        iconPath: '',
+        target: 'https://npmjs.com',
+        category: 'Dev',
+        type: LaunchType.url,
+      ),
     ]);
 
     // Set default category

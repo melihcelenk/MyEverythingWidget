@@ -184,15 +184,29 @@ This document outlines the development tasks for MyEverythingWidget v1.0 MVP.
 
 ---
 
+## 🐛 Known Issues
+
+### UI Layout Issues
+- [ ] **Tab bar overflow**: Media tab is cut off at window edge
+- [ ] **App card text overflow**: "Stack Overflow" second word not visible
+- [ ] **Window width**: Consider increasing from 320px to accommodate content
+
+### Suggested Fixes
+1. Increase window width to 380px or make tabs scrollable
+2. Reduce app card text size or use smaller font
+3. Add ellipsis for long app names
+
+---
+
 ## 📊 Progress Tracking
 
-**Current Phase:** Not Started
-**Completion:** 0%
+**Current Phase:** Phase 3 (Tab System)
+**Completion:** 60%
 
 ### Phase Checklist
-- [ ] Phase 1: Project Setup & Core Window
-- [ ] Phase 2: Application Launcher
-- [ ] Phase 3: Tab System
+- [x] Phase 1: Project Setup & Core Window
+- [x] Phase 2: Application Launcher
+- [x] Phase 3: Tab System
 - [ ] Phase 4: Notes Feature
 - [ ] Phase 5: Clipboard Paste
 - [ ] Phase 6: Polish & Testing
