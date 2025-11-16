@@ -132,40 +132,30 @@ class _MainWindowState extends State<MainWindow> with WindowListener {
         const verticalPadding = 10.0;
         const spacing = 4.0;
 
-        return LayoutBuilder(
-          builder: (context, constraints) {
-            // Debug: Log grid container dimensions
-            debugPrint('═══════════════════════════════════════');
-            debugPrint('[Grid Container] Width: ${constraints.maxWidth.toStringAsFixed(2)}');
-            debugPrint('[Fixed Cell] ${cellWidth}x$cellHeight, Spacing: $spacing');
-            debugPrint('═══════════════════════════════════════');
-
-            return Container(
-              color: Theme.of(context).colorScheme.surface,
-              padding: const EdgeInsets.only(
-                left: horizontalPadding,
-                right: horizontalPadding,
-                top: verticalPadding,
-                bottom: verticalPadding,
-              ),
-              child: SingleChildScrollView(
-                child: Wrap(
-                  spacing: spacing,
-                  runSpacing: spacing,
-                  children: apps.map((app) {
-                    return SizedBox(
-                      width: cellWidth,
-                      height: cellHeight,
-                      child: AppCard(
-                        app: app,
-                        onTap: () => _launchApp(app),
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ),
-            );
-          },
+        return Container(
+          color: Theme.of(context).colorScheme.surface,
+          padding: const EdgeInsets.only(
+            left: horizontalPadding,
+            right: horizontalPadding,
+            top: verticalPadding,
+            bottom: verticalPadding,
+          ),
+          child: SingleChildScrollView(
+            child: Wrap(
+              spacing: spacing,
+              runSpacing: spacing,
+              children: apps.map((app) {
+                return SizedBox(
+                  width: cellWidth,
+                  height: cellHeight,
+                  child: AppCard(
+                    app: app,
+                    onTap: () => _launchApp(app),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
         );
       },
     );

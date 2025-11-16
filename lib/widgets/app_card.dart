@@ -15,27 +15,20 @@ class AppCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        // Debug: Log card dimensions
-        debugPrint('[AppCard ${app.name}] Width: ${constraints.maxWidth.toStringAsFixed(2)}, Height: ${constraints.maxHeight.toStringAsFixed(2)}');
-
-        return InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(8),
-          child: Container(
-            padding: const EdgeInsets.all(8),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildIcon(context),
-                const SizedBox(height: 8),
-                _buildLabel(context),
-              ],
-            ),
-          ),
-        );
-      },
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _buildIcon(context),
+            const SizedBox(height: 8),
+            _buildLabel(context),
+          ],
+        ),
+      ),
     );
   }
 
