@@ -5,9 +5,11 @@
 *.swp
 .DS_Store
 .atom/
+.build/
 .buildlog/
 .history
 .svn/
+.swiftpm/
 migrate_working_dir/
 
 # IntelliJ related
@@ -25,12 +27,11 @@ migrate_working_dir/
 **/doc/api/
 **/ios/Flutter/.last_build_id
 .dart_tool/
-.flutter-plugins
 .flutter-plugins-dependencies
-.packages
 .pub-cache/
 .pub/
 /build/
+/coverage/
 
 # Symbolication related
 app.*.symbols
@@ -56,9 +57,6 @@ app.*.map.json
 # Linux related
 /linux/flutter/ephemeral/
 
-# macOS related
-/macos/Flutter/ephemeral/
-
 # Web related
 /web/
 
@@ -68,3 +66,4 @@ coverage/
 # Personal notes and temporary files
 nul
 /.claude/settings.local.json
+img.png
