@@ -85,23 +85,29 @@ void main() {
       const cellWidth = 90.0;
       const cellHeight = 100.0;
       const spacing = 4.0;
+      const padding = 10.0;
 
       Widget buildGrid(double containerWidth) {
         return MaterialApp(
           home: Scaffold(
-            body: SizedBox(
+            body: Container(
               width: containerWidth,
+              padding: const EdgeInsets.all(padding),
               child: SingleChildScrollView(
-                child: Wrap(
-                  spacing: spacing,
-                  runSpacing: spacing,
-                  children: apps.map((app) {
-                    return SizedBox(
-                      width: cellWidth,
-                      height: cellHeight,
-                      child: AppCard(app: app, onTap: () {}),
-                    );
-                  }).toList(),
+                child: Align(
+                  alignment: Alignment.topLeft,
+                  child: Wrap(
+                    alignment: WrapAlignment.start,
+                    spacing: spacing,
+                    runSpacing: spacing,
+                    children: apps.map((app) {
+                      return SizedBox(
+                        width: cellWidth,
+                        height: cellHeight,
+                        child: AppCard(app: app, onTap: () {}),
+                      );
+                    }).toList(),
+                  ),
                 ),
               ),
             ),
@@ -109,39 +115,40 @@ void main() {
         );
       }
 
-      // Test with 320px width (3 columns fit)
+      // Test with 320px width (narrow window)
       await tester.pumpWidget(buildGrid(320));
       await tester.pumpAndSettle();
 
       var cards = find.byType(AppCard);
       expect(cards, findsNWidgets(3));
 
-      // Verify first card is at expected position (0, 0)
+      // Verify first card is at expected position (padding, padding)
       final firstCardPos320 = tester.getTopLeft(cards.at(0));
-      expect(firstCardPos320.dx, 0);
-      expect(firstCardPos320.dy, 0);
+      expect(firstCardPos320.dx, padding);
+      expect(firstCardPos320.dy, padding);
 
-      // Test with 400px width (4 columns could fit)
-      await tester.pumpWidget(buildGrid(400));
+      // Test with 700px width (very wide window - like in screenshot)
+      await tester.pumpWidget(buildGrid(700));
       await tester.pumpAndSettle();
 
       cards = find.byType(AppCard);
       expect(cards, findsNWidgets(3));
 
-      // Verify first card position hasn't changed (still at 0, 0)
-      final firstCardPos400 = tester.getTopLeft(cards.at(0));
-      expect(firstCardPos400.dx, 0);
-      expect(firstCardPos400.dy, 0);
+      // CRITICAL: Verify first card position hasn't changed (still at padding, padding)
+      // This ensures cards don't shift when window width changes
+      final firstCardPos700 = tester.getTopLeft(cards.at(0));
+      expect(firstCardPos700.dx, padding, reason: 'First card should stay at left edge (padding=$padding) regardless of window width. Got: ${firstCardPos700.dx}');
+      expect(firstCardPos700.dy, padding, reason: 'First card should stay at top edge (padding=$padding) regardless of window width. Got: ${firstCardPos700.dy}');
 
       // Verify cards maintain fixed size
       final firstCardSize = tester.getSize(cards.at(0));
       expect(firstCardSize.width, cellWidth);
       expect(firstCardSize.height, cellHeight);
 
-      // Verify second card is at correct horizontal position (90 + 4 = 94)
+      // Verify second card is at correct horizontal position (padding + cellWidth + spacing)
       final secondCardPos = tester.getTopLeft(cards.at(1));
-      expect(secondCardPos.dx, cellWidth + spacing);
-      expect(secondCardPos.dy, 0); // Same row
+      expect(secondCardPos.dx, padding + cellWidth + spacing);
+      expect(secondCardPos.dy, padding); // Same row
     });
 
     testWidgets('AppCard text visibility with different names', (tester) async {

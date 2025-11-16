@@ -141,19 +141,23 @@ class _MainWindowState extends State<MainWindow> with WindowListener {
             bottom: verticalPadding,
           ),
           child: SingleChildScrollView(
-            child: Wrap(
-              spacing: spacing,
-              runSpacing: spacing,
-              children: apps.map((app) {
-                return SizedBox(
-                  width: cellWidth,
-                  height: cellHeight,
-                  child: AppCard(
-                    app: app,
-                    onTap: () => _launchApp(app),
-                  ),
-                );
-              }).toList(),
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: Wrap(
+                alignment: WrapAlignment.start,
+                spacing: spacing,
+                runSpacing: spacing,
+                children: apps.map((app) {
+                  return SizedBox(
+                    width: cellWidth,
+                    height: cellHeight,
+                    child: AppCard(
+                      app: app,
+                      onTap: () => _launchApp(app),
+                    ),
+                  );
+                }).toList(),
+              ),
             ),
           ),
         );
