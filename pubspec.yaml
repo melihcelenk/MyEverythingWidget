@@ -53,6 +53,9 @@ dependencies:
   # UUID generator for unique IDs
   uuid: ^4.5.1
 
+  # File picker for browsing files
+  file_picker: ^8.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
+import 'package:file_picker/file_picker.dart';
 import '../models/app_shortcut.dart';
 
 /// App picker dialog
@@ -67,6 +69,70 @@ class _AppPickerDialogState extends State<AppPickerDialog> {
     return LaunchType.exe;
   }
 
+  /// Browse and select an executable file
+  Future<void> _browseFile() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['exe', 'lnk', 'bat', 'cmd'],
+        dialogTitle: 'Select Application',
+      );
+
+      if (result != null && result.files.isNotEmpty) {
+        final filePath = result.files.first.path;
+        if (filePath != null) {
+          _populateFieldsFromFile(filePath);
+        }
+      }
+    } catch (e) {
+      _showError('Failed to browse file: $e');
+    }
+  }
+
+  /// Populate form fields from selected file
+  void _populateFieldsFromFile(String filePath) {
+    _targetController.text = filePath;
+
+    // Auto-fill app name from file name if empty
+    if (_nameController.text.isEmpty) {
+      final fileName = _extractFileName(filePath);
+      _nameController.text = fileName;
+    }
+  }
+
+  /// Extract clean file name from path
+  String _extractFileName(String filePath) {
+    final file = File(filePath);
+    final fileName = file.uri.pathSegments.last;
+    
+    // Remove extension
+    final nameWithoutExt = fileName.replaceAll(RegExp(r'\.(exe|lnk|bat|cmd)$'), '');
+    
+    // Clean up common patterns
+    return _cleanFileName(nameWithoutExt);
+  }
+
+  /// Clean up file name for display
+  String _cleanFileName(String name) {
+    // Remove version numbers, underscores, etc.
+    return name
+        .replaceAll('_', ' ')
+        .replaceAll('-', ' ')
+        .trim()
+        .split(' ')
+        .map((word) => word.isEmpty ? '' : word[0].toUpperCase() + word.substring(1))
+        .join(' ');
+  }
+
+  /// Show error message
+  void _showError(String message) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final isEditing = widget.editingApp != null;
@@ -95,19 +161,37 @@ class _AppPickerDialogState extends State<AppPickerDialog> {
                 },
               ),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: _targetController,
-                decoration: const InputDecoration(
-                  labelText: 'URL or Path',
-                  hintText: 'https://example.com or C:\\App.exe',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Please enter URL or path';
-                  }
-                  return null;
-                },
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: _targetController,
+                      decoration: const InputDecoration(
+                        labelText: 'URL or Path',
+                        hintText: 'https://example.com or C:\\App.exe',
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Please enter URL or path';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Tooltip(
+                    message: 'Browse',
+                    child: IconButton(
+                      icon: const Icon(Icons.folder_open),
+                      onPressed: _browseFile,
+                      style: IconButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                        foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
+                      ),
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(

@@ -56,13 +56,26 @@ This document outlines the development tasks for MyEverythingWidget v1.0 MVP.
 - [x] Add hardcoded app shortcuts (3-4 apps)
 - [x] Test: Icons display and apps launch
 
-### Task 2.5: Dynamic App Cards with Add Button ⭐ **PRIORITY TODAY**
+### Task 2.5: Dynamic App Cards with Add Button ⭐ **COMPLETED**
 - [x] Add "+" button card to grid layout
 - [x] Implement app picker dialog/modal
 - [x] Add method to `AppState` to add new app shortcuts
 - [x] Update state management to support dynamic app list
 - [x] Test: Add button opens picker, new apps appear in grid
 - [x] All tests passing (28/28 tests)
+- [x] **Browse Button Feature:**
+  - Added "Browse" button next to URL/Path field
+  - File picker for .exe, .lnk, .bat, .cmd files
+  - Auto-fill app name from file name
+  - Clean file name formatting (remove underscores, capitalize)
+  - Error handling for file browsing
+  - **Clean Code applied:**
+    - `_browseFile()` - File selection logic
+    - `_populateFieldsFromFile()` - Populate form fields
+    - `_extractFileName()` - Extract file name
+    - `_cleanFileName()` - Clean up file name
+    - `_showError()` - Error handling
+  - All 41 tests passing
 
 ---
 
