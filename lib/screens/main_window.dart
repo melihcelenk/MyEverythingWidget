@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
@@ -180,22 +181,31 @@ class _MainWindowState extends State<MainWindow> with WindowListener, TickerProv
               ),
             ),
           ),
-          child: TabBar(
-            controller: _tabController,
-            isScrollable: true,
-            tabAlignment: TabAlignment.start,
-            tabs: state.categories.map((category) {
-              return Tab(
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(category.icon),
-                    const SizedBox(width: 6),
-                    Text(category.name),
-                  ],
-                ),
-              );
-            }).toList(),
+          child: ScrollConfiguration(
+            behavior: ScrollConfiguration.of(context).copyWith(
+              dragDevices: {
+                PointerDeviceKind.touch,
+                PointerDeviceKind.mouse,
+              },
+              scrollbars: false,
+            ),
+            child: TabBar(
+              controller: _tabController,
+              isScrollable: true,
+              tabAlignment: TabAlignment.start,
+              tabs: state.categories.map((category) {
+                return Tab(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(category.icon),
+                      const SizedBox(width: 6),
+                      Text(category.name),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
           ),
         );
       },
