@@ -32,11 +32,11 @@ class AppState extends ChangeNotifier {
       const AppCategory(id: '4', name: 'Media', icon: '🎵'),
     ]);
 
-    // Load apps
+    // Load apps (with various name lengths to test tooltip and truncation)
     _apps.addAll([
       const AppShortcut(
         id: '1',
-        name: 'Chrome',
+        name: 'Google Chrome',
         iconPath: '',
         target: 'https://google.com',
         category: 'Web',
@@ -44,7 +44,7 @@ class AppState extends ChangeNotifier {
       ),
       const AppShortcut(
         id: '2',
-        name: 'GitHub',
+        name: 'GitHub Desktop',
         iconPath: '',
         target: 'https://github.com',
         category: 'Dev',
@@ -52,15 +52,15 @@ class AppState extends ChangeNotifier {
       ),
       const AppShortcut(
         id: '3',
-        name: 'YouTube',
+        name: 'YouTube Music',
         iconPath: '',
-        target: 'https://youtube.com',
+        target: 'https://music.youtube.com',
         category: 'Media',
         type: LaunchType.url,
       ),
       const AppShortcut(
         id: '4',
-        name: 'Spotify',
+        name: 'Spotify Premium',
         iconPath: '',
         target: 'https://spotify.com',
         category: 'Media',
@@ -68,7 +68,7 @@ class AppState extends ChangeNotifier {
       ),
       const AppShortcut(
         id: '5',
-        name: 'Stack Overflow',
+        name: 'Stack Overflow Community',
         iconPath: '',
         target: 'https://stackoverflow.com',
         category: 'Dev',
@@ -84,7 +84,7 @@ class AppState extends ChangeNotifier {
       ),
       const AppShortcut(
         id: '7',
-        name: 'VS Code',
+        name: 'Visual Studio Code',
         iconPath: '',
         target: 'https://code.visualstudio.com',
         category: 'Dev',
@@ -92,7 +92,7 @@ class AppState extends ChangeNotifier {
       ),
       const AppShortcut(
         id: '8',
-        name: 'CodePen',
+        name: 'CodePen Playground',
         iconPath: '',
         target: 'https://codepen.io',
         category: 'Dev',
@@ -100,7 +100,7 @@ class AppState extends ChangeNotifier {
       ),
       const AppShortcut(
         id: '9',
-        name: 'MDN',
+        name: 'MDN Web Docs',
         iconPath: '',
         target: 'https://developer.mozilla.org',
         category: 'Dev',
@@ -108,7 +108,7 @@ class AppState extends ChangeNotifier {
       ),
       const AppShortcut(
         id: '10',
-        name: 'Docker Hub',
+        name: 'Docker Hub Registry',
         iconPath: '',
         target: 'https://hub.docker.com',
         category: 'Dev',
@@ -116,9 +116,17 @@ class AppState extends ChangeNotifier {
       ),
       const AppShortcut(
         id: '11',
-        name: 'NPM',
+        name: 'NPM Package Manager',
         iconPath: '',
         target: 'https://npmjs.com',
+        category: 'Dev',
+        type: LaunchType.url,
+      ),
+      const AppShortcut(
+        id: '12',
+        name: 'Git Version Control',
+        iconPath: '',
+        target: 'https://git-scm.com',
         category: 'Dev',
         type: LaunchType.url,
       ),

@@ -186,15 +186,25 @@ This document outlines the development tasks for MyEverythingWidget v1.0 MVP.
 
 ## 🐛 Known Issues
 
-### UI Layout Issues
-- [ ] **Tab bar overflow**: Media tab is cut off at window edge
-- [ ] **App card text overflow**: "Stack Overflow" second word not visible
-- [ ] **Window width**: Consider increasing from 320px to accommodate content
+### UI Layout Issues (Phase 3.3)
+- [x] **Tab bar overflow**: Media tab is cut off at window edge → Fixed by increasing window width to 400px
+- [x] **App card text overflow**: "Stack Overflow" second word not visible → Fixed by wrapping text
+- [x] **Window width**: Consider increasing from 320px to accommodate content → Increased to 400px
+- [x] **App card vertical alignment**: Long names (2+ lines) cause card to shift up
+  - Fix: Changed `MainAxisAlignment.center` to `MainAxisAlignment.start`
+  - Test: Added visual alignment tests (`test/widgets/app_card_alignment_test.dart`)
+  - Result: All cards now align at top, icons at same Y position
+- [ ] **App card text truncation**: Names longer than 2 lines need truncation with ellipsis
+  - Current: Text wraps to max 2 lines with `TextOverflow.ellipsis`
+  - Needed: Tooltip on hover showing full name (like Windows)
+  - Implementation: Use `Tooltip` widget wrapping the text
 
-### Suggested Fixes
-1. Increase window width to 380px or make tabs scrollable
-2. Reduce app card text size or use smaller font
-3. Add ellipsis for long app names
+### Current Task (Phase 3.4: Text Truncation & Tooltip)
+- [ ] Add tooltip to app card names
+  - Wrap Text widget with Tooltip
+  - Show full app name on hover
+  - Tooltip should appear after short delay (like Windows)
+  - Test tooltip appears and shows correct text
 
 ---
 

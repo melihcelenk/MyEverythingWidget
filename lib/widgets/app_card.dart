@@ -21,7 +21,7 @@ class AppCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(8),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             _buildIcon(context),
             const SizedBox(height: 8),
@@ -49,14 +49,42 @@ class AppCard extends StatelessWidget {
   }
 
   Widget _buildLabel(BuildContext context) {
-    return Flexible(
-      child: Text(
-        app.name,
+    // Calculate if text will overflow
+    // We check if the text needs more than 2 lines to display fully
+    final textPainter = TextPainter(
+      text: TextSpan(
+        text: app.name,
         style: Theme.of(context).textTheme.bodySmall,
-        textAlign: TextAlign.center,
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
       ),
+      maxLines: 2,
+      textAlign: TextAlign.center,
+      textDirection: TextDirection.ltr,
+    );
+
+    // Layout with a reasonable max width (card width minus padding)
+    textPainter.layout(maxWidth: 74); // 90px card - 16px padding
+    final didExceedMaxLines = textPainter.didExceedMaxLines;
+
+    return Flexible(
+      child: didExceedMaxLines
+          ? Tooltip(
+              message: app.name,
+              waitDuration: const Duration(milliseconds: 500),
+              child: Text(
+                app.name,
+                style: Theme.of(context).textTheme.bodySmall,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            )
+          : Text(
+              app.name,
+              style: Theme.of(context).textTheme.bodySmall,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
     );
   }
 
