@@ -181,30 +181,45 @@ class _MainWindowState extends State<MainWindow> with WindowListener, TickerProv
               ),
             ),
           ),
-          child: ScrollConfiguration(
-            behavior: ScrollConfiguration.of(context).copyWith(
-              dragDevices: {
-                PointerDeviceKind.touch,
-                PointerDeviceKind.mouse,
-              },
-              scrollbars: false,
-            ),
-            child: TabBar(
-              controller: _tabController,
-              isScrollable: true,
-              tabAlignment: TabAlignment.start,
-              tabs: state.categories.map((category) {
-                return Tab(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(category.icon),
-                      const SizedBox(width: 6),
-                      Text(category.name),
-                    ],
-                  ),
-                );
-              }).toList(),
+          child: Listener(
+            onPointerSignal: (event) {
+              if (event is PointerScrollEvent) {
+                // Convert vertical scroll to horizontal tab navigation
+                final delta = event.scrollDelta.dy;
+                if (delta > 0 && _tabController.index < _tabController.length - 1) {
+                  // Scroll down = next tab
+                  _tabController.animateTo(_tabController.index + 1);
+                } else if (delta < 0 && _tabController.index > 0) {
+                  // Scroll up = previous tab
+                  _tabController.animateTo(_tabController.index - 1);
+                }
+              }
+            },
+            child: ScrollConfiguration(
+              behavior: ScrollConfiguration.of(context).copyWith(
+                dragDevices: {
+                  PointerDeviceKind.touch,
+                  PointerDeviceKind.mouse,
+                },
+                scrollbars: false,
+              ),
+              child: TabBar(
+                controller: _tabController,
+                isScrollable: true,
+                tabAlignment: TabAlignment.start,
+                tabs: state.categories.map((category) {
+                  return Tab(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(category.icon),
+                        const SizedBox(width: 6),
+                        Text(category.name),
+                      ],
+                    ),
+                  );
+                }).toList(),
+              ),
             ),
           ),
         );
