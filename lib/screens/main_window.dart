@@ -53,6 +53,25 @@ class _MainWindowState extends State<MainWindow> with WindowListener, TickerProv
     }
   }
 
+  /// Handle mouse wheel scroll events for tab navigation
+  void _handleTabScroll(PointerSignalEvent event) {
+    if (event is! PointerScrollEvent) return;
+
+    final delta = event.scrollDelta.dy;
+    final currentIndex = _tabController.index;
+    
+    if (delta > 0 && currentIndex < _tabController.length - 1) {
+      _navigateToTab(currentIndex + 1);
+    } else if (delta < 0 && currentIndex > 0) {
+      _navigateToTab(currentIndex - 1);
+    }
+  }
+
+  /// Navigate to specific tab with animation
+  void _navigateToTab(int index) {
+    _tabController.animateTo(index);
+  }
+
   Future<void> _initWindow() async {
     await windowManager.setAlwaysOnTop(_isAlwaysOnTop);
   }
@@ -173,58 +192,61 @@ class _MainWindowState extends State<MainWindow> with WindowListener, TickerProv
     return Consumer<AppState>(
       builder: (context, state, child) {
         return Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceContainerHighest,
-            border: Border(
-              bottom: BorderSide(
-                color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
-              ),
-            ),
-          ),
+          decoration: _buildTabBarDecoration(context),
           child: Listener(
-            onPointerSignal: (event) {
-              if (event is PointerScrollEvent) {
-                // Convert vertical scroll to horizontal tab navigation
-                final delta = event.scrollDelta.dy;
-                if (delta > 0 && _tabController.index < _tabController.length - 1) {
-                  // Scroll down = next tab
-                  _tabController.animateTo(_tabController.index + 1);
-                } else if (delta < 0 && _tabController.index > 0) {
-                  // Scroll up = previous tab
-                  _tabController.animateTo(_tabController.index - 1);
-                }
-              }
-            },
+            onPointerSignal: _handleTabScroll,
             child: ScrollConfiguration(
-              behavior: ScrollConfiguration.of(context).copyWith(
-                dragDevices: {
-                  PointerDeviceKind.touch,
-                  PointerDeviceKind.mouse,
-                },
-                scrollbars: false,
-              ),
+              behavior: _buildScrollBehavior(context),
               child: TabBar(
                 controller: _tabController,
                 isScrollable: true,
                 tabAlignment: TabAlignment.start,
-                tabs: state.categories.map((category) {
-                  return Tab(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(category.icon),
-                        const SizedBox(width: 6),
-                        Text(category.name),
-                      ],
-                    ),
-                  );
-                }).toList(),
+                tabs: _buildTabs(state.categories),
               ),
             ),
           ),
         );
       },
     );
+  }
+
+  /// Build tab bar decoration style
+  BoxDecoration _buildTabBarDecoration(BuildContext context) {
+    return BoxDecoration(
+      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+      border: Border(
+        bottom: BorderSide(
+          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+        ),
+      ),
+    );
+  }
+
+  /// Build scroll behavior configuration for tab bar
+  ScrollBehavior _buildScrollBehavior(BuildContext context) {
+    return ScrollConfiguration.of(context).copyWith(
+      dragDevices: {
+        PointerDeviceKind.touch,
+        PointerDeviceKind.mouse,
+      },
+      scrollbars: false,
+    );
+  }
+
+  /// Build tabs list from categories
+  List<Widget> _buildTabs(List<dynamic> categories) {
+    return categories.map((category) {
+      return Tab(
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(category.icon),
+            const SizedBox(width: 6),
+            Text(category.name),
+          ],
+        ),
+      );
+    }).toList();
   }
 
   Widget _buildContent() {
