@@ -137,7 +137,7 @@ class _MainWindowState extends State<MainWindow> with WindowListener {
         final apps = state.filteredApps;
 
         if (apps.isEmpty) {
-          return _buildEmptyState();
+          return _buildEmptyStateWithFAB();
         }
 
         // Fixed-size grid configuration (like Windows Explorer/Android launcher)
@@ -148,43 +148,45 @@ class _MainWindowState extends State<MainWindow> with WindowListener {
         const verticalPadding = 10.0;
         const spacing = 4.0;
 
-        return Container(
-          color: Theme.of(context).colorScheme.surface,
-          padding: const EdgeInsets.only(
-            left: horizontalPadding,
-            right: horizontalPadding,
-            top: verticalPadding,
-            bottom: verticalPadding,
-          ),
-          child: SingleChildScrollView(
-            child: Align(
-              alignment: Alignment.topLeft,
-              child: Wrap(
-                alignment: WrapAlignment.start,
-                spacing: spacing,
-                runSpacing: spacing,
-                children: [
-                  ...apps.map((app) {
-                    return SizedBox(
-                      width: cellWidth,
-                      height: cellHeight,
-                      child: AppCard(
-                        app: app,
-                        onTap: () => _launchApp(app),
-                      ),
-                    );
-                  }),
-                  SizedBox(
-                    width: cellWidth,
-                    height: cellHeight,
-                    child: AddAppButton(
-                      onTap: _showAddAppDialog,
-                    ),
+        return Stack(
+          children: [
+            Container(
+              color: Theme.of(context).colorScheme.surface,
+              padding: const EdgeInsets.only(
+                left: horizontalPadding,
+                right: horizontalPadding,
+                top: verticalPadding,
+                bottom: verticalPadding,
+              ),
+              child: SingleChildScrollView(
+                child: Align(
+                  alignment: Alignment.topLeft,
+                  child: Wrap(
+                    alignment: WrapAlignment.start,
+                    spacing: spacing,
+                    runSpacing: spacing,
+                    children: apps.map((app) {
+                      return SizedBox(
+                        width: cellWidth,
+                        height: cellHeight,
+                        child: AppCard(
+                          app: app,
+                          onTap: () => _launchApp(app),
+                        ),
+                      );
+                    }).toList(),
                   ),
-                ],
+                ),
               ),
             ),
-          ),
+            Positioned(
+              right: 16,
+              bottom: 16,
+              child: AddAppButton(
+                onTap: _showAddAppDialog,
+              ),
+            ),
+          ],
         );
       },
     );
@@ -209,6 +211,21 @@ class _MainWindowState extends State<MainWindow> with WindowListener {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildEmptyStateWithFAB() {
+    return Stack(
+      children: [
+        _buildEmptyState(),
+        Positioned(
+          right: 16,
+          bottom: 16,
+          child: AddAppButton(
+            onTap: _showAddAppDialog,
+          ),
+        ),
+      ],
     );
   }
 }

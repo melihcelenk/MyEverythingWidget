@@ -3,8 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:my_everything_widget/widgets/add_app_button.dart';
 
 void main() {
-  group('AddAppButton Widget', () {
-    testWidgets('should render add button with + icon', (tester) async {
+  group('AddAppButton Widget - Floating FAB Style', () {
+    testWidgets('should render circular floating button with + icon', (tester) async {
       var tapped = false;
 
       await tester.pumpWidget(
@@ -30,7 +30,7 @@ void main() {
       expect(tapped, true);
     });
 
-    testWidgets('should display "Add" text', (tester) async {
+    testWidgets('should be circular with fixed size', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -41,29 +41,18 @@ void main() {
         ),
       );
 
-      expect(find.text('Add'), findsOneWidget);
-    });
-
-    testWidgets('should have same size as app card', (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: SizedBox(
-              width: 90,
-              height: 100,
-              child: AddAppButton(
-                onTap: () {},
-              ),
-            ),
-          ),
+      final container = tester.widget<Container>(
+        find.descendant(
+          of: find.byType(AddAppButton),
+          matching: find.byType(Container),
         ),
       );
-
-      final addButton = tester.widget<AddAppButton>(find.byType(AddAppButton));
-      expect(addButton, isNotNull);
+      
+      expect(container.constraints?.minWidth, 56);
+      expect(container.constraints?.minHeight, 56);
     });
 
-    testWidgets('should be visually distinct from regular app cards', (tester) async {
+    testWidgets('should have circular shape', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -74,9 +63,32 @@ void main() {
         ),
       );
 
-      // Should use dotted/dashed border style
-      final inkWell = find.byType(InkWell);
-      expect(inkWell, findsOneWidget);
+      final decoration = tester.widget<Container>(
+        find.descendant(
+          of: find.byType(AddAppButton),
+          matching: find.byType(Container),
+        ),
+      ).decoration as BoxDecoration?;
+
+      expect(decoration?.shape, BoxShape.circle);
+    });
+
+    testWidgets('should have elevation/shadow effect', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: AddAppButton(
+              onTap: () {},
+            ),
+          ),
+        ),
+      );
+
+      // Should have Material widget for elevation
+      expect(find.descendant(
+        of: find.byType(AddAppButton),
+        matching: find.byType(Material),
+      ), findsOneWidget);
     });
   });
 }
