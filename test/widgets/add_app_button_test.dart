@@ -30,7 +30,7 @@ void main() {
       expect(tapped, true);
     });
 
-    testWidgets('should be circular with fixed size', (tester) async {
+    testWidgets('should be circular with compact size', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -48,8 +48,8 @@ void main() {
         ),
       );
       
-      expect(container.constraints?.minWidth, 56);
-      expect(container.constraints?.minHeight, 56);
+      expect(container.constraints?.minWidth, 48);
+      expect(container.constraints?.minHeight, 48);
     });
 
     testWidgets('should have circular shape', (tester) async {

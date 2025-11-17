@@ -24,17 +24,25 @@ class MyApp extends StatelessWidget {
   }
 
   ThemeData _buildLightTheme() {
+    final baseColorScheme = ColorScheme.fromSeed(seedColor: Colors.blue);
     return ThemeData(
-      colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+      colorScheme: baseColorScheme.copyWith(
+        tertiaryContainer: Colors.green.shade100,
+        onTertiaryContainer: Colors.green.shade900,
+      ),
       useMaterial3: true,
     );
   }
 
   ThemeData _buildDarkTheme() {
+    final baseColorScheme = ColorScheme.fromSeed(
+      seedColor: Colors.blue,
+      brightness: Brightness.dark,
+    );
     return ThemeData(
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: Colors.blue,
-        brightness: Brightness.dark,
+      colorScheme: baseColorScheme.copyWith(
+        tertiaryContainer: Colors.green.shade800,
+        onTertiaryContainer: Colors.green.shade100,
       ),
       useMaterial3: true,
     );

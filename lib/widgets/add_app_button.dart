@@ -12,25 +12,27 @@ class AddAppButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return Material(
-      elevation: 6,
+      elevation: 4,
       shape: const CircleBorder(),
-      color: Theme.of(context).colorScheme.primaryContainer,
+      color: colorScheme.tertiaryContainer,
       child: InkWell(
         onTap: onTap,
         customBorder: const CircleBorder(),
         child: Container(
           constraints: const BoxConstraints(
-            minWidth: 56,
-            minHeight: 56,
+            minWidth: 48,
+            minHeight: 48,
           ),
           decoration: const BoxDecoration(
             shape: BoxShape.circle,
           ),
           child: Icon(
             Icons.add,
-            size: 28,
-            color: Theme.of(context).colorScheme.onPrimaryContainer,
+            size: 24,
+            color: colorScheme.onTertiaryContainer,
           ),
         ),
       ),
