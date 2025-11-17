@@ -24,6 +24,7 @@ void main() {
               onTap: () {},
               onEdit: (app) {},
               onRename: (app) {},
+              onChangeIcon: (app) {},
             ),
           ),
         ),
@@ -36,6 +37,7 @@ void main() {
 
       // Context menu should appear
       expect(find.text('Open'), findsOneWidget);
+      expect(find.text('Change Icon'), findsOneWidget);
       expect(find.text('Edit'), findsOneWidget);
       expect(find.text('Rename'), findsOneWidget);
     });
@@ -53,6 +55,7 @@ void main() {
               },
               onEdit: (app) {},
               onRename: (app) {},
+              onChangeIcon: (app) {},
             ),
           ),
         ),
@@ -68,6 +71,35 @@ void main() {
       expect(openCalled, true);
     });
 
+    testWidgets('should call onChangeIcon when Change Icon is selected', (tester) async {
+      AppShortcut? changedIconApp;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: AppCard(
+              app: testApp,
+              onTap: () {},
+              onEdit: (app) {},
+              onRename: (app) {},
+              onChangeIcon: (app) {
+                changedIconApp = app;
+              },
+            ),
+          ),
+        ),
+      );
+
+      // Right click and select Change Icon
+      await tester.tap(find.byType(AppCard), buttons: kSecondaryButton);
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Change Icon'));
+      await tester.pumpAndSettle();
+
+      expect(changedIconApp, testApp);
+    });
+
     testWidgets('should call onEdit when Edit is selected', (tester) async {
       AppShortcut? editedApp;
 
@@ -81,6 +113,7 @@ void main() {
                 editedApp = app;
               },
               onRename: (app) {},
+              onChangeIcon: (app) {},
             ),
           ),
         ),
@@ -109,6 +142,7 @@ void main() {
               onRename: (app) {
                 renamedApp = app;
               },
+              onChangeIcon: (app) {},
             ),
           ),
         ),
@@ -133,6 +167,7 @@ void main() {
               onTap: () {},
               onEdit: (app) {},
               onRename: (app) {},
+              onChangeIcon: (app) {},
             ),
           ),
         ),
@@ -144,6 +179,7 @@ void main() {
 
       // Icons should be present
       expect(find.byIcon(Icons.open_in_new), findsOneWidget);
+      expect(find.byIcon(Icons.emoji_emotions), findsOneWidget);
       expect(find.byIcon(Icons.edit), findsOneWidget);
       expect(find.byIcon(Icons.drive_file_rename_outline), findsOneWidget);
     });

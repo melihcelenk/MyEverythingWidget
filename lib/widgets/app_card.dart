@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import '../models/app_shortcut.dart';
 
@@ -8,6 +9,7 @@ class AppCard extends StatelessWidget {
   final VoidCallback onTap;
   final void Function(AppShortcut)? onEdit;
   final void Function(AppShortcut)? onRename;
+  final void Function(AppShortcut)? onChangeIcon;
 
   const AppCard({
     super.key,
@@ -15,6 +17,7 @@ class AppCard extends StatelessWidget {
     required this.onTap,
     this.onEdit,
     this.onRename,
+    this.onChangeIcon,
   });
 
   @override
@@ -60,6 +63,16 @@ class AppCard extends StatelessWidget {
           ),
         ),
         PopupMenuItem(
+          value: 'change_icon',
+          child: const Row(
+            children: [
+              Icon(Icons.emoji_emotions, size: 18),
+              SizedBox(width: 12),
+              Text('Change Icon'),
+            ],
+          ),
+        ),
+        PopupMenuItem(
           value: 'edit',
           child: const Row(
             children: [
@@ -83,6 +96,8 @@ class AppCard extends StatelessWidget {
     ).then((value) {
       if (value == 'open') {
         onTap();
+      } else if (value == 'change_icon' && onChangeIcon != null) {
+        onChangeIcon!(app);
       } else if (value == 'edit' && onEdit != null) {
         onEdit!(app);
       } else if (value == 'rename' && onRename != null) {
@@ -92,6 +107,67 @@ class AppCard extends StatelessWidget {
   }
 
   Widget _buildIcon(BuildContext context) {
+    // Check if custom icon exists
+    if (app.iconPath.isNotEmpty) {
+      // Try emoji (single character or up to 2 chars for composite emojis)
+      if (app.iconPath.length <= 2) {
+        return Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Center(
+            child: Text(
+              app.iconPath,
+              style: const TextStyle(fontSize: 24),
+            ),
+          ),
+        );
+      }
+
+      // Try material icon (numeric codepoint)
+      final codePoint = int.tryParse(app.iconPath);
+      if (codePoint != null) {
+        return Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(
+            IconData(codePoint, fontFamily: 'MaterialIcons'),
+            size: 24,
+            color: Theme.of(context).colorScheme.primary,
+          ),
+        );
+      }
+
+      // Try image file
+      final file = File(app.iconPath);
+      if (file.existsSync()) {
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: Image.file(
+            file,
+            width: 40,
+            height: 40,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) {
+              return _buildDefaultIcon(context);
+            },
+          ),
+        );
+      }
+    }
+
+    // Fallback to default type-based icon
+    return _buildDefaultIcon(context);
+  }
+
+  Widget _buildDefaultIcon(BuildContext context) {
     return Container(
       width: 40,
       height: 40,

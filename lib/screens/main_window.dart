@@ -9,6 +9,7 @@ import '../widgets/custom_title_bar.dart';
 import '../widgets/app_card.dart';
 import '../widgets/add_app_button.dart';
 import '../widgets/app_picker_dialog.dart';
+import '../widgets/icon_picker_dialog.dart';
 
 /// Main application window
 /// Manages window state and displays primary content
@@ -169,6 +170,28 @@ class _MainWindowState extends State<MainWindow> with WindowListener, TickerProv
     }
   }
 
+  Future<void> _changeIcon(AppShortcut app) async {
+    final result = await showDialog<IconPickerResult>(
+      context: context,
+      builder: (context) => const IconPickerDialog(),
+    );
+
+    if (result != null && mounted) {
+      final updatedApp = AppShortcut(
+        id: app.id,
+        name: app.name,
+        iconPath: result.value,
+        target: app.target,
+        category: app.category,
+        type: app.type,
+      );
+      Provider.of<AppState>(context, listen: false).updateApp(updatedApp);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Icon updated successfully')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -292,6 +315,7 @@ class _MainWindowState extends State<MainWindow> with WindowListener, TickerProv
                           onTap: () => _launchApp(app),
                           onEdit: _editApp,
                           onRename: _renameApp,
+                          onChangeIcon: _changeIcon,
                         ),
                       );
                     }).toList(),

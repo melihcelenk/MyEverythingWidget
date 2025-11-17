@@ -76,6 +76,43 @@ This document outlines the development tasks for MyEverythingWidget v1.0 MVP.
     - `_cleanFileName()` - Clean up file name
     - `_showError()` - Error handling
   - All 41 tests passing
+- [x] **Notion-Style Icon Picker ⭐ COMPLETED:**
+  - Three-tab icon picker dialog (Emoji / Icons / Upload)
+  - **Emoji Tab:** 48 commonly used emojis in grid layout (10 columns, rounded rectangles)
+  - **Icons Tab:** Material Design icons collection (48 icons, 10 columns)
+  - **Upload Tab:** Custom image upload with drag & drop support
+  - Search/filter functionality for finding icons
+  - Icon preview in App Picker Dialog (compact 40x40 size)
+  - **Context Menu:** "Change Icon" option added
+  - **Add/Edit Dialog:** Icon selector integrated with scrollable content
+  - **AppCard Rendering:** Supports emoji, material icons, and custom images
+  - **UI/UX Improvements:**
+    - Wider dialog (650px) for better grid visibility
+    - Larger emojis (32px) and icons (28px) for better readability
+    - Rounded rectangles instead of circles (Notion-style)
+    - Proper spacing (4px) between grid items
+    - Compact icon preview (40x40) in forms
+    - Drag & drop visual feedback with border/color changes
+    - SingleChildScrollView for overflow prevention
+  - **Overflow Testing:**
+    - Automated overflow detection tests added
+    - All overflow issues resolved (56/56 tests passing)
+    - Tests automatically catch layout issues
+  - **Clean Code applied:**
+    - `IconPickerDialog` - Separate widget with single responsibility
+    - `IconPickerResult` - Data model for icon selection
+    - `IconType` enum - Type safety for icon types
+    - `_buildIconPreview()` - Icon preview widget
+    - `_selectIcon()` - Icon selection handler
+    - Icon rendering extracted to separate methods in AppCard
+    - Overflow tests ensure robustness
+  - All 56 tests passing
+- [x] **Icon Infrastructure Prepared:**
+  - `IconExtractionService` created for future enhancement
+  - `AppShortcut.iconPath` field ready for custom icons
+  - Win32 package added for Windows API access
+  - Currently using Material Design icons (type-based)
+  - **Future Enhancement:** Full icon extraction from .exe files
 
 ---
 
@@ -238,6 +275,7 @@ This document outlines the development tasks for MyEverythingWidget v1.0 MVP.
 
 **Current Phase:** Phase 3 (Tab System) - COMPLETED ✅
 **Completion:** 100% (Phase 3)
+**Recent Completion:** Notion-Style Icon Picker ⭐
 
 ### Phase Checklist
 - [x] Phase 1: Project Setup & Core Window ✅
@@ -251,6 +289,8 @@ This document outlines the development tasks for MyEverythingWidget v1.0 MVP.
 ### Today's Priority Tasks ✅ COMPLETED
 1. ✅ **Task 3.3**: Scrollable Tabs - DONE
 2. ✅ **Task 2.5**: Dynamic App Cards with Add Button - DONE
+3. ✅ **Icon Picker Feature**: Notion-style Icon Selection - DONE
+4. ✅ **Icon Picker UX**: Overflow fixes, larger emojis, drag & drop - DONE
 
 ---
 

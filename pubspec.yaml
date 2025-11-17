@@ -56,6 +56,9 @@ dependencies:
   # File picker for browsing files
   file_picker: ^8.0.0
 
+  # Windows icon extraction
+  win32: ^5.5.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
