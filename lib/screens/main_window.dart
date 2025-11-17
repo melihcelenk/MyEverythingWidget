@@ -18,21 +18,38 @@ class MainWindow extends StatefulWidget {
   State<MainWindow> createState() => _MainWindowState();
 }
 
-class _MainWindowState extends State<MainWindow> with WindowListener {
+class _MainWindowState extends State<MainWindow> with WindowListener, TickerProviderStateMixin {
   bool _isAlwaysOnTop = true;
   final _launcherService = AppLauncherService();
+  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
     windowManager.addListener(this);
     _initWindow();
+    
+    final appState = context.read<AppState>();
+    _tabController = TabController(
+      length: appState.categories.length,
+      vsync: this,
+    );
+    _tabController.addListener(_onTabChanged);
   }
 
   @override
   void dispose() {
+    _tabController.removeListener(_onTabChanged);
+    _tabController.dispose();
     windowManager.removeListener(this);
     super.dispose();
+  }
+
+  void _onTabChanged() {
+    if (!_tabController.indexIsChanging) {
+      final appState = context.read<AppState>();
+      appState.selectCategory(appState.categories[_tabController.index]);
+    }
   }
 
   Future<void> _initWindow() async {
@@ -155,7 +172,6 @@ class _MainWindowState extends State<MainWindow> with WindowListener {
     return Consumer<AppState>(
       builder: (context, state, child) {
         return Container(
-          height: 50,
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surfaceContainerHighest,
             border: Border(
@@ -164,30 +180,22 @@ class _MainWindowState extends State<MainWindow> with WindowListener {
               ),
             ),
           ),
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-            child: Row(
-              children: state.categories.map((category) {
-                final isSelected = category == state.selectedCategory;
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  child: ChoiceChip(
-                    label: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(category.icon),
-                        const SizedBox(width: 6),
-                        Text(category.name),
-                      ],
-                    ),
-                    selected: isSelected,
-                    onSelected: (_) => state.selectCategory(category),
-                    showCheckmark: false,
-                  ),
-                );
-              }).toList(),
-            ),
+          child: TabBar(
+            controller: _tabController,
+            isScrollable: true,
+            tabAlignment: TabAlignment.start,
+            tabs: state.categories.map((category) {
+              return Tab(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(category.icon),
+                    const SizedBox(width: 6),
+                    Text(category.name),
+                  ],
+                ),
+              );
+            }).toList(),
           ),
         );
       },

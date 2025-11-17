@@ -81,10 +81,12 @@ This document outlines the development tasks for MyEverythingWidget v1.0 MVP.
 - [x] Test: Tabs switch and filter content
 
 ### Task 3.3: Scrollable Tabs ⭐ **PRIORITY TODAY**
-- [ ] Make `TabBar` scrollable when tabs overflow
-- [ ] Add `isScrollable: true` to `TabBar` widget
-- [ ] Test: Multiple tabs scroll horizontally when needed
-- [ ] Ensure tab indicator works correctly with scrolling
+- [x] Make `TabBar` scrollable when tabs overflow
+- [x] Add `isScrollable: true` to `TabBar` widget
+- [x] Test: Multiple tabs scroll horizontally when needed
+- [x] Ensure tab indicator works correctly with scrolling
+- [x] Replaced ChoiceChip with TabBar/TabController
+- [x] All 5 scrollable tab tests passing
 
 ---
 
@@ -222,9 +224,9 @@ This document outlines the development tasks for MyEverythingWidget v1.0 MVP.
 - [ ] Phase 6: Polish & Testing
 - [ ] Phase 7: Deployment
 
-### Today's Priority Tasks
-1. ⭐ **Task 3.3**: Scrollable Tabs
-2. ⭐ **Task 2.5**: Dynamic App Cards with Add Button
+### Today's Priority Tasks ✅ COMPLETED
+1. ✅ **Task 3.3**: Scrollable Tabs - DONE
+2. ✅ **Task 2.5**: Dynamic App Cards with Add Button - DONE
 
 ---
 
