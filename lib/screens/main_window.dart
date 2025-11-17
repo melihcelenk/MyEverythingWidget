@@ -6,6 +6,8 @@ import '../providers/app_state.dart';
 import '../services/app_launcher_service.dart';
 import '../widgets/custom_title_bar.dart';
 import '../widgets/app_card.dart';
+import '../widgets/add_app_button.dart';
+import '../widgets/app_picker_dialog.dart';
 
 /// Main application window
 /// Manages window state and displays primary content
@@ -49,6 +51,20 @@ class _MainWindowState extends State<MainWindow> with WindowListener {
     if (!success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to launch ${app.name}')),
+      );
+    }
+  }
+
+  Future<void> _showAddAppDialog() async {
+    final app = await showDialog<AppShortcut>(
+      context: context,
+      builder: (context) => const AppPickerDialog(),
+    );
+
+    if (app != null && mounted) {
+      Provider.of<AppState>(context, listen: false).addApp(app);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${app.name} added successfully')),
       );
     }
   }
@@ -147,16 +163,25 @@ class _MainWindowState extends State<MainWindow> with WindowListener {
                 alignment: WrapAlignment.start,
                 spacing: spacing,
                 runSpacing: spacing,
-                children: apps.map((app) {
-                  return SizedBox(
+                children: [
+                  ...apps.map((app) {
+                    return SizedBox(
+                      width: cellWidth,
+                      height: cellHeight,
+                      child: AppCard(
+                        app: app,
+                        onTap: () => _launchApp(app),
+                      ),
+                    );
+                  }),
+                  SizedBox(
                     width: cellWidth,
                     height: cellHeight,
-                    child: AppCard(
-                      app: app,
-                      onTap: () => _launchApp(app),
+                    child: AddAppButton(
+                      onTap: _showAddAppDialog,
                     ),
-                  );
-                }).toList(),
+                  ),
+                ],
               ),
             ),
           ),

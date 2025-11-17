@@ -9,67 +9,82 @@ This document outlines the development tasks for MyEverythingWidget v1.0 MVP.
 ## 🚀 Phase 1: Project Setup & Core Window
 
 ### Task 1.1: Environment Setup
-- [ ] Verify Flutter installation (`flutter doctor`)
-- [ ] Create Flutter project (`flutter create my_everything_widget --platforms=windows,linux`)
-- [ ] Initialize Git repository
-- [ ] Add required packages to `pubspec.yaml`
+- [x] Verify Flutter installation (`flutter doctor`)
+- [x] Create Flutter project (`flutter create my_everything_widget --platforms=windows,linux`)
+- [x] Initialize Git repository
+- [x] Add required packages to `pubspec.yaml`
   - `window_manager: ^0.3.7`
   - `provider: ^6.1.0`
   - `clipboard_watcher: ^0.2.0`
   - `msix: ^3.16.0`
 
 ### Task 1.2: Main Window Implementation
-- [ ] Create `lib/screens/main_window.dart`
-- [ ] Implement custom title bar
-- [ ] Add drag-to-move functionality
-- [ ] Configure always-on-top toggle
-- [ ] Set window size to 320x500
-- [ ] Test: Window opens and is draggable
+- [x] Create `lib/screens/main_window.dart`
+- [x] Implement custom title bar
+- [x] Add drag-to-move functionality
+- [x] Configure always-on-top toggle
+- [x] Set window size to 320x500
+- [x] Test: Window opens and is draggable
 
 ---
 
 ## 🎯 Phase 2: Application Launcher
 
 ### Task 2.1: Data Models
-- [ ] Create `lib/models/app_shortcut.dart`
-- [ ] Define `AppShortcut` class with properties:
+- [x] Create `lib/models/app_shortcut.dart`
+- [x] Define `AppShortcut` class with properties:
   - `id`, `name`, `iconPath`, `target`, `category`, `type`
-- [ ] Define `LaunchType` enum (exe, uwp, url)
+- [x] Define `LaunchType` enum (exe, uwp, url)
 
 ### Task 2.2: App Card Widget
-- [ ] Create `lib/widgets/app_card.dart`
-- [ ] Implement icon + text layout
-- [ ] Add tap gesture handler
-- [ ] Style card with Material Design
+- [x] Create `lib/widgets/app_card.dart`
+- [x] Implement icon + text layout
+- [x] Add tap gesture handler
+- [x] Style card with Material Design
+- [x] Add tooltip for truncated text (500ms wait duration)
 
 ### Task 2.3: App Launcher Service
-- [ ] Create `lib/services/app_launcher.dart`
-- [ ] Implement launch logic for different types:
+- [x] Create `lib/services/app_launcher.dart`
+- [x] Implement launch logic for different types:
   - EXE: `Process.start()`
   - URL: `url_launcher` package
-- [ ] Add error handling
+- [x] Add error handling
 
 ### Task 2.4: Grid Layout
-- [ ] Create `lib/widgets/category_view.dart`
-- [ ] Implement `GridView.builder` with 3 columns
-- [ ] Add hardcoded app shortcuts (3-4 apps)
-- [ ] Test: Icons display and apps launch
+- [x] Create `lib/widgets/category_view.dart`
+- [x] Implement `GridView.builder` with 3 columns
+- [x] Add hardcoded app shortcuts (3-4 apps)
+- [x] Test: Icons display and apps launch
+
+### Task 2.5: Dynamic App Cards with Add Button ⭐ **PRIORITY TODAY**
+- [x] Add "+" button card to grid layout
+- [x] Implement app picker dialog/modal
+- [x] Add method to `AppState` to add new app shortcuts
+- [x] Update state management to support dynamic app list
+- [x] Test: Add button opens picker, new apps appear in grid
+- [x] All tests passing (28/28 tests)
 
 ---
 
 ## 📑 Phase 3: Tab System
 
 ### Task 3.1: State Management Setup
-- [ ] Create `lib/providers/app_state.dart`
-- [ ] Implement Provider pattern
-- [ ] Add categories list (Music, Notes, AI)
-- [ ] Add selected category tracking
+- [x] Create `lib/providers/app_state.dart`
+- [x] Implement Provider pattern
+- [x] Add categories list (Music, Notes, AI)
+- [x] Add selected category tracking
 
 ### Task 3.2: Tab Bar Implementation
-- [ ] Add `TabBar` to main window
-- [ ] Add `TabBarView` with category views
-- [ ] Implement category filtering logic
-- [ ] Test: Tabs switch and filter content
+- [x] Add `TabBar` to main window
+- [x] Add `TabBarView` with category views
+- [x] Implement category filtering logic
+- [x] Test: Tabs switch and filter content
+
+### Task 3.3: Scrollable Tabs ⭐ **PRIORITY TODAY**
+- [ ] Make `TabBar` scrollable when tabs overflow
+- [ ] Add `isScrollable: true` to `TabBar` widget
+- [ ] Test: Multiple tabs scroll horizontally when needed
+- [ ] Ensure tab indicator works correctly with scrolling
 
 ---
 
@@ -175,7 +190,6 @@ This document outlines the development tasks for MyEverythingWidget v1.0 MVP.
 
 ### Out of Scope for v1.0
 - ❌ Command runner
-- ❌ Application picker (+ button)
 - ❌ Settings page
 - ❌ System tray integration
 - ❌ Global hotkeys
@@ -186,41 +200,31 @@ This document outlines the development tasks for MyEverythingWidget v1.0 MVP.
 
 ## 🐛 Known Issues
 
-### UI Layout Issues (Phase 3.3)
-- [x] **Tab bar overflow**: Media tab is cut off at window edge → Fixed by increasing window width to 400px
-- [x] **App card text overflow**: "Stack Overflow" second word not visible → Fixed by wrapping text
-- [x] **Window width**: Consider increasing from 320px to accommodate content → Increased to 400px
-- [x] **App card vertical alignment**: Long names (2+ lines) cause card to shift up
-  - Fix: Changed `MainAxisAlignment.center` to `MainAxisAlignment.start`
-  - Test: Added visual alignment tests (`test/widgets/app_card_alignment_test.dart`)
-  - Result: All cards now align at top, icons at same Y position
-- [ ] **App card text truncation**: Names longer than 2 lines need truncation with ellipsis
-  - Current: Text wraps to max 2 lines with `TextOverflow.ellipsis`
-  - Needed: Tooltip on hover showing full name (like Windows)
-  - Implementation: Use `Tooltip` widget wrapping the text
-
-### Current Task (Phase 3.4: Text Truncation & Tooltip)
-- [ ] Add tooltip to app card names
-  - Wrap Text widget with Tooltip
-  - Show full app name on hover
-  - Tooltip should appear after short delay (like Windows)
-  - Test tooltip appears and shows correct text
+### Future Enhancements (Not in Current Sprint)
+- [ ] **Settings page**: Theme toggle, startup options (Phase 6.1)
+- [ ] **System tray integration**: Minimize to tray functionality (Phase 6+)
+- [ ] **SQLite persistence**: Save apps and notes to database (Phase 6+)
+- [ ] **Command runner**: Execute system commands (Future Phase)
 
 ---
 
 ## 📊 Progress Tracking
 
-**Current Phase:** Phase 3 (Tab System)
-**Completion:** 60%
+**Current Phase:** Phase 3 (Tab System) - In Progress
+**Completion:** 75%
 
 ### Phase Checklist
-- [x] Phase 1: Project Setup & Core Window
-- [x] Phase 2: Application Launcher
-- [x] Phase 3: Tab System
+- [x] Phase 1: Project Setup & Core Window ✅
+- [x] Phase 2: Application Launcher ✅ (Task 2.5 in progress)
+- [x] Phase 3: Tab System (Task 3.3 in progress)
 - [ ] Phase 4: Notes Feature
 - [ ] Phase 5: Clipboard Paste
 - [ ] Phase 6: Polish & Testing
 - [ ] Phase 7: Deployment
+
+### Today's Priority Tasks
+1. ⭐ **Task 3.3**: Scrollable Tabs
+2. ⭐ **Task 2.5**: Dynamic App Cards with Add Button
 
 ---
 

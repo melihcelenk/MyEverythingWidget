@@ -15,7 +15,9 @@ class AppState extends ChangeNotifier {
 
   /// Get apps filtered by selected category
   List<AppShortcut> get filteredApps {
-    if (_selectedCategory == null) return apps;
+    if (_selectedCategory == null || _selectedCategory!.name == 'All') {
+      return apps;
+    }
     return _apps.where((app) => app.category == _selectedCategory!.name).toList();
   }
 
@@ -138,6 +140,18 @@ class AppState extends ChangeNotifier {
 
   void selectCategory(AppCategory category) {
     _selectedCategory = category;
+    notifyListeners();
+  }
+
+  /// Add a new app to the list
+  void addApp(AppShortcut app) {
+    _apps.add(app);
+    notifyListeners();
+  }
+
+  /// Remove an app from the list
+  void removeApp(String appId) {
+    _apps.removeWhere((app) => app.id == appId);
     notifyListeners();
   }
 }

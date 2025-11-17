@@ -50,6 +50,9 @@ dependencies:
   # Path provider for local storage
   path_provider: ^2.1.2
 
+  # UUID generator for unique IDs
+  uuid: ^4.5.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
