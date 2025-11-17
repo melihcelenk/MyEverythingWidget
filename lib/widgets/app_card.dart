@@ -2,34 +2,93 @@ import 'package:flutter/material.dart';
 import '../models/app_shortcut.dart';
 
 /// Application card widget
-/// Displays app icon and name in a clickable card
+/// Displays app icon and name in a clickable card with context menu
 class AppCard extends StatelessWidget {
   final AppShortcut app;
   final VoidCallback onTap;
+  final void Function(AppShortcut)? onEdit;
+  final void Function(AppShortcut)? onRename;
 
   const AppCard({
     super.key,
     required this.app,
     required this.onTap,
+    this.onEdit,
+    this.onRename,
   });
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
-      child: Container(
-        padding: const EdgeInsets.all(8),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            _buildIcon(context),
-            const SizedBox(height: 8),
-            _buildLabel(context),
-          ],
+    return GestureDetector(
+      onSecondaryTapDown: (details) => _showContextMenu(context, details),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              _buildIcon(context),
+              const SizedBox(height: 8),
+              _buildLabel(context),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  void _showContextMenu(BuildContext context, TapDownDetails details) {
+    final overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+    
+    showMenu(
+      context: context,
+      position: RelativeRect.fromRect(
+        details.globalPosition & const Size(40, 40),
+        Offset.zero & overlay.size,
+      ),
+      items: [
+        PopupMenuItem(
+          value: 'open',
+          child: const Row(
+            children: [
+              Icon(Icons.open_in_new, size: 18),
+              SizedBox(width: 12),
+              Text('Open'),
+            ],
+          ),
+        ),
+        PopupMenuItem(
+          value: 'edit',
+          child: const Row(
+            children: [
+              Icon(Icons.edit, size: 18),
+              SizedBox(width: 12),
+              Text('Edit'),
+            ],
+          ),
+        ),
+        PopupMenuItem(
+          value: 'rename',
+          child: const Row(
+            children: [
+              Icon(Icons.drive_file_rename_outline, size: 18),
+              SizedBox(width: 12),
+              Text('Rename'),
+            ],
+          ),
+        ),
+      ],
+    ).then((value) {
+      if (value == 'open') {
+        onTap();
+      } else if (value == 'edit' && onEdit != null) {
+        onEdit!(app);
+      } else if (value == 'rename' && onRename != null) {
+        onRename!(app);
+      }
+    });
   }
 
   Widget _buildIcon(BuildContext context) {

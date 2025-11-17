@@ -149,6 +149,15 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Update an existing app
+  void updateApp(AppShortcut updatedApp) {
+    final index = _apps.indexWhere((app) => app.id == updatedApp.id);
+    if (index != -1) {
+      _apps[index] = updatedApp;
+      notifyListeners();
+    }
+  }
+
   /// Remove an app from the list
   void removeApp(String appId) {
     _apps.removeWhere((app) => app.id == appId);

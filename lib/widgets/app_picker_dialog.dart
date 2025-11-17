@@ -3,9 +3,11 @@ import 'package:uuid/uuid.dart';
 import '../models/app_shortcut.dart';
 
 /// App picker dialog
-/// Allows user to add a new application with name, URL/path, and category
+/// Allows user to add or edit an application with name, URL/path, and category
 class AppPickerDialog extends StatefulWidget {
-  const AppPickerDialog({super.key});
+  final AppShortcut? editingApp;
+
+  const AppPickerDialog({super.key, this.editingApp});
 
   @override
   State<AppPickerDialog> createState() => _AppPickerDialogState();
@@ -18,6 +20,16 @@ class _AppPickerDialogState extends State<AppPickerDialog> {
   String _selectedCategory = 'Web';
 
   final List<String> _categories = ['Web', 'Dev', 'Media', 'All'];
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.editingApp != null) {
+      _nameController.text = widget.editingApp!.name;
+      _targetController.text = widget.editingApp!.target;
+      _selectedCategory = widget.editingApp!.category;
+    }
+  }
 
   @override
   void dispose() {
@@ -36,9 +48,9 @@ class _AppPickerDialogState extends State<AppPickerDialog> {
       }
 
       final app = AppShortcut(
-        id: const Uuid().v4(),
+        id: widget.editingApp?.id ?? const Uuid().v4(),
         name: name,
-        iconPath: '',
+        iconPath: widget.editingApp?.iconPath ?? '',
         target: target,
         category: _selectedCategory,
         type: _detectLaunchType(target),
@@ -57,8 +69,10 @@ class _AppPickerDialogState extends State<AppPickerDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final isEditing = widget.editingApp != null;
+    
     return AlertDialog(
-      title: const Text('Add Application'),
+      title: Text(isEditing ? 'Edit Application' : 'Add Application'),
       content: Form(
         key: _formKey,
         child: SizedBox(
@@ -127,7 +141,7 @@ class _AppPickerDialogState extends State<AppPickerDialog> {
         ),
         TextButton(
           onPressed: _submit,
-          child: const Text('Add'),
+          child: Text(isEditing ? 'Save' : 'Add'),
         ),
       ],
     );

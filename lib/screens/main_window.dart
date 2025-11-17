@@ -69,6 +69,69 @@ class _MainWindowState extends State<MainWindow> with WindowListener {
     }
   }
 
+  Future<void> _editApp(AppShortcut app) async {
+    final updatedApp = await showDialog<AppShortcut>(
+      context: context,
+      builder: (context) => AppPickerDialog(editingApp: app),
+    );
+
+    if (updatedApp != null && mounted) {
+      Provider.of<AppState>(context, listen: false).updateApp(updatedApp);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${updatedApp.name} updated successfully')),
+      );
+    }
+  }
+
+  Future<void> _renameApp(AppShortcut app) async {
+    final controller = TextEditingController(text: app.name);
+
+    final newName = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Rename Application'),
+        content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(
+            labelText: 'App Name',
+            border: OutlineInputBorder(),
+          ),
+          autofocus: true,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              final name = controller.text.trim();
+              if (name.isNotEmpty) {
+                Navigator.of(context).pop(name);
+              }
+            },
+            child: const Text('Rename'),
+          ),
+        ],
+      ),
+    );
+
+    if (newName != null && newName != app.name && mounted) {
+      final updatedApp = AppShortcut(
+        id: app.id,
+        name: newName,
+        iconPath: app.iconPath,
+        target: app.target,
+        category: app.category,
+        type: app.type,
+      );
+      Provider.of<AppState>(context, listen: false).updateApp(updatedApp);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Renamed to $newName')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -172,6 +235,8 @@ class _MainWindowState extends State<MainWindow> with WindowListener {
                         child: AppCard(
                           app: app,
                           onTap: () => _launchApp(app),
+                          onEdit: _editApp,
+                          onRename: _renameApp,
                         ),
                       );
                     }).toList(),
