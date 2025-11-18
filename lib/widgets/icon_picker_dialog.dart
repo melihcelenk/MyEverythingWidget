@@ -237,6 +237,7 @@ class _IconPickerDialogState extends State<IconPickerDialog>
             onTap: () => _selectEmoji(emoji),
             borderRadius: BorderRadius.circular(6),
             child: Container(
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
                 borderRadius: BorderRadius.circular(6),
@@ -248,7 +249,7 @@ class _IconPickerDialogState extends State<IconPickerDialog>
               child: Center(
                 child: Text(
                   emoji,
-                  style: const TextStyle(fontSize: 32),
+                  style: const TextStyle(fontSize: 40),
                 ),
               ),
             ),
@@ -277,6 +278,7 @@ class _IconPickerDialogState extends State<IconPickerDialog>
             onTap: () => _selectMaterialIcon(icon),
             borderRadius: BorderRadius.circular(6),
             child: Container(
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
                 borderRadius: BorderRadius.circular(6),
