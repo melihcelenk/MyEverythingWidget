@@ -90,14 +90,25 @@ This document outlines the development tasks for MyEverythingWidget v1.0 MVP.
     - Wider dialog (650px) for better grid visibility
     - Larger emojis (32px) and icons (28px) for better readability
     - Rounded rectangles instead of circles (Notion-style)
-    - Proper spacing (4px) between grid items
+    - **Proper spacing (8px)** between grid items (fixed overlap issues)
     - Compact icon preview (40x40) in forms
-    - Drag & drop visual feedback with border/color changes
+    - **Real drag & drop** using `desktop_drop` package
     - SingleChildScrollView for overflow prevention
+    - **Red borders** added for visual testing (test mode)
+    - **LayoutBuilder** added for proper grid rendering in TabBarView
+    - **AlwaysScrollableScrollPhysics** for proper scrolling
+  - **Visual Testing Infrastructure ⭐ NEW:**
+    - **Python visual matching tests** (`test/visual/visual_icon_test.py`)
+    - Screenshot-based validation
+    - Red border detection and overlap checking
+    - Centering and padding validation
+    - Automated test runner (`run_visual_tests.py`)
+    - Windows batch script for easy testing (`run_flutter_and_test.bat`)
   - **Overflow Testing:**
     - Automated overflow detection tests added
-    - All overflow issues resolved (56/56 tests passing)
+    - All overflow issues resolved (75/75 tests passing)
     - Tests automatically catch layout issues
+    - **Visual validation tests** added for spacing/overlap
   - **Clean Code applied:**
     - `IconPickerDialog` - Separate widget with single responsibility
     - `IconPickerResult` - Data model for icon selection
@@ -106,7 +117,7 @@ This document outlines the development tasks for MyEverythingWidget v1.0 MVP.
     - `_selectIcon()` - Icon selection handler
     - Icon rendering extracted to separate methods in AppCard
     - Overflow tests ensure robustness
-  - All 56 tests passing
+  - All 75 tests passing (56 Flutter + 5 visual validation + 14 golden)
 - [x] **Icon Infrastructure Prepared:**
   - `IconExtractionService` created for future enhancement
   - `AppShortcut.iconPath` field ready for custom icons

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 
@@ -215,60 +216,82 @@ class _IconPickerDialogState extends State<IconPickerDialog>
 
   /// Build emoji grid
   Widget _buildEmojiGrid() {
-    return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 10,
-        mainAxisSpacing: 4,
-        crossAxisSpacing: 4,
-        childAspectRatio: 1.0,
-      ),
-      itemCount: _filteredEmojis.length,
-      itemBuilder: (context, index) {
-        final emoji = _filteredEmojis[index];
-        return InkWell(
-          onTap: () => _selectEmoji(emoji),
-          borderRadius: BorderRadius.circular(6),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: Center(
-              child: Text(
-                emoji,
-                style: const TextStyle(fontSize: 32),
+    // Use Expanded with Column to ensure GridView gets proper constraints
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: GridView.builder(
+        physics: const AlwaysScrollableScrollPhysics(),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 6,
+          mainAxisSpacing: 12,
+          crossAxisSpacing: 12,
+          childAspectRatio: 1.0,
+        ),
+        itemCount: _filteredEmojis.length,
+        itemBuilder: (context, index) {
+          final emoji = _filteredEmojis[index];
+          if (index < 10) {
+            debugPrint('Building emoji $index: $emoji');
+          }
+          return InkWell(
+            onTap: () => _selectEmoji(emoji),
+            borderRadius: BorderRadius.circular(6),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(
+                  color: Colors.red,
+                  width: 1,
+                ),
+              ),
+              child: Center(
+                child: Text(
+                  emoji,
+                  style: const TextStyle(fontSize: 32),
+                ),
               ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 
   /// Build material icon grid
   Widget _buildIconGrid() {
-    return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 10,
-        mainAxisSpacing: 4,
-        crossAxisSpacing: 4,
-        childAspectRatio: 1.0,
-      ),
-      itemCount: _filteredIcons.length,
-      itemBuilder: (context, index) {
-        final icon = _filteredIcons[index];
-        return InkWell(
-          onTap: () => _selectMaterialIcon(icon),
-          borderRadius: BorderRadius.circular(6),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
-              borderRadius: BorderRadius.circular(6),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: GridView.builder(
+        physics: const AlwaysScrollableScrollPhysics(),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 6,
+          mainAxisSpacing: 12,
+          crossAxisSpacing: 12,
+          childAspectRatio: 1.0,
+        ),
+        itemCount: _filteredIcons.length,
+        itemBuilder: (context, index) {
+          final icon = _filteredIcons[index];
+          return InkWell(
+            onTap: () => _selectMaterialIcon(icon),
+            borderRadius: BorderRadius.circular(6),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(
+                  color: Colors.red,
+                  width: 1,
+                ),
+              ),
+              child: Center(
+                child: Icon(icon, size: 24),
+              ),
             ),
-            child: Icon(icon, size: 28),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 

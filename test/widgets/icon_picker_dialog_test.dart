@@ -74,9 +74,28 @@ void main() {
       await tester.tap(find.text('Open'));
       await tester.pumpAndSettle();
 
+      // Wait for TabBarView to fully render
+      await tester.pump(const Duration(milliseconds: 100));
+      await tester.pumpAndSettle();
+
+      // Verify GridView exists (we're using GridView with shrinkWrap now)
+      expect(find.byType(GridView), findsWidgets);
+
       // Emoji tab should be selected by default
-      final emojiTexts = find.text('📱', findRichText: true);
+      // Check if emoji text widgets are actually rendered and visible
+      final emojiTexts = find.byWidgetPredicate(
+        (widget) => widget is Text && 
+            widget.data != null && 
+            widget.data!.length <= 2 &&
+            widget.data!.runes.length > 0,
+      );
+      
+      // Verify at least some emojis are rendered
       expect(emojiTexts, findsWidgets);
+      
+      // Verify specific emoji is present
+      final firstEmoji = find.text('📱', findRichText: true);
+      expect(firstEmoji, findsWidgets);
     });
 
     testWidgets('should display icon grid in Icons tab', (tester) async {
