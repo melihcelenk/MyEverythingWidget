@@ -1,69 +1,71 @@
-# Miscellaneous
-*.class
-*.log
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 *.pyc
-*.swp
-.DS_Store
-.atom/
-.build/
-.buildlog/
-.history
-.svn/
-.swiftpm/
-migrate_working_dir/
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
 
-# IntelliJ related
-*.iml
-*.ipr
-*.iws
-.idea/
+# PySide6
+*.qmlc
+*.jsc
 
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
-
-# Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
+# Flutter (legacy version)
 .dart_tool/
+.flutter-plugins
 .flutter-plugins-dependencies
+.packages
 .pub-cache/
 .pub/
-/build/
-/coverage/
+.metadata
+flutter_version/
 
-# Symbolication related
-app.*.symbols
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.gitattributes
 
-# Obfuscation related
-app.*.map.json
+# OS
+Thumbs.db
+desktop.ini
 
-# Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
+# Visual test screenshots
+screenshot_*.png
+test_screenshot.png
+tests/visual/screenshot_*.png
+# Allow docs images
+!docs/**/*.png
 
-# Windows related
-*.exe
-*.dll
-*.pdb
-*.msix
-*.appx
-*.appxbundle
-*.msixbundle
-/windows/flutter/ephemeral/
-
-# Linux related
-/linux/flutter/ephemeral/
-
-# Web related
-/web/
-
-# Test coverage
-coverage/
-
-# Personal notes and temporary files
+# Temporary files
+*.tmp
+*.bak
 nul
-/.claude/settings.local.json
-img.png
+teststest_*.py
+
+# Claude local settings
+.claude/

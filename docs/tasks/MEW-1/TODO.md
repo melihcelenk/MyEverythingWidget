@@ -4,6 +4,25 @@
 
 This document outlines the development tasks for MyEverythingWidget v1.0 MVP.
 
+> **Note:** Project migrated from Flutter to PySide6 (Python). Flutter code preserved in `flutter_version/` for reference.
+
+---
+
+## 🎯 Current Status (PySide6)
+
+**Platform:** PySide6 6.10.0
+**Tests:** 52 tests passing
+**Status:** Core features working, no crashes
+
+### Recent Fixes
+- [x] Fixed SystemError in tab switching (recursive signal emission)
+- [x] Added signal blocking during tab updates
+- [x] Comprehensive test coverage for:
+  - App card creation (all icon types)
+  - Tab switching operations
+  - State management
+  - Category operations
+
 ---
 
 ## 🚀 Phase 1: Project Setup & Core Window
