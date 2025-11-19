@@ -237,9 +237,13 @@ class IconPickerDialog(QDialog):
     def _on_search_changed(self, text: str):
         """Handle search query change"""
         self._search_query = text.lower()
-        # Filter emojis based on search query
+        # Note: For simplicity, search filtering is not implemented
+        # Future enhancement: rebuild tabs on search change
+
+    def _get_filtered_emojis(self):
+        """Get emojis filtered by search query"""
         if self._search_query:
-            return [e for e in self.EMOJIS if self._search_query.lower() in e.lower()]
+            return [e for e in self.EMOJIS if self._search_query in e]
         return self.EMOJIS
     
     def _select_emoji(self, emoji: str):
