@@ -68,8 +68,8 @@ class TestTabDisplay:
         assert add_tab_rect.width() <= first_tab_rect.width(), \
             f"Add button ({add_tab_rect.width()}px) should be <= first tab ({first_tab_rect.width()}px)"
 
-    def test_tab_bar_scrollable_with_many_tabs(self, main_window):
-        """Tab bar should be scrollable when there are many tabs"""
+    def test_tab_bar_supports_many_tabs(self, main_window):
+        """Tab bar should support many tabs without crashing"""
         tab_bar = main_window._tab_widget.tabBar()
 
         # Add many categories to exceed window width
@@ -81,8 +81,10 @@ class TestTabDisplay:
             )
             main_window._app_state.add_category(new_category)
 
-        # Tab bar should have scroll buttons enabled
-        assert tab_bar.usesScrollButtons(), "Tab bar should use scroll buttons"
+        # Tab bar should have all tabs
+        # Original categories + 10 new + 1 add button
+        expected_count = len(main_window._app_state.categories) + 1
+        assert tab_bar.count() == expected_count, f"Expected {expected_count} tabs, got {tab_bar.count()}"
 
     def test_long_category_name_truncated(self, main_window):
         """Long category names should be truncated with ellipsis"""
@@ -128,3 +130,14 @@ class TestTabDisplay:
         tab_bar = main_window._tab_widget.tabBar()
         assert tab_bar.contextMenuPolicy() == Qt.ContextMenuPolicy.CustomContextMenu, \
             "Tab bar should have CustomContextMenu policy for right-click menu"
+
+    def test_no_scroll_buttons(self, main_window):
+        """Tab bar should not have scroll buttons (use drag instead)"""
+        tab_bar = main_window._tab_widget.tabBar()
+        # Scroll buttons should be disabled for modern look
+        assert not tab_bar.usesScrollButtons(), "Tab bar should not use scroll buttons"
+
+    def test_tab_bar_mouse_tracking(self, main_window):
+        """Tab bar should have mouse tracking for drag scrolling"""
+        tab_bar = main_window._tab_widget.tabBar()
+        assert tab_bar.hasMouseTracking(), "Tab bar should have mouse tracking enabled"

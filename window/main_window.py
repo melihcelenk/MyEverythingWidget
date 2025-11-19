@@ -7,7 +7,7 @@ from PySide6.QtWidgets import (
     QScrollArea, QGridLayout, QPushButton, QMessageBox, QMenu
 )
 from PySide6.QtCore import Qt, QPoint, Signal, QSize
-from PySide6.QtGui import QMouseEvent, QKeyEvent
+from PySide6.QtGui import QMouseEvent, QKeyEvent, QWheelEvent
 from window.app_state import AppState
 from services.app_launcher_service import AppLauncherService
 from widgets.custom_title_bar import CustomTitleBar
@@ -16,6 +16,59 @@ from widgets.add_app_button import AddAppButton
 from widgets.app_picker_dialog import AppPickerDialog
 from widgets.icon_picker_dialog import IconPickerDialog, IconPickerResult
 from models.app_shortcut import AppShortcut
+
+
+class DraggableTabBar(QTabBar):
+    """Custom tab bar with drag-to-scroll and wheel scroll support"""
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._drag_start_pos = None
+        self._scroll_offset = 0
+        self.setMouseTracking(True)
+        self.setUsesScrollButtons(False)
+
+    def mousePressEvent(self, event: QMouseEvent):
+        """Start drag scroll on left click"""
+        if event.button() == Qt.MouseButton.LeftButton:
+            self._drag_start_pos = event.pos()
+        super().mousePressEvent(event)
+
+    def mouseMoveEvent(self, event: QMouseEvent):
+        """Handle drag scrolling"""
+        if self._drag_start_pos and event.buttons() == Qt.MouseButton.LeftButton:
+            delta = event.pos().x() - self._drag_start_pos.x()
+            if abs(delta) > 5:  # Threshold to distinguish from click
+                self._scroll_tabs(delta)
+                self._drag_start_pos = event.pos()
+        super().mouseMoveEvent(event)
+
+    def mouseReleaseEvent(self, event: QMouseEvent):
+        """End drag scroll"""
+        self._drag_start_pos = None
+        super().mouseReleaseEvent(event)
+
+    def wheelEvent(self, event: QWheelEvent):
+        """Handle mouse wheel scrolling"""
+        delta = event.angleDelta().y()
+        if delta > 0:
+            # Scroll left (previous tab)
+            new_index = max(0, self.currentIndex() - 1)
+        else:
+            # Scroll right (next tab)
+            new_index = min(self.count() - 2, self.currentIndex() + 1)  # -2 to skip add button
+        self.setCurrentIndex(new_index)
+        event.accept()
+
+    def _scroll_tabs(self, delta: int):
+        """Scroll tabs by delta pixels"""
+        # Move to adjacent tab based on drag direction
+        if delta > 20:
+            new_index = max(0, self.currentIndex() - 1)
+            self.setCurrentIndex(new_index)
+        elif delta < -20:
+            new_index = min(self.count() - 2, self.currentIndex() + 1)
+            self.setCurrentIndex(new_index)
 
 
 class MainWindow(QMainWindow):
@@ -54,10 +107,10 @@ class MainWindow(QMainWindow):
         self._tab_widget = QTabWidget()
         self._tab_widget.setTabsClosable(False)
 
-        # Make tab bar scrollable
-        tab_bar = self._tab_widget.tabBar()
-        tab_bar.setUsesScrollButtons(True)
-        tab_bar.setExpanding(False)  # Don't expand tabs to fill width
+        # Use custom draggable tab bar
+        custom_tab_bar = DraggableTabBar()
+        self._tab_widget.setTabBar(custom_tab_bar)
+        custom_tab_bar.setExpanding(False)  # Don't expand tabs to fill width
 
         self._tab_widget.setStyleSheet("""
             QTabWidget::pane {
