@@ -4,7 +4,7 @@ Manages window state and displays primary content
 """
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QTabWidget, QTabBar,
-    QScrollArea, QGridLayout, QPushButton, QMessageBox
+    QScrollArea, QGridLayout, QPushButton, QMessageBox, QMenu
 )
 from PySide6.QtCore import Qt, QPoint, Signal, QSize
 from PySide6.QtGui import QMouseEvent, QKeyEvent
@@ -53,6 +53,12 @@ class MainWindow(QMainWindow):
         # Tab widget with modern styling
         self._tab_widget = QTabWidget()
         self._tab_widget.setTabsClosable(False)
+
+        # Make tab bar scrollable
+        tab_bar = self._tab_widget.tabBar()
+        tab_bar.setUsesScrollButtons(True)
+        tab_bar.setExpanding(False)  # Don't expand tabs to fill width
+
         self._tab_widget.setStyleSheet("""
             QTabWidget::pane {
                 border: 1px solid #ddd;
@@ -64,7 +70,7 @@ class MainWindow(QMainWindow):
                 color: #666;
                 border: 1px solid #ddd;
                 border-bottom: none;
-                padding: 8px 16px;
+                padding: 8px 12px;
                 margin-right: 2px;
                 border-top-left-radius: 4px;
                 border-top-right-radius: 4px;
@@ -81,12 +87,6 @@ class MainWindow(QMainWindow):
             }
             QTabBar::tab:!selected {
                 margin-top: 2px;
-            }
-            QTabBar::tab:last-child {
-                min-width: 30px;
-                max-width: 30px;
-                padding: 8px 8px;
-                font-weight: bold;
             }
         """)
         layout.addWidget(self._tab_widget)
@@ -159,6 +159,7 @@ class MainWindow(QMainWindow):
                 on_edit=lambda a=app: self._edit_app(a),
                 on_rename=lambda a=app: self._rename_app(a),
                 on_change_icon=lambda a=app: self._change_icon(a),
+                on_delete=lambda a=app: self._delete_app(a),
             )
             # Add widget with alignment to top-left
             layout.addWidget(app_card, row, col, alignment=Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
@@ -196,7 +197,9 @@ class MainWindow(QMainWindow):
         # Add category tabs
         for category in self._app_state.categories:
             tab_content, grid_layout = self._create_category_tab(category)
-            self._tab_widget.addTab(tab_content, f"{category.icon} {category.name}")
+            # Truncate name to 10 characters
+            display_name = category.name[:10] + "..." if len(category.name) > 10 else category.name
+            self._tab_widget.addTab(tab_content, f"{category.icon} {display_name}")
             self._category_tabs[category.id] = tab_content
             self._category_grids[category.id] = grid_layout
         
@@ -205,20 +208,11 @@ class MainWindow(QMainWindow):
         add_tab_widget.setFixedHeight(0)  # Hidden content
         self._tab_widget.addTab(add_tab_widget, "+")
         
-        # Style the add tab to be narrower
+        # Remove close buttons from add tab
         tab_bar = self._tab_widget.tabBar()
         add_tab_index = self._tab_widget.count() - 1
         tab_bar.setTabButton(add_tab_index, QTabBar.ButtonPosition.LeftSide, None)
         tab_bar.setTabButton(add_tab_index, QTabBar.ButtonPosition.RightSide, None)
-        
-        # Apply custom styling to add tab
-        self._tab_widget.setStyleSheet(self._tab_widget.styleSheet() + """
-            QTabBar::tab:last-child {
-                min-width: 30px;
-                max-width: 30px;
-                padding: 8px 8px;
-            }
-        """)
     
     def _on_state_changed(self):
         """Handle app state changes"""
@@ -284,13 +278,13 @@ class MainWindow(QMainWindow):
             return
         
         menu = QMenu(self)
-        
-        edit_action = menu.addAction("Edit")
+
+        rename_action = menu.addAction("Rename")
         delete_action = menu.addAction("Delete")
-        
+
         action = menu.exec(tab_bar.mapToGlobal(position))
-        
-        if action == edit_action:
+
+        if action == rename_action:
             self._show_edit_category_dialog(category)
         elif action == delete_action:
             self._show_delete_category_dialog(category)
@@ -437,7 +431,21 @@ class MainWindow(QMainWindow):
             )
             self._app_state.update_app(updated_app)
             QMessageBox.information(self, "Success", f"Renamed to {new_name}")
-    
+
+    def _delete_app(self, app: AppShortcut):
+        """Delete an app"""
+        reply = QMessageBox.question(
+            self,
+            "Delete Application",
+            f"Are you sure you want to delete '{app.name}'?",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No
+        )
+
+        if reply == QMessageBox.StandardButton.Yes:
+            self._app_state.remove_app(app.id)
+            QMessageBox.information(self, "Success", f"'{app.name}' deleted")
+
     def _change_icon(self, app: AppShortcut):
         """Change app icon"""
         dialog = IconPickerDialog(self, current_icon=app.icon_path)

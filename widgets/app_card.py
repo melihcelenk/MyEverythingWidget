@@ -15,13 +15,14 @@ class AppCard(QWidget):
     """Application card widget"""
     
     def __init__(self, app: AppShortcut, on_tap, on_edit=None,
-                 on_rename=None, on_change_icon=None, parent=None):
+                 on_rename=None, on_change_icon=None, on_delete=None, parent=None):
         super().__init__(parent)
         self._app = app
         self._on_tap = on_tap
         self._on_edit = on_edit
         self._on_rename = on_rename
         self._on_change_icon = on_change_icon
+        self._on_delete = on_delete
         
         self.setFixedSize(90, 100)
         self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
@@ -223,6 +224,11 @@ class AppCard(QWidget):
         if self._on_rename:
             rename_action = menu.addAction("Rename")
             rename_action.triggered.connect(lambda: self._on_rename(self._app))
-        
+
+        if self._on_delete:
+            menu.addSeparator()
+            delete_action = menu.addAction("Delete")
+            delete_action.triggered.connect(lambda: self._on_delete(self._app))
+
         menu.exec(position)
 
