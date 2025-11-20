@@ -191,26 +191,26 @@ This document outlines the development tasks for MyEverythingWidget v1.0 MVP.
 ## 📝 Phase 4: Notes Feature
 
 ### Task 4.1: Note Model
-- [ ] Create `window/models/note.py` (or equivalent) for Python implementation
-- [ ] Define `Note` dataclass with `id`, `content`, `type`, `category`, `created_at`, `updated_at`
-- [ ] Define `NoteType` enum (text, image, link, file) plus helper properties
-- [ ] Implement serialization helpers that round-trip to JSON/dict for storage
-- [ ] Write unit tests covering defaults, equality, serialization, and validation hooks
+- [x] Create `window/models/note.py` (or equivalent) for Python implementation
+- [x] Define `Note` dataclass with `id`, `content`, `type`, `category`, `created_at`, `updated_at`
+- [x] Define `NoteType` enum (text, image, link, file) plus helper properties
+- [x] Implement serialization helpers that round-trip to JSON/dict for storage
+- [x] Write unit tests covering defaults, equality, serialization, and validation hooks
 
 ### Task 4.2: Note Card Widget
-- [ ] Create `widgets/note_card.py` with `NoteCard` QWidget that takes a `Note`
-- [ ] Render icon/emoji + truncated text, show tooltip with full content on hover
-- [ ] Add copy-to-clipboard button and optional delete button/hamburger menu
-- [ ] Support drag handles anchor for future reorder phase
-- [ ] Cover widget with pytest-qt tests verifying layout, tooltip, copy/delete signals
+- [x] Create `widgets/note_card.py` with `NoteCard` QWidget that takes a `Note`
+- [x] Render icon/emoji + truncated text, show tooltip with full content on hover
+- [x] Add copy-to-clipboard button and optional delete button/hamburger menu
+- [x] Support drag handles anchor for future reorder phase
+- [x] Cover widget with pytest-qt tests verifying layout, tooltip, copy/delete signals
 
 ### Task 4.3: Note List
-- [ ] Extend `AppState` to store an ordered list of notes, persist them with storage service
-- [ ] Add filtering helpers and command objects for copying/deleting notes
-- [ ] Build a dedicated notes tab/view showing `NoteCard` widgets in a scrollable flow layout
-- [ ] Support swipe/drag gestures, context menu (copy/delete), and placeholder when empty
-- [ ] Add integration tests covering rendering, filtering, persistence, and placeholder state
-- [ ] Refactor phase 4 artifacts to confirm each class/method maintains a single responsibility and clean OOP boundaries
+- [x] Extend `AppState` to store an ordered list of notes, persist them with storage service
+- [x] Add filtering helpers and command objects for copying/deleting notes
+- [x] Build a dedicated notes tab/view showing `NoteCard` widgets in a scrollable flow layout
+- [x] Support swipe/drag gestures, context menu (copy/delete), and placeholder when empty
+- [x] Add integration tests covering rendering, filtering, persistence, and placeholder state
+- [x] Refactor phase 4 artifacts to confirm each class/method maintains a single responsibility and clean OOP boundaries
 
 ---
 

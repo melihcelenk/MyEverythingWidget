@@ -11,6 +11,7 @@ A lightweight, modern desktop widget application for quick access to your favori
 - **Drag-to-move** - Custom title bar for easy window positioning
 - **Dynamic App Management** - Add, edit, rename, and delete apps on the fly
 - **Dynamic Category Management** - Add, edit, and delete categories with context menu
+- **Persistent Notes** - Create, view, copy, and delete notes with a dedicated tab that syncs with storage
 - **Persistent State Storage** - Categories and app cards are saved to `%LOCALAPPDATA%\MyEverythingWidget\app_state.json` (override via `MEW_STATE_PATH`) so the widget restores user data across sessions.
 
 ### UI/UX

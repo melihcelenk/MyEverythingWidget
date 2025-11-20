@@ -5,11 +5,15 @@ Handles tab creation, updates, and context menu
 import logging
 
 from PySide6.QtWidgets import (
-    QTabWidget, QTabBar, QScrollArea, QGridLayout, QWidget, QMenu
+    QTabWidget, QTabBar, QScrollArea, QGridLayout, QWidget, QMenu,
+    QLabel, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton
 )
 from PySide6.QtCore import Qt
 from widgets.draggable_tab_bar import DraggableTabBar
 from widgets.app_card import AppCard
+from widgets.note_card import NoteCard
+from window.models.note import Note, NoteType
+import uuid
 
 
 class TabManager:
@@ -68,6 +72,8 @@ class TabManager:
 
         self._category_tabs = {}
         self._category_grids = {}
+        self._notes_layout = None
+        self._note_input = None
         self._tab_widget = None
 
     def create_tab_widget(self) -> QTabWidget:
@@ -92,6 +98,7 @@ class TabManager:
         self.update_tabs()
         self._tab_widget.setCurrentIndex(0)
 
+        self._refresh_notes_tab()
         return self._tab_widget
 
     @property
@@ -115,7 +122,9 @@ class TabManager:
             self._category_tabs[category.id] = tab_content
             self._category_grids[category.id] = grid_layout
 
-        # Add "+" tab at the end
+        note_tab = self._create_notes_tab()
+        self._tab_widget.addTab(note_tab, "Notes")
+
         add_tab_widget = QWidget()
         add_tab_widget.setFixedHeight(0)
         self._tab_widget.addTab(add_tab_widget, "+")
@@ -182,6 +191,94 @@ class TabManager:
             if col >= 3:
                 col = 0
                 row += 1
+
+    def _create_notes_tab(self):
+        """Create the notes tab content."""
+        container = QWidget()
+        container_layout = QVBoxLayout(container)
+        container_layout.setContentsMargins(0, 0, 0, 0)
+        container_layout.setSpacing(4)
+
+        header = QWidget()
+        header_layout = QHBoxLayout(header)
+        header_layout.setContentsMargins(8, 8, 8, 8)
+        header_layout.setSpacing(4)
+
+        line_edit = QLineEdit()
+        line_edit.setPlaceholderText("Add quick note...")
+        add_button = QPushButton("Add Note")
+        add_button.clicked.connect(self._on_add_note_clicked)
+
+        header_layout.addWidget(line_edit)
+        header_layout.addWidget(add_button)
+
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        content = QWidget()
+        layout = QVBoxLayout(content)
+        layout.setContentsMargins(10, 10, 10, 10)
+        layout.setSpacing(6)
+        scroll_area.setWidget(content)
+
+        container_layout.addWidget(header)
+        container_layout.addWidget(scroll_area)
+
+        self._note_input = line_edit
+        self._notes_layout = layout
+
+        self._refresh_notes_tab()
+        return container
+
+    def _refresh_notes_tab(self):
+        """Rebuild note cards inside the notes tab."""
+        if not self._notes_layout:
+            return
+
+        while self._notes_layout.count():
+            item = self._notes_layout.takeAt(0)
+            if item.widget():
+                item.widget().deleteLater()
+
+        notes = self._app_state.notes
+        if not notes:
+            placeholder = QLabel("No notes yet")
+            placeholder.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            self._notes_layout.addWidget(placeholder)
+        else:
+            for note in notes:
+                card = NoteCard(note)
+                card.copyRequested.connect(lambda note_id: None)
+                card.deleteRequested.connect(self._app_state.remove_note)
+                self._notes_layout.addWidget(card)
+
+        self._notes_layout.addStretch(1)
+
+    def refresh_notes_tab(self):
+        """Expose note refresh for external callers."""
+        self._refresh_notes_tab()
+
+    def _on_add_note_clicked(self):
+        """Handle new note submission from the notes tab."""
+        if not self._note_input:
+            return
+
+        content = self._note_input.text().strip()
+        if not content:
+            return
+
+        category = (
+            self._app_state.selected_category.name
+            if self._app_state.selected_category
+            else "All"
+        )
+        note = Note(
+            id=str(uuid.uuid4()),
+            content=content,
+            type=NoteType.TEXT,
+            category=category,
+        )
+        self._app_state.add_note(note)
+        self._note_input.clear()
 
     def _on_tab_clicked(self, index: int):
         """Handle tab bar click"""

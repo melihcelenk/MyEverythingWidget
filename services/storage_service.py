@@ -43,11 +43,17 @@ class StorageService:
         except (json.JSONDecodeError, OSError):
             return {}
 
-    def save(self, categories: List[Dict[str, Any]], apps: List[Dict[str, Any]]):
-        """Persist the category and app lists."""
+    def save(
+        self,
+        categories: List[Dict[str, Any]],
+        apps: List[Dict[str, Any]],
+        notes: Optional[List[Dict[str, Any]]] = None,
+    ):
+        """Persist the category, app, and note lists."""
         payload = {
             "categories": categories,
             "apps": apps,
+            "notes": notes or [],
         }
         self._path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
 

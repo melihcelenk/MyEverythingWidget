@@ -1,6 +1,6 @@
 """
 Global application state
-Manages categories, apps, and selected category
+Manages categories, apps, notes, and selected category
 """
 from typing import List, Optional
 
@@ -8,12 +8,12 @@ from PySide6.QtCore import QObject, Signal
 from models.app_shortcut import AppShortcut, LaunchType
 from models.category import AppCategory
 from services.storage_service import StorageService
+from window.models.note import Note, NoteType
 
 
 class AppState(QObject):
     """Global application state manager"""
 
-    # Signals
     state_changed = Signal()
 
     def __init__(self, storage_service: Optional[StorageService] = None):
@@ -21,37 +21,44 @@ class AppState(QObject):
         self._storage = storage_service or StorageService()
         self._categories: List[AppCategory] = []
         self._apps: List[AppShortcut] = []
+        self._notes: List[Note] = []
         self._selected_category: Optional[AppCategory] = None
 
         if not self._load_from_storage():
             self._load_initial_data()
 
         self._save_state()
-    
+
     @property
     def categories(self) -> List[AppCategory]:
-        """Get all categories"""
         return list(self._categories)
-    
+
     @property
     def apps(self) -> List[AppShortcut]:
-        """Get all apps"""
         return list(self._apps)
-    
+
+    @property
+    def notes(self) -> List[Note]:
+        """Get all notes"""
+        return list(self._notes)
+
     @property
     def selected_category(self) -> Optional[AppCategory]:
-        """Get selected category"""
         return self._selected_category
-    
+
     @property
     def filtered_apps(self) -> List[AppShortcut]:
-        """Get apps filtered by selected category"""
         if self._selected_category is None or self._selected_category.name == 'All':
             return self.apps
         return [app for app in self._apps if app.category == self._selected_category.name]
-    
+
+    @property
+    def filtered_notes(self) -> List[Note]:
+        if self._selected_category is None or self._selected_category.name == 'All':
+            return self.notes
+        return [note for note in self._notes if note.category == self._selected_category.name]
+
     def _load_initial_data(self):
-        """Load default categories and apps into memory"""
         self._categories = [
             AppCategory(id='1', name='All', icon='📱'),
             AppCategory(id='2', name='Web', icon='🌐'),
@@ -86,13 +93,22 @@ class AppState(QObject):
             for app_id, name, target, category in default_apps
         ]
 
+        self._notes = [
+            Note(
+                id='note-1',
+                content='Welcome to My Everything Widget notes',
+                type=NoteType.TEXT,
+                category='All',
+            )
+        ]
+
         self._selected_category = self._categories[0]
 
     def _load_from_storage(self) -> bool:
-        """Try to hydrate state from the persisted file."""
         payload = self._storage.load()
         categories = payload.get("categories", [])
         apps = payload.get("apps", [])
+        notes = payload.get("notes", [])
 
         if not categories or not apps:
             return False
@@ -110,6 +126,7 @@ class AppState(QObject):
                 )
                 for app in apps
             ]
+            self._notes = [Note.from_dict(note_dict) for note_dict in notes]
         except KeyError:
             return False
 
@@ -133,53 +150,47 @@ class AppState(QObject):
             "type": app.type.value,
         }
 
+    def _note_to_dict(self, note: Note) -> dict:
+        return note.to_dict()
+
     def _save_state(self):
-        """Persist the current lists."""
         categories_payload = [self._category_to_dict(cat) for cat in self._categories]
         apps_payload = [self._app_to_dict(app) for app in self._apps]
-        self._storage.save(categories_payload, apps_payload)
+        notes_payload = [self._note_to_dict(note) for note in self._notes]
+        self._storage.save(categories_payload, apps_payload, notes_payload)
 
     def _persist_state(self):
-        """Save and notify observers."""
         self._save_state()
         self.state_changed.emit()
-    
+
     def select_category(self, category: AppCategory):
-        """Select a category"""
         self._selected_category = category
         self.state_changed.emit()
-    
+
     def add_app(self, app: AppShortcut):
-        """Add a new app to the list"""
         self._apps.append(app)
         self._persist_state()
-    
+
     def update_app(self, updated_app: AppShortcut):
-        """Update an existing app"""
         for i, app in enumerate(self._apps):
             if app.id == updated_app.id:
-                # Create new instance to ensure immutability
                 from dataclasses import replace
+
                 self._apps[i] = replace(app, **updated_app.__dict__)
                 self._persist_state()
                 return
-    
+
     def remove_app(self, app_id: str):
-        """Remove an app from the list"""
         self._apps = [app for app in self._apps if app.id != app_id]
         self._persist_state()
-    
+
     def add_category(self, category: AppCategory):
-        """Add a new category"""
-        # Check if category with same name exists
         if any(c.name == category.name for c in self._categories):
             raise ValueError(f"Category '{category.name}' already exists")
         self._categories.append(category)
         self._persist_state()
-    
+
     def remove_category(self, category_id: str):
-        """Remove a category"""
-        # Don't allow removing "All" category
         category = next((c for c in self._categories if c.id == category_id), None)
         if category is None:
             return
@@ -187,10 +198,8 @@ class AppState(QObject):
         if category.name == 'All':
             raise ValueError("Cannot remove 'All' category")
 
-        # Remove category and move apps to "All" category
         self._categories = [c for c in self._categories if c.id != category_id]
 
-        # Move apps from deleted category to "All"
         for index, app in enumerate(self._apps):
             if app.category == category.name:
                 self._apps[index] = AppShortcut(
@@ -202,20 +211,17 @@ class AppState(QObject):
                     type=app.type,
                 )
 
-        # If deleted category was selected, select "All"
         if self._selected_category and self._selected_category.id == category_id:
             self._selected_category = next((c for c in self._categories if c.name == 'All'), None)
 
         self._persist_state()
-    
+
     def update_category(self, updated_category: AppCategory):
-        """Update an existing category"""
         for i, category in enumerate(self._categories):
             if category.id == updated_category.id:
                 old_name = category.name
                 self._categories[i] = updated_category
 
-                # Update apps that belong to this category
                 apps_to_update = [app for app in self._apps if app.category == old_name]
                 for app in apps_to_update:
                     updated_app = AppShortcut(
@@ -228,10 +234,26 @@ class AppState(QObject):
                     )
                     self.update_app(updated_app)
 
-                # Update selected category if it was updated
                 if self._selected_category and self._selected_category.id == updated_category.id:
                     self._selected_category = updated_category
 
                 self._persist_state()
                 return
+
+    def add_note(self, note: Note):
+        self._notes.append(note)
+        self._persist_state()
+
+    def update_note(self, updated_note: Note):
+        from dataclasses import replace
+
+        for i, note in enumerate(self._notes):
+            if note.id == updated_note.id:
+                self._notes[i] = replace(note, **updated_note.__dict__)
+                self._persist_state()
+                return
+
+    def remove_note(self, note_id: str):
+        self._notes = [note for note in self._notes if note.id != note_id]
+        self._persist_state()
 

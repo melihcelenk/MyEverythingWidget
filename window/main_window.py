@@ -109,6 +109,7 @@ class MainWindow(QMainWindow):
                         break
             elif self._tab_widget.count() > 1:
                 self._tab_widget.setCurrentIndex(0)
+            self._tab_manager.refresh_notes_tab()
         finally:
             self._tab_widget.blockSignals(False)
 

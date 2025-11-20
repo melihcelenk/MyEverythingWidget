@@ -1,0 +1,51 @@
+"""
+Note model for My Everything Widget
+"""
+from __future__ import annotations
+
+from dataclasses import dataclass, field, asdict
+from datetime import datetime
+from enum import Enum
+from typing import Any, Dict
+
+
+class NoteType(Enum):
+    TEXT = "text"
+    IMAGE = "image"
+    LINK = "link"
+    FILE = "file"
+
+    @property
+    def is_media(self) -> bool:
+        return self in {NoteType.IMAGE, NoteType.FILE}
+
+
+@dataclass(frozen=True)
+class Note:
+    id: str
+    content: str
+    type: NoteType
+    category: str
+    created_at: datetime = field(default_factory=datetime.utcnow)
+    updated_at: datetime = field(default_factory=datetime.utcnow)
+
+    def to_dict(self) -> Dict[str, Any]:
+        data = asdict(self)
+        data["type"] = self.type.value
+        data["created_at"] = self.created_at.isoformat()
+        data["updated_at"] = self.updated_at.isoformat()
+        return data
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "Note":
+        created_at = datetime.fromisoformat(data["created_at"])
+        updated_at = datetime.fromisoformat(data["updated_at"])
+        return cls(
+            id=data["id"],
+            content=data["content"],
+            type=NoteType(data["type"]),
+            category=data["category"],
+            created_at=created_at,
+            updated_at=updated_at,
+        )
+
