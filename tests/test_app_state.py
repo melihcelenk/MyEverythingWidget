@@ -1,6 +1,8 @@
 """
 Tests for AppState
 """
+import os
+
 import pytest
 from window.app_state import AppState
 from models.app_shortcut import AppShortcut, LaunchType
@@ -8,6 +10,15 @@ from models.app_shortcut import AppShortcut, LaunchType
 
 class TestAppState:
     """Test AppState functionality"""
+
+
+@pytest.fixture(autouse=True)
+def temporary_state_file(tmp_path):
+    """Ensure each test uses an isolated state file."""
+    state_file = tmp_path / "app_state.json"
+    os.environ["MEW_STATE_PATH"] = str(state_file)
+    yield
+    os.environ.pop("MEW_STATE_PATH", None)
     
     def test_add_app(self):
         """Test adding a new app"""

@@ -1,24 +1,30 @@
 """
 Tests for tab display - text visibility, width, and scrolling
 """
-import pytest
-from PySide6.QtWidgets import QApplication
-from PySide6.QtCore import Qt, QPoint
-from window.main_window import MainWindow
-from window.app_state import AppState
-from models.category import AppCategory
+import os
 import uuid
+
+import pytest
+from PySide6.QtCore import Qt, QPoint
+
+from models.category import AppCategory
+from window.main_window import MainWindow
 
 
 class TestTabDisplay:
     """Test tab display properties"""
 
     @pytest.fixture
-    def main_window(self, qtbot):
+    def main_window(self, qtbot, tmp_path):
         """Create main window for testing"""
+        state_file = tmp_path / "app_state.json"
+        os.environ["MEW_STATE_PATH"] = str(state_file)
         window = MainWindow()
         qtbot.addWidget(window)
-        return window
+        try:
+            yield window
+        finally:
+            os.environ.pop("MEW_STATE_PATH", None)
 
     def test_tab_text_not_elided_for_short_names(self, main_window):
         """Tab text should be fully visible for short category names"""
@@ -145,8 +151,6 @@ class TestTabDisplay:
     def test_drag_scroll_changes_tab(self, main_window, qtbot):
         """Dragging on tab bar should change tabs"""
         from PySide6.QtCore import QPoint
-        from PySide6.QtGui import QMouseEvent
-        from PySide6.QtCore import QEvent
 
         # Add more categories to have something to scroll to
         for i in range(5):
@@ -240,7 +244,7 @@ class TestTabDisplay:
         wheel_event = QWheelEvent(
             QPointF(50, 15),  # pos
             QPointF(50, 15),  # globalPos
-            QPoint(0, 0),     # pixelDelta
+            QPoint(0, 0),  # pixelDelta
             QPoint(0, -120),  # angleDelta (scroll down)
             Qt.MouseButton.NoButton,
             Qt.KeyboardModifier.NoModifier,
