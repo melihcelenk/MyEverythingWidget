@@ -2,13 +2,17 @@
 Custom draggable tab bar widget
 Supports drag-to-scroll and wheel scroll navigation
 """
-from PySide6.QtWidgets import QTabBar
+import logging
+
+from PySide6.QtWidgets import QTabBar, QToolButton
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QMouseEvent, QWheelEvent
 
 
 class DraggableTabBar(QTabBar):
     """Custom tab bar with drag-to-scroll and wheel scroll support"""
+
+    _logger = logging.getLogger(__name__)
 
     DRAG_THRESHOLD = 10  # Pixels to move before drag starts
     SCROLL_THRESHOLD = 20  # Pixels to scroll before changing tab
@@ -20,6 +24,7 @@ class DraggableTabBar(QTabBar):
         self._pressed_index = -1
         self.setMouseTracking(True)
         self.setUsesScrollButtons(True)
+        self._connect_scroll_buttons()
 
     # === Public Properties ===
 
@@ -41,6 +46,12 @@ class DraggableTabBar(QTabBar):
 
     def mousePressEvent(self, event: QMouseEvent):
         """Handle mouse press - start potential drag"""
+        self._logger.debug(
+            "mousePressEvent: button=%s position=(%.1f, %.1f)",
+            event.button(),
+            event.position().x(),
+            event.position().y(),
+        )
         if event.button() == Qt.MouseButton.LeftButton:
             self._handle_left_button_press(event)
         else:
@@ -54,6 +65,12 @@ class DraggableTabBar(QTabBar):
 
     def mouseReleaseEvent(self, event: QMouseEvent):
         """Handle mouse release - end drag or select tab"""
+        self._logger.debug(
+            "mouseReleaseEvent: button=%s position=(%.1f, %.1f)",
+            event.button(),
+            event.position().x(),
+            event.position().y(),
+        )
         if event.button() == Qt.MouseButton.LeftButton:
             self._handle_left_button_release()
         else:
@@ -99,6 +116,23 @@ class DraggableTabBar(QTabBar):
             self.setCurrentIndex(self._pressed_index)
         self._reset_drag_state()
 
+    def _connect_scroll_buttons(self):
+        """Connect scroll button clicks to logging"""
+        for name, direction in (("ScrollLeftButton", "left"), ("ScrollRightButton", "right")):
+            button = self.findChild(QToolButton, name)
+            if button is not None:
+                button.clicked.connect(lambda checked=False, direction=direction: self._log_scroll_button(direction))
+
+    def _log_scroll_button(self, direction: str):
+        """Log button click details to understand which tab indexes are involved"""
+        self._logger.debug(
+            "scroll button clicked: %s current=%d last_category=%d tab_count=%d",
+            direction,
+            self.currentIndex(),
+            self.last_category_index,
+            self.count(),
+        )
+
     def _should_select_tab(self) -> bool:
         """Check if a tab should be selected on release"""
         return (not self._is_dragging and
@@ -122,16 +156,20 @@ class DraggableTabBar(QTabBar):
         """Scroll to next tab (right)"""
         current = self.currentIndex()
 
+        self._logger.debug(
+            "_scroll_to_next_tab: current=%d last_category=%d",
+            current,
+            self.last_category_index,
+        )
+
         if current < self.last_category_index:
             self.setCurrentIndex(current + 1)
         elif current == self.last_category_index:
-
             self._make_add_button_visible()
 
     def _make_add_button_visible(self):
-        """Make the + button visible by temporarily selecting it"""
+        """Make the + button visible by selecting it"""
         self.setCurrentIndex(self.add_button_index)
-        self.setCurrentIndex(self.last_category_index)
 
     def _scroll_by_drag(self, delta: int):
         """Scroll tabs based on drag delta"""

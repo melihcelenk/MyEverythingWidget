@@ -2,6 +2,7 @@
 My Everything Widget - PySide6 Version
 Main entry point
 """
+import logging
 import sys
 from pathlib import Path
 
@@ -16,6 +17,11 @@ from window.main_window import MainWindow
 
 def main():
     """Application entry point"""
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format="%(asctime)s %(name)s %(levelname)s %(message)s",
+    )
+
     app = QApplication(sys.argv)
     app.setApplicationName("My Everything Widget")
     

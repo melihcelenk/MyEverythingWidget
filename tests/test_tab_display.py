@@ -249,9 +249,9 @@ class TestTabDisplay:
         )
         tab_bar.wheelEvent(wheel_event)
 
-        # Current index should still be last category (not + button)
-        assert tab_bar.currentIndex() == last_category_index, \
-            f"Should stay on last category {last_category_index}, got {tab_bar.currentIndex()}"
+        add_button_index = tab_bar.count() - 1
+        assert tab_bar.currentIndex() == add_button_index, \
+            f"Should move to add button {add_button_index}, got {tab_bar.currentIndex()}"
 
     def test_add_tab_button_emits_signal(self, main_window, qtbot):
         """Clicking + button should emit tabBarClicked signal"""

@@ -2,6 +2,8 @@
 Tab management for main window
 Handles tab creation, updates, and context menu
 """
+import logging
+
 from PySide6.QtWidgets import (
     QTabWidget, QTabBar, QScrollArea, QGridLayout, QWidget, QMenu
 )
@@ -12,6 +14,8 @@ from widgets.app_card import AppCard
 
 class TabManager:
     """Manages tab widget and category tabs"""
+
+    _logger = logging.getLogger(__name__)
 
     TAB_STYLESHEET = """
         QTabWidget::pane {
@@ -181,6 +185,11 @@ class TabManager:
 
     def _on_tab_clicked(self, index: int):
         """Handle tab bar click"""
+        self._logger.debug(
+            "_on_tab_clicked: index=%d tab_count=%d",
+            index,
+            self._tab_widget.count(),
+        )
         if index == self._tab_widget.count() - 1:
             previous_index = self._tab_widget.currentIndex()
             if previous_index == index:
