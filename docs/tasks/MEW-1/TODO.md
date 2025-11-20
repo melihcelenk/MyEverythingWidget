@@ -193,86 +193,111 @@ This document outlines the development tasks for MyEverythingWidget v1.0 MVP.
 ### Task 4.1: Note Model
 - [ ] Create `window/models/note.py` (or equivalent) for Python implementation
 - [ ] Define `Note` dataclass with `id`, `content`, `type`, `category`, `created_at`, `updated_at`
-- [ ] Define `NoteType` enum (text, image, link, file)
-- [ ] Add serialization helpers and unit tests for `Note` equality, defaults, and conversion
+- [ ] Define `NoteType` enum (text, image, link, file) plus helper properties
+- [ ] Implement serialization helpers that round-trip to JSON/dict for storage
+- [ ] Write unit tests covering defaults, equality, serialization, and validation hooks
 
 ### Task 4.2: Note Card Widget
-- [ ] Create `widgets/note_card.py` with `NoteCard` QWidget
-- [ ] Render note preview (emoji/icon + text) with ellipsis/tooltip for long content
-- [ ] Add copy-to-clipboard button that emits signal when copy succeeds
-- [ ] Cover widget with pytest-qt tests for layout, tooltip, and copy button
+- [ ] Create `widgets/note_card.py` with `NoteCard` QWidget that takes a `Note`
+- [ ] Render icon/emoji + truncated text, show tooltip with full content on hover
+- [ ] Add copy-to-clipboard button and optional delete button/hamburger menu
+- [ ] Support drag handles anchor for future reorder phase
+- [ ] Cover widget with pytest-qt tests verifying layout, tooltip, copy/delete signals
 
 ### Task 4.3: Note List
-- [ ] Extend `AppState` (`notes` collection) + filtering/persistence
-- [ ] Build a notes tab/view showing `NoteCard` widgets in a scrollable layout
-- [ ] Provide actions for copy, delete, and category filtering
-- [ ] Write integration tests covering note rendering, filtering, and persistence
+- [ ] Extend `AppState` to store an ordered list of notes, persist them with storage service
+- [ ] Add filtering helpers and command objects for copying/deleting notes
+- [ ] Build a dedicated notes tab/view showing `NoteCard` widgets in a scrollable flow layout
+- [ ] Support swipe/drag gestures, context menu (copy/delete), and placeholder when empty
+- [ ] Add integration tests covering rendering, filtering, persistence, and placeholder state
+- [ ] Refactor phase 4 artifacts to confirm each class/method maintains a single responsibility and clean OOP boundaries
 
 ---
 
 ## 📋 Phase 5: Clipboard Paste (Ctrl+V)
 
 ### Task 5.1: Keyboard Handler
-- [ ] Create `services/clipboard_service.py` to read/sanitize clipboard payloads
-- [ ] Handle `Ctrl+V` keypress within `MainWindow` while widget has focus
-- [ ] Show confirmation prompt (toast/snackbar) before persisting content
-- [ ] Add tests that mock clipboard contents to verify detection and prompts
+- [ ] Create `services/clipboard_service.py` to normalize clipboard mime types (text/image)
+- [ ] Hook `MainWindow.keyPressEvent` to detect `Ctrl+V` (and `Shift+Insert`) when widget is focused
+- [ ] Display non-blocking confirmation overlay (toast/snackbar) so users can cancel or continue
+- [ ] Provide clipboard permission/logging info for crash diagnostics
+- [ ] Add unit tests that mock `QClipboard` to verify detection/confirmation flows
 
 ### Task 5.2: Text Paste
-- [ ] Detect `text/plain` clipboard entries in clipboard service
-- [ ] Create `Note` (type=text) within selected category via `AppState.add_note()`
-- [ ] Persist note immediately and emit `state_changed`
-- [ ] Add tests ensuring text paste populates notes list and filtering works
+- [ ] Detect `text/plain` clipboard entries, sanitize whitespace/newlines, and build default note title
+- [ ] Create `Note` (type=text) under current category via `AppState.add_note()` or dedicated service
+- [ ] Persist note immediately, refresh note tab, and trigger notification
+- [ ] Cover flow with unit tests verifying text detection, sanitization, persistence, and UI update
 
 ### Task 5.3: Image Paste
-- [ ] Detect image data on clipboard, dump to `%LOCALAPPDATA%\MyEverythingWidget\images/`
-- [ ] Create `NoteType.IMAGE` entry referencing stored file; render thumbnail in UI
-- [ ] Handle clipboard formats gracefully when image paste fails
-- [ ] Add tests verifying storage, note creation, and cleanup
+- [ ] Detect image data on clipboard, dump to `%LOCALAPPDATA%\MyEverythingWidget\images\` with deterministic names
+- [ ] Create `NoteType.IMAGE` entry referencing stored file, render thumbnail (scaled to widget)
+- [ ] Provide image note metadata (size/origin) and graceful failure handling
+- [ ] Add tests verifying storage, UI rendering, and cleanup on deletion
+- [ ] Refactor clipboard/paste helpers introduced in phase 5 to keep services decoupled and single-responsibility
 
 ---
 
 ## ✨ Phase 6: Polish & Testing
 
 ### Task 6.1: Theme Support
-- [ ] Introduce `ThemeMode` enum and theme manager service
-- [ ] Apply palette updates centrally (main window, tabs, note cards)
-- [ ] Persist selection via storage service (alongside apps/notes)
-- [ ] Add tests ensuring theme switch triggers UI refresh
+- [ ] Introduce `ThemeMode` enum (light/dark/auto) and `ThemeManager` service
+- [ ] Apply palette/style updates via shared stylesheet helper for windows, tabs, notes, dialogs
+- [ ] Persist choice in storage, emit signal for UI components to refresh
+- [ ] Add tests verifying theme persistence and palette changes
 
 ### Task 6.2: Manual Testing
 - [ ] Maintain checklist documentation covering: window drag, launcher, tabs, notes, clipboard
-- [ ] Automate screenshot capture/logging for critical flows if feasible
-- [ ] Document any regression issues discovered during nightly runs
+- [ ] Automate screenshot capture/logging for critical flows (tab scroll, note view, clipboard)
+- [ ] Document regression issues discovered during nightly runs and tag in tracker
 
-### Task 6.3: Bug Fixes
 - [ ] Prioritize and triage logged issues (wheel lag, persistence, clipboard)
-- [ ] Improve test coverage for uncovered flows (notes persistence, clipboard)
+- [ ] Improve test coverage for uncovered flows (notes persistence, clipboard, theme)
 - [ ] Refactor/cleanup once functionality stabilized
 
 ### Task 6.4: Automated Testing
 - [ ] Ensure pytest suite covers AppState, notes, clipboard, main window integration
 - [ ] Add fixture-driven visual regression harness referencing `tests/visual` for future expansion
+- [ ] Refactor automated testing helpers so each fixture and utility class stays focused and stateless
+
+## 🧩 Phase 7: Drag & Drop Reordering
+
+### Task 7.1: App/Card Reordering
+- [ ] Allow app cards to be drag-and-drop re-sequenced within each category grid
+- [ ] Persist ordering in `AppState` and storage service
+- [ ] Add tests simulating drag events and verifying ordering/persistence
+
+### Task 7.2: Note Reordering
+- [ ] Enable drag handles on `NoteCard` to reorder notes within a category
+- [ ] Support keyboard reorder shortcuts (Ctrl+↑/Ctrl+↓)
+- [ ] Write integration tests covering drag, keyboard commands, and UI re-rendering
+
+### Task 7.3: Image Note Reordering
+- [ ] Allow image notes to be repositioned via drag/drop
+- [ ] Ensure scoped drop targets to avoid mixing with app grid
+- [ ] Verify persistence and state restoration for reordered image notes
+- [ ] Validate drag/drop classes and handlers follow clean-OOP single-responsibility boundaries
 ---
 
-## 📦 Phase 7: Deployment
+## 📦 Phase 8: Deployment
 
-### Task 7.1: MSIX Configuration
+### Task 8.1: MSIX Configuration
 - [ ] Configure `msix_config` in `pubspec.yaml`
 - [ ] Add application logo and assets
 - [ ] Set display name and publisher info
 
-### Task 7.2: Build & Package
+### Task 8.2: Build & Package
 - [ ] Run `flutter build windows --release`
 - [ ] Generate MSIX package (`flutter pub run msix:create`)
 - [ ] Test MSIX installation
 - [ ] Verify app launches from Start Menu
 
-### Task 7.3: Documentation
+### Task 8.3: Documentation
 - [ ] Update README.md with features
 - [ ] Add screenshots
 - [ ] Document installation instructions
 - [ ] Add contribution guidelines
+- [ ] Refactor deployment-related docs/tools to ensure they stay modular and versioned separately
 
 ---
 
