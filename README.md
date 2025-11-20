@@ -4,7 +4,6 @@ A lightweight, modern desktop widget application for quick access to your favori
 
 ## Features
 
-### Core Features
 - **Application Launcher** - Quick access to your favorite apps with icon grid
 - **Category Tabs** - Organize apps into categories (All, Web, Dev, Media, etc.)
 - **Notion-style Icon Picker** - Choose from emojis, material icons, or upload custom images
@@ -12,6 +11,7 @@ A lightweight, modern desktop widget application for quick access to your favori
 - **Drag-to-move** - Custom title bar for easy window positioning
 - **Dynamic App Management** - Add, edit, rename, and delete apps on the fly
 - **Dynamic Category Management** - Add, edit, and delete categories with context menu
+- **Persistent State Storage** - Categories and app cards are saved to `%LOCALAPPDATA%\MyEverythingWidget\app_state.json` (override via `MEW_STATE_PATH`) so the widget restores user data across sessions.
 
 ### UI/UX
 - **Modern Design** - Clean, Material Design-inspired interface
@@ -155,6 +155,19 @@ python -m pytest tests/ -v --cov=. --cov-report=html
 4. Ensure all tests pass
 5. Update documentation
 6. Submit pull request
+
+## Persistence & Logging
+
+### Persistence
+
+- App state (categories + apps) is stored via `services/storage_service.py` as JSON.
+- The default file is `%LOCALAPPDATA%\MyEverythingWidget\app_state.json`; override the path by setting `MEW_STATE_PATH` before launch.
+- `AppState` loads this file when it exists and saves on every add/update/remove so new tabs and cards stay in sync across runs.
+
+### Logging
+- Logging is configured in `main.py` using `logging.basicConfig(level=logging.DEBUG, …)`, so debug messages appear when running `run.ps1` or `main.py`.
+- Wheel scroll navigation still feels delayed compared to the scroll buttons; see the TODO for tracking the future smoothing fix.
+- `widgets/draggable_tab_bar.py` reports wheel, press, release, and scroll button events, while `window/tab_manager.py` logs `_on_tab_clicked` calls, making navigation issues easier to trace.
 
 ## License
 

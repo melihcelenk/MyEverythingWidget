@@ -179,6 +179,13 @@ This document outlines the development tasks for MyEverythingWidget v1.0 MVP.
   - Single Responsibility Principle applied
   - OOP best practices followed
 
+### Task 3.4: Persistence & Observability ⭐ **COMPLETED**
+- [x] Implement `services/storage_service.py` to read/write `%LOCALAPPDATA%\MyEverythingWidget\app_state.json`
+- [x] Update `AppState` to load saved tabs/apps and persist on add/update/remove (env var `MEW_STATE_PATH` supported)
+- [x] Document persistence behavior and logging guidance in `README.md`
+- [x] Add logging hooks for tab clicks, wheel navigation, and scroll buttons to trace navigation flow
+- [ ] Wheel scroll still feels delayed compared to scroll buttons; track smoothing fix
+
 ---
 
 ## 📝 Phase 4: Notes Feature
