@@ -191,66 +191,68 @@ This document outlines the development tasks for MyEverythingWidget v1.0 MVP.
 ## 📝 Phase 4: Notes Feature
 
 ### Task 4.1: Note Model
-- [ ] Create `lib/models/note.dart`
-- [ ] Define `Note` class with properties:
-  - `id`, `content`, `type`, `category`, `createdAt`, `updatedAt`
-- [ ] Define `NoteType` enum (text, image)
+- [ ] Create `window/models/note.py` (or equivalent) for Python implementation
+- [ ] Define `Note` dataclass with `id`, `content`, `type`, `category`, `created_at`, `updated_at`
+- [ ] Define `NoteType` enum (text, image, link, file)
+- [ ] Add serialization helpers and unit tests for `Note` equality, defaults, and conversion
 
 ### Task 4.2: Note Card Widget
-- [ ] Create `lib/widgets/note_card.dart`
-- [ ] Implement note display with text content
-- [ ] Add copy button with `Clipboard.setData()`
-- [ ] Show SnackBar confirmation ("Copied!")
-- [ ] Test: Copy functionality works
+- [ ] Create `widgets/note_card.py` with `NoteCard` QWidget
+- [ ] Render note preview (emoji/icon + text) with ellipsis/tooltip for long content
+- [ ] Add copy-to-clipboard button that emits signal when copy succeeds
+- [ ] Cover widget with pytest-qt tests for layout, tooltip, and copy button
 
 ### Task 4.3: Note List
-- [ ] Add hardcoded notes to state
-- [ ] Display notes in category view
-- [ ] Implement scrollable list
-- [ ] Test: Notes display correctly
+- [ ] Extend `AppState` (`notes` collection) + filtering/persistence
+- [ ] Build a notes tab/view showing `NoteCard` widgets in a scrollable layout
+- [ ] Provide actions for copy, delete, and category filtering
+- [ ] Write integration tests covering note rendering, filtering, and persistence
 
 ---
 
 ## 📋 Phase 5: Clipboard Paste (Ctrl+V)
 
 ### Task 5.1: Keyboard Handler
-- [ ] Create `lib/services/clipboard_service.dart`
-- [ ] Implement `KeyboardListener` for Ctrl+V
-- [ ] Add focus management
+- [ ] Create `services/clipboard_service.py` to read/sanitize clipboard payloads
+- [ ] Handle `Ctrl+V` keypress within `MainWindow` while widget has focus
+- [ ] Show confirmation prompt (toast/snackbar) before persisting content
+- [ ] Add tests that mock clipboard contents to verify detection and prompts
 
 ### Task 5.2: Text Paste
-- [ ] Implement text clipboard detection
-- [ ] Create new note from pasted text
-- [ ] Add note to current category
-- [ ] Test: Ctrl+V pastes text
+- [ ] Detect `text/plain` clipboard entries in clipboard service
+- [ ] Create `Note` (type=text) within selected category via `AppState.add_note()`
+- [ ] Persist note immediately and emit `state_changed`
+- [ ] Add tests ensuring text paste populates notes list and filtering works
 
 ### Task 5.3: Image Paste
-- [ ] Implement image clipboard detection
-- [ ] Save image to local storage
-- [ ] Create note with image path
-- [ ] Test: Ctrl+V pastes images
+- [ ] Detect image data on clipboard, dump to `%LOCALAPPDATA%\MyEverythingWidget\images/`
+- [ ] Create `NoteType.IMAGE` entry referencing stored file; render thumbnail in UI
+- [ ] Handle clipboard formats gracefully when image paste fails
+- [ ] Add tests verifying storage, note creation, and cleanup
 
 ---
 
 ## ✨ Phase 6: Polish & Testing
 
 ### Task 6.1: Theme Support
-- [ ] Implement light/dark theme toggle
-- [ ] Apply theme to all widgets
-- [ ] Persist theme preference
+- [ ] Introduce `ThemeMode` enum and theme manager service
+- [ ] Apply palette updates centrally (main window, tabs, note cards)
+- [ ] Persist selection via storage service (alongside apps/notes)
+- [ ] Add tests ensuring theme switch triggers UI refresh
 
 ### Task 6.2: Manual Testing
-- [ ] Window functionality checklist
-- [ ] Application launcher checklist
-- [ ] Tab system checklist
-- [ ] Notes feature checklist
-- [ ] Document any issues
+- [ ] Maintain checklist documentation covering: window drag, launcher, tabs, notes, clipboard
+- [ ] Automate screenshot capture/logging for critical flows if feasible
+- [ ] Document any regression issues discovered during nightly runs
 
 ### Task 6.3: Bug Fixes
-- [ ] Address issues found during testing
-- [ ] Optimize performance if needed
-- [ ] Clean up code and comments
+- [ ] Prioritize and triage logged issues (wheel lag, persistence, clipboard)
+- [ ] Improve test coverage for uncovered flows (notes persistence, clipboard)
+- [ ] Refactor/cleanup once functionality stabilized
 
+### Task 6.4: Automated Testing
+- [ ] Ensure pytest suite covers AppState, notes, clipboard, main window integration
+- [ ] Add fixture-driven visual regression harness referencing `tests/visual` for future expansion
 ---
 
 ## 📦 Phase 7: Deployment
