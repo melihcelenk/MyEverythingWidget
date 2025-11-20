@@ -156,8 +156,8 @@ class TestMainWindow:
         """Test that category tabs contain app cards"""
         # Get the first category tab (should be "All")
         if main_window._tab_widget.count() > 0:
-            # Check that category grids exist
-            assert len(main_window._category_grids) > 0
+            # Check that tab manager has category grids
+            assert len(main_window._tab_manager._category_grids) > 0
     
     def test_multiple_tab_switches(self, main_window):
         """Test switching between multiple tabs repeatedly"""
