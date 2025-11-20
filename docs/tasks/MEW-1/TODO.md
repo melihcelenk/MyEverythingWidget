@@ -211,6 +211,7 @@ This document outlines the development tasks for MyEverythingWidget v1.0 MVP.
 - [x] Support swipe/drag gestures, context menu (copy/delete), and placeholder when empty
 - [x] Add integration tests covering rendering, filtering, persistence, and placeholder state
 - [x] Refactor phase 4 artifacts to confirm each class/method maintains a single responsibility and clean OOP boundaries
+- [ ] Replace the standalone notes tab with an in-grid overlay: allow notes to span multiple columns, use an icon-only copy button, expose edit/delete via the tab context menu, and address the timezone-aware datetime/Qt reference warnings before moving on
 
 ---
 

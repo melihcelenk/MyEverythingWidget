@@ -3,7 +3,8 @@ Tests for the NoteCard widget
 """
 import pytest
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QApplication, QPushButton
+from PySide6.QtGui import QClipboard, QContextMenuEvent
+from PySide6.QtWidgets import QApplication, QPushButton, QMenu
 
 from widgets.note_card import NoteCard
 from window.models.note import Note, NoteType
@@ -32,7 +33,7 @@ def test_note_card_copy_emits_signal(qtbot):
 
 
 @pytest.mark.usefixtures("qtbot")
-def test_note_card_delete_button(qtbot):
+def test_note_card_context_menu_delete(qtbot, monkeypatch):
     note = Note(
         id="note-2",
         content="Delete me",
@@ -45,7 +46,13 @@ def test_note_card_delete_button(qtbot):
     emitted = []
     card.deleteRequested.connect(lambda note_id: emitted.append(note_id))
 
-    delete_button = card.findChildren(QPushButton)[1]
-    qtbot.mouseClick(delete_button, Qt.MouseButton.LeftButton)
+    def fake_exec(self, pos):
+        return self.actions()[1]
+
+    monkeypatch.setattr(QMenu, "exec", fake_exec)
+
+    global_pos = card.mapToGlobal(card.rect().center())
+    event = QContextMenuEvent(QContextMenuEvent.Mouse, card.rect().center(), global_pos)
+    card.contextMenuEvent(event)
 
     assert emitted == ["note-2"]

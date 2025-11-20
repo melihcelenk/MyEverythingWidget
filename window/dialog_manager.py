@@ -2,11 +2,14 @@
 Dialog management for main window
 Handles all dialog operations for categories and apps
 """
-from PySide6.QtWidgets import QMessageBox, QInputDialog
+from PySide6.QtWidgets import QMessageBox, QInputDialog, QFileDialog
+from PySide6.QtGui import QPixmap
 from models.category import AppCategory
 from models.app_shortcut import AppShortcut
 from widgets.app_picker_dialog import AppPickerDialog
 from widgets.icon_picker_dialog import IconPickerDialog
+from window.models.note import Note, NoteType
+from services.image_storage_service import ImageStorageService
 import uuid
 
 
@@ -16,6 +19,7 @@ class DialogManager:
     def __init__(self, parent, app_state):
         self._parent = parent
         self._app_state = app_state
+        self._image_storage = ImageStorageService()
 
     # === Category Dialogs ===
 
@@ -183,3 +187,39 @@ class DialogManager:
                 QMessageBox.information(self._parent, "Success", "Icon updated successfully")
                 return True
         return False
+
+    # === Image Dialogs ===
+
+    def show_add_image_dialog(self, category_name: str) -> bool:
+        """Show file dialog to add an image. Returns True if image was added."""
+        file_path, _ = QFileDialog.getOpenFileName(
+            self._parent,
+            "Select Image",
+            "",
+            "Images (*.png *.jpg *.jpeg *.bmp *.gif);;All Files (*)"
+        )
+
+        if not file_path:
+            return False
+
+        # Load and validate image
+        pixmap = QPixmap(file_path)
+        if pixmap.isNull():
+            QMessageBox.warning(self._parent, "Error", "Failed to load image")
+            return False
+
+        # Save to storage
+        saved_path = self._image_storage.save_image(pixmap)
+        if saved_path is None:
+            QMessageBox.warning(self._parent, "Error", "Failed to save image")
+            return False
+
+        # Create note with image type
+        note = Note(
+            id=str(uuid.uuid4()),
+            content=saved_path,
+            type=NoteType.IMAGE,
+            category=category_name
+        )
+        self._app_state.add_note(note)
+        return True

@@ -9,9 +9,11 @@ from PySide6.QtWidgets import (
     QLabel, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton
 )
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QPixmap
 from widgets.draggable_tab_bar import DraggableTabBar
 from widgets.app_card import AppCard
 from widgets.note_card import NoteCard
+from widgets.image_card import ImageCard
 from window.models.note import Note, NoteType
 import uuid
 
@@ -72,8 +74,7 @@ class TabManager:
 
         self._category_tabs = {}
         self._category_grids = {}
-        self._notes_layout = None
-        self._note_input = None
+        self._note_inputs = {}
         self._tab_widget = None
 
     def create_tab_widget(self) -> QTabWidget:
@@ -98,7 +99,6 @@ class TabManager:
         self.update_tabs()
         self._tab_widget.setCurrentIndex(0)
 
-        self._refresh_notes_tab()
         return self._tab_widget
 
     @property
@@ -150,10 +150,18 @@ class TabManager:
         content_widget = QWidget()
         scroll_area.setWidget(content_widget)
 
-        grid_layout = QGridLayout(content_widget)
+        content_layout = QVBoxLayout(content_widget)
+        content_layout.setContentsMargins(0, 0, 0, 0)
+        content_layout.setSpacing(6)
+        content_layout.addWidget(self._create_note_entry(category))
+
+        grid_container = QWidget()
+        grid_layout = QGridLayout(grid_container)
         grid_layout.setSpacing(4)
         grid_layout.setContentsMargins(10, 10, 10, 10)
         grid_layout.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+
+        content_layout.addWidget(grid_container)
 
         self._populate_category_grid(category, grid_layout)
 
@@ -192,93 +200,105 @@ class TabManager:
                 col = 0
                 row += 1
 
+        self._add_note_cards_to_layout(category, layout, row, col)
+
+    def _create_note_entry(self, category):
+        container = QWidget()
+        layout = QHBoxLayout(container)
+        layout.setContentsMargins(8, 8, 8, 8)
+        layout.setSpacing(4)
+
+        line_edit = QLineEdit()
+        line_edit.setPlaceholderText("Add a quick note...")
+        add_button = QPushButton("Add")
+        add_button.clicked.connect(lambda: self._on_add_note_clicked(category.id))
+
+        layout.addWidget(line_edit)
+        layout.addWidget(add_button)
+
+        self._note_inputs[category.id] = line_edit
+        return container
+
+    def _on_add_note_clicked(self, category_id: str):
+        line_edit = self._note_inputs.get(category_id)
+        if line_edit is None:
+            return
+
+        content = line_edit.text().strip()
+        if not content:
+            return
+
+        category = next(
+            (cat for cat in self._app_state.categories if cat.id == category_id),
+            self._app_state.categories[0] if self._app_state.categories else None,
+        )
+        category_name = category.name if category else "All"
+
+        note = Note(
+            id=str(uuid.uuid4()),
+            content=content,
+            type=NoteType.TEXT,
+            category=category_name,
+        )
+        self._app_state.add_note(note)
+        line_edit.clear()
+
+    def _add_note_cards_to_layout(self, category, layout, start_row, start_col):
+        notes = (
+            self._app_state.notes
+            if category.name == 'All'
+            else [note for note in self._app_state.notes if note.category == category.name]
+        )
+        row = start_row + (1 if start_col > 0 else 0)
+        col = 0
+        span_options = [3, 2]
+
+        for idx, note in enumerate(notes):
+            # Check if this is an image note
+            if note.type == NoteType.IMAGE:
+                pixmap = QPixmap(note.content)
+                if not pixmap.isNull():
+                    card = ImageCard(
+                        image_id=note.id,
+                        pixmap=pixmap,
+                        on_delete=self._app_state.remove_note
+                    )
+                    col_span = card.col_span
+                    row_span = card.row_span
+
+                    # Check if fits in current row
+                    if col + col_span > 3:
+                        row += 1
+                        col = 0
+
+                    layout.addWidget(card, row, col, row_span, col_span)
+                    col += col_span
+                    if col >= 3:
+                        row += row_span
+                        col = 0
+                    continue
+
+            # Text note - use NoteCard
+            span = span_options[idx % len(span_options)]
+            if col + span > 3:
+                row += 1
+                col = 0
+            card = NoteCard(note)
+            card.copyRequested.connect(lambda note_id: None)
+            card.deleteRequested.connect(self._app_state.remove_note)
+            card.editRequested.connect(lambda note_id: None)
+            layout.addWidget(card, row, col, 1, span)
+            col += span
+            if col >= 3:
+                row += 1
+                col = 0
+
     def _create_notes_tab(self):
         """Create the notes tab content."""
         container = QWidget()
         container_layout = QVBoxLayout(container)
         container_layout.setContentsMargins(0, 0, 0, 0)
         container_layout.setSpacing(4)
-
-        header = QWidget()
-        header_layout = QHBoxLayout(header)
-        header_layout.setContentsMargins(8, 8, 8, 8)
-        header_layout.setSpacing(4)
-
-        line_edit = QLineEdit()
-        line_edit.setPlaceholderText("Add quick note...")
-        add_button = QPushButton("Add Note")
-        add_button.clicked.connect(self._on_add_note_clicked)
-
-        header_layout.addWidget(line_edit)
-        header_layout.addWidget(add_button)
-
-        scroll_area = QScrollArea()
-        scroll_area.setWidgetResizable(True)
-        content = QWidget()
-        layout = QVBoxLayout(content)
-        layout.setContentsMargins(10, 10, 10, 10)
-        layout.setSpacing(6)
-        scroll_area.setWidget(content)
-
-        container_layout.addWidget(header)
-        container_layout.addWidget(scroll_area)
-
-        self._note_input = line_edit
-        self._notes_layout = layout
-
-        self._refresh_notes_tab()
-        return container
-
-    def _refresh_notes_tab(self):
-        """Rebuild note cards inside the notes tab."""
-        if not self._notes_layout:
-            return
-
-        while self._notes_layout.count():
-            item = self._notes_layout.takeAt(0)
-            if item.widget():
-                item.widget().deleteLater()
-
-        notes = self._app_state.notes
-        if not notes:
-            placeholder = QLabel("No notes yet")
-            placeholder.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            self._notes_layout.addWidget(placeholder)
-        else:
-            for note in notes:
-                card = NoteCard(note)
-                card.copyRequested.connect(lambda note_id: None)
-                card.deleteRequested.connect(self._app_state.remove_note)
-                self._notes_layout.addWidget(card)
-
-        self._notes_layout.addStretch(1)
-
-    def refresh_notes_tab(self):
-        """Expose note refresh for external callers."""
-        self._refresh_notes_tab()
-
-    def _on_add_note_clicked(self):
-        """Handle new note submission from the notes tab."""
-        if not self._note_input:
-            return
-
-        content = self._note_input.text().strip()
-        if not content:
-            return
-
-        category = (
-            self._app_state.selected_category.name
-            if self._app_state.selected_category
-            else "All"
-        )
-        note = Note(
-            id=str(uuid.uuid4()),
-            content=content,
-            type=NoteType.TEXT,
-            category=category,
-        )
-        self._app_state.add_note(note)
-        self._note_input.clear()
 
     def _on_tab_clicked(self, index: int):
         """Handle tab bar click"""

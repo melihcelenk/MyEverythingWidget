@@ -2,16 +2,20 @@
 Main application window
 Manages window state and displays primary content
 """
-from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QMessageBox
+from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QMessageBox, QPushButton
 from PySide6.QtCore import Qt, QPoint
-from PySide6.QtGui import QMouseEvent
+from PySide6.QtGui import QMouseEvent, QKeyEvent
 from window.app_state import AppState
 from window.tab_manager import TabManager
 from window.dialog_manager import DialogManager
+from window.models.note import Note, NoteType
 from services.app_launcher_service import AppLauncherService
+from services.clipboard_service import ClipboardService
+from services.image_storage_service import ImageStorageService
 from widgets.custom_title_bar import CustomTitleBar
 from widgets.add_app_button import AddAppButton
 from models.app_shortcut import AppShortcut
+import uuid
 
 
 class MainWindow(QMainWindow):
@@ -23,6 +27,9 @@ class MainWindow(QMainWindow):
         self._app_state = AppState()
         self._launcher_service = AppLauncherService()
         self._drag_position = QPoint()
+
+        self._clipboard_service = ClipboardService()
+        self._image_storage = ImageStorageService()
 
         self._init_managers()
         self._init_ui()
@@ -66,7 +73,28 @@ class MainWindow(QMainWindow):
         self._tab_widget = self._tab_manager.create_tab_widget()
         layout.addWidget(self._tab_widget)
 
-        # Floating add button
+        # Floating add image button
+        self._add_image_button = QPushButton("🖼️", central_widget)
+        self._add_image_button.setFixedSize(40, 40)
+        self._add_image_button.setStyleSheet("""
+            QPushButton {
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 20px;
+                font-size: 18px;
+            }
+            QPushButton:hover {
+                background-color: #45a049;
+            }
+            QPushButton:pressed {
+                background-color: #3d8b40;
+            }
+        """)
+        self._add_image_button.clicked.connect(self._on_add_image_clicked)
+        self._add_image_button.raise_()
+
+        # Floating add app button
         self._add_button = AddAppButton(
             on_tap=lambda: self._dialog_manager.show_add_app_dialog()
         )
@@ -124,6 +152,14 @@ class MainWindow(QMainWindow):
         if self._dialog_manager.show_add_category_dialog():
             self._tab_widget.setCurrentIndex(len(self._app_state.categories) - 1)
 
+    def _on_add_image_clicked(self):
+        """Handle add image button click"""
+        current_index = self._tab_widget.currentIndex()
+        category_name = "All"
+        if 0 <= current_index < len(self._app_state.categories):
+            category_name = self._app_state.categories[current_index].name
+        self._dialog_manager.show_add_image_dialog(category_name)
+
     # === Actions ===
 
     def _launch_app(self, app: AppShortcut):
@@ -144,10 +180,13 @@ class MainWindow(QMainWindow):
     # === Window Events ===
 
     def resizeEvent(self, event):
-        """Handle window resize to position add button"""
+        """Handle window resize to position floating buttons"""
         super().resizeEvent(event)
         if hasattr(self, '_add_button'):
             self._add_button.move(self.width() - 64, self.height() - 64)
+        if hasattr(self, '_add_image_button'):
+            # Position above add app button
+            self._add_image_button.move(self.width() - 54, self.height() - 114)
 
     def mousePressEvent(self, event: QMouseEvent):
         """Handle mouse press for window dragging"""
@@ -160,3 +199,42 @@ class MainWindow(QMainWindow):
         if event.buttons() == Qt.MouseButton.LeftButton:
             self.move(event.globalPosition().toPoint() - self._drag_position)
             event.accept()
+
+    def keyPressEvent(self, event: QKeyEvent):
+        """Handle key press events"""
+        # Ctrl+V for paste
+        if event.modifiers() == Qt.KeyboardModifier.ControlModifier and event.key() == Qt.Key.Key_V:
+            self._handle_paste()
+            event.accept()
+        else:
+            super().keyPressEvent(event)
+
+    def _handle_paste(self):
+        """Handle paste from clipboard"""
+        if not self._clipboard_service.has_image():
+            return
+
+        pixmap = self._clipboard_service.get_image()
+        if pixmap is None:
+            return
+
+        # Save image to storage
+        file_path = self._image_storage.save_image(pixmap)
+        if file_path is None:
+            QMessageBox.warning(self, "Error", "Failed to save image")
+            return
+
+        # Get current category
+        current_index = self._tab_widget.currentIndex()
+        category_name = "All"
+        if 0 <= current_index < len(self._app_state.categories):
+            category_name = self._app_state.categories[current_index].name
+
+        # Create note with image type
+        note = Note(
+            id=str(uuid.uuid4()),
+            content=file_path,
+            type=NoteType.IMAGE,
+            category=category_name
+        )
+        self._app_state.add_note(note)

@@ -2,7 +2,7 @@
 Tests for Note model serialization and default behavior
 """
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
 import pytest
 
@@ -38,8 +38,9 @@ def test_note_default_timestamps():
         category="Notes",
     )
 
-    assert note.created_at <= datetime.utcnow()
-    assert note.updated_at <= datetime.utcnow()
+    now = datetime.now(timezone.utc)
+    assert note.created_at <= now
+    assert note.updated_at <= now
     assert note.type == NoteType.LINK
 
 
