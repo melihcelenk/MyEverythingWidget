@@ -244,6 +244,10 @@ class TestGridAlignment:
 class TestGridOverflow:
     """Test that items don't overflow the window"""
 
+    CELL_WIDTH = 90
+    CELL_HEIGHT = 100
+    SPACING = 4
+
     def test_note_card_does_not_overflow_window(self, qtbot):
         """Note card width should fit within 320px window"""
         window_width = 320
@@ -258,6 +262,60 @@ class TestGridOverflow:
             max_width = window_width - (margin * 2)
             assert card.width() <= max_width, \
                 f"{span}-span card width {card.width()} exceeds max {max_width}"
+
+    def test_2x1_image_plus_note_fits_in_row(self, qtbot):
+        """2x1 image + 1x1 note should fit, NOT 2x1 image + 2x1 note"""
+        # 2x1 image takes 2 columns
+        image_cols = 2
+        # Only 1 column left, so note must be 1x1 or go to next row
+        remaining = 3 - image_cols
+
+        # A 2-span note should NOT fit in remaining space
+        note_span = 2
+        assert note_span > remaining, \
+            f"2-span note ({note_span}) should not fit in remaining {remaining} columns"
+
+    def test_items_after_2col_image_should_wrap(self, qtbot):
+        """Items that don't fit after 2-col image should wrap to next row"""
+        container = QWidget()
+        container.setFixedWidth(320)
+
+        layout = QGridLayout(container)
+        layout.setSpacing(4)
+        layout.setContentsMargins(8, 8, 8, 8)
+
+        # Set fixed column widths
+        for i in range(3):
+            layout.setColumnMinimumWidth(i, 90)
+            layout.setColumnStretch(i, 0)
+
+        # 2x1 image in columns 0-1
+        pixmap = QPixmap(200, 100)  # Wide image -> 2x1 or 3x1
+        pixmap.fill(Qt.GlobalColor.blue)
+        image_card = ImageCard("1", pixmap)
+
+        # 2-span note - should go to next row since only 1 col left
+        note = Note(id="2", content="Test", type=NoteType.TEXT, category="All")
+        note_card = NoteCard(note, col_span=2)
+
+        # Place image at row 0, col 0, span 2 cols
+        layout.addWidget(image_card, 0, 0, 1, 2)
+        # Note should be placed at row 1, col 0 (wrapped)
+        layout.addWidget(note_card, 1, 0, 1, 2)
+
+        container.show()
+        qtbot.addWidget(container)
+        QApplication.processEvents()
+
+        # Image should be in row 0
+        assert image_card.y() < note_card.y(), \
+            f"Note should be below image: image.y={image_card.y()}, note.y={note_card.y()}"
+
+        # Note should not overflow container
+        note_right = note_card.x() + note_card.width()
+        container_inner_width = container.width() - 16  # margins
+        assert note_right <= container_inner_width, \
+            f"Note overflows: right={note_right}, container={container_inner_width}"
 
     def test_image_card_max_3_columns(self, qtbot):
         """Image card should never exceed 3 columns"""

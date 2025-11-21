@@ -306,8 +306,17 @@ class TabManager:
                     continue
 
             # Text note - use NoteCard
-            span = span_options[idx % len(span_options)]
-            if col + span > 3:
+            # Calculate available space
+            available = 3 - col
+
+            # Choose span based on available space
+            preferred_span = span_options[idx % len(span_options)]
+            if preferred_span <= available:
+                span = preferred_span
+            elif available >= 2:
+                span = 2
+            else:
+                # Not enough space, wrap to next row
                 row += 1
                 col = 0
                 # Skip occupied cells
@@ -316,6 +325,7 @@ class TabManager:
                     if col >= 3:
                         col = 0
                         row += 1
+                span = preferred_span
 
             card = NoteCard(note, col_span=span)
             card.copyRequested.connect(lambda note_id: None)

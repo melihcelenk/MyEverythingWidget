@@ -4,7 +4,7 @@ Provides drag-to-resize functionality with grid snapping
 """
 from PySide6.QtWidgets import QWidget, QApplication
 from PySide6.QtCore import Qt, QRect, Signal, QPoint
-from PySide6.QtGui import QPainter, QPen, QColor, QMouseEvent, QCursor
+from PySide6.QtGui import QPainter, QPen, QColor, QMouseEvent, QCursor, QBrush
 
 
 class ResizableMixin:
@@ -35,6 +35,8 @@ class ResizableMixin:
         self._is_resizing = False
         self._resize_start_pos = QPoint()
         self._resize_start_size = None
+        self._original_col = 0
+        self._original_row = 0
         self._min_col = min_col
         self._max_col = max_col
         self._min_row = min_row
@@ -116,21 +118,21 @@ class ResizableMixin:
                 handle_rect.right(), handle_rect.bottom() - offset
             )
 
-        # Draw preview size if resizing
+        # Draw preview size label if resizing
         if self._is_resizing and self._preview_col > 0:
-            preview_width, preview_height = self._calculate_size_from_span(
-                self._preview_col, self._preview_row
-            )
-
-            # Draw preview rectangle
-            pen = QPen(QColor(255, 0, 0, 128), 2, Qt.PenStyle.DashLine)
-            painter.setPen(pen)
-            painter.drawRect(0, 0, preview_width - 1, preview_height - 1)
-
-            # Draw size label
+            # Draw size label in center of current widget
             label = f"{self._preview_col}x{self._preview_row}"
-            painter.setPen(QPen(QColor(255, 0, 0)))
-            painter.drawText(preview_width // 2 - 15, preview_height // 2 + 5, label)
+            painter.setPen(QPen(QColor(255, 255, 255)))
+            painter.setBrush(QColor(255, 0, 0, 200))
+
+            # Draw label background
+            label_rect = painter.fontMetrics().boundingRect(label)
+            label_x = (self.width() - label_rect.width()) // 2 - 4
+            label_y = (self.height() - label_rect.height()) // 2 - 2
+            painter.drawRect(label_x, label_y, label_rect.width() + 8, label_rect.height() + 4)
+
+            # Draw label text
+            painter.drawText(label_x + 4, label_y + label_rect.height(), label)
 
     def handle_resize_mouse_press(self, event: QMouseEvent) -> bool:
         """Handle mouse press for resize. Returns True if handled."""
@@ -142,8 +144,10 @@ class ResizableMixin:
                 self._is_resizing = True
                 self._resize_start_pos = event.globalPosition().toPoint()
                 self._resize_start_size = self.size()
-                self._preview_col = getattr(self, '_col_span', 1)
-                self._preview_row = getattr(self, '_row_span', 1)
+                self._original_col = getattr(self, '_col_span', 1)
+                self._original_row = getattr(self, '_row_span', 1)
+                self._preview_col = self._original_col
+                self._preview_row = self._original_row
                 return True
 
         return False
@@ -171,6 +175,12 @@ class ResizableMixin:
             self._preview_col, self._preview_row = self._calculate_span_from_size(
                 new_width, new_height
             )
+
+            # Temporarily resize widget to show preview
+            preview_width, preview_height = self._calculate_size_from_span(
+                self._preview_col, self._preview_row
+            )
+            self.setFixedSize(preview_width, preview_height)
 
             self.update()
             return True
