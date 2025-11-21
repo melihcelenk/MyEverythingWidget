@@ -29,6 +29,7 @@ class NoteCard(QFrame, ResizableMixin):
     deleteRequested = Signal(str)
     editRequested = Signal(str)
     resizeRequested = Signal(int, int)  # col_span, row_span
+    relocateRequested = Signal(str, str)  # note_id, new_category
 
     # Grid cell size constants
     CELL_WIDTH = 90
@@ -41,6 +42,7 @@ class NoteCard(QFrame, ResizableMixin):
         self._col_span = col_span
         self._row_span = row_span
         self._clipboard = QApplication.clipboard()
+        self._categories = []  # Available categories for relocation
         self.setFrameShape(QFrame.Shape.StyledPanel)
         self.setFrameShadow(QFrame.Shadow.Raised)
         self.setObjectName("NoteCard")
@@ -51,6 +53,10 @@ class NoteCard(QFrame, ResizableMixin):
         # Set fixed size based on span
         self._update_size()
         self._build_ui()
+
+    def set_categories(self, categories: list):
+        """Set available categories for relocation"""
+        self._categories = categories
 
     def _update_size(self):
         """Update widget size based on current span"""
@@ -129,8 +135,18 @@ class NoteCard(QFrame, ResizableMixin):
         menu = QMenu(self)
         edit_action = menu.addAction("Edit")
         resize_action = menu.addAction("Resize")
+
+        # Relocate submenu
+        relocate_menu = menu.addMenu("Relocate")
+        category_actions = {}
+        for cat in self._categories:
+            if cat.name != self.note.category and cat.name != "All":
+                action = relocate_menu.addAction(f"{cat.icon} {cat.name}")
+                category_actions[action] = cat.name
+
         delete_action = menu.addAction("Delete")
         action = menu.exec(event.globalPos())
+
         if action == edit_action:
             self.editRequested.emit(self.note.id)
         elif action == resize_action:
@@ -140,6 +156,8 @@ class NoteCard(QFrame, ResizableMixin):
                 self.enable_resize_mode()
         elif action == delete_action:
             self.deleteRequested.emit(self.note.id)
+        elif action in category_actions:
+            self.relocateRequested.emit(self.note.id, category_actions[action])
 
     def paintEvent(self, event):
         """Override to draw resize overlay"""

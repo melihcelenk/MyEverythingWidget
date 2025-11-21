@@ -282,7 +282,9 @@ class TabManager:
                         pixmap=pixmap,
                         on_delete=self._app_state.remove_note
                     )
+                    card.set_categories(self._app_state.categories, category.name)
                     card.resizeRequested.connect(lambda c_span, r_span, c=card: self._on_resize_card(c, c_span, r_span))
+                    card.relocateRequested.connect(self._on_relocate_note)
                     col_span = card.col_span
                     row_span = card.row_span
                     self._logger.debug(
@@ -342,10 +344,12 @@ class TabManager:
                 row, col, span, available
             )
             card = NoteCard(note, col_span=span)
+            card.set_categories(self._app_state.categories)
             card.copyRequested.connect(lambda note_id: None)
             card.deleteRequested.connect(self._app_state.remove_note)
             card.editRequested.connect(self._on_edit_note)
             card.resizeRequested.connect(lambda c_span, r_span, c=card: self._on_resize_card(c, c_span, r_span))
+            card.relocateRequested.connect(self._on_relocate_note)
             layout.addWidget(card, row, col, 1, span)
             col += span
             if col >= 3:
@@ -359,6 +363,16 @@ class TabManager:
             return
         # TODO: Implement note editing dialog
         self._logger.debug("Edit note requested: %s", note_id)
+
+    def _on_relocate_note(self, note_id: str, new_category: str):
+        """Handle note relocation to a new category"""
+        from dataclasses import replace
+        note = next((n for n in self._app_state.notes if n.id == note_id), None)
+        if note is None:
+            return
+        updated_note = replace(note, category=new_category)
+        self._app_state.update_note(updated_note)
+        self.refresh_all_tabs()
 
     def _on_resize_card(self, card, col_span: int, row_span: int):
         """Handle card resize request"""

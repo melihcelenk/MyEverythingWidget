@@ -15,6 +15,7 @@ class ImageCard(QWidget, ResizableMixin):
     # Signals
     deleteRequested = Signal(str)
     resizeRequested = Signal(int, int)  # col_span, row_span
+    relocateRequested = Signal(str, str)  # image_id, new_category
 
     # Base size for one grid cell
     CELL_WIDTH = 90
@@ -26,6 +27,8 @@ class ImageCard(QWidget, ResizableMixin):
         self._image_id = image_id
         self._pixmap = pixmap
         self._on_delete = on_delete
+        self._categories = []  # Available categories for relocation
+        self._current_category = ""
 
         # Calculate span based on aspect ratio
         calculator = ImageGridCalculator()
@@ -37,6 +40,11 @@ class ImageCard(QWidget, ResizableMixin):
         self.init_resizable(min_col=1, max_col=3, min_row=1, max_row=3)
 
         self._init_ui()
+
+    def set_categories(self, categories: list, current_category: str = ""):
+        """Set available categories for relocation"""
+        self._categories = categories
+        self._current_category = current_category
 
     @property
     def image_id(self) -> str:
@@ -94,16 +102,29 @@ class ImageCard(QWidget, ResizableMixin):
         self.customContextMenuRequested.connect(self._show_context_menu)
 
     def _show_context_menu(self, position):
-        """Show context menu with resize and delete options"""
+        """Show context menu with resize, relocate and delete options"""
         menu = QMenu(self)
 
         resize_action = menu.addAction("Resize")
         resize_action.triggered.connect(self._on_resize_clicked)
 
+        # Relocate submenu
+        relocate_menu = menu.addMenu("Relocate")
+        for cat in self._categories:
+            if cat.name != self._current_category and cat.name != "All":
+                action = relocate_menu.addAction(f"{cat.icon} {cat.name}")
+                action.triggered.connect(
+                    lambda checked, c=cat.name: self._on_relocate(c)
+                )
+
         delete_action = menu.addAction("Delete")
         delete_action.triggered.connect(self._on_delete_clicked)
 
         menu.exec(self.mapToGlobal(position))
+
+    def _on_relocate(self, new_category: str):
+        """Handle relocate action"""
+        self.relocateRequested.emit(self._image_id, new_category)
 
     def _on_resize_clicked(self):
         """Toggle resize mode"""
