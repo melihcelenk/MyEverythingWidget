@@ -56,9 +56,10 @@ class TestMainWindow:
         """Test adding a new category"""
         initial_count = main_window._tab_widget.count()
         
+        unique_id = str(uuid.uuid4())
         new_category = AppCategory(
-            id=str(uuid.uuid4()),
-            name="Test Category",
+            id=unique_id,
+            name=f"Test Category {unique_id[:8]}",
             icon="📁"
         )
         
