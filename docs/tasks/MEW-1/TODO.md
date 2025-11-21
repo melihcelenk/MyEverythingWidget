@@ -241,22 +241,31 @@ This document outlines the development tasks for MyEverythingWidget v1.0 MVP.
 ## 🔧 Phase 5.5: Note Widget Fixes (IN PROGRESS)
 
 ### Kritik Hatalar
-- [ ] Add a quick note satırı bazı sekmelerde aşağı kaymış - düzelt
-- [ ] App card'lar ile note input arasında çok fazla boşluk var - düzelt
-- [ ] Note'larda "TEXT" yazısı görünüyor - kaldır
-- [ ] Note boyutu içeriğe göre değişiyor - sabit boyut olmalı (2x1 veya 3x1)
+- [x] Add a quick note satırı bazı sekmelerde aşağı kaymış - düzelt
+- [x] App card'lar ile note input arasında çok fazla boşluk var - düzelt
+- [x] Note'larda "TEXT" yazısı görünüyor - kaldır
+- [x] Note boyutu içeriğe göre değişiyor - sabit boyut olmalı (2x1 veya 3x1)
+- [x] Notes sekmesi kaldırıldı (gereksiz)
+- [ ] Grid spacing - görseller arası çok boşluk var, düzgün oturmuyor
+- [ ] App card ile note arasında fazla boşluk var
 
 ### Özellik Düzeltmeleri
-- [ ] Notes ayrı sayfa olmayacak - normal sekmelerde grid üstüne eklenecek
-- [ ] Copy butonu küçük kare ikon olacak
-- [ ] Delete butonu note üzerinde olmayacak - sağ tık menüsünde olacak
-- [ ] Edit butonu sağ tık menüsünde olacak (yapılmış ama çalışmıyor - düzelt)
-- [ ] Not boyutu sabit: 2 veya 3 card genişliğinde
+- [x] Notes ayrı sayfa olmayacak - normal sekmelerde grid üstüne eklenecek
+- [x] Copy butonu küçük kare ikon olacak
+- [x] Delete butonu note üzerinde olmayacak - sağ tık menüsünde olacak
+- [x] Edit butonu sağ tık menüsünde olacak
+- [x] Not boyutu sabit: 2 veya 3 card genişliğinde
 
 ### Grid Kuralları
 - Note genişlik: 2x1 veya 3x1 (sabit)
 - Image genişlik: aspect ratio'ya göre (1x1, 1x2, 2x1, 2x2, 3x1, 3x2, vb.)
 - App card: 1x1 (sabit)
+
+### Performans Sorunları (KRİTİK)
+- [ ] **7GB RAM kullanımı** - Hedef: 100MB
+- [ ] **%8 CPU kullanımı** - Sekmeler arası geçiş çok yavaş
+- [ ] Debug logları veya memory leak olabilir
+- [ ] Tab switch optimize edilmeli
 
 ---
 

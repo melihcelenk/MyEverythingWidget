@@ -15,38 +15,48 @@ from PySide6.QtWidgets import (
     QMenu,
     QStyle,
 )
-from PySide6.QtGui import QIcon
+from PySide6.QtGui import QIcon, QPainter, QMouseEvent
 from PySide6.QtCore import Signal, Qt
 
 from window.models.note import Note
+from widgets.resizable_mixin import ResizableMixin
 
 
-class NoteCard(QFrame):
+class NoteCard(QFrame, ResizableMixin):
     """Widget representing a single note entry."""
 
     copyRequested = Signal(str)
     deleteRequested = Signal(str)
     editRequested = Signal(str)
+    resizeRequested = Signal(int, int)  # col_span, row_span
 
     # Grid cell size constants
     CELL_WIDTH = 90
     CELL_HEIGHT = 100
     SPACING = 4
 
-    def __init__(self, note: Note, col_span: int = 2, parent: QWidget | None = None):
+    def __init__(self, note: Note, col_span: int = 2, row_span: int = 1, parent: QWidget | None = None):
         super().__init__(parent)
         self.note = note
         self._col_span = col_span
+        self._row_span = row_span
         self._clipboard = QApplication.clipboard()
         self.setFrameShape(QFrame.Shape.StyledPanel)
         self.setFrameShadow(QFrame.Shadow.Raised)
         self.setObjectName("NoteCard")
 
-        # Set fixed size based on span (2 or 3 columns)
-        total_width = (self.CELL_WIDTH * col_span) + (self.SPACING * (col_span - 1))
-        self.setFixedSize(total_width, self.CELL_HEIGHT)
+        # Initialize resizable mixin
+        self.init_resizable(min_col=2, max_col=3, min_row=1, max_row=2)
 
+        # Set fixed size based on span
+        self._update_size()
         self._build_ui()
+
+    def _update_size(self):
+        """Update widget size based on current span"""
+        total_width = (self.CELL_WIDTH * self._col_span) + (self.SPACING * (self._col_span - 1))
+        total_height = (self.CELL_HEIGHT * self._row_span) + (self.SPACING * (self._row_span - 1))
+        self.setFixedSize(total_width, total_height)
 
     @property
     def col_span(self) -> int:
@@ -118,12 +128,54 @@ class NoteCard(QFrame):
     def contextMenuEvent(self, event):
         menu = QMenu(self)
         edit_action = menu.addAction("Edit")
+        resize_action = menu.addAction("Resize")
         delete_action = menu.addAction("Delete")
         action = menu.exec(event.globalPos())
         if action == edit_action:
             self.editRequested.emit(self.note.id)
+        elif action == resize_action:
+            if self.is_resize_enabled():
+                self.disable_resize_mode()
+            else:
+                self.enable_resize_mode()
         elif action == delete_action:
             self.deleteRequested.emit(self.note.id)
+
+    def paintEvent(self, event):
+        """Override to draw resize overlay"""
+        super().paintEvent(event)
+        if self._resize_enabled:
+            painter = QPainter(self)
+            self.paint_resize_overlay(painter)
+
+    def mousePressEvent(self, event: QMouseEvent):
+        """Handle mouse press"""
+        if self.handle_resize_mouse_press(event):
+            return
+        super().mousePressEvent(event)
+
+    def mouseMoveEvent(self, event: QMouseEvent):
+        """Handle mouse move"""
+        if self.handle_resize_mouse_move(event):
+            return
+        super().mouseMoveEvent(event)
+
+    def mouseReleaseEvent(self, event: QMouseEvent):
+        """Handle mouse release"""
+        if self.handle_resize_mouse_release(event):
+            return
+        super().mouseReleaseEvent(event)
+
+    @property
+    def row_span(self) -> int:
+        return self._row_span
+
+    def set_span(self, col_span: int, row_span: int):
+        """Set new span and update size"""
+        self._col_span = col_span
+        self._row_span = row_span
+        self._update_size()
+        self.update()
 
     def update_note(self, note: Note):
         self.note = note

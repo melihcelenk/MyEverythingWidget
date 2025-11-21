@@ -122,9 +122,6 @@ class TabManager:
             self._category_tabs[category.id] = tab_content
             self._category_grids[category.id] = grid_layout
 
-        note_tab = self._create_notes_tab()
-        self._tab_widget.addTab(note_tab, "Notes")
-
         add_tab_widget = QWidget()
         add_tab_widget.setFixedHeight(0)
         self._tab_widget.addTab(add_tab_widget, "+")
@@ -159,7 +156,11 @@ class TabManager:
         grid_layout = QGridLayout(grid_container)
         grid_layout.setSpacing(4)
         grid_layout.setContentsMargins(8, 4, 8, 8)
-        grid_layout.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+
+        # Set fixed column widths to prevent stretching
+        for i in range(3):
+            grid_layout.setColumnMinimumWidth(i, 90)
+            grid_layout.setColumnStretch(i, 0)
 
         content_layout.addWidget(grid_container)
 
@@ -193,8 +194,7 @@ class TabManager:
                 on_change_icon=lambda a=app: self._on_app_change_icon(a),
                 on_delete=lambda a=app: self._on_app_delete(a),
             )
-            layout.addWidget(app_card, row, col,
-                           alignment=Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+            layout.addWidget(app_card, row, col)
             col += 1
             if col >= 3:
                 col = 0
@@ -249,11 +249,26 @@ class TabManager:
             if category.name == 'All'
             else [note for note in self._app_state.notes if note.category == category.name]
         )
+
+        if not notes:
+            return
+
+        # Start on new row after apps
         row = start_row + (1 if start_col > 0 else 0)
         col = 0
-        span_options = [3, 2]
+
+        # Track which cells are occupied (for multi-row spans)
+        occupied = set()
+        span_options = [2, 3]
 
         for idx, note in enumerate(notes):
+            # Skip occupied cells
+            while (row, col) in occupied:
+                col += 1
+                if col >= 3:
+                    col = 0
+                    row += 1
+
             # Check if this is an image note
             if note.type == NoteType.IMAGE:
                 pixmap = QPixmap(note.content)
@@ -263,6 +278,7 @@ class TabManager:
                         pixmap=pixmap,
                         on_delete=self._app_state.remove_note
                     )
+                    card.resizeRequested.connect(lambda col, row, c=card: self._on_resize_card(c, col, row))
                     col_span = card.col_span
                     row_span = card.row_span
 
@@ -270,12 +286,23 @@ class TabManager:
                     if col + col_span > 3:
                         row += 1
                         col = 0
+                        # Skip occupied cells again
+                        while (row, col) in occupied:
+                            col += 1
+                            if col >= 3:
+                                col = 0
+                                row += 1
+
+                    # Mark cells as occupied for multi-row spans
+                    for r in range(row, row + row_span):
+                        for c in range(col, col + col_span):
+                            occupied.add((r, c))
 
                     layout.addWidget(card, row, col, row_span, col_span)
                     col += col_span
                     if col >= 3:
-                        row += row_span
                         col = 0
+                        row += 1
                     continue
 
             # Text note - use NoteCard
@@ -283,10 +310,18 @@ class TabManager:
             if col + span > 3:
                 row += 1
                 col = 0
+                # Skip occupied cells
+                while (row, col) in occupied:
+                    col += 1
+                    if col >= 3:
+                        col = 0
+                        row += 1
+
             card = NoteCard(note, col_span=span)
             card.copyRequested.connect(lambda note_id: None)
             card.deleteRequested.connect(self._app_state.remove_note)
             card.editRequested.connect(self._on_edit_note)
+            card.resizeRequested.connect(lambda col, row, c=card: self._on_resize_card(c, col, row))
             layout.addWidget(card, row, col, 1, span)
             col += span
             if col >= 3:
@@ -300,6 +335,17 @@ class TabManager:
             return
         # TODO: Implement note editing dialog
         self._logger.debug("Edit note requested: %s", note_id)
+
+    def _on_resize_card(self, card, col_span: int, row_span: int):
+        """Handle card resize request"""
+        self._logger.debug("Resize card: col=%d, row=%d", col_span, row_span)
+
+        # Update the card's size
+        card.set_span(col_span, row_span)
+        card.disable_resize_mode()
+
+        # Refresh the grid to update layout
+        # TODO: Update note/image span in app_state for persistence
 
     def refresh_notes_tab(self):
         """Refresh note cards in all category tabs"""
