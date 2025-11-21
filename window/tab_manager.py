@@ -278,9 +278,13 @@ class TabManager:
                         pixmap=pixmap,
                         on_delete=self._app_state.remove_note
                     )
-                    card.resizeRequested.connect(lambda col, row, c=card: self._on_resize_card(c, col, row))
+                    card.resizeRequested.connect(lambda c_span, r_span, c=card: self._on_resize_card(c, c_span, r_span))
                     col_span = card.col_span
                     row_span = card.row_span
+                    self._logger.debug(
+                        "Placing image: row=%d, col=%d, col_span=%d, row_span=%d",
+                        row, col, col_span, row_span
+                    )
 
                     # Check if fits in current row
                     if col + col_span > 3:
@@ -302,36 +306,42 @@ class TabManager:
                     col += col_span
                     if col >= 3:
                         col = 0
-                        row += 1
+                        row += row_span  # Move past all rows occupied by image
                     continue
 
             # Text note - use NoteCard
-            # Calculate available space
-            available = 3 - col
-
-            # Choose span based on available space
             preferred_span = span_options[idx % len(span_options)]
-            if preferred_span <= available:
-                span = preferred_span
-            elif available >= 2:
-                span = 2
-            else:
-                # Not enough space, wrap to next row
-                row += 1
-                col = 0
-                # Skip occupied cells
-                while (row, col) in occupied:
-                    col += 1
-                    if col >= 3:
-                        col = 0
-                        row += 1
-                span = preferred_span
 
+            # Find a position where the note fits without overflow
+            while True:
+                available = 3 - col
+
+                if preferred_span <= available:
+                    span = preferred_span
+                    break
+                elif available >= 2:
+                    span = 2
+                    break
+                else:
+                    # Not enough space, move to next row
+                    row += 1
+                    col = 0
+                    # Skip occupied cells
+                    while (row, col) in occupied:
+                        col += 1
+                        if col >= 3:
+                            col = 0
+                            row += 1
+
+            self._logger.debug(
+                "Placing note: row=%d, col=%d, span=%d, available=%d",
+                row, col, span, available
+            )
             card = NoteCard(note, col_span=span)
             card.copyRequested.connect(lambda note_id: None)
             card.deleteRequested.connect(self._app_state.remove_note)
             card.editRequested.connect(self._on_edit_note)
-            card.resizeRequested.connect(lambda col, row, c=card: self._on_resize_card(c, col, row))
+            card.resizeRequested.connect(lambda c_span, r_span, c=card: self._on_resize_card(c, c_span, r_span))
             layout.addWidget(card, row, col, 1, span)
             col += span
             if col >= 3:

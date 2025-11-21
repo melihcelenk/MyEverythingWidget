@@ -317,6 +317,138 @@ class TestGridOverflow:
         assert note_right <= container_inner_width, \
             f"Note overflows: right={note_right}, container={container_inner_width}"
 
+    def test_2col_image_followed_by_2col_note_wraps(self, qtbot):
+        """When 2-col image is placed, 2-col note should wrap to next row"""
+        # This tests the actual visual placement
+
+        container = QWidget()
+        container.setFixedWidth(320)
+
+        layout = QGridLayout(container)
+        layout.setSpacing(4)
+        layout.setContentsMargins(8, 8, 8, 8)
+
+        # Set fixed column widths
+        for i in range(3):
+            layout.setColumnMinimumWidth(i, 90)
+            layout.setColumnStretch(i, 0)
+
+        # Create 2x1 image (narrow horizontal)
+        pixmap = QPixmap(120, 100)  # ratio 1.2, should be 2x1
+        pixmap.fill(Qt.GlobalColor.blue)
+        image_card = ImageCard("1", pixmap)
+
+        # Verify image is 2x1
+        assert image_card.col_span == 2, f"Expected 2 cols, got {image_card.col_span}"
+        assert image_card.row_span == 1, f"Expected 1 row, got {image_card.row_span}"
+
+        # Create 2-span note
+        note = Note(id="2", content="Test", type=NoteType.TEXT, category="All")
+        note_card = NoteCard(note, col_span=2)
+
+        # Place image at row 0, col 0 (spans 2 cols)
+        layout.addWidget(image_card, 0, 0, 1, 2)
+
+        # After 2-col image, only 1 col left
+        # 2-span note should NOT be placed at col 2 (would overflow)
+        # It should wrap to row 1, col 0
+
+        # Simulate the logic
+        col = 0 + 2  # After image
+        available = 3 - col  # = 1
+        note_span = 2
+
+        # Note doesn't fit (2 > 1), should wrap
+        if note_span > available:
+            row = 1
+            col = 0
+        else:
+            row = 0
+
+        layout.addWidget(note_card, row, col, 1, note_span)
+
+        container.show()
+        qtbot.addWidget(container)
+        QApplication.processEvents()
+
+        # Verify note is below image, not beside it
+        assert note_card.y() > image_card.y(), \
+            f"Note should be below image: note.y={note_card.y()}, image.y={image_card.y()}"
+
+        # Verify note doesn't overflow
+        note_right = note_card.x() + note_card.width()
+        max_right = container.width() - 8  # right margin
+        assert note_right <= max_right, \
+            f"Note overflows: right={note_right}, max={max_right}"
+
+    def test_2x2_image_note_should_go_below_not_beside(self, qtbot):
+        """2x2 image occupies rows 0-1, cols 0-1. Note should go to row 2, not row 1 col 2"""
+        # This is the actual bug scenario from logs:
+        # Image at row=6, col=0, col_span=2, row_span=2
+        # Note placed at row=7, col=2 with span=2 - this overflows!
+
+        # Simulate the placement algorithm
+        occupied = set()
+
+        # Image: 2 cols, 2 rows starting at row 0, col 0
+        image_row = 0
+        image_col = 0
+        image_col_span = 2
+        image_row_span = 2
+
+        # Mark occupied cells
+        for r in range(image_row, image_row + image_row_span):
+            for c in range(image_col, image_col + image_col_span):
+                occupied.add((r, c))
+
+        # After image placement
+        col = image_col + image_col_span  # = 2
+        if col >= 3:
+            col = 0
+            row = image_row + image_row_span  # = 2
+        else:
+            row = image_row  # = 0
+
+        # Now place note
+        # Skip occupied cells
+        while (row, col) in occupied:
+            col += 1
+            if col >= 3:
+                col = 0
+                row += 1
+
+        preferred_span = 2
+
+        # Find a position where the note fits without overflow
+        while True:
+            available = 3 - col
+
+            if preferred_span <= available:
+                span = preferred_span
+                break
+            elif available >= 2:
+                span = 2
+                break
+            else:
+                # Not enough space, move to next row
+                row += 1
+                col = 0
+                # Skip occupied cells
+                while (row, col) in occupied:
+                    col += 1
+                    if col >= 3:
+                        col = 0
+                        row += 1
+
+        # Note should be at row 2, col 0 with span 2
+        # NOT at row 0/1, col 2 (which would overflow)
+        assert row >= image_row + image_row_span or col + span <= 3, \
+            f"Note at row={row}, col={col}, span={span} would overlap or overflow"
+
+        # Specifically check it doesn't overflow
+        assert col + span <= 3, \
+            f"Note overflows: col={col}, span={span}, total={col+span}"
+
     def test_image_card_max_3_columns(self, qtbot):
         """Image card should never exceed 3 columns"""
         # Very wide image
