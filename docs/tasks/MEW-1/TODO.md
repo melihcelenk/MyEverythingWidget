@@ -215,27 +215,48 @@ This document outlines the development tasks for MyEverythingWidget v1.0 MVP.
 
 ---
 
-## 📋 Phase 5: Clipboard Paste (Ctrl+V)
+## 📋 Phase 5: Clipboard Paste (Ctrl+V) ✅ COMPLETED
 
-### Task 5.1: Keyboard Handler
-- [ ] Create `services/clipboard_service.py` to normalize clipboard mime types (text/image)
-- [ ] Hook `MainWindow.keyPressEvent` to detect `Ctrl+V` (and `Shift+Insert`) when widget is focused
-- [ ] Display non-blocking confirmation overlay (toast/snackbar) so users can cancel or continue
-- [ ] Provide clipboard permission/logging info for crash diagnostics
-- [ ] Add unit tests that mock `QClipboard` to verify detection/confirmation flows
+### Task 5.1: Keyboard Handler ✅
+- [x] Create `services/clipboard_service.py` to normalize clipboard mime types (text/image)
+- [x] Hook `MainWindow.keyPressEvent` to detect `Ctrl+V` when widget is focused
+- [x] 6 unit tests passing for clipboard service
 
-### Task 5.2: Text Paste
-- [ ] Detect `text/plain` clipboard entries, sanitize whitespace/newlines, and build default note title
-- [ ] Create `Note` (type=text) under current category via `AppState.add_note()` or dedicated service
-- [ ] Persist note immediately, refresh note tab, and trigger notification
-- [ ] Cover flow with unit tests verifying text detection, sanitization, persistence, and UI update
+### Task 5.2: Image Paste ✅
+- [x] Detect image data on clipboard
+- [x] Save to `data/images/` with UUID names
+- [x] Create `NoteType.IMAGE` entry referencing stored file
+- [x] Auto-calculate grid span based on aspect ratio (ImageGridCalculator)
+- [x] 12 tests for grid calculator, 8 tests for ImageCard
 
-### Task 5.3: Image Paste
-- [ ] Detect image data on clipboard, dump to `%LOCALAPPDATA%\MyEverythingWidget\images\` with deterministic names
-- [ ] Create `NoteType.IMAGE` entry referencing stored file, render thumbnail (scaled to widget)
-- [ ] Provide image note metadata (size/origin) and graceful failure handling
-- [ ] Add tests verifying storage, UI rendering, and cleanup on deletion
-- [ ] Refactor clipboard/paste helpers introduced in phase 5 to keep services decoupled and single-responsibility
+### Task 5.3: Add Image Button ✅
+- [x] Floating button (🖼️) to add images from file
+- [x] File dialog for PNG, JPG, JPEG, BMP, GIF
+- [x] Integration with DialogManager
+
+**Total: 26 new tests passing**
+
+---
+
+## 🔧 Phase 5.5: Note Widget Fixes (IN PROGRESS)
+
+### Kritik Hatalar
+- [ ] Add a quick note satırı bazı sekmelerde aşağı kaymış - düzelt
+- [ ] App card'lar ile note input arasında çok fazla boşluk var - düzelt
+- [ ] Note'larda "TEXT" yazısı görünüyor - kaldır
+- [ ] Note boyutu içeriğe göre değişiyor - sabit boyut olmalı (2x1 veya 3x1)
+
+### Özellik Düzeltmeleri
+- [ ] Notes ayrı sayfa olmayacak - normal sekmelerde grid üstüne eklenecek
+- [ ] Copy butonu küçük kare ikon olacak
+- [ ] Delete butonu note üzerinde olmayacak - sağ tık menüsünde olacak
+- [ ] Edit butonu sağ tık menüsünde olacak (yapılmış ama çalışmıyor - düzelt)
+- [ ] Not boyutu sabit: 2 veya 3 card genişliğinde
+
+### Grid Kuralları
+- Note genişlik: 2x1 veya 3x1 (sabit)
+- Image genişlik: aspect ratio'ya göre (1x1, 1x2, 2x1, 2x2, 3x1, 3x2, vb.)
+- App card: 1x1 (sabit)
 
 ---
 

@@ -152,13 +152,13 @@ class TabManager:
 
         content_layout = QVBoxLayout(content_widget)
         content_layout.setContentsMargins(0, 0, 0, 0)
-        content_layout.setSpacing(6)
+        content_layout.setSpacing(0)
         content_layout.addWidget(self._create_note_entry(category))
 
         grid_container = QWidget()
         grid_layout = QGridLayout(grid_container)
         grid_layout.setSpacing(4)
-        grid_layout.setContentsMargins(10, 10, 10, 10)
+        grid_layout.setContentsMargins(8, 4, 8, 8)
         grid_layout.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
 
         content_layout.addWidget(grid_container)
@@ -283,15 +283,30 @@ class TabManager:
             if col + span > 3:
                 row += 1
                 col = 0
-            card = NoteCard(note)
+            card = NoteCard(note, col_span=span)
             card.copyRequested.connect(lambda note_id: None)
             card.deleteRequested.connect(self._app_state.remove_note)
-            card.editRequested.connect(lambda note_id: None)
+            card.editRequested.connect(self._on_edit_note)
             layout.addWidget(card, row, col, 1, span)
             col += span
             if col >= 3:
                 row += 1
                 col = 0
+
+    def _on_edit_note(self, note_id: str):
+        """Handle edit note request"""
+        note = next((n for n in self._app_state.notes if n.id == note_id), None)
+        if note is None:
+            return
+        # TODO: Implement note editing dialog
+        self._logger.debug("Edit note requested: %s", note_id)
+
+    def refresh_notes_tab(self):
+        """Refresh note cards in all category tabs"""
+        for category in self._app_state.categories:
+            if category.id in self._category_grids:
+                grid_layout = self._category_grids[category.id]
+                self._populate_category_grid(category, grid_layout)
 
     def _create_notes_tab(self):
         """Create the notes tab content."""
@@ -299,6 +314,7 @@ class TabManager:
         container_layout = QVBoxLayout(container)
         container_layout.setContentsMargins(0, 0, 0, 0)
         container_layout.setSpacing(4)
+        return container
 
     def _on_tab_clicked(self, index: int):
         """Handle tab bar click"""
