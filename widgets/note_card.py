@@ -20,9 +20,10 @@ from PySide6.QtCore import Signal, Qt
 
 from window.models.note import Note
 from widgets.resizable_mixin import ResizableMixin
+from widgets.draggable_mixin import DraggableMixin
 
 
-class NoteCard(QFrame, ResizableMixin):
+class NoteCard(QFrame, ResizableMixin, DraggableMixin):
     """Widget representing a single note entry."""
 
     copyRequested = Signal(str)
@@ -30,6 +31,7 @@ class NoteCard(QFrame, ResizableMixin):
     editRequested = Signal(str)
     resizeRequested = Signal(int, int)  # col_span, row_span
     relocateRequested = Signal(str, str)  # note_id, new_category
+    itemDropped = Signal(str, int)  # item_id, target_index
 
     # Grid cell size constants
     CELL_WIDTH = 90
@@ -49,6 +51,9 @@ class NoteCard(QFrame, ResizableMixin):
 
         # Initialize resizable mixin
         self.init_resizable(min_col=2, max_col=3, min_row=1, max_row=2)
+
+        # Initialize draggable mixin
+        self.init_draggable(note.id, "note")
 
         # Set fixed size based on span
         self._update_size()
@@ -170,11 +175,14 @@ class NoteCard(QFrame, ResizableMixin):
         """Handle mouse press"""
         if self.handle_resize_mouse_press(event):
             return
+        self.handle_drag_mouse_press(event)
         super().mousePressEvent(event)
 
     def mouseMoveEvent(self, event: QMouseEvent):
         """Handle mouse move"""
         if self.handle_resize_mouse_move(event):
+            return
+        if self.handle_drag_mouse_move(event, self):
             return
         super().mouseMoveEvent(event)
 
@@ -183,6 +191,21 @@ class NoteCard(QFrame, ResizableMixin):
         if self.handle_resize_mouse_release(event):
             return
         super().mouseReleaseEvent(event)
+
+    def dragEnterEvent(self, event):
+        """Handle drag enter"""
+        self.handle_drag_enter(event)
+
+    def dropEvent(self, event):
+        """Handle drop"""
+        parent = self.parent()
+        if parent and hasattr(parent, 'layout'):
+            layout = parent.layout()
+            if layout:
+                index = layout.indexOf(self)
+                item_type, item_id = self.handle_drop(event, index)
+                if item_type and item_id:
+                    self.itemDropped.emit(item_id, index)
 
     @property
     def row_span(self) -> int:

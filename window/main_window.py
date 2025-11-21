@@ -155,7 +155,7 @@ class MainWindow(QMainWindow):
     def _on_add_image_clicked(self):
         """Handle add image button click"""
         current_index = self._tab_widget.currentIndex()
-        category_name = "All"
+        category_name = self._app_state.categories[0].name if self._app_state.categories else "Web"
         if 0 <= current_index < len(self._app_state.categories):
             category_name = self._app_state.categories[current_index].name
         self._dialog_manager.show_add_image_dialog(category_name)
@@ -226,7 +226,7 @@ class MainWindow(QMainWindow):
 
         # Get current category
         current_index = self._tab_widget.currentIndex()
-        category_name = "All"
+        category_name = self._app_state.categories[0].name if self._app_state.categories else "Web"
         if 0 <= current_index < len(self._app_state.categories):
             category_name = self._app_state.categories[current_index].name
 

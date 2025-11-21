@@ -9,11 +9,15 @@ from PySide6.QtCore import Qt, QSize, QTimer, Signal
 from PySide6.QtGui import QPixmap, QIcon, QFont, QContextMenuEvent, QMouseEvent, QEnterEvent
 from pathlib import Path
 from models.app_shortcut import AppShortcut, LaunchType
+from widgets.draggable_mixin import DraggableMixin
 
 
-class AppCard(QWidget):
+class AppCard(QWidget, DraggableMixin):
     """Application card widget"""
-    
+
+    # Signals for drag-drop
+    itemDropped = Signal(str, int)
+
     def __init__(self, app: AppShortcut, on_tap, on_edit=None,
                  on_rename=None, on_change_icon=None, on_delete=None, parent=None):
         super().__init__(parent)
@@ -23,10 +27,13 @@ class AppCard(QWidget):
         self._on_rename = on_rename
         self._on_change_icon = on_change_icon
         self._on_delete = on_delete
-        
+
         self.setFixedSize(90, 100)
         self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
-        
+
+        # Initialize drag-drop
+        self.init_draggable(app.id, "app")
+
         self._init_ui()
     
     def _init_ui(self):
@@ -165,6 +172,7 @@ class AppCard(QWidget):
         """Handle mouse press with visual feedback"""
         if event.button() == Qt.MouseButton.LeftButton:
             self._is_pressed = True
+            self.handle_drag_mouse_press(event)
             # Visual feedback: darker background
             self.setStyleSheet("""
                 AppCard {
@@ -173,17 +181,27 @@ class AppCard(QWidget):
                     border-radius: 8px;
                 }
             """)
-            # Call callback after a short delay for visual feedback
-            from PySide6.QtCore import QTimer
-            QTimer.singleShot(100, lambda: self._execute_tap())
+            event.accept()  # Prevent event from propagating to parent (window)
         elif event.button() == Qt.MouseButton.RightButton:
             self._show_context_menu(event.globalPos())
+            event.accept()
+
+    def mouseMoveEvent(self, event: QMouseEvent):
+        """Handle mouse move for drag detection"""
+        if self.handle_drag_mouse_move(event, self):
+            self._is_pressed = False
+            event.accept()
+            return
+        event.accept()  # Always accept to prevent window dragging
     
     def mouseReleaseEvent(self, event: QMouseEvent):
         """Handle mouse release - reset pressed state"""
         super().mouseReleaseEvent(event)
         if self._is_pressed:
             self._is_pressed = False
+            # Execute tap on release (not drag)
+            if event.button() == Qt.MouseButton.LeftButton:
+                self._execute_tap()
             # Reset to hover state if mouse is still over
             if self.rect().contains(event.pos()):
                 self.setStyleSheet("""
@@ -201,6 +219,22 @@ class AppCard(QWidget):
                         border-radius: 8px;
                     }
                 """)
+
+    def dragEnterEvent(self, event):
+        """Handle drag enter"""
+        self.handle_drag_enter(event)
+
+    def dropEvent(self, event):
+        """Handle drop"""
+        # Get grid position from parent
+        parent = self.parent()
+        if parent and hasattr(parent, 'layout'):
+            layout = parent.layout()
+            if layout:
+                index = layout.indexOf(self)
+                item_type, item_id = self.handle_drop(event, index)
+                if item_type and item_id:
+                    self.itemDropped.emit(item_id, index)
     
     def _execute_tap(self):
         """Execute tap callback"""

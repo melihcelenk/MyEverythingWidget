@@ -181,10 +181,10 @@ class TabManager:
                 child.widget().deleteLater()
 
         # Filter apps by category
-        if category.name == 'All':
-            apps = self._app_state.apps
-        else:
-            apps = [app for app in self._app_state.apps if app.category == category.name]
+        apps = [app for app in self._app_state.apps if app.category == category.name]
+
+        # Sort apps by order
+        apps = sorted(apps, key=lambda a: a.order)
 
         # Add app cards in grid (3 columns)
         row = 0
@@ -198,6 +198,7 @@ class TabManager:
                 on_change_icon=lambda a=app: self._on_app_change_icon(a),
                 on_delete=lambda a=app: self._on_app_delete(a),
             )
+            app_card.itemDropped.connect(self._on_item_dropped)
             layout.addWidget(app_card, row, col)
             col += 1
             if col >= 3:
@@ -248,14 +249,13 @@ class TabManager:
         line_edit.clear()
 
     def _add_note_cards_to_layout(self, category, layout, start_row, start_col):
-        notes = (
-            self._app_state.notes
-            if category.name == 'All'
-            else [note for note in self._app_state.notes if note.category == category.name]
-        )
+        notes = [note for note in self._app_state.notes if note.category == category.name]
 
         if not notes:
             return
+
+        # Sort notes by order
+        notes = sorted(notes, key=lambda n: n.order)
 
         # Start on new row after apps
         row = start_row + (1 if start_col > 0 else 0)
@@ -285,6 +285,7 @@ class TabManager:
                     card.set_categories(self._app_state.categories, category.name)
                     card.resizeRequested.connect(lambda c_span, r_span, c=card: self._on_resize_card(c, c_span, r_span))
                     card.relocateRequested.connect(self._on_relocate_note)
+                    card.itemDropped.connect(self._on_item_dropped)
                     col_span = card.col_span
                     row_span = card.row_span
                     self._logger.debug(
@@ -350,6 +351,7 @@ class TabManager:
             card.editRequested.connect(self._on_edit_note)
             card.resizeRequested.connect(lambda c_span, r_span, c=card: self._on_resize_card(c, c_span, r_span))
             card.relocateRequested.connect(self._on_relocate_note)
+            card.itemDropped.connect(self._on_item_dropped)
             layout.addWidget(card, row, col, 1, span)
             col += span
             if col >= 3:
@@ -373,6 +375,78 @@ class TabManager:
         updated_note = replace(note, category=new_category)
         self._app_state.update_note(updated_note)
         self.refresh_all_tabs()
+
+    def _on_item_dropped(self, item_id: str, target_index: int):
+        """Handle item drop for reordering"""
+        self._logger.info("Item dropped: id=%s, target_index=%d", item_id, target_index)
+
+        # Find the item (could be app, note, or image)
+        app = next((a for a in self._app_state.apps if a.id == item_id), None)
+        if app:
+            self._reorder_app(app, target_index)
+            return
+
+        note = next((n for n in self._app_state.notes if n.id == item_id), None)
+        if note:
+            self._reorder_note(note, target_index)
+            return
+
+    def _reorder_app(self, app, target_index: int):
+        """Reorder app to target position"""
+        # Get current category apps sorted by order
+        category_apps = sorted(
+            [a for a in self._app_state.apps if a.category == app.category],
+            key=lambda a: a.order
+        )
+
+        # Find current index of the dragged app
+        current_index = next(
+            (i for i, a in enumerate(category_apps) if a.id == app.id), 0
+        )
+
+        # Remove the dragged app from list
+        category_apps.pop(current_index)
+
+        # Insert at target position
+        target_index = min(target_index, len(category_apps))
+        category_apps.insert(target_index, app)
+
+        # Update order values only if changed
+        for i, a in enumerate(category_apps):
+            if a.order != i:
+                a.order = i
+
+        self.refresh_notes_tab()
+
+    def _reorder_note(self, note, target_index: int):
+        """Reorder note to target position"""
+        from dataclasses import replace
+
+        # Get current category notes sorted by order
+        category_notes = sorted(
+            [n for n in self._app_state.notes if n.category == note.category],
+            key=lambda n: n.order
+        )
+
+        # Find current index
+        current_index = next(
+            (i for i, n in enumerate(category_notes) if n.id == note.id), 0
+        )
+
+        # Remove from current position
+        category_notes.pop(current_index)
+
+        # Insert at target position
+        target_index = min(target_index, len(category_notes))
+        category_notes.insert(target_index, note)
+
+        # Update order values
+        for i, n in enumerate(category_notes):
+            if n.order != i:
+                updated_note = replace(n, order=i)
+                self._app_state.update_note(updated_note)
+
+        self.refresh_notes_tab()
 
     def _on_resize_card(self, card, col_span: int, row_span: int):
         """Handle card resize request"""
@@ -462,8 +536,6 @@ class TabManager:
             return
 
         category = self._app_state.categories[index]
-        if category.name == 'All':
-            return
 
         menu = QMenu()
         rename_action = menu.addAction("Rename")

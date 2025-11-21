@@ -7,15 +7,17 @@ from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPixmap, QPainter, QMouseEvent
 from services.image_grid_calculator import ImageGridCalculator
 from widgets.resizable_mixin import ResizableMixin
+from widgets.draggable_mixin import DraggableMixin
 
 
-class ImageCard(QWidget, ResizableMixin):
+class ImageCard(QWidget, ResizableMixin, DraggableMixin):
     """Widget to display an image in the grid"""
 
     # Signals
     deleteRequested = Signal(str)
     resizeRequested = Signal(int, int)  # col_span, row_span
     relocateRequested = Signal(str, str)  # image_id, new_category
+    itemDropped = Signal(str, int)  # item_id, target_index
 
     # Base size for one grid cell
     CELL_WIDTH = 90
@@ -38,6 +40,9 @@ class ImageCard(QWidget, ResizableMixin):
 
         # Initialize resizable mixin
         self.init_resizable(min_col=1, max_col=3, min_row=1, max_row=3)
+
+        # Initialize draggable mixin
+        self.init_draggable(image_id, "image")
 
         self._init_ui()
 
@@ -150,11 +155,14 @@ class ImageCard(QWidget, ResizableMixin):
         """Handle mouse press"""
         if self.handle_resize_mouse_press(event):
             return
+        self.handle_drag_mouse_press(event)
         super().mousePressEvent(event)
 
     def mouseMoveEvent(self, event: QMouseEvent):
         """Handle mouse move"""
         if self.handle_resize_mouse_move(event):
+            return
+        if self.handle_drag_mouse_move(event, self):
             return
         super().mouseMoveEvent(event)
 
@@ -163,6 +171,21 @@ class ImageCard(QWidget, ResizableMixin):
         if self.handle_resize_mouse_release(event):
             return
         super().mouseReleaseEvent(event)
+
+    def dragEnterEvent(self, event):
+        """Handle drag enter"""
+        self.handle_drag_enter(event)
+
+    def dropEvent(self, event):
+        """Handle drop"""
+        parent = self.parent()
+        if parent and hasattr(parent, 'layout'):
+            layout = parent.layout()
+            if layout:
+                index = layout.indexOf(self)
+                item_type, item_id = self.handle_drop(event, index)
+                if item_type and item_id:
+                    self.itemDropped.emit(item_id, index)
 
     def set_span(self, col_span: int, row_span: int):
         """Set new span and update size"""

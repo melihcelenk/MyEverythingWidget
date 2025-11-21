@@ -48,19 +48,18 @@ class AppState(QObject):
 
     @property
     def filtered_apps(self) -> List[AppShortcut]:
-        if self._selected_category is None or self._selected_category.name == 'All':
+        if self._selected_category is None:
             return self.apps
         return [app for app in self._apps if app.category == self._selected_category.name]
 
     @property
     def filtered_notes(self) -> List[Note]:
-        if self._selected_category is None or self._selected_category.name == 'All':
+        if self._selected_category is None:
             return self.notes
         return [note for note in self._notes if note.category == self._selected_category.name]
 
     def _load_initial_data(self):
         self._categories = [
-            AppCategory(id='1', name='All', icon='📱'),
             AppCategory(id='2', name='Web', icon='🌐'),
             AppCategory(id='3', name='Dev', icon='💻'),
             AppCategory(id='4', name='Media', icon='🎵'),
@@ -98,7 +97,7 @@ class AppState(QObject):
                 id='note-1',
                 content='Welcome to My Everything Widget notes',
                 type=NoteType.TEXT,
-                category='All',
+                category='Web',
             )
         ]
 
@@ -130,10 +129,7 @@ class AppState(QObject):
         except KeyError:
             return False
 
-        self._selected_category = next(
-            (cat for cat in self._categories if cat.name == 'All'),
-            self._categories[0],
-        )
+        self._selected_category = self._categories[0] if self._categories else None
 
         return True
 
@@ -195,11 +191,10 @@ class AppState(QObject):
         if category is None:
             return
 
-        if category.name == 'All':
-            raise ValueError("Cannot remove 'All' category")
-
         self._categories = [c for c in self._categories if c.id != category_id]
 
+        # Move apps to first available category
+        first_category = self._categories[0].name if self._categories else "Web"
         for index, app in enumerate(self._apps):
             if app.category == category.name:
                 self._apps[index] = AppShortcut(
@@ -207,12 +202,12 @@ class AppState(QObject):
                     name=app.name,
                     icon_path=app.icon_path,
                     target=app.target,
-                    category='All',
+                    category=first_category,
                     type=app.type,
                 )
 
         if self._selected_category and self._selected_category.id == category_id:
-            self._selected_category = next((c for c in self._categories if c.name == 'All'), None)
+            self._selected_category = self._categories[0] if self._categories else None
 
         self._persist_state()
 

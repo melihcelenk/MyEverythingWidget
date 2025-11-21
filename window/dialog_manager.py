@@ -91,7 +91,7 @@ class DialogManager:
             self._parent,
             "Delete Category",
             f"Are you sure you want to delete category '{category.name}'?\n\n"
-            "Apps in this category will be moved to 'All' category.",
+            "Apps in this category will be moved to the first category.",
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
             QMessageBox.StandardButton.No
         )

@@ -28,6 +28,7 @@ class Note:
     category: str
     created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    order: int = field(default=0)
 
     def to_dict(self) -> Dict[str, Any]:
         data = asdict(self)
@@ -47,5 +48,6 @@ class Note:
             category=data["category"],
             created_at=created_at,
             updated_at=updated_at,
+            order=data.get("order", 0),
         )
 
