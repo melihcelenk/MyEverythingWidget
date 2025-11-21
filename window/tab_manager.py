@@ -11,6 +11,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 from widgets.draggable_tab_bar import DraggableTabBar
+from services.image_cache_service import ImageCacheService
 from widgets.app_card import AppCard
 from widgets.note_card import NoteCard
 from widgets.image_card import ImageCard
@@ -76,6 +77,8 @@ class TabManager:
         self._category_grids = {}
         self._note_inputs = {}
         self._tab_widget = None
+        self._image_cache = ImageCacheService()
+        self._dirty_tabs = set()  # Tabs that need refresh when activated
 
     def create_tab_widget(self) -> QTabWidget:
         """Create and configure tab widget"""
@@ -94,6 +97,7 @@ class TabManager:
         tab_bar.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         tab_bar.customContextMenuRequested.connect(self._on_context_menu)
         tab_bar.tabBarClicked.connect(self._on_tab_clicked)
+        self._tab_widget.currentChanged.connect(self._on_tab_changed)
 
         # Create initial tabs
         self.update_tabs()
@@ -271,8 +275,8 @@ class TabManager:
 
             # Check if this is an image note
             if note.type == NoteType.IMAGE:
-                pixmap = QPixmap(note.content)
-                if not pixmap.isNull():
+                pixmap = self._image_cache.get(note.content)
+                if pixmap is not None:
                     card = ImageCard(
                         image_id=note.id,
                         pixmap=pixmap,
@@ -368,11 +372,30 @@ class TabManager:
         # TODO: Update note/image span in app_state for persistence
 
     def refresh_notes_tab(self):
-        """Refresh note cards in all category tabs"""
+        """Refresh note cards in active category tab only"""
+        # Only refresh the currently active tab for performance
+        current_index = self._tab_widget.currentIndex()
+        if current_index < 0 or current_index >= len(self._app_state.categories):
+            return
+
+        category = self._app_state.categories[current_index]
+        if category.id in self._category_grids:
+            grid_layout = self._category_grids[category.id]
+            self._populate_category_grid(category, grid_layout)
+
+        # Mark other tabs as needing refresh
+        self._dirty_tabs = set(
+            cat.id for cat in self._app_state.categories
+            if cat.id != category.id
+        )
+
+    def refresh_all_tabs(self):
+        """Force refresh all category tabs"""
         for category in self._app_state.categories:
             if category.id in self._category_grids:
                 grid_layout = self._category_grids[category.id]
                 self._populate_category_grid(category, grid_layout)
+        self._dirty_tabs = set()
 
     def _create_notes_tab(self):
         """Create the notes tab content."""
@@ -381,6 +404,19 @@ class TabManager:
         container_layout.setContentsMargins(0, 0, 0, 0)
         container_layout.setSpacing(4)
         return container
+
+    def _on_tab_changed(self, index: int):
+        """Handle tab change - refresh if tab was dirty"""
+        if index < 0 or index >= len(self._app_state.categories):
+            return
+
+        category = self._app_state.categories[index]
+        if category.id in self._dirty_tabs:
+            self._dirty_tabs.discard(category.id)
+            if category.id in self._category_grids:
+                grid_layout = self._category_grids[category.id]
+                self._populate_category_grid(category, grid_layout)
+                self._logger.debug("Refreshed dirty tab: %s", category.name)
 
     def _on_tab_clicked(self, index: int):
         """Handle tab bar click"""
