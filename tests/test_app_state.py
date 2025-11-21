@@ -70,14 +70,15 @@ class TestAppState:
         assert len(app_state.apps) == initial_count - 1
         assert not any(app.id == app_id for app in app_state.apps)
 
-    def test_filtered_apps_all_category(self):
-        """Test filtered apps for All category"""
+    def test_filtered_apps_web_category(self):
+        """Test filtered apps for Web category (first category)"""
         app_state = AppState()
-        all_category = app_state.categories[0]
-        app_state.select_category(all_category)
+        web_category = app_state.categories[0]
+        app_state.select_category(web_category)
 
         filtered = app_state.filtered_apps
-        assert len(filtered) == len(app_state.apps)
+        # Should only return apps in Web category
+        assert all(app.category == 'Web' for app in filtered)
 
     def test_filtered_apps_specific_category(self):
         """Test filtered apps for specific category"""

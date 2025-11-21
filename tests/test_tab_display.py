@@ -30,9 +30,9 @@ class TestTabDisplay:
         """Tab text should be fully visible for short category names"""
         tab_bar = main_window._tab_widget.tabBar()
 
-        # Check "All" tab (index 0) - should show full text
+        # Check "Web" tab (index 0) - should show full text
         tab_text = tab_bar.tabText(0)
-        assert "All" in tab_text, f"Tab text should contain 'All', got: {tab_text}"
+        assert "Web" in tab_text, f"Tab text should contain 'Web', got: {tab_text}"
 
         # Tab width should be enough to show the text
         tab_rect = tab_bar.tabRect(0)

@@ -142,10 +142,10 @@ class MainWindow(QMainWindow):
             self._tab_widget.blockSignals(False)
 
     def _on_tab_changed(self, index):
-        """Handle tab change"""
-        if 0 <= index < len(self._app_state.categories):
-            category = self._app_state.categories[index]
-            self._app_state.select_category(category)
+        """Handle tab change - no state update needed, just track selection"""
+        # Don't call select_category here as it triggers state_changed
+        # which causes update_tabs() and recreates all widgets (memory leak)
+        pass
 
     def _on_add_category(self):
         """Handle add category button click"""

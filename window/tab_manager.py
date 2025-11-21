@@ -174,11 +174,13 @@ class TabManager:
 
     def _populate_category_grid(self, category, layout):
         """Populate category grid with app cards"""
-        # Clear existing widgets
+        # Clear existing widgets - use setParent(None) for immediate cleanup
         while layout.count():
             child = layout.takeAt(0)
             if child.widget():
-                child.widget().deleteLater()
+                widget = child.widget()
+                widget.setParent(None)
+                widget.deleteLater()
 
         # Filter apps by category
         apps = [app for app in self._app_state.apps if app.category == category.name]
@@ -471,12 +473,6 @@ class TabManager:
             grid_layout = self._category_grids[category.id]
             self._populate_category_grid(category, grid_layout)
 
-        # Mark other tabs as needing refresh
-        self._dirty_tabs = set(
-            cat.id for cat in self._app_state.categories
-            if cat.id != category.id
-        )
-
     def refresh_all_tabs(self):
         """Force refresh all category tabs"""
         for category in self._app_state.categories:
@@ -494,17 +490,9 @@ class TabManager:
         return container
 
     def _on_tab_changed(self, index: int):
-        """Handle tab change - refresh if tab was dirty"""
-        if index < 0 or index >= len(self._app_state.categories):
-            return
-
-        category = self._app_state.categories[index]
-        if category.id in self._dirty_tabs:
-            self._dirty_tabs.discard(category.id)
-            if category.id in self._category_grids:
-                grid_layout = self._category_grids[category.id]
-                self._populate_category_grid(category, grid_layout)
-                self._logger.debug("Refreshed dirty tab: %s", category.name)
+        """Handle tab change - no refresh needed, tabs are pre-populated"""
+        # Tab content is already loaded, no need to refresh on switch
+        pass
 
     def _on_tab_clicked(self, index: int):
         """Handle tab bar click"""
