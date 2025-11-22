@@ -3,6 +3,8 @@ Note card widget displays a note preview with copy/delete actions.
 """
 from __future__ import annotations
 
+from PySide6.QtCore import Signal, Qt
+from PySide6.QtGui import QPainter, QMouseEvent
 from PySide6.QtWidgets import (
     QApplication,
     QFrame,
@@ -13,14 +15,11 @@ from PySide6.QtWidgets import (
     QSizePolicy,
     QWidget,
     QMenu,
-    QStyle,
 )
-from PySide6.QtGui import QIcon, QPainter, QMouseEvent
-from PySide6.QtCore import Signal, Qt
 
-from window.models.note import Note
-from widgets.resizable_mixin import ResizableMixin
 from widgets.draggable_mixin import DraggableMixin
+from widgets.resizable_mixin import ResizableMixin
+from window.models.note import Note
 
 
 class NoteCard(QFrame, ResizableMixin, DraggableMixin):
@@ -174,17 +173,23 @@ class NoteCard(QFrame, ResizableMixin, DraggableMixin):
     def mousePressEvent(self, event: QMouseEvent):
         """Handle mouse press"""
         if self.handle_resize_mouse_press(event):
+            event.accept()
             return
-        self.handle_drag_mouse_press(event)
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.handle_drag_mouse_press(event)
+            event.accept()
+            return
         super().mousePressEvent(event)
 
     def mouseMoveEvent(self, event: QMouseEvent):
         """Handle mouse move"""
         if self.handle_resize_mouse_move(event):
+            event.accept()
             return
         if self.handle_drag_mouse_move(event, self):
+            event.accept()
             return
-        super().mouseMoveEvent(event)
+        event.accept()  # Always accept to prevent window dragging
 
     def mouseReleaseEvent(self, event: QMouseEvent):
         """Handle mouse release"""
@@ -195,6 +200,10 @@ class NoteCard(QFrame, ResizableMixin, DraggableMixin):
     def dragEnterEvent(self, event):
         """Handle drag enter"""
         self.handle_drag_enter(event)
+
+    def dragLeaveEvent(self, event):
+        """Handle drag leave"""
+        self.handle_drag_leave(event)
 
     def dropEvent(self, event):
         """Handle drop"""

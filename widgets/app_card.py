@@ -2,12 +2,14 @@
 Application card widget
 Displays app icon and name in a clickable card with context menu
 """
-from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QLabel, QPushButton, QMenu, QSizePolicy
-)
-from PySide6.QtCore import Qt, QSize, QTimer, Signal
-from PySide6.QtGui import QPixmap, QIcon, QFont, QContextMenuEvent, QMouseEvent, QEnterEvent
 from pathlib import Path
+
+from PySide6.QtCore import Qt, QSize, Signal
+from PySide6.QtGui import QPixmap, QMouseEvent
+from PySide6.QtWidgets import (
+    QWidget, QVBoxLayout, QLabel, QMenu, QSizePolicy
+)
+
 from models.app_shortcut import AppShortcut, LaunchType
 from widgets.draggable_mixin import DraggableMixin
 
@@ -223,6 +225,10 @@ class AppCard(QWidget, DraggableMixin):
     def dragEnterEvent(self, event):
         """Handle drag enter"""
         self.handle_drag_enter(event)
+
+    def dragLeaveEvent(self, event):
+        """Handle drag leave"""
+        self.handle_drag_leave(event)
 
     def dropEvent(self, event):
         """Handle drop"""

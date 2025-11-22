@@ -2,12 +2,13 @@
 Image card widget
 Displays an image in the grid with delete option
 """
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QMenu
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QPixmap, QPainter, QMouseEvent
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QMenu
+
 from services.image_grid_calculator import ImageGridCalculator
-from widgets.resizable_mixin import ResizableMixin
 from widgets.draggable_mixin import DraggableMixin
+from widgets.resizable_mixin import ResizableMixin
 
 
 class ImageCard(QWidget, ResizableMixin, DraggableMixin):
@@ -154,17 +155,23 @@ class ImageCard(QWidget, ResizableMixin, DraggableMixin):
     def mousePressEvent(self, event: QMouseEvent):
         """Handle mouse press"""
         if self.handle_resize_mouse_press(event):
+            event.accept()
             return
-        self.handle_drag_mouse_press(event)
+        if event.button() == Qt.MouseButton.LeftButton:
+            self.handle_drag_mouse_press(event)
+            event.accept()
+            return
         super().mousePressEvent(event)
 
     def mouseMoveEvent(self, event: QMouseEvent):
         """Handle mouse move"""
         if self.handle_resize_mouse_move(event):
+            event.accept()
             return
         if self.handle_drag_mouse_move(event, self):
+            event.accept()
             return
-        super().mouseMoveEvent(event)
+        event.accept()  # Always accept to prevent window dragging
 
     def mouseReleaseEvent(self, event: QMouseEvent):
         """Handle mouse release"""
@@ -175,6 +182,10 @@ class ImageCard(QWidget, ResizableMixin, DraggableMixin):
     def dragEnterEvent(self, event):
         """Handle drag enter"""
         self.handle_drag_enter(event)
+
+    def dragLeaveEvent(self, event):
+        """Handle drag leave"""
+        self.handle_drag_leave(event)
 
     def dropEvent(self, event):
         """Handle drop"""
