@@ -13,8 +13,8 @@ if TYPE_CHECKING:
     from typing import Optional
 
 # Grid cell dimensions (must match TabManager/GridDropZone)
-CELL_WIDTH = 94  # 90 + 4 spacing
-CELL_HEIGHT = 94
+CELL_WIDTH = 84  # 80 + 4 spacing
+CELL_HEIGHT = 84
 
 
 class DraggableMixin:

@@ -33,8 +33,8 @@ class NoteCard(QFrame, ResizableMixin, DraggableMixin):
     itemDropped = Signal(str, str)  # item_id, target_item_id
 
     # Grid cell size constants
-    CELL_WIDTH = 90
-    CELL_HEIGHT = 100
+    CELL_WIDTH = 80
+    CELL_HEIGHT = 80
     SPACING = 4
 
     def __init__(self, note: Note, col_span: int = 2, row_span: int = 1, parent: QWidget | None = None):

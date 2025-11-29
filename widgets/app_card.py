@@ -30,7 +30,7 @@ class AppCard(QWidget, DraggableMixin):
         self._on_change_icon = on_change_icon
         self._on_delete = on_delete
 
-        self.setFixedSize(90, 100)
+        self.setFixedSize(80, 80)
         self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
 
         # Initialize drag-drop with span info
@@ -45,8 +45,8 @@ class AppCard(QWidget, DraggableMixin):
     def _init_ui(self):
         """Initialize UI"""
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(8, 8, 8, 8)
-        layout.setSpacing(8)
+        layout.setContentsMargins(4, 4, 4, 4)
+        layout.setSpacing(2)
         
         # Icon
         icon_widget = self._build_icon()
@@ -77,7 +77,7 @@ class AppCard(QWidget, DraggableMixin):
     def _build_icon(self) -> QWidget:
         """Build icon widget"""
         icon_widget = QLabel()
-        icon_widget.setFixedSize(QSize(40, 40))
+        icon_widget.setFixedSize(QSize(36, 36))
         icon_widget.setAlignment(Qt.AlignmentFlag.AlignCenter)
         
         # Check if custom icon exists
@@ -100,7 +100,8 @@ class AppCard(QWidget, DraggableMixin):
                 if icon_file.exists() and icon_file.suffix.lower() in ['.png', '.jpg', '.jpeg', '.ico']:
                     pixmap = QPixmap(str(icon_file))
                     if not pixmap.isNull():
-                        scaled_pixmap = pixmap.scaled(QSize(40, 40), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+                        scaled_pixmap = pixmap.scaled(QSize(36, 36), Qt.AspectRatioMode.KeepAspectRatio,
+                                                      Qt.TransformationMode.SmoothTransformation)
                         icon_widget.setPixmap(scaled_pixmap)
                         icon_widget.setStyleSheet("border-radius: 10px;")
                         return icon_widget
@@ -125,13 +126,13 @@ class AppCard(QWidget, DraggableMixin):
         label = QLabel(self._app.name)
         label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         label.setWordWrap(True)
-        label.setMaximumHeight(40)
-        label.setStyleSheet("font-size: 11px;")
+        label.setMaximumHeight(28)
+        label.setStyleSheet("font-size: 10px;")
         
         # Check if text will overflow (simple heuristic)
         font_metrics = label.fontMetrics()
         text_width = font_metrics.horizontalAdvance(self._app.name)
-        max_width = 74  # 90px card - 16px padding
+        max_width = 72  # 80px card - 8px padding
         
         if text_width > max_width * 2:  # More than 2 lines
             label.setToolTip(self._app.name)

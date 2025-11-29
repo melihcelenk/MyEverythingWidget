@@ -21,8 +21,8 @@ class ImageCard(QWidget, ResizableMixin, DraggableMixin):
     itemDropped = Signal(str, str)  # item_id, target_item_id
 
     # Base size for one grid cell
-    CELL_WIDTH = 90
-    CELL_HEIGHT = 100
+    CELL_WIDTH = 80
+    CELL_HEIGHT = 80
     SPACING = 4
 
     def __init__(self, image_id: str, pixmap: QPixmap, on_delete=None, parent=None):

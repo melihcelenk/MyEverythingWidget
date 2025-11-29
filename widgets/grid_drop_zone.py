@@ -30,15 +30,15 @@ class GridDropZone(QWidget):
     GRID_ROWS = 5
 
     # Cell dimensions (must match actual widget sizes)
-    CELL_WIDTH = 90
-    CELL_HEIGHT = 100
+    CELL_WIDTH = 80
+    CELL_HEIGHT = 80
     SPACING = 4
 
     # Layout margins (must match QGridLayout margins)
-    MARGIN_LEFT = 8
+    MARGIN_LEFT = 6
     MARGIN_TOP = 4
-    MARGIN_RIGHT = 8
-    MARGIN_BOTTOM = 8
+    MARGIN_RIGHT = 6
+    MARGIN_BOTTOM = 4
 
     def __init__(self, parent=None):
         super().__init__(parent)

@@ -98,17 +98,16 @@ class TabManager:
         if grid_layout.count() == 0:
             return (0, 0)
 
-        # Get grid geometry info
-        # Each cell is approximately 90px wide (column minimum) + 4px spacing
-        CELL_WIDTH = 90 + 4
-        CELL_HEIGHT = 90 + 4  # Approximate height
+        # Get grid geometry info (must match GridDropZone constants)
+        CELL_WIDTH = GridDropZone.CELL_WIDTH + GridDropZone.SPACING
+        CELL_HEIGHT = GridDropZone.CELL_HEIGHT + GridDropZone.SPACING
 
         col = pos.x() // CELL_WIDTH
         row = pos.y() // CELL_HEIGHT
 
-        # Clamp to valid range (3 columns max)
-        col = max(0, min(col, 2))
-        row = max(0, row)
+        # Clamp to valid range
+        col = max(0, min(col, GridDropZone.GRID_COLS - 1))
+        row = max(0, min(row, GridDropZone.GRID_ROWS - 1))
 
         return (row, col)
 
@@ -138,8 +137,12 @@ class TabManager:
             if note.category != category_name:
                 continue
             if note.grid_row is not None and note.grid_col is not None:
-                # Notes are always 1x1 for now (no span fields yet)
-                occupied.add((note.grid_row, note.grid_col))
+                # Mark all cells occupied by this note (accounting for span)
+                col_span = getattr(note, 'col_span', 1) or 1
+                row_span = getattr(note, 'row_span', 1) or 1
+                for r in range(note.grid_row, note.grid_row + row_span):
+                    for c in range(note.grid_col, note.grid_col + col_span):
+                        occupied.add((r, c))
 
         return occupied
 
@@ -683,7 +686,7 @@ class TabManager:
             # No collision - just move the item
             self._logger.info("No collision, moving item")
             self._move_item(dragged_item, target_row, target_col)
-            self.refresh_notes_tab()
+            self._quick_refresh_current_tab()
             return
 
         # Collision detected - find the colliding item
@@ -709,7 +712,7 @@ class TabManager:
                 self._logger.info("Swapping items")
                 self._move_item(dragged_item, target_row, target_col)
                 self._move_item(colliding_item, source_row, source_col)
-                self.refresh_notes_tab()
+                self._quick_refresh_current_tab()
                 return
 
         # Swap not possible - reject the drop
@@ -797,7 +800,7 @@ class TabManager:
         target_app.order = source_order
 
         self._app_state.state_changed.emit()
-        self.refresh_notes_tab()
+        self._quick_refresh_current_tab()
 
     def _reorder_note(self, note, target_note):
         """Swap note positions using grid coordinates (Android-like behavior)
@@ -846,7 +849,7 @@ class TabManager:
             self._app_state.blockSignals(False)
 
         self._app_state.state_changed.emit()
-        self.refresh_notes_tab()
+        self._quick_refresh_current_tab()
 
     def _on_resize_card(self, card, col_span: int, row_span: int):
         """Handle card resize request"""
@@ -858,6 +861,12 @@ class TabManager:
 
         # Refresh the grid to update layout
         # TODO: Update note/image span in app_state for persistence
+
+    def _quick_refresh_current_tab(self):
+        """Fast refresh - uses QTimer to batch updates and avoid blocking UI"""
+        from PySide6.QtCore import QTimer
+        # Schedule refresh on next event loop iteration
+        QTimer.singleShot(0, self.refresh_notes_tab)
 
     def refresh_notes_tab(self):
         """Refresh note cards in active category tab only"""
