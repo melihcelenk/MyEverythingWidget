@@ -18,147 +18,57 @@
   ],
   "apps": [
     {
-      "id": "1",
-      "name": "Google Chrome",
+      "id": "web-r0c0",
+      "name": "App R0C0",
       "icon_path": "",
-      "target": "https://google.com",
+      "target": "",
       "category": "Web",
-      "type": "url"
+      "type": "exe"
     },
     {
-      "id": "2",
-      "name": "GitHub Desktop",
+      "id": "web-r0c1",
+      "name": "App R0C1",
       "icon_path": "",
-      "target": "https://github.com",
-      "category": "Dev",
-      "type": "url"
-    },
-    {
-      "id": "3",
-      "name": "YouTube Music",
-      "icon_path": "",
-      "target": "https://music.youtube.com",
-      "category": "Media",
-      "type": "url"
-    },
-    {
-      "id": "4",
-      "name": "Spotify Premium",
-      "icon_path": "",
-      "target": "https://spotify.com",
-      "category": "Media",
-      "type": "url"
-    },
-    {
-      "id": "5",
-      "name": "Stack Overflow Community",
-      "icon_path": "",
-      "target": "https://stackoverflow.com",
-      "category": "Dev",
-      "type": "url"
-    },
-    {
-      "id": "6",
-      "name": "Gmail",
-      "icon_path": "",
-      "target": "https://gmail.com",
+      "target": "",
       "category": "Web",
-      "type": "url"
+      "type": "exe"
     },
     {
-      "id": "7",
-      "name": "Visual Studio Code",
+      "id": "web-r0c2",
+      "name": "App R0C2",
       "icon_path": "",
-      "target": "https://code.visualstudio.com",
-      "category": "Dev",
-      "type": "url"
+      "target": "",
+      "category": "Web",
+      "type": "exe"
     },
     {
-      "id": "8",
-      "name": "CodePen Playground",
+      "id": "web-r1c0",
+      "name": "App R1C0",
       "icon_path": "",
-      "target": "https://codepen.io",
-      "category": "Dev",
-      "type": "url"
+      "target": "",
+      "category": "Web",
+      "type": "exe"
     },
     {
-      "id": "9",
-      "name": "MDN Web Docs",
+      "id": "web-r1c1",
+      "name": "App R1C1",
       "icon_path": "",
-      "target": "https://developer.mozilla.org",
-      "category": "Dev",
-      "type": "url"
-    },
-    {
-      "id": "10",
-      "name": "Docker Hub Registry",
-      "icon_path": "",
-      "target": "https://hub.docker.com",
-      "category": "Dev",
-      "type": "url"
-    },
-    {
-      "id": "11",
-      "name": "NPM Package Manager",
-      "icon_path": "",
-      "target": "https://npmjs.com",
-      "category": "Dev",
-      "type": "url"
-    },
-    {
-      "id": "12",
-      "name": "Git Version Control",
-      "icon_path": "",
-      "target": "https://git-scm.com",
-      "category": "Dev",
-      "type": "url"
+      "target": "",
+      "category": "Web",
+      "type": "exe"
     }
   ],
   "notes": [
     {
-      "id": "test-note-0",
-      "content": "Test Note 1",
+      "id": "note-single-1",
+      "content": "Single Note 1",
       "type": "text",
       "category": "Web",
-      "created_at": "2025-11-29T11:09:58.760594+00:00",
-      "updated_at": "2025-11-29T11:09:58.760594+00:00",
-      "order": 0
-    },
-    {
-      "id": "test-note-1",
-      "content": "Test Note 2",
-      "type": "text",
-      "category": "Web",
-      "created_at": "2025-11-29T11:09:58.787152+00:00",
-      "updated_at": "2025-11-29T11:09:58.787152+00:00",
-      "order": 2
-    },
-    {
-      "id": "test-note-2",
-      "content": "Test Note 3",
-      "type": "text",
-      "category": "Web",
-      "created_at": "2025-11-29T11:09:58.819293+00:00",
-      "updated_at": "2025-11-29T11:09:58.819293+00:00",
-      "order": 1
-    },
-    {
-      "id": "test-note-3",
-      "content": "Test Note 4",
-      "type": "text",
-      "category": "Web",
-      "created_at": "2025-11-29T11:09:58.867410+00:00",
-      "updated_at": "2025-11-29T11:09:58.867410+00:00",
-      "order": 3
-    },
-    {
-      "id": "test-note-4",
-      "content": "Test Note 5",
-      "type": "text",
-      "category": "Web",
-      "created_at": "2025-11-29T11:09:58.907999+00:00",
-      "updated_at": "2025-11-29T11:09:58.907999+00:00",
-      "order": 4
+      "created_at": "2025-11-29T12:20:31.208425+00:00",
+      "updated_at": "2025-11-29T12:20:31.208425+00:00",
+      "order": 0,
+      "grid_row": 0,
+      "grid_col": 1
     }
   ]
 }

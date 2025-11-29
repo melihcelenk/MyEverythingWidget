@@ -2,8 +2,8 @@
 Application shortcut model
 Represents a launchable application or URL
 """
-from enum import Enum
 from dataclasses import dataclass, field
+from enum import Enum
 
 
 class LaunchType(Enum):
@@ -23,6 +23,10 @@ class AppShortcut:
     category: str
     type: LaunchType
     order: int = field(default=0)
+    grid_row: int | None = field(default=None)
+    grid_col: int | None = field(default=None)
+    col_span: int = field(default=1)
+    row_span: int = field(default=1)
 
     def __eq__(self, other):
         if not isinstance(other, AppShortcut):

@@ -29,6 +29,8 @@ class Note:
     created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     order: int = field(default=0)
+    grid_row: int | None = field(default=None)
+    grid_col: int | None = field(default=None)
 
     def to_dict(self) -> Dict[str, Any]:
         data = asdict(self)
@@ -49,5 +51,7 @@ class Note:
             created_at=created_at,
             updated_at=updated_at,
             order=data.get("order", 0),
+            grid_row=data.get("grid_row"),
+            grid_col=data.get("grid_col"),
         )
 
