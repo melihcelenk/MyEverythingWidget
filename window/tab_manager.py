@@ -7,7 +7,7 @@ import uuid
 
 from PySide6.QtCore import Qt, QPoint
 from PySide6.QtWidgets import (
-    QTabWidget, QTabBar, QScrollArea, QGridLayout, QWidget, QMenu,
+    QTabWidget, QTabBar, QGridLayout, QWidget, QMenu,
     QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton
 )
 
@@ -175,8 +175,10 @@ class TabManager:
         return cells
 
     def _find_first_available_cell(self, occupied: set[tuple[int, int]],
-                                   row_span: int = 1, col_span: int = 1) -> tuple[int, int]:
+                                   row_span: int = 1, col_span: int = 1) -> tuple[int, int] | None:
         """Find the first available grid cell that can fit an item.
+
+        Fixed 3x5 grid - returns None if no space available.
 
         Args:
             occupied: Set of already occupied (row, col) cells
@@ -184,18 +186,18 @@ class TabManager:
             col_span: Number of columns the item needs
 
         Returns:
-            (row, col) tuple for the first available position
+            (row, col) tuple for the first available position, or None if grid is full
         """
-        row = 0
-        col = 0
+        for row in range(GridDropZone.GRID_ROWS):
+            for col in range(GridDropZone.GRID_COLS):
+                # Check if item would overflow grid bounds
+                if col + col_span > GridDropZone.GRID_COLS:
+                    continue
+                if row + row_span > GridDropZone.GRID_ROWS:
+                    continue
 
-        while True:
-            # Check if current position can fit the item
-            can_fit = True
-            if col + col_span > 3:  # Would overflow columns
-                can_fit = False
-            else:
                 # Check if all required cells are free
+                can_fit = True
                 for r in range(row, row + row_span):
                     for c in range(col, col + col_span):
                         if (r, c) in occupied:
@@ -204,14 +206,10 @@ class TabManager:
                     if not can_fit:
                         break
 
-            if can_fit:
-                return (row, col)
+                if can_fit:
+                    return (row, col)
 
-            # Move to next cell
-            col += 1
-            if col >= 3:
-                col = 0
-                row += 1
+        return None  # Grid is full
 
     def create_tab_widget(self) -> QTabWidget:
         """Create and configure tab widget"""
@@ -275,42 +273,52 @@ class TabManager:
         return name[:max_length] + "..." if len(name) > max_length else name
 
     def _create_category_tab(self, category):
-        """Create a tab content widget for a category"""
-        scroll_area = QScrollArea()
-        scroll_area.setWidgetResizable(True)
-        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-        scroll_area.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+        """Create a tab content widget for a category
 
+        Uses fixed 3x5 grid (Android-like) with no scrolling.
+        """
+        # Main container (no scroll)
         content_widget = QWidget()
-        scroll_area.setWidget(content_widget)
-
         content_layout = QVBoxLayout(content_widget)
         content_layout.setContentsMargins(0, 0, 0, 0)
         content_layout.setSpacing(0)
+
+        # Quick note entry at top
         content_layout.addWidget(self._create_note_entry(category))
 
-        # Use GridDropZone as the grid container itself
+        # GridDropZone is the fixed 3x5 grid container
         grid_container = GridDropZone()
         grid_container.gridDropped.connect(self._on_grid_drop)
 
         grid_layout = QGridLayout(grid_container)
-        grid_layout.setSpacing(4)
-        grid_layout.setContentsMargins(8, 4, 8, 8)
+        grid_layout.setSpacing(GridDropZone.SPACING)
+        grid_layout.setContentsMargins(
+            GridDropZone.MARGIN_LEFT,
+            GridDropZone.MARGIN_TOP,
+            GridDropZone.MARGIN_RIGHT,
+            GridDropZone.MARGIN_BOTTOM
+        )
 
-        # Set fixed column widths to prevent stretching
-        for i in range(3):
-            grid_layout.setColumnMinimumWidth(i, 90)
+        # Set fixed column widths (3 columns)
+        for i in range(GridDropZone.GRID_COLS):
+            grid_layout.setColumnMinimumWidth(i, GridDropZone.CELL_WIDTH)
             grid_layout.setColumnStretch(i, 0)
 
-        # Store drop zone for this category
+        # Set fixed row heights (5 rows)
+        for i in range(GridDropZone.GRID_ROWS):
+            grid_layout.setRowMinimumHeight(i, GridDropZone.CELL_HEIGHT)
+            grid_layout.setRowStretch(i, 0)
+
+        # Store references
         self._category_drop_zones[category.id] = grid_container
+        self._category_scroll_areas[category.id] = content_widget  # For compatibility
 
         content_layout.addWidget(grid_container)
+        content_layout.addStretch()  # Push grid to top
 
         self._populate_category_grid(category, grid_layout)
 
-        return scroll_area, grid_layout
+        return content_widget, grid_layout
 
     def _populate_category_grid(self, category, layout):
         """Populate category grid with app cards respecting explicit grid positions"""
@@ -361,7 +369,12 @@ class TabManager:
         # Auto-place apps without explicit grid positions (for backward compat)
         for app in sorted(apps_without_grid, key=lambda a: a.order):
             # Find first available cell
-            row, col = self._find_first_available_cell(occupied, app.row_span, app.col_span)
+            cell = self._find_first_available_cell(occupied, app.row_span, app.col_span)
+            if cell is None:
+                self._logger.warning("Grid full, cannot place app: %s", app.name)
+                continue
+
+            row, col = cell
 
             # IMPORTANT: Assign grid position NOW so it persists
             app.grid_row = row
@@ -528,7 +541,12 @@ class TabManager:
                     row_span = card.row_span
 
                     # Find first available cell
-                    row, col = self._find_first_available_cell(occupied, row_span, col_span)
+                    cell = self._find_first_available_cell(occupied, row_span, col_span)
+                    if cell is None:
+                        self._logger.warning("Grid full, cannot place image note")
+                        continue
+
+                    row, col = cell
 
                     # Save grid position to note
                     updated_note = replace(note, grid_row=row, grid_col=col,
@@ -544,7 +562,12 @@ class TabManager:
                     continue
 
             # Text note
-            row, col = self._find_first_available_cell(occupied, row_span, col_span)
+            cell = self._find_first_available_cell(occupied, row_span, col_span)
+            if cell is None:
+                self._logger.warning("Grid full, cannot place text note")
+                continue
+
+            row, col = cell
 
             # Save grid position to note
             updated_note = replace(note, grid_row=row, grid_col=col,
@@ -597,11 +620,18 @@ class TabManager:
     def _on_grid_drop(self, item_id: str, target_row: int, target_col: int):
         """Handle grid-based drop (Android-like behavior).
 
+        Rules:
+        1. Fixed 3x5 grid - no overflow allowed
+        2. If target is empty, move item there
+        3. If target is occupied by ONE item that fits in source, swap
+        4. If swap not possible, reject the drop (no displacement)
+
         Args:
             item_id: ID of the item being dragged
             target_row: Target grid row
             target_col: Target grid column
         """
+
         self._logger.info(
             "Grid drop: item=%s to row=%d col=%d",
             item_id, target_row, target_col
@@ -624,144 +654,96 @@ class TabManager:
         row_span = getattr(dragged_item, 'row_span', 1)
         col_span = getattr(dragged_item, 'col_span', 1)
 
-        # Get occupied cells (excluding the dragged item itself)
-        occupied = self._get_occupied_cells(category_name)
-        source_cells = self._get_cells_for_item(dragged_item)
-        occupied -= source_cells  # Remove source cells from occupied set
+        # Check grid bounds (3x5 fixed grid)
+        if target_col + col_span > GridDropZone.GRID_COLS:
+            self._logger.warning("Drop would overflow grid columns")
+            return
+        if target_row + row_span > GridDropZone.GRID_ROWS:
+            self._logger.warning("Drop would overflow grid rows")
+            return
 
-        # Check if target cells are available
+        # Calculate target cells
         target_cells = set()
         for r in range(target_row, target_row + row_span):
             for c in range(target_col, target_col + col_span):
                 target_cells.add((r, c))
 
-        # Check if target would overflow grid
-        if target_col + col_span > 3:
-            self._logger.warning("Drop would overflow grid columns")
-            return
+        # Get source cells (dragged item's current position)
+        source_cells = self._get_cells_for_item(dragged_item)
+        source_row = dragged_item.grid_row
+        source_col = dragged_item.grid_col
 
-        # Calculate collision
+        # Get all occupied cells except the dragged item
+        occupied = self._get_occupied_cells(category_name) - source_cells
+
+        # Check for collision
         collision_cells = target_cells & occupied
 
         if not collision_cells:
             # No collision - just move the item
-            self._logger.info("No collision, moving item to empty cells")
-            if dragged_app:
-                dragged_app.grid_row = target_row
-                dragged_app.grid_col = target_col
-                self._app_state.state_changed.emit()  # Trigger save
-            else:
-                from dataclasses import replace
-                updated_note = replace(
-                    dragged_note,
-                    grid_row=target_row,
-                    grid_col=target_col
-                )
-                self._app_state.update_note(updated_note)
+            self._logger.info("No collision, moving item")
+            self._move_item(dragged_item, target_row, target_col)
             self.refresh_notes_tab()
-        else:
-            # Collision detected - find the item(s) at target
-            self._logger.info("Collision detected, attempting swap/displace")
+            return
 
-            # Find all items that collide with target
-            colliding_items = []
-            for app in self._app_state.apps:
-                if app.category != category_name or app.id == item_id:
-                    continue
-                if self._get_cells_for_item(app) & target_cells:
-                    colliding_items.append(app)
+        # Collision detected - find the colliding item
+        colliding_item = self._find_item_at_cells(category_name, collision_cells, item_id)
 
-            for note in self._app_state.notes:
-                if note.category != category_name or note.id == item_id:
-                    continue
-                if self._get_cells_for_item(note) & target_cells:
-                    colliding_items.append(note)
+        if colliding_item is None:
+            self._logger.warning("Collision detected but no item found")
+            return
 
-            # Try to swap if source cells are available
-            if source_cells and not (source_cells & occupied):
-                # Source is available - swap with first colliding item
+        # Check if swap is possible
+        # Swap is possible if:
+        # 1. There's exactly one colliding item
+        # 2. The colliding item can fit in the source position
+
+        colliding_span_row = getattr(colliding_item, 'row_span', 1)
+        colliding_span_col = getattr(colliding_item, 'col_span', 1)
+
+        # Check if colliding item fits at source position
+        if source_row is not None and source_col is not None:
+            if (source_col + colliding_span_col <= GridDropZone.GRID_COLS and
+                    source_row + colliding_span_row <= GridDropZone.GRID_ROWS):
+                # Swap is possible
                 self._logger.info("Swapping items")
-                if colliding_items:
-                    target_item = colliding_items[0]
-                    source_row = dragged_item.grid_row
-                    source_col = dragged_item.grid_col
+                self._move_item(dragged_item, target_row, target_col)
+                self._move_item(colliding_item, source_row, source_col)
+                self.refresh_notes_tab()
+                return
 
-                    # Move dragged item to target
-                    if dragged_app:
-                        dragged_app.grid_row = target_row
-                        dragged_app.grid_col = target_col
-                    else:
-                        from dataclasses import replace
-                        updated_note = replace(
-                            dragged_note,
-                            grid_row=target_row,
-                            grid_col=target_col
-                        )
-                        self._app_state.update_note(updated_note)
+        # Swap not possible - reject the drop
+        self._logger.warning("Cannot swap - colliding item doesn't fit at source")
 
-                    # Move target item to source
-                    if hasattr(target_item, 'name'):  # AppShortcut
-                        target_item.grid_row = source_row
-                        target_item.grid_col = source_col
-                        self._app_state.state_changed.emit()  # Trigger save
-                    else:  # Note
-                        from dataclasses import replace
-                        updated_target = replace(
-                            target_item,
-                            grid_row=source_row,
-                            grid_col=source_col
-                        )
-                        self._app_state.update_note(updated_target)
+    def _move_item(self, item, row: int, col: int):
+        """Move an item to a new grid position."""
+        from dataclasses import replace
 
-                    self.refresh_notes_tab()
-            else:
-                # Source not available - find empty cell for displaced item
-                self._logger.info("Source occupied, finding empty cell for displaced item")
-                if colliding_items:
-                    target_item = colliding_items[0]
+        if hasattr(item, 'name'):  # AppShortcut (has 'name' attribute)
+            item.grid_row = row
+            item.grid_col = col
+            self._app_state.state_changed.emit()
+        else:  # Note
+            updated = replace(item, grid_row=row, grid_col=col)
+            self._app_state.update_note(updated)
 
-                    # Find first available cell for target item
-                    target_span_row = getattr(target_item, 'row_span', 1)
-                    target_span_col = getattr(target_item, 'col_span', 1)
+    def _find_item_at_cells(self, category: str, cells: set, exclude_id: str = None):
+        """Find the item occupying any of the given cells."""
+        for app in self._app_state.apps:
+            if app.category != category or app.id == exclude_id:
+                continue
+            app_cells = self._get_cells_for_item(app)
+            if app_cells & cells:
+                return app
 
-                    # Update occupied to include dragged item at new position
-                    occupied_after_move = occupied | target_cells
+        for note in self._app_state.notes:
+            if note.category != category or note.id == exclude_id:
+                continue
+            note_cells = self._get_cells_for_item(note)
+            if note_cells & cells:
+                return note
 
-                    new_cell = self._find_first_available_cell(
-                        occupied_after_move,
-                        target_span_row,
-                        target_span_col
-                    )
-
-                    # Move dragged item to target
-                    if dragged_app:
-                        dragged_app.grid_row = target_row
-                        dragged_app.grid_col = target_col
-                    else:
-                        from dataclasses import replace
-                        updated_note = replace(
-                            dragged_note,
-                            grid_row=target_row,
-                            grid_col=target_col
-                        )
-                        self._app_state.update_note(updated_note)
-
-                    # Move displaced item to new empty cell
-                    new_row, new_col = new_cell
-                    if hasattr(target_item, 'name'):  # AppShortcut
-                        target_item.grid_row = new_row
-                        target_item.grid_col = new_col
-                        self._app_state.state_changed.emit()  # Trigger save
-                    else:  # Note
-                        from dataclasses import replace
-                        updated_target = replace(
-                            target_item,
-                            grid_row=new_row,
-                            grid_col=new_col
-                        )
-                        self._app_state.update_note(updated_target)
-
-                    self.refresh_notes_tab()
+        return None
 
     def _on_item_dropped(self, item_id: str, target_item_id: str):
         """Handle item drop for reordering
@@ -886,39 +868,15 @@ class TabManager:
 
         category = self._app_state.categories[current_index]
         if category.id in self._category_grids:
-            # Save scroll position
-            scroll_pos = 0
-            if category.id in self._category_scroll_areas:
-                scroll_area = self._category_scroll_areas[category.id]
-                scroll_pos = scroll_area.verticalScrollBar().value()
-
-            # Refresh grid
             grid_layout = self._category_grids[category.id]
             self._populate_category_grid(category, grid_layout)
-
-            # Restore scroll position
-            if category.id in self._category_scroll_areas:
-                scroll_area = self._category_scroll_areas[category.id]
-                scroll_area.verticalScrollBar().setValue(scroll_pos)
 
     def refresh_all_tabs(self):
         """Force refresh all category tabs"""
         for category in self._app_state.categories:
             if category.id in self._category_grids:
-                # Save scroll position
-                scroll_pos = 0
-                if category.id in self._category_scroll_areas:
-                    scroll_area = self._category_scroll_areas[category.id]
-                    scroll_pos = scroll_area.verticalScrollBar().value()
-
-                # Refresh grid
                 grid_layout = self._category_grids[category.id]
                 self._populate_category_grid(category, grid_layout)
-
-                # Restore scroll position
-                if category.id in self._category_scroll_areas:
-                    scroll_area = self._category_scroll_areas[category.id]
-                    scroll_area.verticalScrollBar().setValue(scroll_pos)
         self._dirty_tabs = set()
 
     def _create_notes_tab(self):
