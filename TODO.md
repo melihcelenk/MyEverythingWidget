@@ -15,6 +15,13 @@
 - [x] Implement drag-drop for ImageCard
 - [x] Write drag-drop tests (14 tests)
 - [x] Fix window dragging issue (event.accept() in mouse events)
+- [x] Fix grid layout overflow (2-col + 3-col images in same row)
+- [x] Fix note reordering (use target item ID instead of grid index)
+- [x] Fix scroll position reset after drag-drop
+- [x] Write reordering tests (4 tests)
+- [x] Optimize drag-drop performance (widget reuse instead of recreation)
+- [x] Fix forward drag-drop bug (items moving to wrong position)
+- [x] Add TabManager integration tests (5 tests for all drag scenarios)
 
 ## Pending
 

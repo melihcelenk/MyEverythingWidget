@@ -3,20 +3,20 @@ Tab management for main window
 Handles tab creation, updates, and context menu
 """
 import logging
+import uuid
 
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QTabWidget, QTabBar, QScrollArea, QGridLayout, QWidget, QMenu,
-    QLabel, QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton
+    QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton
 )
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QPixmap
-from widgets.draggable_tab_bar import DraggableTabBar
+
 from services.image_cache_service import ImageCacheService
 from widgets.app_card import AppCard
-from widgets.note_card import NoteCard
+from widgets.draggable_tab_bar import DraggableTabBar
 from widgets.image_card import ImageCard
+from widgets.note_card import NoteCard
 from window.models.note import Note, NoteType
-import uuid
 
 
 class TabManager:
@@ -75,6 +75,7 @@ class TabManager:
 
         self._category_tabs = {}
         self._category_grids = {}
+        self._category_scroll_areas = {}  # Store scroll areas for each category
         self._note_inputs = {}
         self._tab_widget = None
         self._image_cache = ImageCacheService()
@@ -125,6 +126,7 @@ class TabManager:
             self._tab_widget.addTab(tab_content, f"{category.icon} {display_name}")
             self._category_tabs[category.id] = tab_content
             self._category_grids[category.id] = grid_layout
+            self._category_scroll_areas[category.id] = tab_content  # tab_content is scroll_area
 
         add_tab_widget = QWidget()
         add_tab_widget.setFixedHeight(0)
@@ -295,16 +297,21 @@ class TabManager:
                         row, col, col_span, row_span
                     )
 
-                    # Check if fits in current row
-                    if col + col_span > 3:
-                        row += 1
-                        col = 0
-                        # Skip occupied cells again
-                        while (row, col) in occupied:
-                            col += 1
-                            if col >= 3:
-                                col = 0
-                                row += 1
+                    # Find a position where image fits without overflow
+                    while True:
+                        # Check if fits in current row
+                        if col + col_span > 3:
+                            row += 1
+                            col = 0
+                            # Skip occupied cells again
+                            while (row, col) in occupied:
+                                col += 1
+                                if col >= 3:
+                                    col = 0
+                                    row += 1
+                        else:
+                            # Position found
+                            break
 
                     # Mark cells as occupied for multi-row spans
                     for r in range(row, row + row_span):
@@ -378,22 +385,31 @@ class TabManager:
         self._app_state.update_note(updated_note)
         self.refresh_all_tabs()
 
-    def _on_item_dropped(self, item_id: str, target_index: int):
-        """Handle item drop for reordering"""
-        self._logger.info("Item dropped: id=%s, target_index=%d", item_id, target_index)
+    def _on_item_dropped(self, item_id: str, target_item_id: str):
+        """Handle item drop for reordering
 
-        # Find the item (could be app, note, or image)
+        Args:
+            item_id: ID of the item being dragged
+            target_item_id: ID of the item that was dropped onto
+        """
+        self._logger.info("Item dropped: id=%s onto target=%s", item_id, target_item_id)
+
+        # Find the dragged item
         app = next((a for a in self._app_state.apps if a.id == item_id), None)
         if app:
-            self._reorder_app(app, target_index)
+            target_app = next((a for a in self._app_state.apps if a.id == target_item_id), None)
+            if target_app:
+                self._reorder_app(app, target_app)
             return
 
         note = next((n for n in self._app_state.notes if n.id == item_id), None)
         if note:
-            self._reorder_note(note, target_index)
+            target_note = next((n for n in self._app_state.notes if n.id == target_item_id), None)
+            if target_note:
+                self._reorder_note(note, target_note)
             return
 
-    def _reorder_app(self, app, target_index: int):
+    def _reorder_app(self, app, target_app):
         """Reorder app to target position"""
         # Get current category apps sorted by order
         category_apps = sorted(
@@ -401,16 +417,18 @@ class TabManager:
             key=lambda a: a.order
         )
 
-        # Find current index of the dragged app
+        # Find current and target indices
         current_index = next(
             (i for i, a in enumerate(category_apps) if a.id == app.id), 0
+        )
+        target_index = next(
+            (i for i, a in enumerate(category_apps) if a.id == target_app.id), 0
         )
 
         # Remove the dragged app from list
         category_apps.pop(current_index)
 
-        # Insert at target position
-        target_index = min(target_index, len(category_apps))
+        # After pop(), just insert at target_index (same logic as notes)
         category_apps.insert(target_index, app)
 
         # Update order values only if changed
@@ -418,9 +436,10 @@ class TabManager:
             if a.order != i:
                 a.order = i
 
-        self.refresh_notes_tab()
+        # Use lightweight reorder instead of full refresh
+        self._reorder_grid_items_for_apps(category_apps)
 
-    def _reorder_note(self, note, target_index: int):
+    def _reorder_note(self, note, target_note):
         """Reorder note to target position"""
         from dataclasses import replace
 
@@ -430,25 +449,262 @@ class TabManager:
             key=lambda n: n.order
         )
 
-        # Find current index
+        # Find current and target indices
         current_index = next(
             (i for i, n in enumerate(category_notes) if n.id == note.id), 0
         )
+        target_index = next(
+            (i for i, n in enumerate(category_notes) if n.id == target_note.id), 0
+        )
+
+        # No movement needed
+        if current_index == target_index:
+            return
 
         # Remove from current position
         category_notes.pop(current_index)
 
-        # Insert at target position
-        target_index = min(target_index, len(category_notes))
+        # When moving forward, after pop() the target has shifted back by 1
+        # So we don't need to adjust - just insert at target_index
+        # When moving backward, target hasn't shifted, so insert at target_index
+        # In both cases: just insert at target_index!
         category_notes.insert(target_index, note)
 
-        # Update order values
-        for i, n in enumerate(category_notes):
-            if n.order != i:
-                updated_note = replace(n, order=i)
-                self._app_state.update_note(updated_note)
+        # Block signals during batch update for performance
+        self._app_state.blockSignals(True)
+        try:
+            # Update order values
+            for i, n in enumerate(category_notes):
+                if n.order != i:
+                    updated_note = replace(n, order=i)
+                    self._app_state.update_note(updated_note)
+        finally:
+            self._app_state.blockSignals(False)
 
-        self.refresh_notes_tab()
+        # Lightweight refresh - only reorder grid items without recreating widgets
+        self._reorder_grid_items(category_notes)
+
+    def _reorder_grid_items(self, category_notes):
+        """Lightweight grid refresh - reorder without recreating all widgets"""
+        # Get current category from notes
+        if not category_notes:
+            return
+
+        category_name = category_notes[0].category
+        category = next(
+            (cat for cat in self._app_state.categories if cat.name == category_name),
+            None
+        )
+        if not category or category.id not in self._category_grids:
+            return
+
+        # Get the grid layout
+        layout = self._category_grids[category.id]
+
+        # Build a map of item_id -> widget for existing widgets in grid
+        existing_widgets = {}
+        for i in range(layout.count()):
+            item = layout.itemAt(i)
+            if item and item.widget():
+                widget = item.widget()
+                # Identify widget by ID
+                if hasattr(widget, 'note') and hasattr(widget.note, 'id'):
+                    existing_widgets[widget.note.id] = widget
+                elif hasattr(widget, '_image_id'):
+                    existing_widgets[widget._image_id] = widget
+                elif hasattr(widget, '_app') and hasattr(widget._app, 'id'):
+                    existing_widgets[widget._app.id] = widget
+
+        # Only update if we found note widgets (otherwise full refresh needed)
+        if not any(note.id in existing_widgets for note in category_notes):
+            self.refresh_notes_tab()
+            return
+
+        # Remove all widgets from layout without deleting them
+        for i in reversed(range(layout.count())):
+            layout.takeAt(i)
+
+        # Get apps for this category
+        apps = sorted(
+            [app for app in self._app_state.apps if app.category == category.name],
+            key=lambda a: a.order
+        )
+
+        # Re-add app widgets in correct order
+        row = 0
+        col = 0
+        for app in apps:
+            if app.id in existing_widgets:
+                layout.addWidget(existing_widgets[app.id], row, col)
+                col += 1
+                if col >= 3:
+                    col = 0
+                    row += 1
+
+        # Start notes on new row if needed
+        if col > 0:
+            row += 1
+            col = 0
+
+        # Track occupied cells for multi-span images
+        occupied = set()
+
+        # Re-add note/image widgets in new order
+        for note in category_notes:
+            if note.id not in existing_widgets:
+                # Widget doesn't exist, need full refresh
+                self.refresh_notes_tab()
+                return
+
+            widget = existing_widgets[note.id]
+
+            # Skip occupied cells
+            while (row, col) in occupied:
+                col += 1
+                if col >= 3:
+                    col = 0
+                    row += 1
+
+            # Handle multi-span image cards
+            if hasattr(widget, 'col_span') and hasattr(widget, 'row_span'):
+                col_span = widget.col_span
+                row_span = widget.row_span
+
+                # Find position where image fits
+                while col + col_span > 3:
+                    row += 1
+                    col = 0
+                    while (row, col) in occupied:
+                        col += 1
+                        if col >= 3:
+                            col = 0
+                            row += 1
+
+                # Mark cells as occupied
+                for r in range(row, row + row_span):
+                    for c in range(col, col + col_span):
+                        occupied.add((r, c))
+
+                layout.addWidget(widget, row, col, row_span, col_span)
+                col += col_span
+            else:
+                # Regular note card (1x1)
+                layout.addWidget(widget, row, col)
+                col += 1
+
+            if col >= 3:
+                col = 0
+                row += 1
+
+    def _reorder_grid_items_for_apps(self, category_apps):
+        """Lightweight grid refresh for app reordering - reorder without recreating all widgets"""
+        if not category_apps:
+            return
+
+        category_name = category_apps[0].category
+        category = next(
+            (cat for cat in self._app_state.categories if cat.name == category_name),
+            None
+        )
+        if not category or category.id not in self._category_grids:
+            return
+
+        # Get the grid layout
+        layout = self._category_grids[category.id]
+
+        # Build a map of item_id -> widget for existing widgets
+        existing_widgets = {}
+        for i in range(layout.count()):
+            item = layout.itemAt(i)
+            if item and item.widget():
+                widget = item.widget()
+                if hasattr(widget, '_app') and hasattr(widget._app, 'id'):
+                    existing_widgets[widget._app.id] = widget
+                elif hasattr(widget, 'note') and hasattr(widget.note, 'id'):
+                    existing_widgets[widget.note.id] = widget
+                elif hasattr(widget, '_image_id'):
+                    existing_widgets[widget._image_id] = widget
+
+        # Only update if we found app widgets (otherwise full refresh needed)
+        if not any(app.id in existing_widgets for app in category_apps):
+            self.refresh_notes_tab()
+            return
+
+        # Remove all widgets from layout without deleting them
+        for i in reversed(range(layout.count())):
+            layout.takeAt(i)
+
+        # Re-add app widgets in new order
+        row = 0
+        col = 0
+        for app in category_apps:
+            if app.id in existing_widgets:
+                layout.addWidget(existing_widgets[app.id], row, col)
+                col += 1
+                if col >= 3:
+                    col = 0
+                    row += 1
+
+        # Get and add notes/images for this category
+        notes = sorted(
+            [n for n in self._app_state.notes if n.category == category.name],
+            key=lambda n: n.order
+        )
+
+        # Start notes on new row if needed
+        if col > 0:
+            row += 1
+            col = 0
+
+        # Track occupied cells for multi-span images
+        occupied = set()
+
+        # Re-add note/image widgets
+        for note in notes:
+            if note.id not in existing_widgets:
+                # Widget doesn't exist, need full refresh
+                self.refresh_notes_tab()
+                return
+
+            widget = existing_widgets[note.id]
+
+            # Skip occupied cells
+            while (row, col) in occupied:
+                col += 1
+                if col >= 3:
+                    col = 0
+                    row += 1
+
+            # Handle multi-span image cards
+            if hasattr(widget, 'col_span') and hasattr(widget, 'row_span'):
+                col_span = widget.col_span
+                row_span = widget.row_span
+
+                # Find position where image fits
+                while col + col_span > 3:
+                    row += 1
+                    col = 0
+                    while (row, col) in occupied:
+                        col += 1
+                        if col >= 3:
+                            col = 0
+                            row += 1
+
+                # Mark cells as occupied
+                for r in range(row, row + row_span):
+                    for c in range(col, col + col_span):
+                        occupied.add((r, c))
+
+                layout.addWidget(widget, row, col, row_span, col_span)
+                col += col_span
+            else:
+                # Regular note card (1x1)
+                layout.addWidget(widget, row, col)
+                col += 1
+
+            if col >= 3:
+                col = 0
+                row += 1
 
     def _on_resize_card(self, card, col_span: int, row_span: int):
         """Handle card resize request"""
@@ -470,15 +726,39 @@ class TabManager:
 
         category = self._app_state.categories[current_index]
         if category.id in self._category_grids:
+            # Save scroll position
+            scroll_pos = 0
+            if category.id in self._category_scroll_areas:
+                scroll_area = self._category_scroll_areas[category.id]
+                scroll_pos = scroll_area.verticalScrollBar().value()
+
+            # Refresh grid
             grid_layout = self._category_grids[category.id]
             self._populate_category_grid(category, grid_layout)
+
+            # Restore scroll position
+            if category.id in self._category_scroll_areas:
+                scroll_area = self._category_scroll_areas[category.id]
+                scroll_area.verticalScrollBar().setValue(scroll_pos)
 
     def refresh_all_tabs(self):
         """Force refresh all category tabs"""
         for category in self._app_state.categories:
             if category.id in self._category_grids:
+                # Save scroll position
+                scroll_pos = 0
+                if category.id in self._category_scroll_areas:
+                    scroll_area = self._category_scroll_areas[category.id]
+                    scroll_pos = scroll_area.verticalScrollBar().value()
+
+                # Refresh grid
                 grid_layout = self._category_grids[category.id]
                 self._populate_category_grid(category, grid_layout)
+
+                # Restore scroll position
+                if category.id in self._category_scroll_areas:
+                    scroll_area = self._category_scroll_areas[category.id]
+                    scroll_area.verticalScrollBar().setValue(scroll_pos)
         self._dirty_tabs = set()
 
     def _create_notes_tab(self):

@@ -19,8 +19,9 @@ class DraggableMixin:
     This mixin is intended to be used with QWidget subclasses.
     """
 
-    # Signal emitted when item is dropped (item_id, target_index)
-    itemDropped = Signal(str, int)
+    # Signal emitted when item is dropped (item_id, target_item_id)
+    # target_item_id is the ID of the item that was dropped onto
+    itemDropped = Signal(str, str)
 
     # Type hints for instance attributes (initialized in init_draggable)
     _drag_item_id: str

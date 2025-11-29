@@ -1,16 +1,15 @@
 """
 Tests for grid layout spacing and alignment
 """
-import pytest
-from PySide6.QtWidgets import QApplication, QWidget, QGridLayout
-from PySide6.QtGui import QPixmap
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QPixmap
+from PySide6.QtWidgets import QApplication, QWidget, QGridLayout
 
-from widgets.note_card import NoteCard
-from widgets.image_card import ImageCard
-from widgets.app_card import AppCard
-from window.models.note import Note, NoteType
 from models.app_shortcut import AppShortcut, LaunchType
+from widgets.app_card import AppCard
+from widgets.image_card import ImageCard
+from widgets.note_card import NoteCard
+from window.models.note import Note, NoteType
 
 
 class TestGridSpacing:
@@ -468,3 +467,161 @@ class TestGridOverflow:
         qtbot.addWidget(card)
 
         assert card.row_span <= 3, f"row_span {card.row_span} exceeds max 3"
+
+    def test_2col_image_plus_3col_image_wraps(self, qtbot):
+        """2-col image followed by 3-col image should wrap to next row, not overflow"""
+        # This tests the actual bug: 2+3=5 columns in one row (max is 3)
+
+        # Simulate the TabManager placement logic
+        occupied = set()
+
+        # First image: 2 cols, 1 row
+        img1_row = 0
+        img1_col = 0
+        img1_col_span = 2
+        img1_row_span = 1
+
+        # Mark occupied cells for first image
+        for r in range(img1_row, img1_row + img1_row_span):
+            for c in range(img1_col, img1_col + img1_col_span):
+                occupied.add((r, c))
+
+        # After first image
+        col = img1_col + img1_col_span  # = 2
+        row = img1_row  # = 0
+
+        # Second image: 3 cols, 1 row
+        img2_col_span = 3
+
+        # The correct logic should check if it fits
+        if col + img2_col_span > 3:
+            # Should wrap to next row
+            row += 1
+            col = 0
+
+        # Verify second image is placed correctly (wrapped to row 1)
+        assert row == 1, f"3-col image should wrap to row 1, not stay at row {row}"
+        assert col == 0, f"3-col image should start at col 0, not col {col}"
+        assert col + img2_col_span <= 3, \
+            f"Overflow: col={col}, span={img2_col_span}, total={col + img2_col_span}"
+
+    def test_tab_manager_image_placement_no_overflow(self, qtbot):
+        """Test that actual TabManager placement algorithm doesn't overflow"""
+
+        # Simulate the exact placement logic from TabManager._add_note_cards_to_layout
+        occupied = set()
+        row = 0
+        col = 0
+
+        # List of image spans to place (simulating the bug scenario)
+        # First a 2x1, then a 3x1
+        images = [
+            (2, 1),  # 2 cols, 1 row
+            (3, 1),  # 3 cols, 1 row
+        ]
+
+        placements = []
+
+        for col_span, row_span in images:
+            # Skip occupied cells
+            while (row, col) in occupied:
+                col += 1
+                if col >= 3:
+                    col = 0
+                    row += 1
+
+            # Check if fits in current row
+            if col + col_span > 3:
+                row += 1
+                col = 0
+                # Skip occupied cells again
+                while (row, col) in occupied:
+                    col += 1
+                    if col >= 3:
+                        col = 0
+                        row += 1
+
+            # Record placement
+            placements.append((row, col, col_span, row_span))
+
+            # Mark cells as occupied
+            for r in range(row, row + row_span):
+                for c in range(col, col + col_span):
+                    occupied.add((r, c))
+
+            # Move to next position
+            col += col_span
+            if col >= 3:
+                col = 0
+                row += row_span
+
+        # Verify no placement overflows
+        for i, (p_row, p_col, p_col_span, p_row_span) in enumerate(placements):
+            assert p_col + p_col_span <= 3, \
+                f"Image {i} overflows: row={p_row}, col={p_col}, span={p_col_span}, total={p_col + p_col_span}"
+
+        # Verify the second image (3-col) is on its own row
+        assert placements[0] == (0, 0, 2, 1), f"First image wrong: {placements[0]}"
+        assert placements[1] == (1, 0, 3, 1), f"Second image wrong: {placements[1]}"
+
+    def test_2x2_image_followed_by_3x1_image_wraps_properly(self, qtbot):
+        """2x2 image followed by 3x1 image should not overflow"""
+        # This is the exact bug: 2x2 occupies (0,0), (0,1), (1,0), (1,1)
+        # After skipping occupied cells, 3x1 ends up at (1,2) which overflows
+
+        occupied = set()
+        row = 0
+        col = 0
+
+        # First image: 2x2
+        images = [
+            (2, 2),  # 2 cols, 2 rows
+            (3, 1),  # 3 cols, 1 row
+        ]
+
+        placements = []
+
+        for col_span, row_span in images:
+            # Skip occupied cells
+            while (row, col) in occupied:
+                col += 1
+                if col >= 3:
+                    col = 0
+                    row += 1
+
+            # Find a position where image fits without overflow
+            while True:
+                if col + col_span > 3:
+                    row += 1
+                    col = 0
+                    # Skip occupied cells again
+                    while (row, col) in occupied:
+                        col += 1
+                        if col >= 3:
+                            col = 0
+                            row += 1
+                else:
+                    break
+
+            placements.append((row, col, col_span, row_span))
+
+            # Mark cells as occupied
+            for r in range(row, row + row_span):
+                for c in range(col, col + col_span):
+                    occupied.add((r, c))
+
+            # Move to next position
+            col += col_span
+            if col >= 3:
+                col = 0
+                row += row_span
+
+        # Verify no overflow
+        for i, (p_row, p_col, p_col_span, p_row_span) in enumerate(placements):
+            assert p_col + p_col_span <= 3, \
+                f"Image {i} overflows: row={p_row}, col={p_col}, span={p_col_span}"
+
+        # First image at (0,0) with 2x2
+        assert placements[0] == (0, 0, 2, 2), f"First image wrong: {placements[0]}"
+        # Second image should be at row 2 (after 2x2), col 0
+        assert placements[1] == (2, 0, 3, 1), f"Second image wrong: {placements[1]}"

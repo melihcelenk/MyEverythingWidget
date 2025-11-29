@@ -30,7 +30,7 @@ class NoteCard(QFrame, ResizableMixin, DraggableMixin):
     editRequested = Signal(str)
     resizeRequested = Signal(int, int)  # col_span, row_span
     relocateRequested = Signal(str, str)  # note_id, new_category
-    itemDropped = Signal(str, int)  # item_id, target_index
+    itemDropped = Signal(str, str)  # item_id, target_item_id
 
     # Grid cell size constants
     CELL_WIDTH = 90
@@ -207,14 +207,11 @@ class NoteCard(QFrame, ResizableMixin, DraggableMixin):
 
     def dropEvent(self, event):
         """Handle drop"""
-        parent = self.parent()
-        if parent and hasattr(parent, 'layout'):
-            layout = parent.layout()
-            if layout:
-                index = layout.indexOf(self)
-                item_type, item_id = self.handle_drop(event, index)
-                if item_type and item_id:
-                    self.itemDropped.emit(item_id, index)
+        # Extract dragged item info from drop event
+        item_type, item_id = self.handle_drop(event, 0)  # index not used
+        if item_type and item_id:
+            # Emit signal with dragged item ID and this card's ID (target)
+            self.itemDropped.emit(item_id, self.note.id)
 
     @property
     def row_span(self) -> int:

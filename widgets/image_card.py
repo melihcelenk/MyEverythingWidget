@@ -18,7 +18,7 @@ class ImageCard(QWidget, ResizableMixin, DraggableMixin):
     deleteRequested = Signal(str)
     resizeRequested = Signal(int, int)  # col_span, row_span
     relocateRequested = Signal(str, str)  # image_id, new_category
-    itemDropped = Signal(str, int)  # item_id, target_index
+    itemDropped = Signal(str, str)  # item_id, target_item_id
 
     # Base size for one grid cell
     CELL_WIDTH = 90
@@ -189,14 +189,11 @@ class ImageCard(QWidget, ResizableMixin, DraggableMixin):
 
     def dropEvent(self, event):
         """Handle drop"""
-        parent = self.parent()
-        if parent and hasattr(parent, 'layout'):
-            layout = parent.layout()
-            if layout:
-                index = layout.indexOf(self)
-                item_type, item_id = self.handle_drop(event, index)
-                if item_type and item_id:
-                    self.itemDropped.emit(item_id, index)
+        # Extract dragged item info from drop event
+        item_type, item_id = self.handle_drop(event, 0)  # index not used
+        if item_type and item_id:
+            # Emit signal with dragged item ID and this card's ID (target)
+            self.itemDropped.emit(item_id, self._image_id)
 
     def set_span(self, col_span: int, row_span: int):
         """Set new span and update size"""

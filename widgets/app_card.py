@@ -18,7 +18,7 @@ class AppCard(QWidget, DraggableMixin):
     """Application card widget"""
 
     # Signals for drag-drop
-    itemDropped = Signal(str, int)
+    itemDropped = Signal(str, str)  # item_id, target_item_id
 
     def __init__(self, app: AppShortcut, on_tap, on_edit=None,
                  on_rename=None, on_change_icon=None, on_delete=None, parent=None):
@@ -232,15 +232,11 @@ class AppCard(QWidget, DraggableMixin):
 
     def dropEvent(self, event):
         """Handle drop"""
-        # Get grid position from parent
-        parent = self.parent()
-        if parent and hasattr(parent, 'layout'):
-            layout = parent.layout()
-            if layout:
-                index = layout.indexOf(self)
-                item_type, item_id = self.handle_drop(event, index)
-                if item_type and item_id:
-                    self.itemDropped.emit(item_id, index)
+        # Extract dragged item info from drop event
+        item_type, item_id = self.handle_drop(event, 0)  # index not used
+        if item_type and item_id:
+            # Emit signal with dragged item ID and this card's ID (target)
+            self.itemDropped.emit(item_id, self._app.id)
     
     def _execute_tap(self):
         """Execute tap callback"""
