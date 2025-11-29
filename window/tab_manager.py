@@ -290,7 +290,10 @@ class TabManager:
         content_layout.setSpacing(0)
         content_layout.addWidget(self._create_note_entry(category))
 
-        grid_container = QWidget()
+        # Use GridDropZone as the grid container itself
+        grid_container = GridDropZone()
+        grid_container.gridDropped.connect(self._on_grid_drop)
+
         grid_layout = QGridLayout(grid_container)
         grid_layout.setSpacing(4)
         grid_layout.setContentsMargins(8, 4, 8, 8)
@@ -300,15 +303,8 @@ class TabManager:
             grid_layout.setColumnMinimumWidth(i, 90)
             grid_layout.setColumnStretch(i, 0)
 
-        # Create GridDropZone as overlay for grid-based drag-drop
-        drop_zone = GridDropZone(grid_container)
-        drop_zone.setGeometry(grid_container.rect())
-        drop_zone.gridDropped.connect(self._on_grid_drop)
-        drop_zone.show()  # Make visible
-        drop_zone.raise_()  # Bring to front to receive drag events
-
         # Store drop zone for this category
-        self._category_drop_zones[category.id] = drop_zone
+        self._category_drop_zones[category.id] = grid_container
 
         content_layout.addWidget(grid_container)
 
@@ -345,7 +341,8 @@ class TabManager:
                 on_change_icon=lambda a=app: self._on_app_change_icon(a),
                 on_delete=lambda a=app: self._on_app_delete(a),
             )
-            app_card.itemDropped.connect(self._on_item_dropped)
+            # Disable drop acceptance - only GridDropZone handles drops now
+            app_card.setAcceptDrops(False)
 
             # Use explicit grid position
             layout.addWidget(
@@ -366,6 +363,10 @@ class TabManager:
             # Find first available cell
             row, col = self._find_first_available_cell(occupied, app.row_span, app.col_span)
 
+            # IMPORTANT: Assign grid position NOW so it persists
+            app.grid_row = row
+            app.grid_col = col
+
             app_card = AppCard(
                 app=app,
                 on_tap=lambda a=app: self._on_app_tap(a),
@@ -374,13 +375,18 @@ class TabManager:
                 on_change_icon=lambda a=app: self._on_app_change_icon(a),
                 on_delete=lambda a=app: self._on_app_delete(a),
             )
-            app_card.itemDropped.connect(self._on_item_dropped)
+            # Disable drop acceptance - only GridDropZone handles drops now
+            app_card.setAcceptDrops(False)
             layout.addWidget(app_card, row, col, app.row_span, app.col_span)
 
             # Mark cells as occupied
             for r in range(row, row + app.row_span):
                 for c in range(col, col + app.col_span):
                     occupied.add((r, c))
+
+        # Save state if we assigned any grid positions
+        if apps_without_grid:
+            self._app_state.state_changed.emit()
 
         self._add_note_cards_to_layout(category, layout, occupied)
 
@@ -428,11 +434,16 @@ class TabManager:
     def _add_note_cards_to_layout(self, category, layout, occupied: set):
         """Add note cards to layout, respecting explicit grid positions.
 
+        Uses Note's col_span/row_span values from the model.
+        Auto-places notes without positions and saves their positions.
+
         Args:
             category: Category object
             layout: QGridLayout to add cards to
             occupied: Set of already occupied (row, col) cells
         """
+        from dataclasses import replace
+
         notes = [note for note in self._app_state.notes if note.category == category.name]
 
         if not notes:
@@ -442,10 +453,13 @@ class TabManager:
         notes_with_grid = [n for n in notes if n.grid_row is not None and n.grid_col is not None]
         notes_without_grid = [n for n in notes if n.grid_row is None or n.grid_col is None]
 
-        span_options = [2, 3]
+        notes_to_update = []  # Collect notes that need position updates
 
         # First, place notes with explicit grid positions
         for note in notes_with_grid:
+            col_span = note.col_span
+            row_span = note.row_span
+
             if note.type == NoteType.IMAGE:
                 pixmap = self._image_cache.get(note.content)
                 if pixmap is not None:
@@ -457,12 +471,12 @@ class TabManager:
                     card.set_categories(self._app_state.categories, category.name)
                     card.resizeRequested.connect(lambda c_span, r_span, c=card: self._on_resize_card(c, c_span, r_span))
                     card.relocateRequested.connect(self._on_relocate_note)
-                    card.itemDropped.connect(self._on_item_dropped)
+                    card.setAcceptDrops(False)
 
+                    # Use image card's calculated span (based on aspect ratio)
                     col_span = card.col_span
                     row_span = card.row_span
 
-                    # Use explicit position
                     layout.addWidget(card, note.grid_row, note.grid_col, row_span, col_span)
 
                     # Mark cells as occupied
@@ -470,22 +484,32 @@ class TabManager:
                         for c in range(note.grid_col, note.grid_col + col_span):
                             occupied.add((r, c))
             else:
-                # Text note with explicit position
-                card = NoteCard(note, col_span=2)  # Default span
+                # Text note - use span from model
+                card = NoteCard(note, col_span=col_span, row_span=row_span)
                 card.set_categories(self._app_state.categories)
                 card.copyRequested.connect(lambda note_id: None)
                 card.deleteRequested.connect(self._app_state.remove_note)
                 card.editRequested.connect(self._on_edit_note)
                 card.resizeRequested.connect(lambda c_span, r_span, c=card: self._on_resize_card(c, c_span, r_span))
                 card.relocateRequested.connect(self._on_relocate_note)
-                card.itemDropped.connect(self._on_item_dropped)
-                layout.addWidget(card, note.grid_row, note.grid_col, 1, 2)
-                occupied.add((note.grid_row, note.grid_col))
-                occupied.add((note.grid_row, note.grid_col + 1))
+                card.setAcceptDrops(False)
+
+                layout.addWidget(card, note.grid_row, note.grid_col, row_span, col_span)
+
+                # Mark cells as occupied
+                for r in range(note.grid_row, note.grid_row + row_span):
+                    for c in range(note.grid_col, note.grid_col + col_span):
+                        occupied.add((r, c))
 
         # Auto-place notes without explicit grid positions
-        for idx, note in enumerate(sorted(notes_without_grid, key=lambda n: n.order)):
-            # Check if this is an image note
+        for note in sorted(notes_without_grid, key=lambda n: n.order):
+            col_span = note.col_span
+            row_span = note.row_span
+
+            # Default span for new text notes
+            if note.type == NoteType.TEXT and col_span == 1:
+                col_span = 2  # Default text notes to 2 columns wide
+
             if note.type == NoteType.IMAGE:
                 pixmap = self._image_cache.get(note.content)
                 if pixmap is not None:
@@ -497,13 +521,19 @@ class TabManager:
                     card.set_categories(self._app_state.categories, category.name)
                     card.resizeRequested.connect(lambda c_span, r_span, c=card: self._on_resize_card(c, c_span, r_span))
                     card.relocateRequested.connect(self._on_relocate_note)
-                    card.itemDropped.connect(self._on_item_dropped)
+                    card.setAcceptDrops(False)
 
+                    # Use image card's calculated span
                     col_span = card.col_span
                     row_span = card.row_span
 
-                    # Find first available cell that fits
+                    # Find first available cell
                     row, col = self._find_first_available_cell(occupied, row_span, col_span)
+
+                    # Save grid position to note
+                    updated_note = replace(note, grid_row=row, grid_col=col,
+                                           col_span=col_span, row_span=row_span)
+                    notes_to_update.append(updated_note)
 
                     # Mark cells as occupied
                     for r in range(row, row + row_span):
@@ -513,13 +543,15 @@ class TabManager:
                     layout.addWidget(card, row, col, row_span, col_span)
                     continue
 
-            # Text note - use NoteCard with alternating span
-            preferred_span = span_options[idx % len(span_options)]
+            # Text note
+            row, col = self._find_first_available_cell(occupied, row_span, col_span)
 
-            # Find first available cell for preferred span
-            row, col = self._find_first_available_cell(occupied, 1, preferred_span)
+            # Save grid position to note
+            updated_note = replace(note, grid_row=row, grid_col=col,
+                                   col_span=col_span, row_span=row_span)
+            notes_to_update.append(updated_note)
 
-            card = NoteCard(note, col_span=preferred_span)
+            card = NoteCard(updated_note, col_span=col_span, row_span=row_span)
             card.set_categories(self._app_state.categories)
             card.copyRequested.connect(lambda note_id: None)
             card.deleteRequested.connect(self._app_state.remove_note)
@@ -527,11 +559,22 @@ class TabManager:
             card.resizeRequested.connect(lambda c_span, r_span, c=card: self._on_resize_card(c, c_span, r_span))
             card.relocateRequested.connect(self._on_relocate_note)
             card.itemDropped.connect(self._on_item_dropped)
-            layout.addWidget(card, row, col, 1, preferred_span)
+            layout.addWidget(card, row, col, row_span, col_span)
 
             # Mark cells as occupied
-            for c in range(col, col + preferred_span):
-                occupied.add((row, c))
+            for r in range(row, row + row_span):
+                for c in range(col, col + col_span):
+                    occupied.add((r, c))
+
+        # Batch update notes with new grid positions
+        if notes_to_update:
+            self._app_state.blockSignals(True)
+            try:
+                for note in notes_to_update:
+                    self._app_state.update_note(note)
+            finally:
+                self._app_state.blockSignals(False)
+            self._app_state.state_changed.emit()
 
     def _on_edit_note(self, note_id: str):
         """Handle edit note request"""
@@ -606,6 +649,7 @@ class TabManager:
             if dragged_app:
                 dragged_app.grid_row = target_row
                 dragged_app.grid_col = target_col
+                self._app_state.state_changed.emit()  # Trigger save
             else:
                 from dataclasses import replace
                 updated_note = replace(
@@ -659,6 +703,7 @@ class TabManager:
                     if hasattr(target_item, 'name'):  # AppShortcut
                         target_item.grid_row = source_row
                         target_item.grid_col = source_col
+                        self._app_state.state_changed.emit()  # Trigger save
                     else:  # Note
                         from dataclasses import replace
                         updated_target = replace(
@@ -706,6 +751,7 @@ class TabManager:
                     if hasattr(target_item, 'name'):  # AppShortcut
                         target_item.grid_row = new_row
                         target_item.grid_col = new_col
+                        self._app_state.state_changed.emit()  # Trigger save
                     else:  # Note
                         from dataclasses import replace
                         updated_target = replace(
@@ -742,301 +788,83 @@ class TabManager:
             return
 
     def _reorder_app(self, app, target_app):
-        """Reorder app to target position"""
-        # Get current category apps sorted by order
-        category_apps = sorted(
-            [a for a in self._app_state.apps if a.category == app.category],
-            key=lambda a: a.order
-        )
+        """Swap app positions using grid coordinates (Android-like behavior)
 
-        # Find current and target indices
-        current_index = next(
-            (i for i, a in enumerate(category_apps) if a.id == app.id), 0
-        )
-        target_index = next(
-            (i for i, a in enumerate(category_apps) if a.id == target_app.id), 0
-        )
-
-        # Remove the dragged app from list
-        category_apps.pop(current_index)
-
-        # After pop(), just insert at target_index (same logic as notes)
-        category_apps.insert(target_index, app)
-
-        # Update order values only if changed
-        for i, a in enumerate(category_apps):
-            if a.order != i:
-                a.order = i
-
-        # Use lightweight reorder instead of full refresh
-        self._reorder_grid_items_for_apps(category_apps)
-
-    def _reorder_note(self, note, target_note):
-        """Reorder note to target position"""
-        from dataclasses import replace
-
-        # Get current category notes sorted by order
-        category_notes = sorted(
-            [n for n in self._app_state.notes if n.category == note.category],
-            key=lambda n: n.order
-        )
-
-        # Find current and target indices
-        current_index = next(
-            (i for i, n in enumerate(category_notes) if n.id == note.id), 0
-        )
-        target_index = next(
-            (i for i, n in enumerate(category_notes) if n.id == target_note.id), 0
-        )
-
-        # No movement needed
-        if current_index == target_index:
+        Swaps both grid positions AND order values for backward compatibility.
+        """
+        if app.id == target_app.id:
             return
 
-        # Remove from current position
-        category_notes.pop(current_index)
+        # Store target's position and order
+        target_row = target_app.grid_row
+        target_col = target_app.grid_col
+        target_order = target_app.order
 
-        # When moving forward, after pop() the target has shifted back by 1
-        # So we don't need to adjust - just insert at target_index
-        # When moving backward, target hasn't shifted, so insert at target_index
-        # In both cases: just insert at target_index!
-        category_notes.insert(target_index, note)
+        # Store source's position and order
+        source_row = app.grid_row
+        source_col = app.grid_col
+        source_order = app.order
 
-        # Block signals during batch update for performance
+        # Swap positions AND orders
+        app.grid_row = target_row
+        app.grid_col = target_col
+        app.order = target_order
+
+        target_app.grid_row = source_row
+        target_app.grid_col = source_col
+        target_app.order = source_order
+
+        self._app_state.state_changed.emit()
+        self.refresh_notes_tab()
+
+    def _reorder_note(self, note, target_note):
+        """Swap note positions using grid coordinates (Android-like behavior)
+
+        Swaps both grid positions AND order values for backward compatibility.
+        Handles cases where grid positions may be None (legacy notes).
+        """
+        from dataclasses import replace
+
+        if note.id == target_note.id:
+            return
+
+        # Store target's position and order
+        target_row = target_note.grid_row
+        target_col = target_note.grid_col
+        target_order = target_note.order
+        target_col_span = target_note.col_span
+        target_row_span = target_note.row_span
+
+        # Store source's position and order
+        source_row = note.grid_row
+        source_col = note.grid_col
+        source_order = note.order
+        source_col_span = note.col_span
+        source_row_span = note.row_span
+
+        # Update both notes with swapped positions AND orders
+        updated_note = replace(
+            note,
+            grid_row=target_row,
+            grid_col=target_col,
+            order=target_order
+        )
+        updated_target = replace(
+            target_note,
+            grid_row=source_row,
+            grid_col=source_col,
+            order=source_order
+        )
+
         self._app_state.blockSignals(True)
         try:
-            # Update order values
-            for i, n in enumerate(category_notes):
-                if n.order != i:
-                    updated_note = replace(n, order=i)
-                    self._app_state.update_note(updated_note)
+            self._app_state.update_note(updated_note)
+            self._app_state.update_note(updated_target)
         finally:
             self._app_state.blockSignals(False)
 
-        # Lightweight refresh - only reorder grid items without recreating widgets
-        self._reorder_grid_items(category_notes)
-
-    def _reorder_grid_items(self, category_notes):
-        """Lightweight grid refresh - reorder without recreating all widgets"""
-        # Get current category from notes
-        if not category_notes:
-            return
-
-        category_name = category_notes[0].category
-        category = next(
-            (cat for cat in self._app_state.categories if cat.name == category_name),
-            None
-        )
-        if not category or category.id not in self._category_grids:
-            return
-
-        # Get the grid layout
-        layout = self._category_grids[category.id]
-
-        # Build a map of item_id -> widget for existing widgets in grid
-        existing_widgets = {}
-        for i in range(layout.count()):
-            item = layout.itemAt(i)
-            if item and item.widget():
-                widget = item.widget()
-                # Identify widget by ID
-                if hasattr(widget, 'note') and hasattr(widget.note, 'id'):
-                    existing_widgets[widget.note.id] = widget
-                elif hasattr(widget, '_image_id'):
-                    existing_widgets[widget._image_id] = widget
-                elif hasattr(widget, '_app') and hasattr(widget._app, 'id'):
-                    existing_widgets[widget._app.id] = widget
-
-        # Only update if we found note widgets (otherwise full refresh needed)
-        if not any(note.id in existing_widgets for note in category_notes):
-            self.refresh_notes_tab()
-            return
-
-        # Remove all widgets from layout without deleting them
-        for i in reversed(range(layout.count())):
-            layout.takeAt(i)
-
-        # Get apps for this category
-        apps = sorted(
-            [app for app in self._app_state.apps if app.category == category.name],
-            key=lambda a: a.order
-        )
-
-        # Re-add app widgets in correct order
-        row = 0
-        col = 0
-        for app in apps:
-            if app.id in existing_widgets:
-                layout.addWidget(existing_widgets[app.id], row, col)
-                col += 1
-                if col >= 3:
-                    col = 0
-                    row += 1
-
-        # Start notes on new row if needed
-        if col > 0:
-            row += 1
-            col = 0
-
-        # Track occupied cells for multi-span images
-        occupied = set()
-
-        # Re-add note/image widgets in new order
-        for note in category_notes:
-            if note.id not in existing_widgets:
-                # Widget doesn't exist, need full refresh
-                self.refresh_notes_tab()
-                return
-
-            widget = existing_widgets[note.id]
-
-            # Skip occupied cells
-            while (row, col) in occupied:
-                col += 1
-                if col >= 3:
-                    col = 0
-                    row += 1
-
-            # Handle multi-span image cards
-            if hasattr(widget, 'col_span') and hasattr(widget, 'row_span'):
-                col_span = widget.col_span
-                row_span = widget.row_span
-
-                # Find position where image fits
-                while col + col_span > 3:
-                    row += 1
-                    col = 0
-                    while (row, col) in occupied:
-                        col += 1
-                        if col >= 3:
-                            col = 0
-                            row += 1
-
-                # Mark cells as occupied
-                for r in range(row, row + row_span):
-                    for c in range(col, col + col_span):
-                        occupied.add((r, c))
-
-                layout.addWidget(widget, row, col, row_span, col_span)
-                col += col_span
-            else:
-                # Regular note card (1x1)
-                layout.addWidget(widget, row, col)
-                col += 1
-
-            if col >= 3:
-                col = 0
-                row += 1
-
-    def _reorder_grid_items_for_apps(self, category_apps):
-        """Lightweight grid refresh for app reordering - reorder without recreating all widgets"""
-        if not category_apps:
-            return
-
-        category_name = category_apps[0].category
-        category = next(
-            (cat for cat in self._app_state.categories if cat.name == category_name),
-            None
-        )
-        if not category or category.id not in self._category_grids:
-            return
-
-        # Get the grid layout
-        layout = self._category_grids[category.id]
-
-        # Build a map of item_id -> widget for existing widgets
-        existing_widgets = {}
-        for i in range(layout.count()):
-            item = layout.itemAt(i)
-            if item and item.widget():
-                widget = item.widget()
-                if hasattr(widget, '_app') and hasattr(widget._app, 'id'):
-                    existing_widgets[widget._app.id] = widget
-                elif hasattr(widget, 'note') and hasattr(widget.note, 'id'):
-                    existing_widgets[widget.note.id] = widget
-                elif hasattr(widget, '_image_id'):
-                    existing_widgets[widget._image_id] = widget
-
-        # Only update if we found app widgets (otherwise full refresh needed)
-        if not any(app.id in existing_widgets for app in category_apps):
-            self.refresh_notes_tab()
-            return
-
-        # Remove all widgets from layout without deleting them
-        for i in reversed(range(layout.count())):
-            layout.takeAt(i)
-
-        # Re-add app widgets in new order
-        row = 0
-        col = 0
-        for app in category_apps:
-            if app.id in existing_widgets:
-                layout.addWidget(existing_widgets[app.id], row, col)
-                col += 1
-                if col >= 3:
-                    col = 0
-                    row += 1
-
-        # Get and add notes/images for this category
-        notes = sorted(
-            [n for n in self._app_state.notes if n.category == category.name],
-            key=lambda n: n.order
-        )
-
-        # Start notes on new row if needed
-        if col > 0:
-            row += 1
-            col = 0
-
-        # Track occupied cells for multi-span images
-        occupied = set()
-
-        # Re-add note/image widgets
-        for note in notes:
-            if note.id not in existing_widgets:
-                # Widget doesn't exist, need full refresh
-                self.refresh_notes_tab()
-                return
-
-            widget = existing_widgets[note.id]
-
-            # Skip occupied cells
-            while (row, col) in occupied:
-                col += 1
-                if col >= 3:
-                    col = 0
-                    row += 1
-
-            # Handle multi-span image cards
-            if hasattr(widget, 'col_span') and hasattr(widget, 'row_span'):
-                col_span = widget.col_span
-                row_span = widget.row_span
-
-                # Find position where image fits
-                while col + col_span > 3:
-                    row += 1
-                    col = 0
-                    while (row, col) in occupied:
-                        col += 1
-                        if col >= 3:
-                            col = 0
-                            row += 1
-
-                # Mark cells as occupied
-                for r in range(row, row + row_span):
-                    for c in range(col, col + col_span):
-                        occupied.add((r, c))
-
-                layout.addWidget(widget, row, col, row_span, col_span)
-                col += col_span
-            else:
-                # Regular note card (1x1)
-                layout.addWidget(widget, row, col)
-                col += 1
-
-            if col >= 3:
-                col = 0
-                row += 1
+        self._app_state.state_changed.emit()
+        self.refresh_notes_tab()
 
     def _on_resize_card(self, card, col_span: int, row_span: int):
         """Handle card resize request"""

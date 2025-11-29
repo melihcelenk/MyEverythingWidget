@@ -51,8 +51,8 @@ class NoteCard(QFrame, ResizableMixin, DraggableMixin):
         # Initialize resizable mixin
         self.init_resizable(min_col=2, max_col=3, min_row=1, max_row=2)
 
-        # Initialize draggable mixin
-        self.init_draggable(note.id, "note")
+        # Initialize draggable mixin with span info
+        self.init_draggable(note.id, "note", col_span=col_span, row_span=row_span)
 
         # Set fixed size based on span
         self._update_size()
@@ -222,6 +222,8 @@ class NoteCard(QFrame, ResizableMixin, DraggableMixin):
         self._col_span = col_span
         self._row_span = row_span
         self._update_size()
+        # Update drag span for correct visual feedback
+        self.update_drag_span(col_span, row_span)
         self.update()
 
     def update_note(self, note: Note):

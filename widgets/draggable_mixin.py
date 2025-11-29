@@ -6,11 +6,15 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from PySide6.QtCore import Qt, QMimeData, Signal
-from PySide6.QtGui import QDrag, QPixmap, QPainter, QColor
+from PySide6.QtGui import QDrag, QPixmap, QPainter, QColor, QPen
 from PySide6.QtWidgets import QWidget
 
 if TYPE_CHECKING:
     from typing import Optional
+
+# Grid cell dimensions (must match TabManager/GridDropZone)
+CELL_WIDTH = 94  # 90 + 4 spacing
+CELL_HEIGHT = 94
 
 
 class DraggableMixin:
@@ -26,19 +30,26 @@ class DraggableMixin:
     # Type hints for instance attributes (initialized in init_draggable)
     _drag_item_id: str
     _drag_item_type: str
+    _drag_col_span: int
+    _drag_row_span: int
     _drag_start_pos: Optional[object]
     _is_drag_over: bool
     _original_style: Optional[str]
 
-    def init_draggable(self, item_id: str, item_type: str):
+    def init_draggable(self, item_id: str, item_type: str,
+                       col_span: int = 1, row_span: int = 1):
         """Initialize draggable functionality
 
         Args:
             item_id: Unique identifier for the item
             item_type: Type of item (app, note, image)
+            col_span: Number of columns this item spans (default 1)
+            row_span: Number of rows this item spans (default 1)
         """
         self._drag_item_id = item_id
         self._drag_item_type = item_type
+        self._drag_col_span = col_span
+        self._drag_row_span = row_span
         self._drag_start_pos = None
         self._is_drag_over = False
         self._original_style = None
@@ -47,35 +58,79 @@ class DraggableMixin:
         if isinstance(self, QWidget):
             self.setAcceptDrops(True)
 
+    def update_drag_span(self, col_span: int, row_span: int):
+        """Update the span values (call when item is resized)"""
+        self._drag_col_span = col_span
+        self._drag_row_span = row_span
+
     def start_drag(self, widget: QWidget):
-        """Start a drag operation with visual feedback"""
+        """Start a drag operation with visual feedback.
+
+        Creates a drag pixmap that matches the item's actual grid size (span).
+        MIME data format: "type:id:col_span:row_span"
+        """
         drag = QDrag(widget)
         mime_data = QMimeData()
 
-        # Set custom MIME type with item info
-        mime_data.setText(f"{self._drag_item_type}:{self._drag_item_id}")
+        # Get span values (use instance vars or try to read from widget)
+        col_span = getattr(self, '_drag_col_span', 1)
+        row_span = getattr(self, '_drag_row_span', 1)
+
+        # Also check widget attributes as fallback
+        if hasattr(widget, 'col_span'):
+            col_span = widget.col_span
+        if hasattr(widget, 'row_span'):
+            row_span = widget.row_span
+
+        # Set custom MIME type with item info INCLUDING span
+        # Format: "type:id:col_span:row_span"
+        mime_data.setText(
+            f"{self._drag_item_type}:{self._drag_item_id}:{col_span}:{row_span}"
+        )
         drag.setMimeData(mime_data)
 
-        # Create drag pixmap with better visual feedback
-        pixmap = widget.grab()
+        # Calculate target size based on span
+        target_width = col_span * CELL_WIDTH - 4  # Subtract spacing
+        target_height = row_span * CELL_HEIGHT - 4
 
-        # Create semi-transparent version with border
-        drag_pixmap = QPixmap(pixmap.size())
+        # Grab the widget at its current size
+        source_pixmap = widget.grab()
+
+        # Create drag pixmap at the correct span size
+        drag_pixmap = QPixmap(target_width, target_height)
         drag_pixmap.fill(Qt.GlobalColor.transparent)
 
         painter = QPainter(drag_pixmap)
+        painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
         painter.setOpacity(0.7)
-        painter.drawPixmap(0, 0, pixmap)
 
-        # Add a subtle blue border to indicate dragging
+        # Scale source to fit target if sizes differ significantly
+        if abs(source_pixmap.width() - target_width) > 10 or \
+                abs(source_pixmap.height() - target_height) > 10:
+            # Scale to fit
+            scaled = source_pixmap.scaled(
+                target_width, target_height,
+                Qt.AspectRatioMode.KeepAspectRatio,
+                Qt.TransformationMode.SmoothTransformation
+            )
+            # Center the scaled pixmap
+            x_offset = (target_width - scaled.width()) // 2
+            y_offset = (target_height - scaled.height()) // 2
+            painter.drawPixmap(x_offset, y_offset, scaled)
+        else:
+            painter.drawPixmap(0, 0, source_pixmap)
+
+        # Add a prominent blue border to indicate dragging
         painter.setOpacity(1.0)
-        pen_color = QColor(33, 150, 243, 200)  # Material Blue
-        painter.setPen(pen_color)
-        painter.drawRect(0, 0, pixmap.width() - 1, pixmap.height() - 1)
+        pen = QPen(QColor(33, 150, 243, 220))  # Material Blue
+        pen.setWidth(2)
+        painter.setPen(pen)
+        painter.drawRect(1, 1, target_width - 3, target_height - 3)
         painter.end()
 
         drag.setPixmap(drag_pixmap)
-        drag.setHotSpot(widget.rect().center())
+        # Set hotspot to center of the drag pixmap
+        drag.setHotSpot(drag_pixmap.rect().center())
 
         # Execute drag
         drag.exec(Qt.DropAction.MoveAction)

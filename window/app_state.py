@@ -5,6 +5,7 @@ Manages categories, apps, notes, and selected category
 from typing import List, Optional
 
 from PySide6.QtCore import QObject, Signal
+
 from models.app_shortcut import AppShortcut, LaunchType
 from models.category import AppCategory
 from services.storage_service import StorageService
@@ -240,11 +241,9 @@ class AppState(QObject):
         self._persist_state()
 
     def update_note(self, updated_note: Note):
-        from dataclasses import replace
-
         for i, note in enumerate(self._notes):
             if note.id == updated_note.id:
-                self._notes[i] = replace(note, **updated_note.__dict__)
+                self._notes[i] = updated_note
                 self._persist_state()
                 return
 

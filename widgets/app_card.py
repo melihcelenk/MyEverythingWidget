@@ -33,8 +33,12 @@ class AppCard(QWidget, DraggableMixin):
         self.setFixedSize(90, 100)
         self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
 
-        # Initialize drag-drop
-        self.init_draggable(app.id, "app")
+        # Initialize drag-drop with span info
+        self.init_draggable(
+            app.id, "app",
+            col_span=getattr(app, 'col_span', 1),
+            row_span=getattr(app, 'row_span', 1)
+        )
 
         self._init_ui()
     

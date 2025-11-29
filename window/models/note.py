@@ -31,6 +31,8 @@ class Note:
     order: int = field(default=0)
     grid_row: int | None = field(default=None)
     grid_col: int | None = field(default=None)
+    col_span: int = field(default=1)
+    row_span: int = field(default=1)
 
     def to_dict(self) -> Dict[str, Any]:
         data = asdict(self)
@@ -53,5 +55,7 @@ class Note:
             order=data.get("order", 0),
             grid_row=data.get("grid_row"),
             grid_col=data.get("grid_col"),
+            col_span=data.get("col_span", 1),
+            row_span=data.get("row_span", 1),
         )
 

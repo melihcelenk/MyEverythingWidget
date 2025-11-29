@@ -42,8 +42,12 @@ class ImageCard(QWidget, ResizableMixin, DraggableMixin):
         # Initialize resizable mixin
         self.init_resizable(min_col=1, max_col=3, min_row=1, max_row=3)
 
-        # Initialize draggable mixin
-        self.init_draggable(image_id, "image")
+        # Initialize draggable mixin with span info
+        self.init_draggable(
+            image_id, "image",
+            col_span=self._col_span,
+            row_span=self._row_span
+        )
 
         self._init_ui()
 
@@ -204,6 +208,9 @@ class ImageCard(QWidget, ResizableMixin, DraggableMixin):
         total_width = (self.CELL_WIDTH * col_span) + (self.SPACING * (col_span - 1))
         total_height = (self.CELL_HEIGHT * row_span) + (self.SPACING * (row_span - 1))
         self.setFixedSize(total_width, total_height)
+
+        # Update drag span for correct visual feedback
+        self.update_drag_span(col_span, row_span)
 
         # Re-scale image
         scaled_pixmap = self._pixmap.scaled(

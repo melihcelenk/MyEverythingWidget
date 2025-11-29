@@ -397,3 +397,35 @@ This document outlines the development tasks for MyEverythingWidget v1.0 MVP.
 
 **Commit Format:** `[MEW-1] Description`
 **Example:** `[MEW-1] Setup Flutter project structure`
+
+MEW-3 Başlangıç Prompt:
+Tamam o biraz eski kalmış sanırım, aslında boşluk bırakılabiliyor şu an. Onu yapmaya çalıştı. Grid sistemini de yapmaya
+çalıştı. Ama çok kötü şu an. Şimdi MEW-3/TODO.md'yi oluşturacaksın. MEW-2'dekileri boş verelim. Şu an en gözle görülür
+problem şu:
+
+1. Bir 2x1 notu sürüklerken 1x1'lik kare görüyorum ve aynı hizada bile görünmüyor. Ekran görüntüsündeki gibi.
+2. Üstten bir uygulama taşıdığımda üst taraf boş kalınca o satırı boşaltıyor, alt satıra atıyor. Bizim gridimiz sabit
+   olmalı, öyle kafasına göre taşıma yapmamalı. Ben orayı boş bıraktıysam boş olarak kalmalı.
+3. Taşımalarda alakasız yer değiştirmeler oluyor. Çok kötü.
+
+Şunları da TODO'ya yaz: Önceden yazdığım promtlardan biri:
+
+1. bir şeyler silindikçe üstteki nesneler aşağı doğru kaymayacak, hizası değişmeyecek, yerinde kalacak.
+2. Bir notu     
+   sürükle bırak yaparken o notun kapladığı alan kadar dikdörtgen görmeliyim. MEW-2'de img.png'ye bak, ne hizası aynı ne
+   şekli aynı.
+3. Herhangi bir nesneyi bir yerden bir yere taşırken taşıdığım yerdeki o kaplanan alanlardaki   
+   kısımlarda herhangi bir nesne veya bir nesnenin bir kısmı varsa, yani gridde o pozisyonlar doluysa sadece o nesne yer
+   değiştirecek, başka hiçbir nesne yer değiştirmeyecek.
+
+Ayrıca sonnet'e verdiğim promptlardan birinde şu da var, onu da yaz. Tam yapamadığı şey şu:
+
+Mantık şu: ben bu nesneyi (işgal ettiği alanlar 2a, 2b) bir alta taşımak istiyorum, (3a, 3b). Gridde       
+alttaki taşıyacağım kısım boş mu? Eğer boşsa diğer hiçbir nesnenin yeri değişmemeli. Onlara dokunma. Onların konumları
+aynı. Taşıdığım nesneyi 2a, 2b'den 3a, 3b'ye taşıyorum. Eğer taşımakta olduğum grid'de herhangi bir nesne  
+varsa oradaki nesneyi yer varsa sadece taşıdığım kaynağın olduğu yere taşı, yer yoksa başka boş bir yere taşı. Tamamen
+Android'deki mantık. Bunun analizini yap şu an kodlamaya başlama. Ne gerekiyor iyi analiz et, belki        
+taşıma mantığını baştan yazmak gerekir. Belki gridde nesneleri tutuş şeklimiz yanlış, onları baştan yazmamız
+gerekebilir. Bu ihtiyaca göre analizini yap TODO'ya.
+
+Hiçbir maddeyi atlama. 

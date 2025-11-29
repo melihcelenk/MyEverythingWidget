@@ -276,7 +276,11 @@ class TestDragDropReordering:
 
 
 class TestTabManagerReordering:
-    """Test actual reordering in TabManager with drag-drop simulation"""
+    """Test actual reordering in TabManager with drag-drop simulation
+
+    Note: The new Android-like grid system uses SWAP behavior instead of INSERT.
+    When dropping item A onto item B, they swap positions (both grid and order).
+    """
 
     @pytest.fixture
     def app(self):
@@ -314,10 +318,10 @@ class TestTabManagerReordering:
         yield window
         window.close()
 
-    def test_move_note_forward_one_position(self, app, main_window):
-        """Move note-1 forward to note-2's position (drag note-1 onto note-2)"""
+    def test_swap_adjacent_notes(self, app, main_window):
+        """Swap note-1 with note-2 (adjacent swap)"""
         # Initial order: [note-0, note-1, note-2, note-3, note-4]
-        # Drag note-1 onto note-2 → Expected: [note-0, note-2, note-1, note-3, note-4]
+        # Drag note-1 onto note-2 → SWAP → [note-0, note-2, note-1, note-3, note-4]
 
         notes = sorted(
             [n for n in main_window._app_state.notes if n.id.startswith("test-note-")],
@@ -327,14 +331,14 @@ class TestTabManagerReordering:
         # Verify initial order
         assert [n.id for n in notes] == ["test-note-0", "test-note-1", "test-note-2", "test-note-3", "test-note-4"]
 
-        # Simulate drag note-1 onto note-2 (target)
+        # Simulate drag note-1 onto note-2 (swap)
         dragged_note = notes[1]  # note-1
         target_note = notes[2]  # note-2
 
         main_window._tab_manager._reorder_note(dragged_note, target_note)
         app.processEvents()
 
-        # Verify final order - note-1 should be AFTER note-2
+        # Verify swap result
         final_notes = sorted(
             [n for n in main_window._app_state.notes if n.id.startswith("test-note-")],
             key=lambda n: n.order
@@ -342,33 +346,34 @@ class TestTabManagerReordering:
         assert [n.id for n in final_notes] == ["test-note-0", "test-note-2", "test-note-1", "test-note-3",
                                                "test-note-4"]
 
-    def test_move_note_forward_two_positions(self, app, main_window):
-        """Move note-1 forward to note-3's position"""
+    def test_swap_non_adjacent_notes(self, app, main_window):
+        """Swap note-1 with note-3 (non-adjacent swap)"""
         # Initial: [note-0, note-1, note-2, note-3, note-4]
-        # Drag note-1 onto note-3 → Expected: [note-0, note-2, note-3, note-1, note-4]
+        # Drag note-1 onto note-3 → SWAP orders → [note-0, note-3, note-2, note-1, note-4]
 
         notes = sorted(
             [n for n in main_window._app_state.notes if n.id.startswith("test-note-")],
             key=lambda n: n.order
         )
 
-        dragged_note = notes[1]  # note-1
-        target_note = notes[3]  # note-3
+        dragged_note = notes[1]  # note-1 (order=1)
+        target_note = notes[3]  # note-3 (order=3)
 
         main_window._tab_manager._reorder_note(dragged_note, target_note)
         app.processEvents()
 
+        # After swap: note-1 has order=3, note-3 has order=1
         final_notes = sorted(
             [n for n in main_window._app_state.notes if n.id.startswith("test-note-")],
             key=lambda n: n.order
         )
-        assert [n.id for n in final_notes] == ["test-note-0", "test-note-2", "test-note-3", "test-note-1",
+        assert [n.id for n in final_notes] == ["test-note-0", "test-note-3", "test-note-2", "test-note-1",
                                                "test-note-4"]
 
-    def test_move_note_backward_one_position(self, app, main_window):
-        """Move note-3 backward to note-2's position"""
+    def test_swap_backward(self, app, main_window):
+        """Swap note-3 with note-2 (backward swap)"""
         # Initial: [note-0, note-1, note-2, note-3, note-4]
-        # Drag note-3 onto note-2 → Expected: [note-0, note-1, note-3, note-2, note-4]
+        # Drag note-3 onto note-2 → SWAP → [note-0, note-1, note-3, note-2, note-4]
 
         notes = sorted(
             [n for n in main_window._app_state.notes if n.id.startswith("test-note-")],
@@ -388,18 +393,18 @@ class TestTabManagerReordering:
         assert [n.id for n in final_notes] == ["test-note-0", "test-note-1", "test-note-3", "test-note-2",
                                                "test-note-4"]
 
-    def test_move_note_to_end(self, app, main_window):
-        """Move note-1 to the last position"""
+    def test_swap_with_last(self, app, main_window):
+        """Swap note-1 with note-4 (last position)"""
         # Initial: [note-0, note-1, note-2, note-3, note-4]
-        # Drag note-1 onto note-4 → Expected: [note-0, note-2, note-3, note-4, note-1]
+        # Drag note-1 onto note-4 → SWAP → [note-0, note-4, note-2, note-3, note-1]
 
         notes = sorted(
             [n for n in main_window._app_state.notes if n.id.startswith("test-note-")],
             key=lambda n: n.order
         )
 
-        dragged_note = notes[1]  # note-1
-        target_note = notes[4]  # note-4
+        dragged_note = notes[1]  # note-1 (order=1)
+        target_note = notes[4]  # note-4 (order=4)
 
         main_window._tab_manager._reorder_note(dragged_note, target_note)
         app.processEvents()
@@ -408,21 +413,21 @@ class TestTabManagerReordering:
             [n for n in main_window._app_state.notes if n.id.startswith("test-note-")],
             key=lambda n: n.order
         )
-        assert [n.id for n in final_notes] == ["test-note-0", "test-note-2", "test-note-3", "test-note-4",
+        assert [n.id for n in final_notes] == ["test-note-0", "test-note-4", "test-note-2", "test-note-3",
                                                "test-note-1"]
 
-    def test_move_note_to_beginning(self, app, main_window):
-        """Move note-3 to the first position"""
+    def test_swap_with_first(self, app, main_window):
+        """Swap note-3 with note-0 (first position)"""
         # Initial: [note-0, note-1, note-2, note-3, note-4]
-        # Drag note-3 onto note-0 → Expected: [note-3, note-0, note-1, note-2, note-4]
+        # Drag note-3 onto note-0 → SWAP → [note-3, note-1, note-2, note-0, note-4]
 
         notes = sorted(
             [n for n in main_window._app_state.notes if n.id.startswith("test-note-")],
             key=lambda n: n.order
         )
 
-        dragged_note = notes[3]  # note-3
-        target_note = notes[0]  # note-0
+        dragged_note = notes[3]  # note-3 (order=3)
+        target_note = notes[0]  # note-0 (order=0)
 
         main_window._tab_manager._reorder_note(dragged_note, target_note)
         app.processEvents()
@@ -431,7 +436,7 @@ class TestTabManagerReordering:
             [n for n in main_window._app_state.notes if n.id.startswith("test-note-")],
             key=lambda n: n.order
         )
-        assert [n.id for n in final_notes] == ["test-note-3", "test-note-0", "test-note-1", "test-note-2",
+        assert [n.id for n in final_notes] == ["test-note-3", "test-note-1", "test-note-2", "test-note-0",
                                                "test-note-4"]
 
 
