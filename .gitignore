@@ -67,5 +67,8 @@ tests/visual/screenshot_*.png
 nul
 teststest_*.py
 
+# Test temporary files
+tests/tmp/
+
 # Claude local settings
 .claude/

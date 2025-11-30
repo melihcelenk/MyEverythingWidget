@@ -10,13 +10,14 @@ MyEverythingWidget/
 ├── requirements.txt                 ✅ Dependencies
 ├── README.md                        ✅ Documentation
 ├── LICENSE                          ✅ License
-├── ARCHITECTURE.md                  ✅ Architecture docs
-├── CHANGELOG.md                     ✅ Changelog
-├── CONTRIBUTING.md                  ✅ Contributing guide
-├── run_test_mode.bat                ✅ Test mode runner
-├── test_humanized.bat               ✅ Humanized test runner (logic)
-├── test_humanized.sh                ✅ Humanized test runner (Unix)
-├── test_humanized_ui.bat            ✅ Humanized UI test runner
+├── ARCHITECTURE.md                  ⚠️ Should move to docs/
+├── CHANGELOG.md                     ⚠️ Should move to docs/
+├── CONTRIBUTING.md                  ⚠️ Should move to docs/
+├── CLAUDE.md                        ⚠️ Should move to docs/DEVELOPMENT.md
+├── run_test_mode.bat                ⚠️ Should move to scripts/
+├── test_humanized.bat               ⚠️ Should move to scripts/
+├── test_humanized.sh                ⚠️ Should move to scripts/
+├── test_humanized_ui.bat            ⚠️ Should move to scripts/
 ├── run_tests.bat                    ❌ OLD - replaced by test_humanized.bat
 ├── run.bat                          ❌ OLD - not used
 ├── run.ps1                          ❌ OLD - not used
@@ -117,8 +118,8 @@ tests/
 ├── __init__.py                      ✅
 ├── conftest.py                      ✅ Pytest configuration
 ├── README.md                        ✅ Test documentation
-├── test_app_state.json              ✅ Test state file
-├── humanized_runner.py              ⚠️ Logic test runner (duplicate of humanized_ui_runner logic)
+├── state/
+│   └── app_state.json               ✅ Test state file (moved to state/)
 ├── humanized_ui_runner.py           ✅ UI test runner (preferred)
 │
 ├── helpers/
@@ -127,7 +128,8 @@ tests/
 │
 ├── humanized/
 │   └── drag/
-│       └── swapNoteAndApp           ✅ Test case file
+│       ├── swap_note_and_app.dsl            ✅ Test case file
+│       └── 2x1_note_right_edge.dsl          ✅ Test case file
 │
 ├── visual/
 │   ├── __init__.py                  ✅
@@ -156,9 +158,6 @@ tests/
 ├── test_memory_leak.py              ✅
 ├── test_note_card.py                ✅
 ├── test_note_model.py               ✅
-├── test_swap_dsl.py                 ⚠️ DSL test (duplicate of humanized_runner)
-├── test_swap_positioning.py         ⚠️ Old swap test (covered by humanized tests)
-├── test_state.json                  ❌ OLD - replaced by test_app_state.json
 ├── test_tab_display.py              ✅
 └── test_tab_management.py           ✅
 ```
@@ -197,15 +196,10 @@ docs/tasks/
 
 ### Tests
 
-7. **`tests/humanized_runner.py`** - Logic test runner
-    - Duplicate functionality with `humanized_ui_runner.py`
-    - `humanized_ui_runner.py` is preferred (has UI + logic)
-8. **`tests/test_swap_dsl.py`** - DSL test
+7. **`tests/test_swap_dsl.py`** - DSL test (already removed)
     - Covered by `humanized_ui_runner.py` which uses same DSL
-9. **`tests/test_swap_positioning.py`** - Old swap test
+8. **`tests/test_swap_positioning.py`** - Old swap test (already removed)
     - Covered by humanized tests
-10. **`tests/test_state.json`** - Old test state file
-    - Replaced by `test_app_state.json`
 
 ### Window/Grid
 
@@ -233,10 +227,16 @@ docs/tasks/
 - [x] Remove `flutter_version/` directory
 - [x] Remove `venv/` directory
 - [x] Remove `widgets/add_app_button.py` and update `__init__.py`
-- [x] Remove `tests/humanized_runner.py`
-- [x] Remove `tests/test_swap_dsl.py`
-- [x] Remove `tests/test_swap_positioning.py`
-- [x] Remove `tests/test_state.json`
+- [x] Remove `tests/humanized_runner.py` (already removed)
+- [x] Remove `tests/test_swap_dsl.py` (already removed)
+- [x] Remove `tests/test_swap_positioning.py` (already removed)
+- [x] Remove `tests/test_state.json` (already removed)
+- [x] Move test state to `tests/state/app_state.json`
+- [x] Update test file naming to `.dsl` extension
+- [x] Update test files to `snake_case.dsl` format
+- [x] Move test state to `tests/state/app_state.json`
+- [x] Update test file naming to `.dsl` extension
+- [x] Update test files to `snake_case.dsl` format
 
 **Result:** 8 files/directories removed. Test count: 232 → 215 (removed 17 tests from deleted files). All remaining
 tests pass (10 pre-existing failures unrelated to cleanup).
@@ -300,7 +300,7 @@ tests pass (10 pre-existing failures unrelated to cleanup).
 
 **Fix:**
 
-- [x] Humanized formatında test yaz: `tests/humanized/drag/2x1_note_right_edge`
+- [x] Humanized formatında test yaz: `tests/humanized/drag/2x1_note_right_edge.dsl`
 - [x] Test senaryosu: Create(NOTE) + Drag
 - [x] Bug'ı düzelt:
     - `window/grid/populator.py`: Yeni notlar için span bilgisini state'e kaydet
@@ -378,10 +378,143 @@ tests pass (10 pre-existing failures unrelated to cleanup).
 
 ---
 
+## Phase 4: Standard GitHub Repository Structure
+
+### Current Issues
+
+Root directory'de çok fazla dosya var:
+
+- Multiple `.bat` files (scripts should be in `scripts/`)
+- Multiple `.md` files (docs should be organized)
+- `CLAUDE.md` (development guidelines - should be in `docs/` or root is OK)
+- `data/` directory (should be organized better)
+
+### Standard GitHub Repository Structure
+
+**Recommended structure for open-source Python projects:**
+
+```
+MyEverythingWidget/
+├── .github/                    # GitHub-specific files
+│   └── workflows/             # CI/CD workflows
+├── docs/                      # Documentation
+│   ├── README.md             # Main documentation
+│   ├── CONTRIBUTING.md       # Contributing guide
+│   ├── CHANGELOG.md          # Changelog
+│   ├── ARCHITECTURE.md       # Architecture docs
+│   ├── DEVELOPMENT.md        # Development guidelines (CLAUDE.md)
+│   └── tasks/                # Task-specific docs (keep as is)
+├── scripts/                   # Utility scripts
+│   ├── run_test_mode.bat     # Test mode runner
+│   ├── test_humanized.bat    # Humanized test runner (logic)
+│   ├── test_humanized.sh     # Humanized test runner (Unix)
+│   └── test_humanized_ui.bat # Humanized UI test runner
+├── tests/                     # Test files (keep as is)
+├── src/ or root/             # Source code
+│   ├── main.py               # Entry point
+│   ├── models/               # Data models
+│   ├── services/             # Business logic
+│   ├── widgets/              # UI widgets
+│   └── window/               # Window management
+├── data/                      # Data files (if needed)
+│   └── images/               # Image assets
+├── .venv/                     # Virtual environment (gitignored)
+├── requirements.txt           # Dependencies
+├── LICENSE                    # License file
+└── README.md                  # Project README (root)
+```
+
+### Proposed Changes
+
+#### 1. Scripts Organization
+
+**Move to `scripts/` directory:**
+
+- [ ] `run_test_mode.bat` → `scripts/run_test_mode.bat`
+- [ ] `test_humanized.bat` → `scripts/test_humanized.bat`
+- [ ] `test_humanized.sh` → `scripts/test_humanized.sh`
+- [ ] `test_humanized_ui.bat` → `scripts/test_humanized_ui.bat`
+
+**Update references:**
+
+- [ ] Update `README.md` to reference `scripts/` paths
+- [ ] Update `CLAUDE.md` to reference `scripts/` paths
+- [ ] Update any documentation that references these scripts
+
+#### 2. Documentation Organization
+
+**Move to `docs/` directory:**
+
+- [ ] `ARCHITECTURE.md` → `docs/ARCHITECTURE.md`
+- [ ] `CHANGELOG.md` → `docs/CHANGELOG.md`
+- [ ] `CONTRIBUTING.md` → `docs/CONTRIBUTING.md`
+- [ ] `CLAUDE.md` → `docs/DEVELOPMENT.md` (rename for clarity)
+
+**Keep in root:**
+
+- `README.md` - Standard location for GitHub
+- `LICENSE` - Standard location
+
+#### 3. Data Directory
+
+**Current:** `data/images/`
+**Keep as is** - This is fine for application data
+
+**Alternative:** Move to `assets/` or `resources/` if preferred
+
+#### 4. Source Code Organization
+
+**Current:** Source code in root (`models/`, `services/`, `widgets/`, `window/`)
+**Options:**
+
+- **Option A:** Keep in root (simpler, common for small projects)
+- **Option B:** Move to `src/` (more organized, common for larger projects)
+
+**Recommendation:** Keep in root for now (project is still manageable)
+
+### Implementation Plan
+
+#### Phase 4.1: Move Scripts
+
+- [ ] Create `scripts/` directory
+- [ ] Move all `.bat` and `.sh` files to `scripts/`
+- [ ] Update all references in documentation
+- [ ] Test that scripts still work from new location
+
+#### Phase 4.2: Move Documentation
+
+- [ ] Move documentation files to `docs/`
+- [ ] Rename `CLAUDE.md` to `docs/DEVELOPMENT.md`
+- [ ] Update all references in code and documentation
+- [ ] Update README.md links
+
+#### Phase 4.3: Update References
+
+- [ ] Search for all references to moved files
+- [ ] Update import paths if needed
+- [ ] Update documentation links
+- [ ] Update CI/CD if exists
+
+#### Phase 4.4: Verification
+
+- [ ] Run all tests to ensure nothing breaks
+- [ ] Verify scripts work from new locations
+- [ ] Check documentation links
+- [ ] Update `.gitignore` if needed
+
+### Benefits
+
+1. **Cleaner root directory** - Easier to navigate
+2. **Standard structure** - Familiar to open-source contributors
+3. **Better organization** - Related files grouped together
+4. **Professional appearance** - Ready for public release
+
 ## Notes
 
 - All deletions should be done carefully
 - Run full test suite after each phase
 - Keep git history for reference
 - Update `ARCHITECTURE.md` if file structure changes significantly
+- Scripts in `scripts/` directory are standard practice
+- Documentation in `docs/` is standard practice
 

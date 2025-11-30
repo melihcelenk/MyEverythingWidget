@@ -43,9 +43,12 @@ from window.grid.constants import (
     MARGIN_LEFT
 )
 
-# State file path - use test-specific state in project folder
-STATE_FILE = PROJECT_ROOT / "tests" / "state" / "app_state.json"
-BACKUP_FILE = PROJECT_ROOT / "tests" / "state" / "app_state_backup.json"
+# State file paths
+INITIAL_STATE_FILE = PROJECT_ROOT / "tests" / "state" / "initial_test_state.json"
+TMP_DIR = PROJECT_ROOT / "tests" / "tmp"
+TMP_DIR.mkdir(parents=True, exist_ok=True)
+STATE_FILE = TMP_DIR / "app_state.json"
+BACKUP_FILE = TMP_DIR / "app_state_backup.json"
 
 
 class Colors:
@@ -220,29 +223,37 @@ def backup_state():
 
 
 def restore_state():
-    """Reset test state to empty."""
-    STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
-    STATE_FILE.write_text('{"categories":[],"apps":[],"notes":[]}', encoding='utf-8')
-    print(f"  {Colors.CYAN}Test state reset{Colors.RESET}")
+    """Reset test state by copying from initial state file."""
+    import shutil
+    TMP_DIR.mkdir(parents=True, exist_ok=True)
+    # Copy initial state to tmp directory
+    shutil.copy2(INITIAL_STATE_FILE, STATE_FILE)
+    print(f"  {Colors.CYAN}Test state reset from {INITIAL_STATE_FILE.name}{Colors.RESET}")
 
 
 def create_test_state(test: TestCase) -> dict:
-    """Create CLEAN state.json with ONLY test data - removes all existing categories."""
+    """Create test state by starting from initial state and adding test data."""
+    import json
+
+    # Start from initial state
+    with open(INITIAL_STATE_FILE, 'r', encoding='utf-8') as f:
+        state = json.load(f)
+    
     test_category_id = "test-category-" + str(uuid.uuid4())[:8]
 
     # Only Test category - nothing else
-    categories = [
+    state["categories"] = [
         {"id": test_category_id, "name": "Test", "icon": "🧪"}
     ]
 
-    apps = []
-    notes = []
+    state["apps"] = []
+    state["notes"] = []
 
     now = datetime.now(timezone.utc).isoformat()
 
     for item_id, item in test.initial_items.items():
         if item.item_type == 'app':
-            apps.append({
+            state["apps"].append({
                 "id": f"test-app-{item_id}",
                 "name": f"App {item_id}",
                 "icon_path": "📱",
@@ -256,7 +267,7 @@ def create_test_state(test: TestCase) -> dict:
                 "row_span": item.row_span
             })
         elif item.item_type in ('note', 'image'):
-            notes.append({
+            state["notes"].append({
                 "id": f"test-note-{item_id}",
                 "content": f"Note {item_id}",
                 "type": "image" if item.item_type == 'image' else "text",
@@ -270,12 +281,8 @@ def create_test_state(test: TestCase) -> dict:
                 "row_span": item.row_span
             })
 
-    # Return ONLY test data - this completely replaces the old state
-    return {
-        "categories": categories,
-        "apps": apps,
-        "notes": notes
-    }
+    # Return state with test data
+    return state
 
 
 def write_test_state(state: dict):
@@ -604,11 +611,11 @@ def run_ui_test(test: TestCase) -> bool:
 
     print(f"\n{Colors.CYAN}Setting up...{Colors.RESET}")
 
-    # Backup state
-    backup_state()
+    # Reset state from initial template (copy initial to tmp)
+    restore_state()
     
     try:
-        # Create test state
+        # Create test state (starts from initial state)
         state = create_test_state(test)
         write_test_state(state)
 
