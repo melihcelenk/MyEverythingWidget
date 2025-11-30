@@ -22,7 +22,8 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 try:
     import pyautogui
-    pyautogui.FAILSAFE = True
+
+    pyautogui.FAILSAFE = True  # Move mouse to screen corner to stop
     pyautogui.PAUSE = 0.1
 except ImportError:
     print("ERROR: pyautogui not installed. Run: pip install pyautogui")
@@ -39,6 +40,9 @@ from tests.humanized.runner.constants import (
     CELL_WIDTH, CELL_HEIGHT, SPACING, MARGIN_LEFT,
     Colors
 )
+
+# Import safety utilities (after Colors is imported)
+from tests.humanized.utils.safety import check_user_interrupt, safe_sleep
 from tests.humanized.runner.models import (
     GridItem, CreateAction, DragAction, LaunchAction, TestCase
 )
@@ -58,6 +62,15 @@ MOCK_APPS_DIR.mkdir(parents=True, exist_ok=True)
 # Initialize managers
 state_manager = StateManager(INITIAL_STATE_FILE, STATE_FILE, BACKUP_FILE)
 process_manager = ProcessManager(PROJECT_ROOT, STATE_FILE)
+
+# Initialize interactors and executors
+from tests.humanized.interactors.coordinate_calculator import CoordinateCalculator
+from tests.humanized.interactors.dialog_interactor import DialogInteractor
+from tests.humanized.actions.create_executor import CreateExecutor
+
+coordinate_calculator = CoordinateCalculator()
+dialog_interactor = DialogInteractor(coordinate_calculator)
+create_executor = CreateExecutor(dialog_interactor, coordinate_calculator, MOCK_APPS_DIR)
 
 
 # Parser now uses DSLParser class
@@ -146,8 +159,8 @@ def start_app() -> subprocess.Popen:
     return process_manager.start_app(5.0)
 
 
-def find_window() -> Tuple[int, int]:
-    """Find window and return (x, y)."""
+def find_window() -> Tuple[int, int, int, int]:
+    """Find window and return (x, y, width, height)."""
     return process_manager.find_window()
 
     # Bring window to front and ensure it's visible
@@ -313,7 +326,7 @@ def cleanup_mock_executables():
                 print(f"  {Colors.YELLOW}Warning: Could not delete {file}: {e}{Colors.RESET}")
 
 
-def perform_create_note(content: str, win_x: int, win_y: int):
+def perform_create_note(content: str, win_x: int, win_y: int, main_window_bounds=None):
     """Perform create note operation."""
     # Use same constants as cell_to_pixel for consistency
     TITLE_BAR_HEIGHT = 32
@@ -333,28 +346,31 @@ def perform_create_note(content: str, win_x: int, win_y: int):
     print(f"  {Colors.YELLOW}Clicking input at ({input_x}, {input_y}){Colors.RESET}")
 
     # Click on input field area
+    check_user_interrupt(main_window_bounds)
     pyautogui.click(input_x, input_y)
-    time.sleep(0.5)  # Wait for focus
+    safe_sleep(0.5, main_window_bounds)  # Wait for focus
 
     # Clear any existing text (Ctrl+A, Delete)
+    check_user_interrupt(main_window_bounds)
     pyautogui.hotkey('ctrl', 'a')
-    time.sleep(0.1)
+    safe_sleep(0.1, main_window_bounds)
     pyautogui.press('delete')
-    time.sleep(0.1)
+    safe_sleep(0.1, main_window_bounds)
 
     # Type content
     pyautogui.write(content, interval=0.05)
-    time.sleep(0.3)
+    safe_sleep(0.3, main_window_bounds)
 
     # Press Enter to submit
+    check_user_interrupt(main_window_bounds)
     pyautogui.press('enter')
-    time.sleep(1.0)  # Wait longer for note to be created and state to save
+    safe_sleep(1.0, main_window_bounds)  # Wait longer for note to be created and state to save
 
 
-def perform_create_app(app_name: str, win_x: int, win_y: int) -> Path:
-    """Perform create app operation."""
-    # Create mock executable
-    mock_file = create_mock_executable(app_name)
+def perform_create_app(app_name: str, win_x: int, win_y: int, main_window_bounds=None) -> Path:
+    """Perform create app operation using CreateExecutor."""
+    # Use CreateExecutor to create app (directly call _create_app to get mock_file)
+    return create_executor._create_app(app_name, win_x, win_y, main_window_bounds)
 
     # Window dimensions
     WINDOW_WIDTH = 320
@@ -921,8 +937,11 @@ def run_ui_test(test: TestCase) -> bool:
             return False
 
         # Find window
-        win_x, win_y = find_window()
-        print(f"  {Colors.GREEN}Window at ({win_x}, {win_y}){Colors.RESET}")
+        win_x, win_y, win_width, win_height = find_window()
+        print(f"  {Colors.GREEN}Window at ({win_x}, {win_y}), size: {win_width}x{win_height}{Colors.RESET}")
+
+        # Store window bounds for interrupt checking
+        main_window_bounds = (win_x, win_y, win_width, win_height)
 
         # Click Test tab
         click_test_tab(win_x, win_y)
@@ -933,9 +952,9 @@ def run_ui_test(test: TestCase) -> bool:
             for action in test.actions:
                 if isinstance(action, CreateAction):
                     if action.item_type == 'NOTE':
-                        perform_create_note(action.content, win_x, win_y)
+                        perform_create_note(action.content, win_x, win_y, main_window_bounds)
                         # After creating, read state to get the created item's position
-                        time.sleep(1.0)  # Wait longer for state to save
+                        safe_sleep(1.0, main_window_bounds)  # Wait longer for state to save
                         created_state = state_manager.read_state()
                         # Find the created note (should be the last one or match content)
                         created_note = None
@@ -956,7 +975,7 @@ def run_ui_test(test: TestCase) -> bool:
                             if grid_row is None or grid_col is None:
                                 print(
                                     f"  {Colors.YELLOW}Note position not set yet, waiting for auto-placement...{Colors.RESET}")
-                                time.sleep(1.0)
+                                safe_sleep(1.0, main_window_bounds)
                                 state_content = STATE_FILE.read_text(encoding='utf-8')
                                 created_state = json.loads(state_content)
                                 for note in created_state.get("notes", []):
@@ -986,13 +1005,13 @@ def run_ui_test(test: TestCase) -> bool:
                             print(
                                 f"  {Colors.RED}Note with content '{action.content}' not found in state{Colors.RESET}")
                     elif action.item_type == 'APP':
-                        mock_file = perform_create_app(action.content, win_x, win_y)
+                        mock_file = perform_create_app(action.content, win_x, win_y, main_window_bounds)
 
                         # CRITICAL: First verify dialog closed
                         print(f"  {Colors.CYAN}Verifying dialog closed...{Colors.RESET}")
                         dialog_closed = False
                         for check in range(3):
-                            time.sleep(0.5)
+                            safe_sleep(0.5, main_window_bounds)
                             try:
                                 dialog_windows = gw.getWindowsWithTitle("Add Item")
                                 if not dialog_windows:
@@ -1015,7 +1034,7 @@ def run_ui_test(test: TestCase) -> bool:
                         created_app = None
                         max_retries = 5
                         for retry in range(max_retries):
-                            time.sleep(0.5 if retry > 0 else 1.0)  # Wait longer on first attempt
+                            safe_sleep(0.5 if retry > 0 else 1.0, main_window_bounds)  # Wait longer on first attempt
                             state_content = STATE_FILE.read_text(encoding='utf-8')
                             created_state = json.loads(state_content)
                             apps = created_state.get("apps", [])
@@ -1240,7 +1259,17 @@ def main():
     print(f"  2. Create test items")
     print(f"  3. Open the app")
     print(f"  4. Perform drag-drop")
-    print(f"  5. Restore your state\n")
+    print(f"  5. Restore your state")
+    print(f"\n  {Colors.YELLOW}SAFETY: Move mouse to screen corner to stop{Colors.RESET}", end="")
+    try:
+        from tests.humanized.utils.safety import KEYBOARD_METHOD as kb_method
+        if kb_method:
+            print(f" | Press any key to stop ({kb_method})")
+        else:
+            print(f" | Keyboard not available (install: pip install keyboard or pynput)")
+    except:
+        print()
+    print()
     
     for filepath in files:
         try:

@@ -113,8 +113,8 @@ class ProcessManager:
             pass
         raise RuntimeError(f"App window did not appear within {timeout} seconds")
 
-    def find_window(self) -> tuple[int, int]:
-        """Find the application window and return its position."""
+    def find_window(self) -> tuple[int, int, int, int]:
+        """Find the application window and return its position and size (left, top, width, height)."""
         if not gw:
             raise RuntimeError("pygetwindow not available")
 
@@ -126,7 +126,12 @@ class ProcessManager:
                     win.activate()
                 except Exception:
                     pass  # Activation may fail, but we can still get position
-                return win.left, win.top
+
+                # Get window dimensions
+                width = win.width if hasattr(win, 'width') and win.width else 320  # Default width
+                height = win.height if hasattr(win, 'height') and win.height else 500  # Default height
+
+                return win.left, win.top, width, height
         except Exception:
             pass
 

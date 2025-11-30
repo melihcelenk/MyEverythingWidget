@@ -1,6 +1,5 @@
 """Dialog interaction utilities for UI tests."""
 
-import time
 from typing import Tuple
 
 try:
@@ -10,6 +9,8 @@ try:
     pyautogui.PAUSE = 0.1
 except ImportError:
     pyautogui = None
+
+from ..utils.safety import check_user_interrupt, safe_sleep
 
 try:
     import pygetwindow as gw
@@ -84,17 +85,19 @@ class DialogInteractor:
 
         return dialog_x, dialog_y, dialog_width, dialog_height
 
-    def click_app_tab(self, dialog_x: int, dialog_y: int, dialog_width: int):
+    def click_app_tab(self, dialog_x: int, dialog_y: int, dialog_width: int, main_window_bounds=None):
         """Click App tab in Add Item Dialog."""
         if not pyautogui:
             raise RuntimeError("pyautogui not available")
 
+        check_user_interrupt(main_window_bounds)
         tab_x, tab_y = self.calculator.get_tab_position(0, dialog_x, dialog_y, dialog_width)
         print(f"  {Colors.YELLOW}Clicking App tab at ({tab_x}, {tab_y}){Colors.RESET}")
         pyautogui.click(tab_x, tab_y)
-        time.sleep(0.8)  # Wait for tab to switch
+        safe_sleep(0.8, main_window_bounds)  # Wait for tab to switch
 
-    def fill_name_input(self, dialog_x: int, dialog_y: int, dialog_width: int, app_name: str) -> bool:
+    def fill_name_input(self, dialog_x: int, dialog_y: int, dialog_width: int, app_name: str,
+                        main_window_bounds=None) -> bool:
         """
         Fill name input field in Add Item Dialog.
         Returns True if successful.
@@ -102,27 +105,29 @@ class DialogInteractor:
         if not pyautogui:
             raise RuntimeError("pyautogui not available")
 
+        check_user_interrupt(main_window_bounds)
         name_input_x, name_input_y = self.calculator.get_name_input_position(dialog_x, dialog_y, dialog_width)
         print(f"  {Colors.YELLOW}Clicking name input at ({name_input_x}, {name_input_y}){Colors.RESET}")
         pyautogui.click(name_input_x, name_input_y)
-        time.sleep(0.5)
+        safe_sleep(0.5, main_window_bounds)
 
         # Type app name
+        check_user_interrupt(main_window_bounds)
         print(f"  {Colors.CYAN}Typing app name: {app_name}{Colors.RESET}")
         pyautogui.hotkey('ctrl', 'a')
-        time.sleep(0.1)
+        safe_sleep(0.1, main_window_bounds)
         pyautogui.press('delete')
-        time.sleep(0.1)
+        safe_sleep(0.1, main_window_bounds)
         pyautogui.write(app_name, interval=0.05)
-        time.sleep(0.5)
+        safe_sleep(0.5, main_window_bounds)
 
         # Verify name was written
         if pyperclip:
             try:
                 pyautogui.hotkey('ctrl', 'a')
-                time.sleep(0.1)
+                safe_sleep(0.1, main_window_bounds)
                 pyautogui.hotkey('ctrl', 'c')
-                time.sleep(0.2)
+                safe_sleep(0.2, main_window_bounds)
                 clipboard_text = pyperclip.paste()
                 if clipboard_text.strip() == app_name:
                     print(f"  {Colors.GREEN}✓ App name written correctly: '{clipboard_text}'{Colors.RESET}")
@@ -136,7 +141,8 @@ class DialogInteractor:
                 return True  # Assume success if we can't verify
         return True
 
-    def fill_path_input(self, dialog_x: int, dialog_y: int, dialog_width: int, name_input_y: int, path: str) -> bool:
+    def fill_path_input(self, dialog_x: int, dialog_y: int, dialog_width: int, name_input_y: int, path: str,
+                        main_window_bounds=None) -> bool:
         """
         Fill path input field in Add Item Dialog.
         Returns True if successful.
@@ -144,28 +150,30 @@ class DialogInteractor:
         if not pyautogui:
             raise RuntimeError("pyautogui not available")
 
+        check_user_interrupt(main_window_bounds)
         path_input_x, path_input_y = self.calculator.get_path_input_position(dialog_x, dialog_y, dialog_width,
                                                                              name_input_y)
         print(f"  {Colors.YELLOW}Clicking path input at ({path_input_x}, {path_input_y}){Colors.RESET}")
         pyautogui.click(path_input_x, path_input_y)
-        time.sleep(0.5)
+        safe_sleep(0.5, main_window_bounds)
 
         # Type path
+        check_user_interrupt(main_window_bounds)
         print(f"  {Colors.CYAN}Typing path: {path}{Colors.RESET}")
         pyautogui.hotkey('ctrl', 'a')
-        time.sleep(0.1)
+        safe_sleep(0.1, main_window_bounds)
         pyautogui.press('delete')
-        time.sleep(0.1)
+        safe_sleep(0.1, main_window_bounds)
         pyautogui.write(path, interval=0.02)
-        time.sleep(0.5)
+        safe_sleep(0.5, main_window_bounds)
 
         # Verify path was written
         if pyperclip:
             try:
                 pyautogui.hotkey('ctrl', 'a')
-                time.sleep(0.1)
+                safe_sleep(0.1, main_window_bounds)
                 pyautogui.hotkey('ctrl', 'c')
-                time.sleep(0.2)
+                safe_sleep(0.2, main_window_bounds)
                 clipboard_text = pyperclip.paste()
                 if clipboard_text.strip() == path:
                     print(f"  {Colors.GREEN}✓ Path written correctly: '{clipboard_text}'{Colors.RESET}")
@@ -178,7 +186,8 @@ class DialogInteractor:
                 return True  # Assume success if we can't verify
         return True
 
-    def click_add_button(self, dialog_x: int, dialog_y: int, dialog_width: int, dialog_height: int) -> bool:
+    def click_add_button(self, dialog_x: int, dialog_y: int, dialog_width: int, dialog_height: int,
+                         main_window_bounds=None) -> bool:
         """
         Click Add button in Add Item Dialog.
         Returns True if dialog closed successfully.
@@ -186,16 +195,18 @@ class DialogInteractor:
         if not pyautogui:
             raise RuntimeError("pyautogui not available")
 
+        check_user_interrupt(main_window_bounds)
         add_button_x, add_button_y = self.calculator.get_add_button_position(dialog_x, dialog_y, dialog_width,
                                                                              dialog_height)
         print(f"  {Colors.YELLOW}Clicking Add button at ({add_button_x}, {add_button_y}){Colors.RESET}")
         pyautogui.click(add_button_x, add_button_y)
-        time.sleep(2.0)
+        safe_sleep(2.0, main_window_bounds)
 
         # Verify dialog closed
         if gw:
             for check in range(3):
-                time.sleep(0.5)
+                check_user_interrupt(main_window_bounds)
+                safe_sleep(0.5, main_window_bounds)
                 try:
                     dialog_windows = gw.getWindowsWithTitle("Add Item")
                     if not dialog_windows:
