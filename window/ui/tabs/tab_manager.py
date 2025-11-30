@@ -11,46 +11,19 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QTabWidget, QTabBar, QWidget, QMenu
 
 from widgets.draggable_tab_bar import DraggableTabBar
+from widgets.styled_tab_widget import StyledTabWidget
 
 if TYPE_CHECKING:
     from window.app_state import AppState
 
 
 class TabManager:
-    """Manages the main tab widget."""
+    """Manages the main tab widget for category tabs."""
 
     _logger = logging.getLogger(__name__)
 
-    TAB_STYLESHEET = """
-        QTabWidget::pane {
-            border: 1px solid #ddd;
-            border-top: none;
-            background-color: white;
-        }
-        QTabBar::tab {
-            background-color: #f5f5f5;
-            color: #666;
-            border: 1px solid #ddd;
-            border-bottom: none;
-            padding: 6px 8px;
-            margin-right: 1px;
-            border-top-left-radius: 4px;
-            border-top-right-radius: 4px;
-            max-width: 70px;
-        }
-        QTabBar::tab:hover {
-            background-color: #e8e8e8;
-            color: #333;
-        }
-        QTabBar::tab:selected {
-            background-color: white;
-            color: #2196F3;
-            border-bottom: 2px solid #2196F3;
-            font-weight: bold;
-        }
-        QTabBar::tab:!selected {
-            margin-top: 2px;
-        }
+    # Additional stylesheet for '+' tab (appended to base style)
+    PLUS_TAB_STYLE = """
         QTabBar::tab:last {
             max-width: 30px;
             padding: 6px 6px;
@@ -59,7 +32,7 @@ class TabManager:
 
     def __init__(self, app_state: 'AppState'):
         self._app_state = app_state
-        self._tab_widget: QTabWidget = None
+        self._tab_widget: StyledTabWidget = None
         self._category_pages: dict = {}  # category_id -> CategoryPage
 
         # Callbacks
@@ -69,15 +42,18 @@ class TabManager:
 
     def create_widget(self) -> QTabWidget:
         """Create and configure the tab widget."""
-        self._tab_widget = QTabWidget()
-        self._tab_widget.setTabsClosable(False)
+        self._tab_widget = StyledTabWidget(compact=False)
 
+        # Replace tab bar with draggable version
         tab_bar = DraggableTabBar()
         self._tab_widget.setTabBar(tab_bar)
         tab_bar.setExpanding(False)
 
-        self._tab_widget.setStyleSheet(self.TAB_STYLESHEET)
+        # Add '+' tab specific styling
+        current_style = self._tab_widget.styleSheet()
+        self._tab_widget.setStyleSheet(current_style + self.PLUS_TAB_STYLE)
 
+        # Connect signals
         tab_bar.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         tab_bar.customContextMenuRequested.connect(self._on_context_menu)
         tab_bar.tabBarClicked.connect(self._on_tab_clicked)

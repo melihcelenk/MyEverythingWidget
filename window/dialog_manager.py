@@ -2,15 +2,17 @@
 Dialog management for main window
 Handles all dialog operations for categories and apps
 """
-from PySide6.QtWidgets import QMessageBox, QInputDialog, QFileDialog
+import uuid
+
 from PySide6.QtGui import QPixmap
-from models.category import AppCategory
+from PySide6.QtWidgets import QMessageBox, QInputDialog, QFileDialog
+
 from models.app_shortcut import AppShortcut
+from models.category import AppCategory
+from services.image_storage_service import ImageStorageService
 from widgets.app_picker_dialog import AppPickerDialog
 from widgets.icon_picker_dialog import IconPickerDialog
 from window.models.note import Note, NoteType
-from services.image_storage_service import ImageStorageService
-import uuid
 
 
 class DialogManager:
@@ -119,6 +121,55 @@ class DialogManager:
                 QMessageBox.information(self._parent, "Success", f"{app.name} added successfully")
                 return True
         return False
+
+    def add_app_from_data(self, data: dict) -> bool:
+        """Add app from data dict (name, target, icon_path). Returns True if added."""
+        import uuid
+        from models.app_shortcut import AppShortcut, LaunchType
+
+        name = data.get("name", "").strip()
+        target = data.get("path", "").strip()
+        icon_path = data.get("icon_path", "")
+
+        if not name or not target:
+            return False
+
+        # Determine launch type based on actual path
+        from pathlib import Path as FilePath
+        target_path = FilePath(target)
+
+        if target.startswith(("http://", "https://")):
+            launch_type = LaunchType.URL
+        elif target_path.is_file():
+            # It's a file - check if executable
+            if target_path.suffix.lower() in ['.exe', '.bat', '.cmd', '.msi']:
+                launch_type = LaunchType.EXE
+            else:
+                launch_type = LaunchType.EXE  # Try to run it anyway
+        elif target_path.is_dir():
+            launch_type = LaunchType.FOLDER
+        elif target.endswith((".exe", ".bat", ".cmd")):
+            launch_type = LaunchType.EXE
+        else:
+            launch_type = LaunchType.FOLDER
+
+        # Get category from data or use first available
+        category = data.get("category", "")
+        if not category:
+            categories = self._app_state.categories
+            category = categories[0].name if categories else "General"
+
+        app = AppShortcut(
+            id=str(uuid.uuid4()),
+            name=name,
+            icon_path=icon_path,
+            target=target,
+            category=category,
+            type=launch_type
+        )
+
+        self._app_state.add_app(app)
+        return True
 
     def show_edit_app_dialog(self, app: AppShortcut) -> bool:
         """Show dialog to edit an app. Returns True if app was updated."""

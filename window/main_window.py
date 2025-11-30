@@ -12,7 +12,7 @@ from models.app_shortcut import AppShortcut
 from services.app_launcher_service import AppLauncherService
 from services.clipboard_service import ClipboardService
 from services.image_storage_service import ImageStorageService
-from widgets.add_app_button import AddAppButton
+from widgets.add_item_dialog import AddItemDialog
 from widgets.custom_title_bar import CustomTitleBar
 from window.app_state import AppState
 from window.dialog_manager import DialogManager
@@ -80,33 +80,27 @@ class MainWindow(QMainWindow):
         self._tab_widget = self._tab_manager.create_tab_widget()
         layout.addWidget(self._tab_widget)
 
-        # Floating add image button
-        self._add_image_button = QPushButton("🖼️", central_widget)
-        self._add_image_button.setFixedSize(self.FAB_SIZE, self.FAB_SIZE)
+        # Floating add button (unified: App/Note/Image)
+        self._add_button = QPushButton("+", central_widget)
+        self._add_button.setFixedSize(self.FAB_SIZE, self.FAB_SIZE)
         border_radius = self.FAB_SIZE // 2
-        self._add_image_button.setStyleSheet(f"""
+        self._add_button.setStyleSheet(f"""
             QPushButton {{
-                background-color: #4CAF50;
+                background-color: #2196F3;
                 color: white;
                 border: none;
                 border-radius: {border_radius}px;
-                font-size: 18px;
+                font-size: 24px;
+                font-weight: bold;
             }}
             QPushButton:hover {{
-                background-color: #45a049;
+                background-color: #1976D2;
             }}
             QPushButton:pressed {{
-                background-color: #3d8b40;
+                background-color: #1565C0;
             }}
         """)
-        self._add_image_button.clicked.connect(self._on_add_image_clicked)
-        self._add_image_button.raise_()
-
-        # Floating add app button
-        self._add_button = AddAppButton(
-            on_tap=lambda: self._dialog_manager.show_add_app_dialog()
-        )
-        self._add_button.setParent(central_widget)
+        self._add_button.clicked.connect(self._on_add_button_clicked)
         self._add_button.raise_()
 
     def _setup_window(self):
@@ -163,11 +157,42 @@ class MainWindow(QMainWindow):
         if self._dialog_manager.show_add_category_dialog():
             self._tab_widget.setCurrentIndex(len(self._app_state.categories) - 1)
 
-    def _on_add_image_clicked(self):
-        """Handle add image button click"""
+    def _on_add_button_clicked(self):
+        """Handle unified add button click - show AddItemDialog."""
+        category_name = self._get_current_category_name()
+        if not category_name:
+            return
+
+        dialog = AddItemDialog(category_name, self)
+        dialog.appAdded.connect(self._on_app_added)
+        dialog.noteAdded.connect(self._on_note_added)
+        dialog.imageAdded.connect(self._on_image_added)
+        dialog.exec()
+
+    def _on_app_added(self, data: dict):
+        """Handle app added from dialog."""
         category_name = self._get_current_category_name()
         if category_name:
-            self._dialog_manager.show_add_image_dialog(category_name)
+            data["category"] = category_name
+            self._dialog_manager.add_app_from_data(data)
+
+    def _on_note_added(self, content: str):
+        """Handle note added from dialog."""
+        category_name = self._get_current_category_name()
+        if category_name:
+            note = Note(
+                id=str(uuid.uuid4()),
+                content=content,
+                type=NoteType.TEXT,
+                category=category_name
+            )
+            self._app_state.add_note(note)
+
+    def _on_image_added(self, image_path: str):
+        """Handle image added from dialog."""
+        category_name = self._get_current_category_name()
+        if category_name:
+            self._add_image_from_path(image_path, category_name)
 
     def _get_current_category_name(self) -> str | None:
         """Get the name of the currently selected category."""
@@ -198,17 +223,14 @@ class MainWindow(QMainWindow):
     # === Window Events ===
 
     def resizeEvent(self, event):
-        """Handle window resize to position floating buttons"""
+        """Handle window resize to position floating button"""
         super().resizeEvent(event)
-        # Position FABs from bottom-right corner
+        # Position FAB at bottom-right corner
         fab_x = self.width() - self.FAB_SIZE - self.FAB_MARGIN
-        fab_bottom_y = self.height() - self.FAB_SIZE - self.FAB_MARGIN
-        fab_top_y = fab_bottom_y - self.FAB_SIZE - self.FAB_MARGIN
+        fab_y = self.height() - self.FAB_SIZE - self.FAB_MARGIN
 
         if hasattr(self, '_add_button'):
-            self._add_button.move(fab_x, fab_bottom_y)
-        if hasattr(self, '_add_image_button'):
-            self._add_image_button.move(fab_x, fab_top_y)
+            self._add_button.move(fab_x, fab_y)
 
     def mousePressEvent(self, event: QMouseEvent):
         """Handle mouse press for window dragging"""
@@ -246,12 +268,30 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, "Error", "Failed to save image")
             return
 
-        # Get current category
+        # Get current category and add image
         category_name = self._get_current_category_name()
-        if not category_name:
+        if category_name:
+            self._add_image_note(file_path, category_name)
+
+    def _add_image_from_path(self, image_path: str, category_name: str):
+        """Add an image from file path (copy to storage first)."""
+        from PySide6.QtGui import QPixmap
+
+        pixmap = QPixmap(image_path)
+        if pixmap.isNull():
+            QMessageBox.warning(self, "Error", f"Failed to load image: {image_path}")
             return
 
-        # Create note with image type
+        # Save to our storage
+        file_path = self._image_storage.save_image(pixmap)
+        if file_path is None:
+            QMessageBox.warning(self, "Error", "Failed to save image")
+            return
+
+        self._add_image_note(file_path, category_name)
+
+    def _add_image_note(self, file_path: str, category_name: str):
+        """Create an image note in the given category."""
         note = Note(
             id=str(uuid.uuid4()),
             content=file_path,

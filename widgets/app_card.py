@@ -83,9 +83,29 @@ class AppCard(QWidget, DraggableMixin):
         
         # Check if custom icon exists
         if self._app.icon_path and isinstance(self._app.icon_path, str) and len(self._app.icon_path) > 0:
-            # Try emoji (single character or up to 2 chars)
-            if len(self._app.icon_path) <= 2:
-                icon_widget.setText(self._app.icon_path)
+            icon_path = self._app.icon_path
+
+            # Check if it's a file path (contains path separators or file extension)
+            is_file_path = ('/' in icon_path or '\\' in icon_path or
+                            icon_path.endswith(('.png', '.jpg', '.jpeg', '.ico', '.bmp')))
+
+            if is_file_path:
+                # Try image file
+                try:
+                    icon_file = Path(icon_path)
+                    if icon_file.exists():
+                        pixmap = QPixmap(str(icon_file))
+                        if not pixmap.isNull():
+                            scaled_pixmap = pixmap.scaled(QSize(36, 36), Qt.AspectRatioMode.KeepAspectRatio,
+                                                          Qt.TransformationMode.SmoothTransformation)
+                            icon_widget.setPixmap(scaled_pixmap)
+                            icon_widget.setStyleSheet("border-radius: 10px;")
+                            return icon_widget
+                except (ValueError, OSError, TypeError):
+                    pass
+            else:
+                # It's an emoji
+                icon_widget.setText(icon_path)
                 icon_widget.setStyleSheet("""
                     QLabel {
                         background-color: rgba(33, 150, 243, 0.2);
@@ -94,21 +114,6 @@ class AppCard(QWidget, DraggableMixin):
                     }
                 """)
                 return icon_widget
-            
-            # Try image file
-            try:
-                icon_file = Path(self._app.icon_path)
-                if icon_file.exists() and icon_file.suffix.lower() in ['.png', '.jpg', '.jpeg', '.ico']:
-                    pixmap = QPixmap(str(icon_file))
-                    if not pixmap.isNull():
-                        scaled_pixmap = pixmap.scaled(QSize(36, 36), Qt.AspectRatioMode.KeepAspectRatio,
-                                                      Qt.TransformationMode.SmoothTransformation)
-                        icon_widget.setPixmap(scaled_pixmap)
-                        icon_widget.setStyleSheet("border-radius: 10px;")
-                        return icon_widget
-            except (ValueError, OSError, TypeError):
-                # Invalid path or file error, fall through to default icon
-                pass
         
         # Fallback to default type-based icon
         icon_widget.setText(self._get_icon_for_type())
