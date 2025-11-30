@@ -2,20 +2,22 @@
 Main application window
 Manages window state and displays primary content
 """
-from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QMessageBox, QPushButton
+import uuid
+
 from PySide6.QtCore import Qt, QPoint
 from PySide6.QtGui import QMouseEvent, QKeyEvent
-from window.app_state import AppState
-from window.tab_manager import TabManager
-from window.dialog_manager import DialogManager
-from window.models.note import Note, NoteType
+from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QMessageBox, QPushButton
+
+from models.app_shortcut import AppShortcut
 from services.app_launcher_service import AppLauncherService
 from services.clipboard_service import ClipboardService
 from services.image_storage_service import ImageStorageService
-from widgets.custom_title_bar import CustomTitleBar
 from widgets.add_app_button import AddAppButton
-from models.app_shortcut import AppShortcut
-import uuid
+from widgets.custom_title_bar import CustomTitleBar
+from window.app_state import AppState
+from window.dialog_manager import DialogManager
+from window.models.note import Note, NoteType
+from window.tab_manager import TabManager
 
 
 class MainWindow(QMainWindow):
@@ -104,7 +106,8 @@ class MainWindow(QMainWindow):
     def _setup_window(self):
         """Setup window properties"""
         self.setWindowTitle("My Everything Widget")
-        self.setFixedSize(320, 500)
+        # 4 columns * 80px + 4px margin = 324px, add padding for window
+        self.setFixedSize(330, 500)
         self.setWindowFlags(
             Qt.WindowType.FramelessWindowHint |
             Qt.WindowType.WindowStaysOnTopHint

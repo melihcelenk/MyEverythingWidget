@@ -26,7 +26,7 @@ class GridDropZone(QWidget):
     gridDropped = Signal(str, int, int)
 
     # Fixed grid dimensions (Android-like)
-    GRID_COLS = 3
+    GRID_COLS = 4
     GRID_ROWS = 5
 
     # Cell dimensions (must match actual widget sizes)

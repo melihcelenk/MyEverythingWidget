@@ -15,8 +15,8 @@ class TestGridConstants:
     """Test grid constants are properly defined."""
 
     def test_grid_dimensions(self):
-        """Grid should be 3x5."""
-        assert GRID_COLS == 3
+        """Grid should be 4x5."""
+        assert GRID_COLS == 4
         assert GRID_ROWS == 5
 
     def test_cell_dimensions(self):
@@ -119,16 +119,16 @@ class TestCollisionDetector:
     def test_is_valid_position(self, detector):
         """Should validate position within grid bounds."""
         assert detector.is_valid_position(0, 0) is True
-        assert detector.is_valid_position(4, 2) is True  # Last valid cell
+        assert detector.is_valid_position(4, 3) is True  # Last valid cell (4x5 grid)
         assert detector.is_valid_position(5, 0) is False  # Row overflow
-        assert detector.is_valid_position(0, 3) is False  # Col overflow
+        assert detector.is_valid_position(0, 4) is False  # Col overflow (4 cols: 0-3)
         assert detector.is_valid_position(-1, 0) is False  # Negative row
 
     def test_is_valid_position_with_span(self, detector):
         """Should validate span doesn't overflow."""
         assert detector.is_valid_position(0, 0, row_span=2, col_span=2) is True
         assert detector.is_valid_position(4, 0, row_span=2) is False  # Would overflow rows
-        assert detector.is_valid_position(0, 2, col_span=2) is False  # Would overflow cols
+        assert detector.is_valid_position(0, 3, col_span=2) is False  # Would overflow cols (4 cols)
 
 
 class TestCellCalculator:
@@ -141,7 +141,7 @@ class TestCellCalculator:
 
     def test_find_first_available_with_occupied(self):
         """Should skip occupied cells."""
-        occupied = {(0, 0), (0, 1), (0, 2)}  # First row full
+        occupied = {(0, 0), (0, 1), (0, 2), (0, 3)}  # First row full (4 cols)
         cell = CellCalculator.find_first_available_cell(occupied)
         assert cell == (1, 0)  # First cell of second row
 
@@ -205,12 +205,12 @@ class TestCellCalculator:
         """Should clamp position to ensure item fits."""
         row, col = CellCalculator.clamp_position(10, 10)
         assert row == 4  # GRID_ROWS - 1
-        assert col == 2  # GRID_COLS - 1
+        assert col == 3  # GRID_COLS - 1 (4 cols: 0-3)
 
         # With span
-        row, col = CellCalculator.clamp_position(4, 2, row_span=2, col_span=2)
+        row, col = CellCalculator.clamp_position(4, 3, row_span=2, col_span=2)
         assert row == 3  # Max row for 2-row item
-        assert col == 1  # Max col for 2-col item
+        assert col == 2  # Max col for 2-col item (4 - 2 = 2)
 
 
 class TestGridManager:
@@ -323,13 +323,12 @@ class TestGridManager:
         """Swapping items of different sizes should fail if target doesn't fit."""
         # 2x1 item at (0,0)-(0,1)
         manager.add_item("item1", row=0, col=0, col_span=2)
-        # 1x1 item at (0,2)
-        manager.add_item("item2", row=0, col=2)
+        # 1x1 item at (0,3) - last column
+        manager.add_item("item2", row=0, col=3)
 
-        # Try to move 2x1 to (0,2) - won't fit, and 1x1 can't go to (0,0)-(0,1)
-        # Actually 1x1 CAN go to (0,0), so this might work...
-        success, swapped = manager.try_swap("item1", target_row=0, target_col=2)
-        # 2x1 at (0,2) would overflow column
+        # Try to move 2x1 to (0,3) - won't fit (would need col 3-4, but only 0-3 exist)
+        success, swapped = manager.try_swap("item1", target_row=0, target_col=3)
+        # 2x1 at (0,3) would overflow column (need 2 cols but only 1 left)
         assert success is False
 
     def test_get_item_at(self, manager):
@@ -358,9 +357,9 @@ class TestGridManager:
         manager.add_item("item2", row=1, col=0)  # 1 cell
 
         stats = manager.get_stats()
-        assert stats["total_cells"] == 15  # 3x5
+        assert stats["total_cells"] == 20  # 4x5
         assert stats["occupied_cells"] == 3
-        assert stats["free_cells"] == 12
+        assert stats["free_cells"] == 17
         assert stats["item_count"] == 2
 
     def test_clear(self, manager):
@@ -426,10 +425,10 @@ class TestDropHandler:
         manager.add_item("item1", row=0, col=0)
         result = handler.handle_drop("item1", target_row=10, target_col=10)
 
-        # Should clamp to (4,2) - last valid position for 1x1
+        # Should clamp to (4,3) - last valid position for 1x1 (4 cols: 0-3)
         assert result.success is True
         assert result.target_row == 4
-        assert result.target_col == 2
+        assert result.target_col == 3
 
     def test_can_drop_empty(self, manager, handler):
         """can_drop should return True for empty cell."""
