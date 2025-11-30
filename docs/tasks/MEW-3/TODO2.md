@@ -53,21 +53,41 @@ window/
 | 2.7 | Grid modülü testleri                                 | ✅ `tests/test_grid_module.py` (50 tests) |
 | 2.8 | Tüm testlerin geçtiğini doğrula                      | ✅ 192 test passed                        |
 
-### 2.9 TabManager Tam Refactor ✅
+### 2.9 Paket Yapısı Refactor ✅
 
-| Dosya               | Önceki | Sonra | Değişim |
-|---------------------|--------|-------|---------|
-| `tab_manager.py`    | 957    | 329   | -66%    |
-| `grid_populator.py` | -      | 259   | (yeni)  |
-| `item_mover.py`     | -      | 183   | (yeni)  |
-| **Toplam**          | 957    | 771   | -19%    |
+```
+window/
+├── tab_manager.py          # 54 lines  (backward compat wrapper)
+├── content_manager.py      # 135 lines (main coordinator)
+├── ui/
+│   ├── tabs/
+│   │   ├── tab_manager.py      # 164 lines (QTabWidget yönetimi)
+│   │   └── category_page.py    # 94 lines  (kategori sayfası)
+│   └── notes/
+│       ├── quick_entry.py      # 55 lines  (not ekleme widget)
+│       └── actions.py          # 57 lines  (not düzenleme)
+├── grid/
+│   ├── constants.py            # Grid sabitleri
+│   ├── populator.py            # 258 lines (grid doldurma)
+│   ├── mover.py                # 182 lines (taşıma/swap)
+│   ├── cell_calculator.py      # Hücre hesaplama
+│   └── collision_detector.py   # Çakışma tespiti
+└── models/
+    └── note.py
+```
+
+**Önceki:** 957 satır tek sınıf
+**Şimdi:** 8 ayrı sınıf, her biri ~50-260 satır
 
 **SOLID Uyumu:**
 
-- ✅ Single Responsibility: Her sınıf tek iş yapıyor
-- ✅ TabManager: Sadece tab yönetimi
-- ✅ GridPopulator: Grid'i kartlarla doldurma
-- ✅ ItemMover: Drag-drop, swap işlemleri
+- ✅ **S**ingle Responsibility: Her sınıf tek iş yapıyor
+- ✅ `ui/tabs/tab_manager.py` → Tab widget yönetimi
+- ✅ `ui/tabs/category_page.py` → Kategori sayfası
+- ✅ `ui/notes/quick_entry.py` → Not ekleme
+- ✅ `ui/notes/actions.py` → Not düzenleme
+- ✅ `grid/populator.py` → Grid doldurma
+- ✅ `grid/mover.py` → Taşıma/swap
 
 **Test Sonucu:** ✅ 192 passed
 

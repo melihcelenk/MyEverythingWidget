@@ -8,19 +8,25 @@ This module provides:
 - DropHandler: Drag-drop operations
 """
 
+"""
+Grid management module.
+
+- constants: Grid dimensions and sizes
+- populator: Fills grid with cards
+- mover: Handles drag-drop and swap
+- cell_calculator: Cell position calculations
+- collision_detector: Detects cell collisions
+"""
 from window.grid.cell_calculator import CellCalculator
 from window.grid.collision_detector import CollisionDetector, GridItem
 from window.grid.constants import GRID_COLS, GRID_ROWS, CELL_WIDTH, CELL_HEIGHT, SPACING
-from window.grid.drop_handler import DropHandler, DropResult, DropAction
-from window.grid.grid_manager import GridManager, PlacementResult
-from window.grid.grid_populator import GridPopulator
-from window.grid.item_mover import ItemMover
+from window.grid.mover import ItemMover
+from window.grid.populator import GridPopulator
 
 __all__ = [
     'GRID_COLS', 'GRID_ROWS', 'CELL_WIDTH', 'CELL_HEIGHT', 'SPACING',
-    'CollisionDetector', 'GridItem',
     'CellCalculator',
-    'GridManager', 'PlacementResult',
-    'DropHandler', 'DropResult', 'DropAction',
-    'GridPopulator', 'ItemMover',
+    'CollisionDetector', 'GridItem',
+    'GridPopulator',
+    'ItemMover',
 ]

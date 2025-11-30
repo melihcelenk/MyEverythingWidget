@@ -1,329 +1,54 @@
 """
-TabManager - Manages tab widget and category tabs.
+TabManager - Backward compatibility wrapper.
 
-Single Responsibility: Tab creation and management.
-Grid population and item movement delegated to separate classes.
+This module re-exports ContentManager as TabManager for backward compatibility.
+New code should use window.content_manager.ContentManager directly.
 """
-import logging
-import uuid
-
-from PySide6.QtCore import Qt, QTimer
-from PySide6.QtWidgets import (
-    QTabWidget, QTabBar, QGridLayout, QWidget, QMenu,
-    QVBoxLayout, QHBoxLayout, QLineEdit, QPushButton
-)
-
-from widgets.draggable_tab_bar import DraggableTabBar
-from widgets.grid_drop_zone import GridDropZone
-from window.grid import GRID_COLS, GRID_ROWS, CELL_WIDTH, CELL_HEIGHT, SPACING
-from window.grid.grid_populator import GridPopulator
-from window.grid.item_mover import ItemMover
-from window.models.note import Note, NoteType
+from window.content_manager import ContentManager
 
 
-class TabManager:
-    """Manages tab widget and category tabs."""
-
-    _logger = logging.getLogger(__name__)
-
-    TAB_STYLESHEET = """
-        QTabWidget::pane {
-            border: 1px solid #ddd;
-            border-top: none;
-            background-color: white;
-        }
-        QTabBar::tab {
-            background-color: #f5f5f5;
-            color: #666;
-            border: 1px solid #ddd;
-            border-bottom: none;
-            padding: 6px 8px;
-            margin-right: 1px;
-            border-top-left-radius: 4px;
-            border-top-right-radius: 4px;
-            max-width: 70px;
-        }
-        QTabBar::tab:hover {
-            background-color: #e8e8e8;
-            color: #333;
-        }
-        QTabBar::tab:selected {
-            background-color: white;
-            color: #2196F3;
-            border-bottom: 2px solid #2196F3;
-            font-weight: bold;
-        }
-        QTabBar::tab:!selected {
-            margin-top: 2px;
-        }
-        QTabBar::tab:last {
-            max-width: 30px;
-            padding: 6px 6px;
-        }
-    """
+class TabManager(ContentManager):
+    """Backward-compatible TabManager that wraps ContentManager."""
 
     def __init__(self, app_state, on_app_tap, on_app_edit, on_app_rename,
                  on_app_change_icon, on_app_delete, on_add_category,
                  on_edit_category, on_delete_category):
-        self._app_state = app_state
-        self._on_add_category = on_add_category
-        self._on_edit_category = on_edit_category
-        self._on_delete_category = on_delete_category
+        super().__init__(app_state)
 
-        # State
-        self._category_tabs = {}
-        self._category_grids = {}
-        self._category_drop_zones = {}
-        self._note_inputs = {}
-        self._tab_widget = None
-
-        # Grid populator (handles placing cards)
-        self._populator = GridPopulator(app_state)
-        self._populator.on_app_tap = on_app_tap
-        self._populator.on_app_edit = on_app_edit
-        self._populator.on_app_rename = on_app_rename
-        self._populator.on_app_change_icon = on_app_change_icon
-        self._populator.on_app_delete = on_app_delete
-        self._populator.on_edit_note = self._on_edit_note
-        self._populator.on_relocate_note = self._on_relocate_note
-        self._populator.on_resize_card = self._on_resize_card
-
-        # Item mover (handles drag-drop)
-        self._mover = ItemMover(
-            app_state,
-            self._populator.get_occupied_cells,
-            self._populator.get_cells_for_item
-        )
-        self._mover.on_refresh = self._quick_refresh
-
-    def create_tab_widget(self) -> QTabWidget:
-        """Create and configure tab widget."""
-        self._tab_widget = QTabWidget()
-        self._tab_widget.setTabsClosable(False)
-
-        custom_tab_bar = DraggableTabBar()
-        self._tab_widget.setTabBar(custom_tab_bar)
-        custom_tab_bar.setExpanding(False)
-
-        self._tab_widget.setStyleSheet(self.TAB_STYLESHEET)
-
-        tab_bar = self._tab_widget.tabBar()
-        tab_bar.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
-        tab_bar.customContextMenuRequested.connect(self._on_context_menu)
-        tab_bar.tabBarClicked.connect(self._on_tab_clicked)
-
-        self.update_tabs()
-        self._tab_widget.setCurrentIndex(0)
-
-        return self._tab_widget
-
-    @property
-    def tab_widget(self) -> QTabWidget:
-        return self._tab_widget
-
-    def update_tabs(self):
-        """Update tabs based on current categories."""
-        while self._tab_widget.count() > 0:
-            self._tab_widget.removeTab(0)
-
-        self._category_tabs = {}
-        self._category_grids = {}
-
-        for category in self._app_state.categories:
-            tab_content, grid_layout = self._create_category_tab(category)
-            display_name = self._truncate_name(category.name)
-            self._tab_widget.addTab(tab_content, f"{category.icon} {display_name}")
-            self._category_tabs[category.id] = tab_content
-            self._category_grids[category.id] = grid_layout
-
-        # Add "+" tab
-        add_tab_widget = QWidget()
-        add_tab_widget.setFixedHeight(0)
-        self._tab_widget.addTab(add_tab_widget, "+")
-
-        tab_bar = self._tab_widget.tabBar()
-        add_tab_index = self._tab_widget.count() - 1
-        tab_bar.setTabButton(add_tab_index, QTabBar.ButtonPosition.LeftSide, None)
-        tab_bar.setTabButton(add_tab_index, QTabBar.ButtonPosition.RightSide, None)
-
-    def _truncate_name(self, name: str, max_length: int = 10) -> str:
-        return name[:max_length] + "..." if len(name) > max_length else name
-
-    def _create_category_tab(self, category):
-        """Create a tab content widget for a category."""
-        content_widget = QWidget()
-        content_layout = QVBoxLayout(content_widget)
-        content_layout.setContentsMargins(0, 0, 0, 0)
-        content_layout.setSpacing(0)
-
-        content_layout.addWidget(self._create_note_entry(category))
-
-        grid_container = GridDropZone()
-        grid_container.gridDropped.connect(self._mover.handle_grid_drop)
-
-        grid_layout = QGridLayout(grid_container)
-        grid_layout.setSpacing(SPACING)
-        grid_layout.setContentsMargins(
-            GridDropZone.MARGIN_LEFT,
-            GridDropZone.MARGIN_TOP,
-            GridDropZone.MARGIN_RIGHT,
-            GridDropZone.MARGIN_BOTTOM
+        # Set app callbacks
+        self.set_app_callbacks(
+            on_tap=on_app_tap,
+            on_edit=on_app_edit,
+            on_rename=on_app_rename,
+            on_change_icon=on_app_change_icon,
+            on_delete=on_app_delete
         )
 
-        for i in range(GRID_COLS):
-            grid_layout.setColumnMinimumWidth(i, CELL_WIDTH)
-            grid_layout.setColumnStretch(i, 0)
-
-        for i in range(GRID_ROWS):
-            grid_layout.setRowMinimumHeight(i, CELL_HEIGHT)
-            grid_layout.setRowStretch(i, 0)
-
-        self._category_drop_zones[category.id] = grid_container
-        content_layout.addWidget(grid_container)
-        content_layout.addStretch()
-
-        self._populator.populate_grid(category, grid_layout)
-
-        return content_widget, grid_layout
-
-    def _create_note_entry(self, category):
-        """Create quick note entry widget."""
-        container = QWidget()
-        layout = QHBoxLayout(container)
-        layout.setContentsMargins(8, 8, 8, 8)
-        layout.setSpacing(4)
-
-        line_edit = QLineEdit()
-        line_edit.setPlaceholderText("Add a quick note...")
-        add_button = QPushButton("Add")
-        add_button.clicked.connect(lambda: self._on_add_note_clicked(category.id))
-
-        layout.addWidget(line_edit)
-        layout.addWidget(add_button)
-
-        self._note_inputs[category.id] = line_edit
-        return container
-
-    def _on_add_note_clicked(self, category_id: str):
-        """Handle add note button click."""
-        line_edit = self._note_inputs.get(category_id)
-        if line_edit is None:
-            return
-
-        content = line_edit.text().strip()
-        if not content:
-            return
-
-        category = next(
-            (cat for cat in self._app_state.categories if cat.id == category_id),
-            self._app_state.categories[0] if self._app_state.categories else None,
+        # Set category callbacks
+        self.set_category_callbacks(
+            on_add=on_add_category,
+            on_edit=on_edit_category,
+            on_delete=on_delete_category
         )
-        category_name = category.name if category else "All"
 
-        note = Note(
-            id=str(uuid.uuid4()),
-            content=content,
-            type=NoteType.TEXT,
-            category=category_name,
-        )
-        self._app_state.add_note(note)
-        line_edit.clear()
-
-    def _on_edit_note(self, note_id: str):
-        """Handle edit note request."""
-        self._logger.debug("Edit note requested: %s", note_id)
-
-    def _on_relocate_note(self, note_id: str, new_category: str):
-        """Handle note relocation to a new category."""
-        from dataclasses import replace
-        note = next((n for n in self._app_state.notes if n.id == note_id), None)
-        if note:
-            updated_note = replace(note, category=new_category)
-            self._app_state.update_note(updated_note)
-            self.refresh_all_tabs()
-
-    def _on_resize_card(self, card, col_span: int, row_span: int):
-        """Handle card resize request."""
-        from dataclasses import replace
-
-        card.set_span(col_span, row_span)
-        card.disable_resize_mode()
-
-        note_id = None
-        if hasattr(card, 'note'):
-            note_id = card.note.id
-        elif hasattr(card, '_image_id'):
-            note_id = card._image_id
-
-        if note_id:
-            note = next((n for n in self._app_state.notes if n.id == note_id), None)
-            if note:
-                updated_note = replace(note, col_span=col_span, row_span=row_span)
-                self._app_state.update_note(updated_note)
-
-        self._quick_refresh()
-
-    def _quick_refresh(self):
-        """Fast refresh using QTimer."""
-        QTimer.singleShot(0, self.refresh_notes_tab)
+    def create_tab_widget(self):
+        """Create the tab widget - delegates to parent."""
+        return super().create_tab_widget()
 
     def refresh_notes_tab(self):
-        """Refresh current category tab."""
-        current_index = self._tab_widget.currentIndex()
-        if current_index < 0 or current_index >= len(self._app_state.categories):
-            return
-
-        category = self._app_state.categories[current_index]
-        if category.id in self._category_grids:
-            self._populator.populate_grid(category, self._category_grids[category.id])
+        """Refresh current tab - delegates to parent."""
+        return super().refresh_current_tab()
 
     def refresh_all_tabs(self):
-        """Refresh all category tabs."""
+        """Refresh all tabs - delegates to parent."""
+        return super().refresh_all_tabs()
+
+    @property
+    def _category_grids(self):
+        """Backward compatibility: return dict of category_id -> grid_layout."""
+        grids = {}
         for category in self._app_state.categories:
-            if category.id in self._category_grids:
-                self._populator.populate_grid(category, self._category_grids[category.id])
-
-    def _on_tab_clicked(self, index: int):
-        """Handle tab bar click."""
-        if index == self._tab_widget.count() - 1:
-            previous_index = self._tab_widget.currentIndex()
-            if previous_index == index:
-                previous_index = max(0, index - 1)
-
-            self._on_add_category()
-
-            if self._tab_widget.currentIndex() == index:
-                self._tab_widget.setCurrentIndex(previous_index)
-
-    def _on_context_menu(self, position):
-        """Show context menu for tab."""
-        tab_bar = self._tab_widget.tabBar()
-        index = tab_bar.tabAt(position)
-
-        if index == self._tab_widget.count() - 1 or index < 0:
-            return
-
-        if index >= len(self._app_state.categories):
-            return
-
-        category = self._app_state.categories[index]
-
-        menu = QMenu()
-        rename_action = menu.addAction("Rename")
-        delete_action = menu.addAction("Delete")
-
-        action = menu.exec(tab_bar.mapToGlobal(position))
-
-        if action == rename_action:
-            self._on_edit_category(category)
-        elif action == delete_action:
-            self._on_delete_category(category)
-
-    # Public API for reordering (delegated to ItemMover)
-    def _reorder_note(self, note, target_note):
-        """Swap note positions. Delegated to ItemMover."""
-        self._mover._swap_notes(note, target_note)
-
-    def _reorder_app(self, app, target_app):
-        """Swap app positions. Delegated to ItemMover."""
-        self._mover._swap_apps(app, target_app)
+            page = self._tab_manager.get_page(category.id)
+            if page and hasattr(page, 'grid_layout'):
+                grids[category.id] = page.grid_layout
+        return grids
