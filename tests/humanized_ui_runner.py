@@ -457,6 +457,9 @@ def compare_results(expected: Dict[str, GridItem], actual: Dict[str, GridItem]) 
         act = actual[item_id]
         if exp.row != act.row or exp.col != act.col:
             return False
+        # Check span as well
+        if exp.row_span != act.row_span or exp.col_span != act.col_span:
+            return False
     return True
 
 
@@ -467,9 +470,13 @@ def show_differences(expected: Dict[str, GridItem], actual: Dict[str, GridItem])
             print(f"  {Colors.RED}{item_id}: not found in actual{Colors.RESET}")
         else:
             act = actual[item_id]
+            errors = []
             if exp.row != act.row or exp.col != act.col:
-                print(
-                    f"  {Colors.RED}{item_id}: expected ({exp.row},{exp.col}) but got ({act.row},{act.col}){Colors.RESET}")
+                errors.append(f"position: expected ({exp.row},{exp.col}) but got ({act.row},{act.col})")
+            if exp.row_span != act.row_span or exp.col_span != act.col_span:
+                errors.append(f"span: expected {exp.col_span}x{exp.row_span} but got {act.col_span}x{act.row_span}")
+            if errors:
+                print(f"  {Colors.RED}{item_id}: {', '.join(errors)}{Colors.RESET}")
 
 
 def cell_to_pixel(row: int, col: int, win_x: int, win_y: int) -> Tuple[int, int]:
