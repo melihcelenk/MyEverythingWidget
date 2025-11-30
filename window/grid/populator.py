@@ -213,14 +213,9 @@ class GridPopulator:
                     for c in range(col, col + col_span):
                         occupied.add((r, c))
 
-        if notes_to_update:
-            self._app_state.blockSignals(True)
-            try:
-                for note in notes_to_update:
-                    self._app_state.update_note(note)
-            finally:
-                self._app_state.blockSignals(False)
-            self._app_state.state_changed.emit()
+        # Don't update state in populate - it's called during refresh and would overwrite changes
+        # State updates should only happen through explicit user actions (move, resize, etc.)
+        # Auto-placed notes should be saved elsewhere (e.g., when first added)
 
     def _create_note_card(self, note, category):
         """Create appropriate card for a note."""

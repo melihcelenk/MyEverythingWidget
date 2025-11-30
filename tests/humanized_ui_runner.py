@@ -293,12 +293,21 @@ def find_window() -> Tuple[int, int]:
         raise RuntimeError("Window not found")
 
     win = windows[0]
-    try:
-        win.activate()
-    except Exception:
-        pass  # Ignore activation errors
-    time.sleep(0.3)
 
+    # Bring window to front and ensure it's visible
+    try:
+        if win.isMinimized:
+            win.restore()
+        win.activate()
+        win.moveTo(100, 100)  # Move to visible position
+    except Exception as e:
+        print(f"  {Colors.YELLOW}Warning: Could not activate window: {e}{Colors.RESET}")
+
+    time.sleep(0.5)
+
+    # Refresh window position
+    win = gw.getWindowsWithTitle("My Everything")[0]
+    
     return win.left, win.top
 
 

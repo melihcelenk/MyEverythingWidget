@@ -2,6 +2,7 @@
 Global application state
 Manages categories, apps, notes, and selected category
 """
+import logging
 from typing import List, Optional
 
 from PySide6.QtCore import QObject, Signal
@@ -16,6 +17,7 @@ class AppState(QObject):
     """Global application state manager"""
 
     state_changed = Signal()
+    _logger = logging.getLogger(__name__)
 
     def __init__(self, storage_service: Optional[StorageService] = None):
         super().__init__()
@@ -216,6 +218,8 @@ class AppState(QObject):
         for i, note in enumerate(self._notes):
             if note.id == updated_note.id:
                 self._notes[i] = updated_note
+                self._logger.info("UPDATE_NOTE: %s -> row=%s, col=%s", updated_note.id, updated_note.grid_row,
+                                  updated_note.grid_col)
                 self._persist_state()
                 return
 
