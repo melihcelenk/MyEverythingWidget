@@ -9,7 +9,7 @@ import pytest
 from PySide6.QtWidgets import QApplication
 
 from window.app_state import AppState
-from window.tab_manager import TabManager
+from window.content_manager import ContentManager
 
 
 class TestMemoryLeak:
@@ -24,23 +24,25 @@ class TestMemoryLeak:
         yield app
 
     @pytest.fixture
-    def tab_manager(self, app):
-        """Create TabManager with mock callbacks"""
+    def content_manager(self, app):
+        """Create ContentManager with mock callbacks"""
         app_state = AppState()
 
         # Mock callbacks
         noop = lambda *args: None
 
-        manager = TabManager(
-            app_state=app_state,
-            on_app_tap=noop,
-            on_app_edit=noop,
-            on_app_rename=noop,
-            on_app_change_icon=noop,
-            on_app_delete=noop,
-            on_add_category=noop,
-            on_edit_category=noop,
-            on_delete_category=noop,
+        manager = ContentManager(app_state=app_state)
+        manager.set_app_callbacks(
+            on_tap=noop,
+            on_edit=noop,
+            on_rename=noop,
+            on_change_icon=noop,
+            on_delete=noop
+        )
+        manager.set_category_callbacks(
+            on_add=noop,
+            on_edit=noop,
+            on_delete=noop
         )
 
         tab_widget = manager.create_tab_widget()
@@ -50,7 +52,7 @@ class TestMemoryLeak:
         tab_widget.deleteLater()
         app.processEvents()
 
-    def test_tab_switching_memory_leak(self, app, tab_manager):
+    def test_tab_switching_memory_leak(self, app, content_manager):
         """Test that switching tabs doesn't cause memory leak"""
         tracemalloc.start()
 
@@ -63,8 +65,8 @@ class TestMemoryLeak:
         initial_mem = sum(stat.size for stat in snapshot1.statistics('lineno'))
 
         # Switch tabs 50 times
-        tab_widget = tab_manager.tab_widget
-        num_tabs = len(tab_manager._app_state.categories)
+        tab_widget = content_manager.tab_widget
+        num_tabs = len(content_manager._app_state.categories)
 
         for i in range(50):
             tab_index = i % num_tabs
@@ -92,15 +94,15 @@ class TestMemoryLeak:
         # Memory increase should be minimal (less than 1 MB for 50 switches)
         assert mem_increase_mb < 1.0, f"Memory leak detected: {mem_increase_mb:.2f} MB increase"
 
-    def test_tab_switching_widget_count(self, app, tab_manager):
+    def test_tab_switching_widget_count(self, app, content_manager):
         """Test that widget count stays stable during tab switching"""
-        tab_widget = tab_manager.tab_widget
-        num_tabs = len(tab_manager._app_state.categories)
+        tab_widget = content_manager.tab_widget
+        num_tabs = len(content_manager._app_state.categories)
 
         # Get initial widget count
         def count_widgets():
             count = 0
-            for cat_id, grid in tab_manager._category_grids.items():
+            for cat_id, grid in content_manager._category_grids.items():
                 count += grid.count()
             return count
 

@@ -176,7 +176,8 @@ docs/tasks/
     ├── TODO2.md                     ✅
     ├── TODO3.md                     ✅
     ├── TODO4.md                     ✅
-    └── TODO5.md                     ✅ (this file)
+    ├── TODO5.md                     ✅ (this file)
+    └── TODO6.md                     ✅ Remaining tasks
 ```
 
 ## Files to Remove ❌
@@ -250,13 +251,13 @@ tests pass (10 pre-existing failures unrelated to cleanup).
     - Only used in tests (`tests/test_grid_module.py`)
     - Real implementation is in `mover.py`
     - Keep for now (test coverage)
-- [ ] If unused, remove `drop_handler.py` (deferred - used in tests)
 - [x] Migrate `main_window.py` to use `ContentManager` directly
     - Updated `main_window.py` to use `ContentManager` instead of `TabManager` wrapper
     - Added backward compatibility `_tab_manager` property for tests
     - Added `_category_grids` property to `ContentManager` for test compatibility
     - All tests pass (42/42 in main_window and drag_drop tests)
-- [ ] Remove `window/tab_manager.py` wrapper (after verifying all tests pass)
+- [x] Remove `window/tab_manager.py` wrapper ✅ **Completed in TODO6.md**
+- [ ] If unused, remove `drop_handler.py` → **Moved to TODO6.md** (deferred - used in tests)
 
 ### Phase 3: Update Imports
 
@@ -266,9 +267,7 @@ tests pass (10 pre-existing failures unrelated to cleanup).
 - [x] Run all tests to ensure nothing breaks
     - All main_window and drag_drop tests pass (42/42)
     - Overall: 215 passed, 10 failed (pre-existing failures)
-- [ ] Update documentation if needed
-    - `window/tab_manager.py` wrapper still exists for `test_memory_leak.py`
-    - Can be removed after migrating that test to use `ContentManager`
+- [x] Update documentation if needed ✅ **Completed in TODO6.md**
 
 ## Additional Issues Found
 
@@ -313,71 +312,9 @@ tests pass (10 pre-existing failures unrelated to cleanup).
 
 ---
 
-### Enhancement: Create Action in Humanized Tests ⚠️
+### Enhancement: Create Action in Humanized Tests
 
-**Goal:**
-
-- Humanized test formatına `Create` aksiyonu eklemek
-- Test senaryolarında yeni item oluşturma işlemlerini desteklemek
-
-**Requirements:**
-
-1. **Create Note Action:**
-    - Syntax: `Create(NOTE, "note content", N1)`
-    - Yeni bir not oluşturur ve belirtilen ID'ye (N1) atar
-    - Not içeriği belirtilen string olmalı
-    - Test sisteminde not oluşturma işlemini simüle etmeli
-
-2. **Create App Action:**
-    - Syntax: `Create(APP, "app name", A1)`
-    - Yeni bir app oluşturur ve belirtilen ID'ye (A1) atar
-    - Mock bir executable dosya oluşturmalı (test için)
-    - Mock bir app dizini oluşturmalı (test için)
-    - App'i açabilmeli (launch edilebilmeli)
-    - Test sisteminde app oluşturma işlemini simüle etmeli
-
-**Implementation Tasks:**
-
-- [x] `tests/helpers/grid_test_dsl.py`'ye `Create` aksiyonu parser'ı ekle
-- [x] `Create` aksiyonu için syntax parsing:
-    - [x] `Create(NOTE, "content", ID)` formatını parse et
-    - [ ] `Create(APP, "name", ID)` formatını parse et (henüz yapılmadı)
-- [x] `tests/humanized_ui_runner.py`'ye `Create` aksiyonu executor'ı ekle
-- [x] Note oluşturma:
-    - [x] Quick note entry widget'ını bul
-    - [x] Text input'a içeriği yaz
-    - [x] Enter'a bas veya Add butonuna tıkla
-    - [x] Oluşturulan notu ID ile eşleştir (action.item_id ile)
-- [ ] App oluşturma:
-    - FAB butonuna tıkla (Add Item Dialog açılır)
-    - "App" sekmesine geç
-    - App name input'una ismi yaz
-    - Mock executable dosya oluştur (geçici dizinde)
-    - Path input'una mock dosya yolunu yaz
-    - Icon seç (opsiyonel, default icon kullanılabilir)
-    - Add butonuna tıkla
-    - Oluşturulan app'i ID ile eşleştir
-- [ ] Mock executable dosya oluşturma:
-    - Test için geçici bir `.exe` veya `.bat` dosyası oluştur
-    - Dosya içeriği minimal olabilir (echo gibi)
-    - Test sonunda temizlenmeli
-- [ ] Mock app dizini oluşturma:
-    - Test için geçici bir dizin oluştur
-    - İçine mock executable koy
-    - Test sonunda temizlenmeli
-- [ ] App launch testi:
-    - Oluşturulan app'e tıklandığında açılabilmeli
-    - Mock executable çalıştırılabilmeli
-    - Test sonunda process temizlenmeli
-- [ ] Test formatı örneği:
-  ```
-  Action:
-  Create(NOTE, "Test note content", N1)
-  Create(APP, "Test App", A1)
-  Drag(N1, R1C2)
-  ```
-- [ ] Mevcut testleri güncelle (gerekirse)
-- [ ] Dokümantasyon güncelle
+**Status:** Note creation completed ✅, App creation remaining → **Moved to TODO6.md**
 
 ---
 
@@ -499,7 +436,7 @@ MyEverythingWidget/
 - [x] Search for all references to moved files
 - [x] Update import paths if needed (no import changes needed - only documentation)
 - [x] Update documentation links (README.md, CONTRIBUTING.md, DEVELOPMENT.md, CLAUDE.md)
-- [ ] Update CI/CD if exists (not applicable - no CI/CD configured)
+- [x] Update CI/CD if exists (not applicable - no CI/CD configured) ✅
 
 #### Phase 4.4: Verification
 
@@ -523,29 +460,19 @@ MyEverythingWidget/
 
 **Problem:**
 
-- `models/` directory contains only `app_shortcut.py` and `category.py`
-- ~~`Note` model is located in `window/models/note.py` instead of `models/note.py`~~ ✅ Fixed: Moved to `models/note.py`
-- This creates inconsistency - all data models should be in the same package
+- ~~`Note` model was located in `window/models/note.py` instead of `models/note.py`~~ ✅ Fixed: Moved to `models/note.py`
+- All data models should be in the same package for consistency
 
-**Current Structure:**
-
-```
-models/
-├── app_shortcut.py
-└── category.py
-
-window/models/
-└── note.py  ❌ Should be in models/
-```
-
-**Proposed Structure:**
+**Current Structure (After Fix):**
 
 ```
 models/
-├── app_shortcut.py
-├── category.py
-└── note.py  ✅ All models together
+├── app_shortcut.py    ✅ AppShortcut, LaunchType
+├── category.py        ✅ AppCategory
+└── note.py            ✅ Note, NoteType
 ```
+
+**Status:** ✅ All data models are now in `models/` package. Structure is consistent.
 
 **Tasks:**
 
@@ -553,7 +480,7 @@ models/
 - [x] Update all imports from `window.models.note` to `models.note`
 - [x] Remove empty `window/models/` directory
 - [x] Update documentation references
-- [ ] Run tests to ensure nothing breaks
+- [x] Run tests to ensure nothing breaks ✅ **Completed in TODO6.md**
 
 #### 5.2: Tests Directory Structure
 
