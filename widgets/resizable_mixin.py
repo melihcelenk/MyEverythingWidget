@@ -2,9 +2,8 @@
 Resizable widget mixin
 Provides drag-to-resize functionality with grid snapping
 """
-from PySide6.QtWidgets import QWidget, QApplication
 from PySide6.QtCore import Qt, QRect, Signal, QPoint
-from PySide6.QtGui import QPainter, QPen, QColor, QMouseEvent, QCursor, QBrush
+from PySide6.QtGui import QPainter, QPen, QColor, QMouseEvent
 
 
 class ResizableMixin:
@@ -24,7 +23,7 @@ class ResizableMixin:
     # Grid cell constants
     CELL_WIDTH = 90
     CELL_HEIGHT = 100
-    SPACING = 4
+    SPACING = 0
 
     # Resize handle size
     HANDLE_SIZE = 12

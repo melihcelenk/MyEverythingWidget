@@ -32,12 +32,12 @@ class GridDropZone(QWidget):
     # Cell dimensions (must match actual widget sizes)
     CELL_WIDTH = 80
     CELL_HEIGHT = 80
-    SPACING = 4
+    SPACING = 0  # No spacing between cards
 
-    # Layout margins (must match QGridLayout margins)
-    MARGIN_LEFT = 6
+    # Layout margins (left aligned)
+    MARGIN_LEFT = 4
     MARGIN_TOP = 4
-    MARGIN_RIGHT = 6
+    MARGIN_RIGHT = 0
     MARGIN_BOTTOM = 4
 
     def __init__(self, parent=None):

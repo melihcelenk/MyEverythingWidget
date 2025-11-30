@@ -18,7 +18,7 @@ class TestGridSpacing:
     # Grid constants - must match widget constants (updated to 80x80)
     CELL_WIDTH = 80
     CELL_HEIGHT = 80
-    SPACING = 4
+    SPACING = 0
     GRID_COLUMNS = 3
 
     def test_note_card_2_span_width(self, qtbot):
@@ -245,7 +245,7 @@ class TestGridOverflow:
 
     CELL_WIDTH = 80
     CELL_HEIGHT = 80
-    SPACING = 4
+    SPACING = 0
 
     def test_note_card_does_not_overflow_window(self, qtbot):
         """Note card width should fit within 320px window"""

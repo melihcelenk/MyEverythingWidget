@@ -35,7 +35,7 @@ class NoteCard(QFrame, ResizableMixin, DraggableMixin):
     # Grid cell size constants
     CELL_WIDTH = 80
     CELL_HEIGHT = 80
-    SPACING = 4
+    SPACING = 0
 
     def __init__(self, note: Note, col_span: int = 2, row_span: int = 1, parent: QWidget | None = None):
         super().__init__(parent)

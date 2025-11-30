@@ -165,11 +165,11 @@ class TestCellCalculator:
     def test_cell_to_pos(self):
         """Should convert cell to pixel position."""
         x, y = CellCalculator.cell_to_pos(0, 0)
-        assert x == 6  # MARGIN_LEFT
+        assert x == 4  # MARGIN_LEFT
         assert y == 4  # MARGIN_TOP
 
         x, y = CellCalculator.cell_to_pos(0, 1)
-        assert x == 6 + 84  # MARGIN_LEFT + CELL_WITH_SPACING
+        assert x == 4 + 80  # MARGIN_LEFT + CELL_WIDTH (no spacing)
 
     def test_pos_to_cell(self):
         """Should convert pixel position to cell."""
@@ -198,7 +198,7 @@ class TestCellCalculator:
         assert h == 80
 
         w, h = CellCalculator.get_cell_size(2, 1)
-        assert w == 80 + 4 + 80  # Two cells + spacing
+        assert w == 80 + 80  # Two cells (no spacing)
         assert h == 80
 
     def test_clamp_position(self):

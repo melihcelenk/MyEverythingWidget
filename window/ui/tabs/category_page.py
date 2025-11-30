@@ -5,6 +5,7 @@ Single Responsibility: Create and manage category page content (grid + note entr
 """
 from typing import TYPE_CHECKING, Callable
 
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QGridLayout
 
 from widgets.grid_drop_zone import GridDropZone
@@ -64,7 +65,8 @@ class CategoryPage(QWidget):
             self._grid_layout.setRowMinimumHeight(i, CELL_HEIGHT)
             self._grid_layout.setRowStretch(i, 0)
 
-        layout.addWidget(self._drop_zone)
+        # Left-align the drop zone (no centering)
+        layout.addWidget(self._drop_zone, 0, Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
         layout.addStretch()
 
     def set_populator(self, populator: GridPopulator):
