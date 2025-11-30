@@ -217,54 +217,35 @@ class GridDropZone(QWidget):
 
     def _calculate_highlight_rect(self, layout, row: int, col: int,
                                   row_span: int, col_span: int) -> tuple:
-        """Calculate highlight rectangle using widget positions.
+        """Calculate highlight rectangle using layout geometry.
+        
+        Uses fixed formula based on constants for consistent alignment.
         
         Returns:
             Tuple of (x, y, width, height)
         """
-        cell_w = self.CELL_WIDTH + self.SPACING
-        cell_h = self.CELL_HEIGHT + self.SPACING
-
-        # Get actual layout margins
+        # Get layout margins and spacing
         if layout:
             margins = layout.contentsMargins()
             margin_left = margins.left()
             margin_top = margins.top()
-            spacing = layout.spacing()
-            if spacing >= 0:
-                cell_w = self.CELL_WIDTH + spacing
-                cell_h = self.CELL_HEIGHT + spacing
+            spacing = layout.spacing() if layout.spacing() >= 0 else self.SPACING
         else:
             margin_left = self.MARGIN_LEFT
             margin_top = self.MARGIN_TOP
+            spacing = self.SPACING
 
-        # Find reference widget to calibrate position
-        ref_x, ref_y, ref_row, ref_col = None, None, None, None
-        if layout:
-            for r in range(self.GRID_ROWS):
-                for c in range(self.GRID_COLS):
-                    item = layout.itemAtPosition(r, c)
-                    if item and item.widget():
-                        widget = item.widget()
-                        ref_x = widget.x()
-                        ref_y = widget.y()
-                        ref_row = r
-                        ref_col = c
-                        break
-                if ref_x is not None:
-                    break
+        # Cell stride (cell size + spacing between cells)
+        cell_stride_w = self.CELL_WIDTH + spacing
+        cell_stride_h = self.CELL_HEIGHT + spacing
 
-        # Calculate position based on reference or fallback to margins
-        if ref_x is not None:
-            x = ref_x + (col - ref_col) * cell_w
-            y = ref_y + (row - ref_row) * cell_h
-        else:
-            x = margin_left + col * cell_w
-            y = margin_top + row * cell_h
+        # Calculate position: margin + col * stride
+        x = margin_left + col * cell_stride_w
+        y = margin_top + row * cell_stride_h
 
-        # Calculate size
-        total_width = col_span * self.CELL_WIDTH + (col_span - 1) * self.SPACING
-        total_height = row_span * self.CELL_HEIGHT + (row_span - 1) * self.SPACING
+        # Calculate size: span * cell_size + (span-1) * spacing
+        total_width = col_span * self.CELL_WIDTH + (col_span - 1) * spacing
+        total_height = row_span * self.CELL_HEIGHT + (row_span - 1) * spacing
 
         return x, y, total_width, total_height
 

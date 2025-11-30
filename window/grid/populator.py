@@ -191,9 +191,12 @@ class GridPopulator:
             if note.type == NoteType.IMAGE:
                 pixmap = self._image_cache.get(note.content)
                 if pixmap:
-                    temp_card = ImageCard(note.id, pixmap, on_delete=lambda: None)
-                    col_span = temp_card.col_span
-                    row_span = temp_card.row_span
+                    # Only auto-calculate span for NEW images (default 1x1)
+                    # If user has set a custom span, respect it
+                    if col_span == 1 and row_span == 1:
+                        temp_card = ImageCard(note.id, pixmap, on_delete=lambda: None)
+                        col_span = temp_card.col_span
+                        row_span = temp_card.row_span
 
             cell = CellCalculator.find_first_available_cell(occupied, row_span, col_span)
             if cell is None:
