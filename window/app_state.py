@@ -9,7 +9,7 @@ from PySide6.QtCore import QObject, Signal
 from models.app_shortcut import AppShortcut, LaunchType
 from models.category import AppCategory
 from services.storage_service import StorageService
-from window.models.note import Note, NoteType
+from window.models.note import Note
 
 
 class AppState(QObject):
@@ -60,58 +60,20 @@ class AppState(QObject):
         return [note for note in self._notes if note.category == self._selected_category.name]
 
     def _load_initial_data(self):
-        self._categories = [
-            AppCategory(id='2', name='Web', icon='🌐'),
-            AppCategory(id='3', name='Dev', icon='💻'),
-            AppCategory(id='4', name='Media', icon='🎵'),
-        ]
-
-        default_apps = [
-            ("1", "Google Chrome", "https://google.com", "Web"),
-            ("2", "GitHub Desktop", "https://github.com", "Dev"),
-            ("3", "YouTube Music", "https://music.youtube.com", "Media"),
-            ("4", "Spotify Premium", "https://spotify.com", "Media"),
-            ("5", "Stack Overflow Community", "https://stackoverflow.com", "Dev"),
-            ("6", "Gmail", "https://gmail.com", "Web"),
-            ("7", "Visual Studio Code", "https://code.visualstudio.com", "Dev"),
-            ("8", "CodePen Playground", "https://codepen.io", "Dev"),
-            ("9", "MDN Web Docs", "https://developer.mozilla.org", "Dev"),
-            ("10", "Docker Hub Registry", "https://hub.docker.com", "Dev"),
-            ("11", "NPM Package Manager", "https://npmjs.com", "Dev"),
-            ("12", "Git Version Control", "https://git-scm.com", "Dev"),
-        ]
-
-        self._apps = [
-            AppShortcut(
-                id=app_id,
-                name=name,
-                icon_path='',
-                target=target,
-                category=category,
-                type=LaunchType.URL,
-            )
-            for app_id, name, target, category in default_apps
-        ]
-
-        self._notes = [
-            Note(
-                id='note-1',
-                content='Welcome to My Everything Widget notes',
-                type=NoteType.TEXT,
-                category='Web',
-            )
-        ]
-
-        self._selected_category = self._categories[0]
+        """Initialize with empty state - no default data."""
+        self._categories = []
+        self._apps = []
+        self._notes = []
+        self._selected_category = None
 
     def _load_from_storage(self) -> bool:
         payload = self._storage.load()
+        if not payload:
+            return False
+            
         categories = payload.get("categories", [])
         apps = payload.get("apps", [])
         notes = payload.get("notes", [])
-
-        if not categories or not apps:
-            return False
 
         try:
             self._categories = [AppCategory(**cat) for cat in categories]
