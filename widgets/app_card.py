@@ -12,6 +12,7 @@ from PySide6.QtWidgets import (
 
 from models.app_shortcut import AppShortcut, LaunchType
 from widgets.draggable_mixin import DraggableMixin
+from window.grid.constants import CELL_WIDTH, CELL_HEIGHT
 
 
 class AppCard(QWidget, DraggableMixin):
@@ -30,7 +31,7 @@ class AppCard(QWidget, DraggableMixin):
         self._on_change_icon = on_change_icon
         self._on_delete = on_delete
 
-        self.setFixedSize(80, 80)
+        self.setFixedSize(CELL_WIDTH, CELL_HEIGHT)
         self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
 
         # Initialize drag-drop with span info
@@ -132,7 +133,7 @@ class AppCard(QWidget, DraggableMixin):
         # Check if text will overflow (simple heuristic)
         font_metrics = label.fontMetrics()
         text_width = font_metrics.horizontalAdvance(self._app.name)
-        max_width = 72  # 80px card - 8px padding
+        max_width = CELL_WIDTH - 8  # card width - padding
         
         if text_width > max_width * 2:  # More than 2 lines
             label.setToolTip(self._app.name)

@@ -9,6 +9,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QMenu
 from services.image_grid_calculator import ImageGridCalculator
 from widgets.draggable_mixin import DraggableMixin
 from widgets.resizable_mixin import ResizableMixin
+from window.grid.constants import CELL_WIDTH, CELL_HEIGHT, SPACING
 
 
 class ImageCard(QWidget, ResizableMixin, DraggableMixin):
@@ -20,10 +21,10 @@ class ImageCard(QWidget, ResizableMixin, DraggableMixin):
     relocateRequested = Signal(str, str)  # image_id, new_category
     itemDropped = Signal(str, str)  # item_id, target_item_id
 
-    # Base size for one grid cell
-    CELL_WIDTH = 80
-    CELL_HEIGHT = 80
-    SPACING = 0
+    # Base size for one grid cell (from central config)
+    CELL_WIDTH = CELL_WIDTH
+    CELL_HEIGHT = CELL_HEIGHT
+    SPACING = SPACING
 
     def __init__(self, image_id: str, pixmap: QPixmap, on_delete=None, parent=None):
         super().__init__(parent)

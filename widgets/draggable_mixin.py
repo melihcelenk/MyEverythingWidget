@@ -9,12 +9,13 @@ from PySide6.QtCore import Qt, QMimeData, Signal
 from PySide6.QtGui import QDrag, QPixmap, QPainter, QColor, QPen
 from PySide6.QtWidgets import QWidget
 
+from window.grid.constants import CELL_WIDTH, CELL_HEIGHT, SPACING
+
 if TYPE_CHECKING:
     from typing import Optional
 
-# Grid cell dimensions (must match TabManager/GridDropZone)
-CELL_WIDTH = 84  # 80 + 4 spacing
-CELL_HEIGHT = 84
+# Cell with spacing for drag pixmap calculation
+CELL_WITH_SPACING = CELL_WIDTH + SPACING
 
 
 class DraggableMixin:
@@ -90,8 +91,9 @@ class DraggableMixin:
         drag.setMimeData(mime_data)
 
         # Calculate target size based on span
-        target_width = col_span * CELL_WIDTH - 4  # Subtract spacing
-        target_height = row_span * CELL_HEIGHT - 4
+        # Size = cells * cell_size + (cells-1) * spacing between them
+        target_width = col_span * CELL_WIDTH + (col_span - 1) * SPACING
+        target_height = row_span * CELL_HEIGHT + (row_span - 1) * SPACING
 
         # Grab the widget at its current size
         source_pixmap = widget.grab()

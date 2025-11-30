@@ -10,7 +10,8 @@ from typing import TYPE_CHECKING, Callable
 from PySide6.QtCore import QTimer
 from PySide6.QtWidgets import QTabWidget
 
-from window.grid import GridPopulator, ItemMover
+from window.grid.mover import ItemMover
+from window.grid.populator import GridPopulator
 from window.ui.notes import NoteActions
 from window.ui.tabs import TabManager, CategoryPage
 

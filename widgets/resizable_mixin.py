@@ -5,6 +5,8 @@ Provides drag-to-resize functionality with grid snapping
 from PySide6.QtCore import Qt, QRect, Signal, QPoint
 from PySide6.QtGui import QPainter, QPen, QColor, QMouseEvent
 
+from window.grid.constants import CELL_WIDTH, CELL_HEIGHT, SPACING
+
 
 class ResizableMixin:
     """
@@ -20,10 +22,10 @@ class ResizableMixin:
     # Signals (defined in implementing class)
     resizeRequested = Signal(int, int)  # col_span, row_span
 
-    # Grid cell constants
-    CELL_WIDTH = 90
-    CELL_HEIGHT = 100
-    SPACING = 0
+    # Grid cell constants (from central config)
+    CELL_WIDTH = CELL_WIDTH
+    CELL_HEIGHT = CELL_HEIGHT
+    SPACING = SPACING
 
     # Resize handle size
     HANDLE_SIZE = 12

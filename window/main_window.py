@@ -16,6 +16,7 @@ from widgets.add_app_button import AddAppButton
 from widgets.custom_title_bar import CustomTitleBar
 from window.app_state import AppState
 from window.dialog_manager import DialogManager
+from window.grid.constants import TOTAL_WIDTH, TOTAL_HEIGHT
 from window.models.note import Note, NoteType
 from window.tab_manager import TabManager
 
@@ -106,8 +107,10 @@ class MainWindow(QMainWindow):
     def _setup_window(self):
         """Setup window properties"""
         self.setWindowTitle("My Everything Widget")
-        # 4 columns * 80px + 4px margin = 324px, add padding for window
-        self.setFixedSize(330, 500)
+        # Window size based on grid constants + extra for title bar and padding
+        window_width = TOTAL_WIDTH + 10  # Small padding
+        window_height = TOTAL_HEIGHT + 100  # Title bar + quick note entry
+        self.setFixedSize(window_width, window_height)
         self.setWindowFlags(
             Qt.WindowType.FramelessWindowHint |
             Qt.WindowType.WindowStaysOnTopHint

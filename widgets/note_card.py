@@ -19,6 +19,7 @@ from PySide6.QtWidgets import (
 
 from widgets.draggable_mixin import DraggableMixin
 from widgets.resizable_mixin import ResizableMixin
+from window.grid.constants import CELL_WIDTH, CELL_HEIGHT, SPACING
 from window.models.note import Note
 
 
@@ -32,10 +33,10 @@ class NoteCard(QFrame, ResizableMixin, DraggableMixin):
     relocateRequested = Signal(str, str)  # note_id, new_category
     itemDropped = Signal(str, str)  # item_id, target_item_id
 
-    # Grid cell size constants
-    CELL_WIDTH = 80
-    CELL_HEIGHT = 80
-    SPACING = 0
+    # Grid cell size constants (from central config)
+    CELL_WIDTH = CELL_WIDTH
+    CELL_HEIGHT = CELL_HEIGHT
+    SPACING = SPACING
 
     def __init__(self, note: Note, col_span: int = 2, row_span: int = 1, parent: QWidget | None = None):
         super().__init__(parent)

@@ -5,7 +5,7 @@ All grid-related dimensions and limits are defined here.
 """
 
 # Grid dimensions (Android-like fixed grid)
-GRID_COLS = 4
+GRID_COLS = 5
 GRID_ROWS = 5
 
 # Cell dimensions in pixels

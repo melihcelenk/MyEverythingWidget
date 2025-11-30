@@ -2,31 +2,20 @@
 Grid management module for Android-like grid layout.
 
 This module provides:
-- GridManager: Main grid layout management
-- CollisionDetector: Cell collision detection
-- CellCalculator: Grid cell calculations
-- DropHandler: Drag-drop operations
-"""
+- constants: Grid dimensions and sizes (GRID_COLS, GRID_ROWS, CELL_WIDTH, etc.)
+- cell_calculator: Grid cell calculations
+- collision_detector: Cell collision detection
 
+Note: populator and mover are imported directly where needed to avoid circular imports.
 """
-Grid management module.
-
-- constants: Grid dimensions and sizes
-- populator: Fills grid with cards
-- mover: Handles drag-drop and swap
-- cell_calculator: Cell position calculations
-- collision_detector: Detects cell collisions
-"""
-from window.grid.cell_calculator import CellCalculator
-from window.grid.collision_detector import CollisionDetector, GridItem
-from window.grid.constants import GRID_COLS, GRID_ROWS, CELL_WIDTH, CELL_HEIGHT, SPACING
-from window.grid.mover import ItemMover
-from window.grid.populator import GridPopulator
+from window.grid.constants import (
+    GRID_COLS, GRID_ROWS, CELL_WIDTH, CELL_HEIGHT, SPACING,
+    MARGIN_LEFT, MARGIN_TOP, MARGIN_RIGHT, MARGIN_BOTTOM,
+    TOTAL_WIDTH, TOTAL_HEIGHT
+)
 
 __all__ = [
     'GRID_COLS', 'GRID_ROWS', 'CELL_WIDTH', 'CELL_HEIGHT', 'SPACING',
-    'CellCalculator',
-    'CollisionDetector', 'GridItem',
-    'GridPopulator',
-    'ItemMover',
+    'MARGIN_LEFT', 'MARGIN_TOP', 'MARGIN_RIGHT', 'MARGIN_BOTTOM',
+    'TOTAL_WIDTH', 'TOTAL_HEIGHT',
 ]

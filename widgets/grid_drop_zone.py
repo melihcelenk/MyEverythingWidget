@@ -2,7 +2,7 @@
 Grid drop zone widget for Android-like drag and drop
 
 Android Launcher Grid System:
-- Fixed grid size (3 columns x 5 rows)
+- Fixed grid size (configurable via constants)
 - Items have explicit (row, col) positions
 - Gaps are preserved - no auto-compacting
 - Collision detection prevents overlap
@@ -11,6 +11,12 @@ Android Launcher Grid System:
 from PySide6.QtCore import Qt, Signal, QPoint
 from PySide6.QtGui import QPainter, QColor, QPen
 from PySide6.QtWidgets import QWidget
+
+from window.grid.constants import (
+    GRID_COLS, GRID_ROWS, CELL_WIDTH, CELL_HEIGHT, SPACING,
+    MARGIN_LEFT, MARGIN_TOP, MARGIN_RIGHT, MARGIN_BOTTOM,
+    TOTAL_WIDTH, TOTAL_HEIGHT
+)
 
 
 class GridDropZone(QWidget):
@@ -25,20 +31,16 @@ class GridDropZone(QWidget):
     # Emitted when an item is dropped: (item_id, target_row, target_col)
     gridDropped = Signal(str, int, int)
 
-    # Fixed grid dimensions (Android-like)
-    GRID_COLS = 4
-    GRID_ROWS = 5
-
-    # Cell dimensions (must match actual widget sizes)
-    CELL_WIDTH = 80
-    CELL_HEIGHT = 80
-    SPACING = 0  # No spacing between cards
-
-    # Layout margins (left aligned)
-    MARGIN_LEFT = 4
-    MARGIN_TOP = 4
-    MARGIN_RIGHT = 0
-    MARGIN_BOTTOM = 4
+    # Re-export constants as class attributes for backward compatibility
+    GRID_COLS = GRID_COLS
+    GRID_ROWS = GRID_ROWS
+    CELL_WIDTH = CELL_WIDTH
+    CELL_HEIGHT = CELL_HEIGHT
+    SPACING = SPACING
+    MARGIN_LEFT = MARGIN_LEFT
+    MARGIN_TOP = MARGIN_TOP
+    MARGIN_RIGHT = MARGIN_RIGHT
+    MARGIN_BOTTOM = MARGIN_BOTTOM
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -51,13 +53,8 @@ class GridDropZone(QWidget):
         self._dragging_col_span = 1
         self._dragging_row_span = 1
 
-        # Set fixed size for 3x5 grid
-        total_width = self.MARGIN_LEFT + self.GRID_COLS * (
-                    self.CELL_WIDTH + self.SPACING) - self.SPACING + self.MARGIN_RIGHT
-        total_height = self.MARGIN_TOP + self.GRID_ROWS * (
-                    self.CELL_HEIGHT + self.SPACING) - self.SPACING + self.MARGIN_BOTTOM
-
-        self.setMinimumSize(total_width, total_height)
+        # Set fixed size from constants
+        self.setMinimumSize(TOTAL_WIDTH, TOTAL_HEIGHT)
         self.setStyleSheet("background: white;")
 
     def dragEnterEvent(self, event):
