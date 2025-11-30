@@ -24,6 +24,10 @@ from window.tab_manager import TabManager
 class MainWindow(QMainWindow):
     """Main application window"""
 
+    # Floating action button dimensions
+    FAB_SIZE = 40
+    FAB_MARGIN = 12  # Margin from window edge
+
     def __init__(self):
         super().__init__()
         self._is_always_on_top = True
@@ -78,21 +82,22 @@ class MainWindow(QMainWindow):
 
         # Floating add image button
         self._add_image_button = QPushButton("🖼️", central_widget)
-        self._add_image_button.setFixedSize(40, 40)
-        self._add_image_button.setStyleSheet("""
-            QPushButton {
+        self._add_image_button.setFixedSize(self.FAB_SIZE, self.FAB_SIZE)
+        border_radius = self.FAB_SIZE // 2
+        self._add_image_button.setStyleSheet(f"""
+            QPushButton {{
                 background-color: #4CAF50;
                 color: white;
                 border: none;
-                border-radius: 20px;
+                border-radius: {border_radius}px;
                 font-size: 18px;
-            }
-            QPushButton:hover {
+            }}
+            QPushButton:hover {{
                 background-color: #45a049;
-            }
-            QPushButton:pressed {
+            }}
+            QPushButton:pressed {{
                 background-color: #3d8b40;
-            }
+            }}
         """)
         self._add_image_button.clicked.connect(self._on_add_image_clicked)
         self._add_image_button.raise_()
@@ -160,11 +165,18 @@ class MainWindow(QMainWindow):
 
     def _on_add_image_clicked(self):
         """Handle add image button click"""
+        category_name = self._get_current_category_name()
+        if category_name:
+            self._dialog_manager.show_add_image_dialog(category_name)
+
+    def _get_current_category_name(self) -> str | None:
+        """Get the name of the currently selected category."""
+        if not self._app_state.categories:
+            return None
         current_index = self._tab_widget.currentIndex()
-        category_name = self._app_state.categories[0].name if self._app_state.categories else "Web"
         if 0 <= current_index < len(self._app_state.categories):
-            category_name = self._app_state.categories[current_index].name
-        self._dialog_manager.show_add_image_dialog(category_name)
+            return self._app_state.categories[current_index].name
+        return self._app_state.categories[0].name
 
     # === Actions ===
 
@@ -188,11 +200,15 @@ class MainWindow(QMainWindow):
     def resizeEvent(self, event):
         """Handle window resize to position floating buttons"""
         super().resizeEvent(event)
+        # Position FABs from bottom-right corner
+        fab_x = self.width() - self.FAB_SIZE - self.FAB_MARGIN
+        fab_bottom_y = self.height() - self.FAB_SIZE - self.FAB_MARGIN
+        fab_top_y = fab_bottom_y - self.FAB_SIZE - self.FAB_MARGIN
+
         if hasattr(self, '_add_button'):
-            self._add_button.move(self.width() - 64, self.height() - 64)
+            self._add_button.move(fab_x, fab_bottom_y)
         if hasattr(self, '_add_image_button'):
-            # Position above add app button
-            self._add_image_button.move(self.width() - 54, self.height() - 114)
+            self._add_image_button.move(fab_x, fab_top_y)
 
     def mousePressEvent(self, event: QMouseEvent):
         """Handle mouse press for window dragging"""
@@ -231,10 +247,9 @@ class MainWindow(QMainWindow):
             return
 
         # Get current category
-        current_index = self._tab_widget.currentIndex()
-        category_name = self._app_state.categories[0].name if self._app_state.categories else "Web"
-        if 0 <= current_index < len(self._app_state.categories):
-            category_name = self._app_state.categories[current_index].name
+        category_name = self._get_current_category_name()
+        if not category_name:
+            return
 
         # Create note with image type
         note = Note(
