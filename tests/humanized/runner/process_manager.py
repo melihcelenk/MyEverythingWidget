@@ -25,20 +25,24 @@ class ProcessManager:
         """Kill all running instances of the application. Returns True if successful within timeout."""
         start_time = time.time()
 
-        # On Windows, directly kill Python processes - fastest method
+        # On Windows, find and kill only My Everything processes
         if platform.system() == 'Windows':
             try:
-                subprocess.run(
-                    ['taskkill', '/F', '/IM', 'python.exe', '/T'],
-                    capture_output=True,
-                    timeout=3
-                )
+                # Find processes by window title instead of killing all Python processes
+                if gw:
+                    windows = gw.getWindowsWithTitle("My Everything")
+                    for win in windows:
+                        try:
+                            if win.isMinimized:
+                                win.restore()
+                            win.close()
+                        except Exception:
+                            pass
+                
                 time.sleep(0.5)  # Brief wait
 
                 if time.time() - start_time > timeout:
                     return False
-            except subprocess.TimeoutExpired:
-                return False
             except Exception:
                 pass
 

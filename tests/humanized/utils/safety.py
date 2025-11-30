@@ -1,6 +1,7 @@
 """Safety utilities for UI automation - allows user to interrupt."""
 
 import platform
+import time
 
 # Try multiple methods for keyboard interrupt detection
 KEYBOARD_METHOD = None
@@ -25,24 +26,10 @@ try:
 
 
     # Start listener in daemon mode so it doesn't block program exit
-    try:
-        _listener = pynput_keyboard.Listener(on_press=_on_press, daemon=True, suppress=False)
-        _listener.start()
-
-        # Give listener a moment to start
-        import time
-
-        time.sleep(0.3)
-
-        # Verify listener is running
-        if _listener.running:
-            KEYBOARD_METHOD = 'pynput'
-        else:
-            # Listener failed to start
-            _listener = None
-    except Exception:
-        # If listener fails, try other methods
-        _listener = None
+    # DISABLED: pynput listener causes hangs/timeouts on Windows
+    # TODO: Fix keyboard interrupt detection
+    _listener = None
+    KEYBOARD_METHOD = None
 except ImportError:
     pass
 except Exception:

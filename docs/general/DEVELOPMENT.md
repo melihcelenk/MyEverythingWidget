@@ -156,6 +156,32 @@ The `humanized_ui_runner.py`:
 - Shows detailed differences if test fails
 - Cleans up state after test
 
+### Troubleshooting
+
+**If tests freeze or timeout when running:**
+
+1. **Check `ProcessManager.kill_all_processes()`**:
+    - **CRITICAL**: This function must NOT kill all Python processes (`taskkill /F /IM python.exe /T`)
+    - It should only close "My Everything" windows using `pygetwindow`
+    - Killing all Python processes will terminate the test script itself, causing silent failures
+    - **Solution**: Use `gw.getWindowsWithTitle("My Everything")` and close only those windows
+
+2. **Check `safety.py` imports**:
+    - If `pynput` listener causes hangs, disable it temporarily
+    - Keyboard interrupt detection may not work reliably on Windows
+    - Mouse-based interrupts (corner detection, outside window) should still work
+
+3. **If command times out or produces no output**:
+    - Don't keep retrying the same command - investigate the root cause
+    - Check if the script is being killed by process management code
+    - Verify imports work: `python -c "from tests.humanized.utils.safety import check_user_interrupt; print('OK')"`
+    - Check syntax: `python -m py_compile tests/humanized_ui_runner.py`
+
+4. **Common issues**:
+    - Test script kills itself: Check `kill_all_processes()` implementation
+    - Import hangs: Check `pynput` listener initialization in `safety.py`
+    - No output: Script may be exiting silently - check process management code
+
 ### Best Practices
 
 1. **Always write tests first** (TDD approach)
