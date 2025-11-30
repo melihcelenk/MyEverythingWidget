@@ -106,6 +106,11 @@ class ItemMover:
             return
 
         # Perform swap
+        self._logger.info("SWAP: %s -> (%d,%d), %s -> (%d,%d)",
+                          dragged_item.id if hasattr(dragged_item, 'id') else 'note',
+                          target_row, target_col,
+                          colliding_item.id if hasattr(colliding_item, 'id') else 'item',
+                          source_row, source_col)
         self._move_item(dragged_item, target_row, target_col)
         self._move_item(colliding_item, source_row, source_col)
         if self.on_refresh:
@@ -130,12 +135,18 @@ class ItemMover:
 
     def _move_item(self, item, row: int, col: int):
         """Move an item to a new grid position."""
+        item_id = getattr(item, 'id', 'unknown')
+        old_row = getattr(item, 'grid_row', '?')
+        old_col = getattr(item, 'grid_col', '?')
+        self._logger.info("MOVE: %s from (%s,%s) to (%d,%d)", item_id, old_row, old_col, row, col)
+        
         if hasattr(item, 'name'):  # AppShortcut
             item.grid_row = row
             item.grid_col = col
-            self._app_state.state_changed.emit()
+            self._app_state.update_app(item)  # Save to persist
         else:  # Note
             updated = replace(item, grid_row=row, grid_col=col)
+            self._logger.info("MOVE NOTE: new grid_col=%d", updated.grid_col)
             self._app_state.update_note(updated)
 
     def _find_item_at_cells(self, category: str, cells: set, exclude_id: str = None):
@@ -165,7 +176,8 @@ class ItemMover:
         app.grid_row, app.grid_col, app.order = target_row, target_col, target_order
         target_app.grid_row, target_app.grid_col, target_app.order = source_row, source_col, source_order
 
-        self._app_state.state_changed.emit()
+        self._app_state.update_app(app)
+        self._app_state.update_app(target_app)
         if self.on_refresh:
             self.on_refresh()
 

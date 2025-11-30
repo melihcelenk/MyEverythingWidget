@@ -38,7 +38,9 @@ class GridItem:
 class CollisionDetector:
     """Detects and handles grid cell collisions."""
 
-    def __init__(self):
+    def __init__(self, rows: int = None, cols: int = None):
+        self._rows = rows if rows is not None else GRID_ROWS
+        self._cols = cols if cols is not None else GRID_COLS
         self._occupied: Set[Tuple[int, int]] = set()
         self._item_cells: dict[str, Set[Tuple[int, int]]] = {}
 

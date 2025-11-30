@@ -1,0 +1,25 @@
+# REAL UI TEST - Actual bug reproduction
+# User reported: 2x1 note goes one column to the LEFT of expected position
+
+Rows: 5
+Columns: 5
+
+Initial:
+.  .  .  .  .
+N1 N1 .  .  A1
+.  .  .  .  .
+.  .  .  .  .
+.  .  .  .  .
+
+Action:
+# Real pixel from user's log: pixel=(300,280) -> cell=(3,3)
+# But user says note ends up at WRONG position (one left)
+DropAtPixel(N1, x=300, y=84)
+
+Expected:
+# User EXPECTS N1 at col 3-4 (rightmost for 2x1)
+.  .  .  .  .
+A1 .  .  N1 N1
+.  .  .  .  .
+.  .  .  .  .
+.  .  .  .  .

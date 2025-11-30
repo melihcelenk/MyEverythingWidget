@@ -1,0 +1,20 @@
+Rows: 5
+Columns: 5
+
+Initial:
+.  .  .  .  .
+N1 N1 .  .  A1
+.  .  .  .  .
+.  .  .  .  .
+.  .  .  .  .
+
+Action:
+# Usage: Drag(Item,Position)
+Drag(N1,R2C4)
+
+Expected:
+.  .  .  .  .
+A1 .  .  N1 N1
+.  .  .  .  .
+.  .  .  .  .
+.  .  .  .  .

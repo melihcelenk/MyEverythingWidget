@@ -123,6 +123,11 @@ class AppState(QObject):
                     target=app["target"],
                     category=app["category"],
                     type=LaunchType(app.get("type") or LaunchType.URL.value),
+                    order=app.get("order", 0),
+                    grid_row=app.get("grid_row"),
+                    grid_col=app.get("grid_col"),
+                    col_span=app.get("col_span", 1),
+                    row_span=app.get("row_span", 1),
                 )
                 for app in apps
             ]
@@ -145,6 +150,11 @@ class AppState(QObject):
             "target": app.target,
             "category": app.category,
             "type": app.type.value,
+            "order": app.order,
+            "grid_row": app.grid_row,
+            "grid_col": app.grid_col,
+            "col_span": app.col_span,
+            "row_span": app.row_span,
         }
 
     def _note_to_dict(self, note: Note) -> dict:

@@ -145,6 +145,9 @@ class GridDropZone(QWidget):
 
         if self._hover_cell is not None:
             row, col = self._hover_cell
+            pos = event.position().toPoint()
+            print(f"[DROP] item={self._dragging_item_id} span={self._dragging_col_span}x{self._dragging_row_span} "
+                  f"pixel=({pos.x()},{pos.y()}) -> cell=({row},{col})")
             self.gridDropped.emit(self._dragging_item_id, row, col)
             event.acceptProposedAction()
         else:

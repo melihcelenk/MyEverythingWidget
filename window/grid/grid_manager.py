@@ -36,8 +36,10 @@ class GridManager:
     - Collision detection and swap logic
     """
 
-    def __init__(self):
-        self._detector = CollisionDetector()
+    def __init__(self, rows: int = None, cols: int = None):
+        self._rows = rows if rows is not None else GRID_ROWS
+        self._cols = cols if cols is not None else GRID_COLS
+        self._detector = CollisionDetector(self._rows, self._cols)
         self._calculator = CellCalculator
         self._items: dict[str, GridItem] = {}
 
