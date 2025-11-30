@@ -755,8 +755,12 @@ def find_test_files(test_name: Optional[str] = None) -> List[Path]:
         for filename in filenames:
             if filename.startswith('.') or '__pycache__' in root or filename.endswith('_REAL'):
                 continue
+            # Only accept .dsl files
+            if not filename.endswith('.dsl'):
+                continue
             filepath = Path(root) / filename
             if test_name:
+                # Match by full filename or stem (without extension)
                 if filename == test_name or filepath.stem == test_name:
                     files.append(filepath)
             else:
