@@ -2,7 +2,6 @@
 Tests for ImageGridCalculator service
 Calculates grid span based on image aspect ratio
 """
-import pytest
 
 
 class TestImageGridCalculator:

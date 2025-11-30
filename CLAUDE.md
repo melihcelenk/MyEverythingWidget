@@ -18,7 +18,7 @@ All project documentation is located in the `docs/general/` directory:
 
 - **DO NOT** ask the user to manually test
 - **DO** write humanized UI tests using the DSL format (see [Development Guidelines](docs/general/DEVELOPMENT.md))
-- **DO** run tests automatically using `scripts\test_humanized_ui.bat`
+- **DO** run tests automatically using `tests\test_humanized_ui.bat`
 - **DO** verify tests pass or correctly identify bugs before fixing
 
 ### Code Quality
@@ -32,8 +32,8 @@ All project documentation is located in the `docs/general/` directory:
 ### Project Structure
 
 - Source code in root: `models/`, `services/`, `widgets/`, `window/`
-- Tests in `tests/` directory
-- Scripts in `scripts/` directory
+- Tests in `tests/` directory (including test runner scripts)
+- Scripts in `scripts/` directory (application scripts)
 - Documentation in `docs/general/` directory
 - Virtual environment: `.venv` (not `venv`)
 
@@ -53,10 +53,10 @@ All project documentation is located in the `docs/general/` directory:
 pytest tests/ -v --ignore=tests/visual
 
 # Humanized UI tests
-.\scripts\test_humanized_ui.bat
+.\tests\test_humanized_ui.bat
 
 # Specific test
-.\scripts\test_humanized_ui.bat test_name
+.\tests\test_humanized_ui.bat test_name
 ```
 
 ### Test File Format

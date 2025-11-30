@@ -102,14 +102,23 @@ for contributing.
 
 4. **Run tests:**
    ```bash
-   # Run all unit tests (excluding visual tests)
-   pytest tests/ -v --ignore=tests/visual
+   # Run all unit and integration tests
+   pytest tests/unit/ tests/integration/ -v
+   
+   # Or use the test runner script
+   .\tests\run_all_tests.bat
+   
+   # Run only unit tests
+   pytest tests/unit/ -v
+   
+   # Run only integration tests
+   pytest tests/integration/ -v
    
    # Run humanized UI tests
-   .\scripts\test_humanized_ui.bat
+   .\tests\test_humanized_ui.bat
    
    # Run specific test file
-   pytest tests/test_app_state.py -v
+   pytest tests/unit/test_app_state.py -v
    ```
 
 ## Code Style

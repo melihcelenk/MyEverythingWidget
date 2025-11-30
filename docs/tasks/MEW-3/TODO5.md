@@ -15,10 +15,9 @@ MyEverythingWidget/
 ├── CONTRIBUTING.md                  ✅ Moved to docs/
 ├── CLAUDE.md                        ✅ Moved to docs/DEVELOPMENT.md
 ├── run_test_mode.bat                ⚠️ Should move to scripts/
-├── test_humanized.bat               ⚠️ Should move to scripts/
-├── test_humanized.sh                ⚠️ Should move to scripts/
-├── test_humanized_ui.bat            ⚠️ Should move to scripts/
-├── run_tests.bat                    ❌ OLD - replaced by test_humanized.bat
+├── test_humanized_ui.bat            ✅ Moved to tests/
+├── run_test_mode.bat                ✅ Moved to tests/
+├── run_tests.bat                    ❌ OLD - removed
 ├── run.bat                          ❌ OLD - not used
 ├── run.ps1                          ❌ OLD - not used
 └── flutter_version/                 ❌ OLD - Flutter version, project uses PySide6
@@ -184,7 +183,9 @@ docs/tasks/
 
 ### Root Level
 
-1. **`run_tests.bat`** - Replaced by `test_humanized.bat`
+1. **`run_tests.bat`** - Removed (old, unused)
+2. **`test_humanized.bat`** - Kept (legacy, may reference old runner)
+3. **`test_humanized.sh`** - Kept (legacy, may reference old runner)
 2. **`run.bat`** - Not used
 3. **`run.ps1`** - Not used
 4. **`flutter_version/`** - Entire directory, old Flutter version
@@ -408,8 +409,8 @@ MyEverythingWidget/
 │   └── tasks/                # Task-specific docs (keep as is)
 ├── scripts/                   # Utility scripts
 │   ├── run_test_mode.bat     # Test mode runner
-│   ├── test_humanized.bat    # Humanized test runner (logic)
-│   ├── test_humanized.sh     # Humanized test runner (Unix)
+│   ├── test_humanized_ui.bat # Humanized UI test runner
+│   ├── run_test_mode.bat     # Run app in test mode
 │   └── test_humanized_ui.bat # Humanized UI test runner
 ├── tests/                     # Test files (keep as is)
 ├── src/ or root/             # Source code
@@ -430,18 +431,19 @@ MyEverythingWidget/
 
 #### 1. Scripts Organization
 
-**Move to `scripts/` directory:**
+**Move to `tests/` directory (test scripts belong with tests):**
 
-- [ ] `run_test_mode.bat` → `scripts/run_test_mode.bat`
-- [ ] `test_humanized.bat` → `scripts/test_humanized.bat`
-- [ ] `test_humanized.sh` → `scripts/test_humanized.sh`
-- [ ] `test_humanized_ui.bat` → `scripts/test_humanized_ui.bat`
+- [x] `run_test_mode.bat` → `tests/run_test_mode.bat`
+- [x] `test_humanized.bat` → `tests/test_humanized.bat`
+- [x] `test_humanized.sh` → `tests/test_humanized.sh`
+- [x] `test_humanized_ui.bat` → `tests/test_humanized_ui.bat`
 
 **Update references:**
 
-- [ ] Update `README.md` to reference `scripts/` paths
-- [ ] Update `docs/DEVELOPMENT.md` to reference `scripts/` paths
-- [ ] Update any documentation that references these scripts
+- [x] Update `README.md` to reference `tests/` paths
+- [x] Update `docs/DEVELOPMENT.md` to reference `tests/` paths
+- [x] Update `docs/CONTRIBUTING.md` to reference `tests/` paths
+- [x] Update `CLAUDE.md` to reference `tests/` paths
 
 #### 2. Documentation Organization
 
@@ -478,8 +480,8 @@ MyEverythingWidget/
 
 #### Phase 4.1: Move Scripts
 
-- [x] Create `scripts/` directory
-- [x] Move all `.bat` and `.sh` files to `scripts/`
+- [x] Create `scripts/` directory (for application scripts)
+- [x] Move test scripts to `tests/` directory (test scripts belong with tests)
 - [x] Update all references in documentation
 - [x] Test that scripts still work from new location
 
@@ -522,7 +524,7 @@ MyEverythingWidget/
 **Problem:**
 
 - `models/` directory contains only `app_shortcut.py` and `category.py`
-- `Note` model is located in `window/models/note.py` instead of `models/note.py`
+- ~~`Note` model is located in `window/models/note.py` instead of `models/note.py`~~ ✅ Fixed: Moved to `models/note.py`
 - This creates inconsistency - all data models should be in the same package
 
 **Current Structure:**
@@ -547,10 +549,10 @@ models/
 
 **Tasks:**
 
-- [ ] Move `window/models/note.py` to `models/note.py`
-- [ ] Update all imports from `window.models.note` to `models.note`
-- [ ] Remove empty `window/models/` directory
-- [ ] Update documentation references
+- [x] Move `window/models/note.py` to `models/note.py`
+- [x] Update all imports from `window.models.note` to `models.note`
+- [x] Remove empty `window/models/` directory
+- [x] Update documentation references
 - [ ] Run tests to ensure nothing breaks
 
 #### 5.2: Tests Directory Structure
@@ -638,17 +640,17 @@ tests/
 
 **Tasks:**
 
-- [ ] Create `tests/unit/` directory
-- [ ] Create `tests/integration/` directory
-- [ ] Move unit test files to `tests/unit/`
-- [ ] Move integration test files to `tests/integration/`
-- [ ] Create `tests/run_all_tests.bat` script
-- [ ] Create `tests/run_all_tests.sh` script
-- [ ] Update `conftest.py` paths if needed
-- [ ] Update pytest configuration to find tests in subdirectories
-- [ ] Update documentation (README.md, DEVELOPMENT.md) with new test structure
-- [ ] Update CI/CD if exists
-- [ ] Run all tests to ensure nothing breaks
+- [x] Create `tests/unit/` directory
+- [x] Create `tests/integration/` directory
+- [x] Move unit test files to `tests/unit/`
+- [x] Move integration test files to `tests/integration/`
+- [x] Create `tests/run_all_tests.bat` script
+- [x] Create `tests/run_all_tests.sh` script
+- [x] Update `conftest.py` paths if needed (already handles subdirectories)
+- [x] Update pytest configuration to find tests in subdirectories (conftest.py already configured)
+- [x] Update documentation (README.md, CONTRIBUTING.md) with new test structure
+- [x] Update CI/CD if exists (not applicable - no CI/CD configured)
+- [x] Run all tests to ensure nothing breaks (tests run successfully from new locations)
 
 **Test Classification:**
 
@@ -679,20 +681,20 @@ tests/
 
 #### Phase 5.1: Fix Models Hierarchy
 
-- [ ] Move `window/models/note.py` to `models/note.py`
-- [ ] Search and update all imports
-- [ ] Remove empty `window/models/` directory
-- [ ] Update documentation
+- [x] Move `window/models/note.py` to `models/note.py`
+- [x] Search and update all imports
+- [x] Remove empty `window/models/` directory
+- [x] Update documentation
 - [ ] Run tests
 
 #### Phase 5.2: Reorganize Tests
 
-- [ ] Create new directory structure
-- [ ] Move test files to appropriate directories
-- [ ] Create test runner scripts
-- [ ] Update pytest configuration
-- [ ] Update documentation
-- [ ] Run all tests
+- [x] Create new directory structure
+- [x] Move test files to appropriate directories
+- [x] Create test runner scripts
+- [x] Update pytest configuration (conftest.py already handles subdirectories)
+- [x] Update documentation
+- [x] Run all tests (tests run successfully from new locations)
 
 ### Benefits
 

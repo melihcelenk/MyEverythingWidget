@@ -17,10 +17,10 @@ from PySide6.QtWidgets import (
     QMenu,
 )
 
+from models.note import Note
 from widgets.draggable_mixin import DraggableMixin
 from widgets.resizable_mixin import ResizableMixin
 from window.grid.constants import CELL_WIDTH, CELL_HEIGHT, SPACING
-from window.models.note import Note
 
 
 class NoteCard(QFrame, ResizableMixin, DraggableMixin):

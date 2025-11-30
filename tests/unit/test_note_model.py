@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 
 import pytest
 
-from window.models.note import Note, NoteType
+from models.note import Note, NoteType
 
 
 @pytest.fixture

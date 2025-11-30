@@ -9,10 +9,10 @@ from PySide6.QtWidgets import QMessageBox, QInputDialog, QFileDialog
 
 from models.app_shortcut import AppShortcut
 from models.category import AppCategory
+from models.note import Note, NoteType
 from services.image_storage_service import ImageStorageService
 from widgets.app_picker_dialog import AppPickerDialog
 from widgets.icon_picker_dialog import IconPickerDialog
-from window.models.note import Note, NoteType
 
 
 class DialogManager:

@@ -86,9 +86,10 @@ MyEverythingWidget/
 │   └── icon_picker_dialog.py
 ├── services/               # Business logic
 │   └── app_launcher_service.py
-├── tests/                  # Unit and visual tests
-│   ├── test_app_state.py
-│   ├── test_app_card.py
+├── tests/                  # Test files
+│   ├── unit/              # Unit tests
+│   ├── integration/       # Integration tests
+│   ├── humanized/         # Humanized UI tests (DSL)
 │   └── visual/            # Visual regression tests
 ├── scripts/                # Utility scripts
 │   ├── run_test_mode.bat
@@ -112,16 +113,24 @@ The project has comprehensive unit tests covering:
 - Note and image management
 
 ```bash
-# Run all unit tests (excluding visual tests)
-python -m pytest tests/ -v --ignore=tests/visual
+# Run all unit and integration tests
+python -m pytest tests/unit/ tests/integration/ -v
+
+# Or use the test runner script
+.\tests\run_all_tests.bat
+
+# Run only unit tests
+python -m pytest tests/unit/ -v
+
+# Run only integration tests
+python -m pytest tests/integration/ -v
 
 # Run specific test file
-python -m pytest tests/test_app_state.py -v
-python -m pytest tests/test_app_card.py -v
-python -m pytest tests/test_main_window.py -v
+python -m pytest tests/unit/test_app_state.py -v
+python -m pytest tests/integration/test_main_window.py -v
 
 # Run with coverage
-python -m pytest tests/ -v --cov=. --cov-report=html
+python -m pytest tests/unit/ tests/integration/ -v --cov=. --cov-report=html
 ```
 
 ### Humanized UI Tests
@@ -130,23 +139,28 @@ The project uses a DSL-based UI testing system for automated drag-and-drop and U
 
 ```bash
 # Run all humanized UI tests
-.\scripts\test_humanized_ui.bat
+.\tests\test_humanized_ui.bat
 
 # Run specific test
-.\scripts\test_humanized_ui.bat test_name
+.\tests\test_humanized_ui.bat test_name
 ```
 
 Test files are located in `tests/humanized/` and use the `.dsl` format.
 See [Development Guidelines](docs/general/DEVELOPMENT.md) for details.
 
 **Test Coverage:**
-- `test_app_state.py` - State management tests
-- `test_app_card.py` - Widget creation with all icon types
-- `test_main_window.py` - Window operations, tab switching, state changes
-- `test_tab_management.py` - Tab creation, removal, updates
-- `test_drag_drop.py` - Drag-and-drop operations
-- `test_grid_layout.py` - Grid layout calculations
-- `humanized/drag/*.dsl` - UI interaction tests
+
+- **Unit Tests** (`tests/unit/`):
+    - `test_app_state.py` - State management tests
+    - `test_app_card.py` - Widget creation with all icon types
+    - `test_tab_management.py` - Tab creation, removal, updates
+    - `test_grid_layout.py` - Grid layout calculations
+    - And more...
+- **Integration Tests** (`tests/integration/`):
+    - `test_main_window.py` - Window operations, tab switching, state changes
+    - `test_drag_drop.py` - Drag-and-drop operations
+    - `test_memory_leak.py` - Memory management tests
+- **Humanized UI Tests** (`tests/humanized/drag/*.dsl`) - UI interaction tests
 
 ## Architecture
 

@@ -9,10 +9,10 @@ from typing import TYPE_CHECKING, Callable, Optional
 
 from PySide6.QtGui import QPixmap
 
+from models.note import Note, NoteType
 from widgets.app_card import AppCard
 from widgets.image_card import ImageCard
 from widgets.note_card import NoteCard
-from window.models.note import Note, NoteType
 
 if TYPE_CHECKING:
     from models.app_shortcut import AppShortcut

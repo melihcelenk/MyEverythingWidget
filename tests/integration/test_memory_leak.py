@@ -4,8 +4,10 @@ Memory leak test for tab switching
 import gc
 import sys
 import tracemalloc
+
 import pytest
 from PySide6.QtWidgets import QApplication
+
 from window.app_state import AppState
 from window.tab_manager import TabManager
 

@@ -11,10 +11,10 @@ import pytest
 from PySide6.QtWidgets import QGridLayout
 
 from models.app_shortcut import AppShortcut, LaunchType
+from models.note import Note, NoteType
 from widgets.app_card import AppCard
 from widgets.grid_drop_zone import GridDropZone
 from widgets.note_card import NoteCard
-from window.models.note import Note, NoteType
 
 
 @pytest.fixture

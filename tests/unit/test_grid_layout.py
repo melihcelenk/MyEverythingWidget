@@ -6,10 +6,10 @@ from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QApplication, QWidget, QGridLayout
 
 from models.app_shortcut import AppShortcut, LaunchType
+from models.note import Note, NoteType
 from widgets.app_card import AppCard
 from widgets.image_card import ImageCard
 from widgets.note_card import NoteCard
-from window.models.note import Note, NoteType
 
 
 class TestGridSpacing:
@@ -446,7 +446,7 @@ class TestGridOverflow:
 
         # Specifically check it doesn't overflow
         assert col + span <= 3, \
-            f"Note overflows: col={col}, span={span}, total={col+span}"
+            f"Note overflows: col={col}, span={span}, total={col + span}"
 
     def test_image_card_max_3_columns(self, qtbot):
         """Image card should never exceed 3 columns"""

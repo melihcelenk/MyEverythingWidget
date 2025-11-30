@@ -5,9 +5,10 @@ import os
 import uuid
 
 import pytest
+
 from models.app_shortcut import AppShortcut, LaunchType
+from models.note import Note, NoteType
 from window.app_state import AppState
-from window.models.note import Note, NoteType
 
 
 @pytest.fixture(autouse=True)
@@ -158,4 +159,3 @@ class TestAppState:
 
         assert all(n.id != note_id for n in app_state.notes)
         assert len(app_state.notes) == len(initial_notes) - 1
-

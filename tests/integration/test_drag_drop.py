@@ -46,7 +46,7 @@ class TestDragDropVisualFeedback:
     def note_card(self, app):
         """Create NoteCard for testing"""
         from widgets.note_card import NoteCard
-        from window.models.note import Note, NoteType
+        from models.note import Note, NoteType
 
         note = Note(
             id="note-1",
@@ -144,7 +144,7 @@ class TestDragDropNoteCard:
     @pytest.fixture
     def note_card(self, app):
         from widgets.note_card import NoteCard
-        from window.models.note import Note, NoteType
+        from models.note import Note, NoteType
 
         note = Note(
             id="note-1",
@@ -253,7 +253,7 @@ class TestDragDropReordering:
     def test_tab_manager_handles_note_drop(self, app, main_window):
         """TabManager should handle note reordering on drop"""
         # Add a note first
-        from window.models.note import Note, NoteType
+        from models.note import Note, NoteType
         import uuid
 
         note = Note(
@@ -287,7 +287,7 @@ class TestTabManagerReordering:
     @pytest.fixture
     def main_window(self, app, tmp_path):
         from window.main_window import MainWindow
-        from window.models.note import Note, NoteType
+        from models.note import Note, NoteType
 
         state_file = tmp_path / "app_state.json"
         os.environ["MEW_STATE_PATH"] = str(state_file)
@@ -443,7 +443,7 @@ class TestNoteReordering:
     def app_state(self):
         """Create AppState with test notes"""
         from window.app_state import AppState
-        from window.models.note import Note, NoteType
+        from models.note import Note, NoteType
         from models.category import AppCategory
 
         state = AppState()

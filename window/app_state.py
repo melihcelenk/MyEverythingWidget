@@ -9,8 +9,8 @@ from PySide6.QtCore import QObject, Signal
 
 from models.app_shortcut import AppShortcut, LaunchType
 from models.category import AppCategory
+from models.note import Note
 from services.storage_service import StorageService
-from window.models.note import Note
 
 
 class AppState(QObject):

@@ -28,7 +28,7 @@ from dataclasses import dataclass, field
 from typing import Dict, List, Set, Tuple, Optional
 from unittest.mock import MagicMock
 
-from window.models.note import Note, NoteType
+from models.note import Note, NoteType
 
 
 @dataclass

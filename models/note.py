@@ -58,4 +58,3 @@ class Note:
             col_span=data.get("col_span", 1),
             row_span=data.get("row_span", 1),
         )
-

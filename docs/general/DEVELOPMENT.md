@@ -65,15 +65,15 @@ Creates a new item and assigns it the specified ID.
 **Run all tests:**
 
 ```bash
-.\scripts\test_humanized_ui.bat
+.\tests\test_humanized_ui.bat
 ```
 
 **Run specific test:**
 
 ```bash
-.\scripts\test_humanized_ui.bat swap_note_and_app
+.\tests\test_humanized_ui.bat swap_note_and_app
 # or
-.\scripts\test_humanized_ui.bat swap_note_and_app.dsl
+.\tests\test_humanized_ui.bat swap_note_and_app.dsl
 ```
 
 ### Test State Management
@@ -117,7 +117,7 @@ All test state files are located in `tests/state/` and `tests/tmp/` directories:
 1. User reports: "2x1 note becomes 1x1 when dragged"
 2. Create test file: `tests/humanized/drag/2x1_note_right_edge.dsl`
 3. Write test with `Create(NOTE, "content", N1)` and `Drag(N1, R2C3)`
-4. Run: `.\scripts\test_humanized_ui.bat 2x1_note_right_edge`
+4. Run: `.\tests\test_humanized_ui.bat 2x1_note_right_edge`
 5. Test fails, confirming the bug
 6. Fix the bug in code
 7. Re-run test to verify fix

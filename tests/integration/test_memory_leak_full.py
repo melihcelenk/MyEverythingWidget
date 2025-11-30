@@ -4,8 +4,10 @@ Full application memory leak test
 import gc
 import sys
 import tracemalloc
+
 import pytest
 from PySide6.QtWidgets import QApplication
+
 from window.main_window import MainWindow
 
 

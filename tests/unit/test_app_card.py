@@ -3,7 +3,7 @@ Tests for AppCard widget
 """
 import pytest
 from PySide6.QtWidgets import QApplication, QLabel
-from PySide6.QtCore import Qt
+
 from models.app_shortcut import AppShortcut, LaunchType
 from widgets.app_card import AppCard
 
@@ -19,7 +19,7 @@ def qapp():
 
 class TestAppCard:
     """Test AppCard widget functionality"""
-    
+
     def test_app_card_creation(self, qapp):
         """Test creating an app card"""
         app = AppShortcut(
@@ -30,11 +30,11 @@ class TestAppCard:
             category='Web',
             type=LaunchType.URL,
         )
-        
+
         card = AppCard(app=app, on_tap=lambda: None)
         assert card is not None
         assert card._app == app
-    
+
     def test_app_card_tooltip_for_long_name(self, qapp):
         """Test tooltip appears for long app names"""
         app = AppShortcut(
@@ -45,7 +45,7 @@ class TestAppCard:
             category='Web',
             type=LaunchType.URL,
         )
-        
+
         card = AppCard(app=app, on_tap=lambda: None)
         # Find label widget
         for child in card.findChildren(QLabel):
@@ -53,7 +53,7 @@ class TestAppCard:
                 # Tooltip should be set for long names
                 assert child.toolTip() == app.name or len(child.toolTip()) > 0
                 break
-    
+
     def test_app_card_no_tooltip_for_short_name(self, qapp):
         """Test tooltip does not appear for short app names"""
         app = AppShortcut(
@@ -225,4 +225,3 @@ class TestAppCard:
             cards.append(card)
 
         assert len(cards) == 100
-

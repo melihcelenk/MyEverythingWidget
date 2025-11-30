@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QLineEdit, QPushButton
 
-from window.models.note import Note, NoteType
+from models.note import Note, NoteType
 
 if TYPE_CHECKING:
     from window.app_state import AppState

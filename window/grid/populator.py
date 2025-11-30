@@ -11,12 +11,12 @@ from typing import TYPE_CHECKING, Callable
 
 from PySide6.QtWidgets import QGridLayout
 
+from models.note import NoteType
 from services.image_cache_service import ImageCacheService
 from widgets.app_card import AppCard
 from widgets.image_card import ImageCard
 from widgets.note_card import NoteCard
 from window.grid.cell_calculator import CellCalculator
-from window.models.note import NoteType
 
 if TYPE_CHECKING:
     from window.app_state import AppState

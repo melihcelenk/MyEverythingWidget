@@ -2,9 +2,9 @@
 Tests for clipboard paste functionality
 """
 import pytest
-from PySide6.QtWidgets import QApplication
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QPixmap, QImage, QClipboard
+from PySide6.QtGui import QPixmap
+from PySide6.QtWidgets import QApplication
 
 
 class TestClipboardPaste:

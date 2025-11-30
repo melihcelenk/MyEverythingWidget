@@ -5,8 +5,8 @@ import pytest
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication, QPushButton
 
+from models.note import Note, NoteType
 from widgets.note_card import NoteCard
-from window.models.note import Note, NoteType
 
 
 @pytest.mark.usefixtures("qtbot")

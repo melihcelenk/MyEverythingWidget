@@ -9,6 +9,7 @@ from PySide6.QtGui import QMouseEvent, QKeyEvent
 from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QMessageBox, QPushButton
 
 from models.app_shortcut import AppShortcut
+from models.note import Note, NoteType
 from services.app_launcher_service import AppLauncherService
 from services.clipboard_service import ClipboardService
 from services.image_storage_service import ImageStorageService
@@ -18,7 +19,6 @@ from window.app_state import AppState
 from window.content_manager import ContentManager
 from window.dialog_manager import DialogManager
 from window.grid.constants import TOTAL_WIDTH, TOTAL_HEIGHT
-from window.models.note import Note, NoteType
 
 
 class MainWindow(QMainWindow):
