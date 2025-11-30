@@ -83,16 +83,33 @@ class ItemMover:
         colliding_span_row = getattr(colliding_item, 'row_span', 1)
         colliding_span_col = getattr(colliding_item, 'col_span', 1)
 
-        if source_row is not None and source_col is not None:
-            if (source_col + colliding_span_col <= GRID_COLS and
-                    source_row + colliding_span_row <= GRID_ROWS):
-                self._move_item(dragged_item, target_row, target_col)
-                self._move_item(colliding_item, source_row, source_col)
-                if self.on_refresh:
-                    self.on_refresh()
-                return
+        if source_row is None or source_col is None:
+            self._logger.warning("Cannot swap - source position unknown")
+            return
 
-        self._logger.warning("Cannot swap - colliding item doesn't fit at source")
+        # Check grid bounds for colliding item at source
+        if (source_col + colliding_span_col > GRID_COLS or
+                source_row + colliding_span_row > GRID_ROWS):
+            self._logger.warning("Cannot swap - colliding item doesn't fit at source (grid bounds)")
+            return
+
+        # Check if source area is free (excluding dragged item's cells)
+        colliding_source_cells = {
+            (r, c) for r in range(source_row, source_row + colliding_span_row)
+            for c in range(source_col, source_col + colliding_span_col)
+        }
+        colliding_item_cells = self._get_cells_for_item(colliding_item)
+        other_occupied = occupied - colliding_item_cells  # Remove colliding item from occupied
+
+        if colliding_source_cells & other_occupied:
+            self._logger.warning("Cannot swap - source area blocked by other items")
+            return
+
+        # Perform swap
+        self._move_item(dragged_item, target_row, target_col)
+        self._move_item(colliding_item, source_row, source_col)
+        if self.on_refresh:
+            self.on_refresh()
 
     def handle_item_dropped(self, item_id: str, target_item_id: str):
         """Handle item drop for reordering (swap)."""
