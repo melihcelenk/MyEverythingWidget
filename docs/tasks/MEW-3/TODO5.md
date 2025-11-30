@@ -10,10 +10,10 @@ MyEverythingWidget/
 ├── requirements.txt                 ✅ Dependencies
 ├── README.md                        ✅ Documentation
 ├── LICENSE                          ✅ License
-├── ARCHITECTURE.md                  ⚠️ Should move to docs/
-├── CHANGELOG.md                     ⚠️ Should move to docs/
-├── CONTRIBUTING.md                  ⚠️ Should move to docs/
-├── CLAUDE.md                        ⚠️ Should move to docs/DEVELOPMENT.md
+├── ARCHITECTURE.md                  ✅ Moved to docs/
+├── CHANGELOG.md                     ✅ Moved to docs/
+├── CONTRIBUTING.md                  ✅ Moved to docs/
+├── CLAUDE.md                        ✅ Moved to docs/DEVELOPMENT.md
 ├── run_test_mode.bat                ⚠️ Should move to scripts/
 ├── test_humanized.bat               ⚠️ Should move to scripts/
 ├── test_humanized.sh                ⚠️ Should move to scripts/
@@ -119,7 +119,9 @@ tests/
 ├── conftest.py                      ✅ Pytest configuration
 ├── README.md                        ✅ Test documentation
 ├── state/
-│   └── app_state.json               ✅ Test state file (moved to state/)
+│   └── initial_test_state.json      ✅ Test state template (git committed)
+├── tmp/                              ✅ Test temporary files (gitignored)
+│   └── app_state.json               ✅ Test state file (created during tests)
 ├── humanized_ui_runner.py           ✅ UI test runner (preferred)
 │
 ├── helpers/
@@ -231,12 +233,12 @@ docs/tasks/
 - [x] Remove `tests/test_swap_dsl.py` (already removed)
 - [x] Remove `tests/test_swap_positioning.py` (already removed)
 - [x] Remove `tests/test_state.json` (already removed)
-- [x] Move test state to `tests/state/app_state.json`
+- [x] Move test state to `tests/state/initial_test_state.json` (template)
+- [x] Create `tests/tmp/` directory for temporary test state (gitignored)
+- [x] Update test system to copy from `initial_test_state.json` to `tmp/app_state.json`
 - [x] Update test file naming to `.dsl` extension
 - [x] Update test files to `snake_case.dsl` format
-- [x] Move test state to `tests/state/app_state.json`
-- [x] Update test file naming to `.dsl` extension
-- [x] Update test files to `snake_case.dsl` format
+- [x] Test state system working correctly
 
 **Result:** 8 files/directories removed. Test count: 232 → 215 (removed 17 tests from deleted files). All remaining
 tests pass (10 pre-existing failures unrelated to cleanup).
@@ -386,7 +388,7 @@ Root directory'de çok fazla dosya var:
 
 - Multiple `.bat` files (scripts should be in `scripts/`)
 - Multiple `.md` files (docs should be organized)
-- `CLAUDE.md` (development guidelines - should be in `docs/` or root is OK)
+- `docs/DEVELOPMENT.md` (development guidelines - moved from CLAUDE.md)
 - `data/` directory (should be organized better)
 
 ### Standard GitHub Repository Structure
@@ -438,17 +440,17 @@ MyEverythingWidget/
 **Update references:**
 
 - [ ] Update `README.md` to reference `scripts/` paths
-- [ ] Update `CLAUDE.md` to reference `scripts/` paths
+- [ ] Update `docs/DEVELOPMENT.md` to reference `scripts/` paths
 - [ ] Update any documentation that references these scripts
 
 #### 2. Documentation Organization
 
 **Move to `docs/` directory:**
 
-- [ ] `ARCHITECTURE.md` → `docs/ARCHITECTURE.md`
-- [ ] `CHANGELOG.md` → `docs/CHANGELOG.md`
-- [ ] `CONTRIBUTING.md` → `docs/CONTRIBUTING.md`
-- [ ] `CLAUDE.md` → `docs/DEVELOPMENT.md` (rename for clarity)
+- [x] `ARCHITECTURE.md` → `docs/ARCHITECTURE.md`
+- [x] `CHANGELOG.md` → `docs/CHANGELOG.md`
+- [x] `CONTRIBUTING.md` → `docs/CONTRIBUTING.md`
+- [x] `CLAUDE.md` → `docs/DEVELOPMENT.md` (rename for clarity)
 
 **Keep in root:**
 
@@ -483,10 +485,10 @@ MyEverythingWidget/
 
 #### Phase 4.2: Move Documentation
 
-- [ ] Move documentation files to `docs/`
-- [ ] Rename `CLAUDE.md` to `docs/DEVELOPMENT.md`
-- [ ] Update all references in code and documentation
-- [ ] Update README.md links
+- [x] Move documentation files to `docs/`
+- [x] Rename `CLAUDE.md` to `docs/DEVELOPMENT.md`
+- [x] Update all references in code and documentation
+- [x] Update README.md links
 
 #### Phase 4.3: Update References
 
@@ -514,7 +516,7 @@ MyEverythingWidget/
 - All deletions should be done carefully
 - Run full test suite after each phase
 - Keep git history for reference
-- Update `ARCHITECTURE.md` if file structure changes significantly
+- Update `docs/ARCHITECTURE.md` if file structure changes significantly
 - Scripts in `scripts/` directory are standard practice
 - Documentation in `docs/` is standard practice
 

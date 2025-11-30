@@ -15,35 +15,35 @@ My Everything Widget follows a clean architecture pattern with clear separation 
 ### Clean Code
 
 1. **Single Responsibility Principle (SRP)**
-   - Each class has one reason to change
-   - Example: `AppCard` only handles app card display, not app launching
+    - Each class has one reason to change
+    - Example: `AppCard` only handles app card display, not app launching
 
 2. **Open/Closed Principle (OCP)**
-   - Open for extension, closed for modification
-   - Example: New icon types can be added without modifying `IconPickerDialog`
+    - Open for extension, closed for modification
+    - Example: New icon types can be added without modifying `IconPickerDialog`
 
 3. **Dependency Inversion Principle (DIP)**
-   - Depend on abstractions, not concretions
-   - Example: `MainWindow` depends on `AppState` interface, not implementation
+    - Depend on abstractions, not concretions
+    - Example: `MainWindow` depends on `AppState` interface, not implementation
 
 ### OOP Principles
 
 1. **Encapsulation**
-   - Private attributes (prefixed with `_`)
-   - Public methods for controlled access
-   - Example: `AppState._apps` is private, accessed via `filtered_apps` property
+    - Private attributes (prefixed with `_`)
+    - Public methods for controlled access
+    - Example: `AppState._apps` is private, accessed via `filtered_apps` property
 
 2. **Inheritance**
-   - Widget classes inherit from PySide6 base classes
-   - Example: `AppCard(QWidget)`, `MainWindow(QMainWindow)`
+    - Widget classes inherit from PySide6 base classes
+    - Example: `AppCard(QWidget)`, `MainWindow(QMainWindow)`
 
 3. **Polymorphism**
-   - Interface-based design
-   - Example: All widgets implement consistent interfaces
+    - Interface-based design
+    - Example: All widgets implement consistent interfaces
 
 4. **Abstraction**
-   - Clear separation between interface and implementation
-   - Example: `AppLauncherService` abstracts platform-specific launching
+    - Clear separation between interface and implementation
+    - Example: `AppLauncherService` abstracts platform-specific launching
 
 ## Component Architecture
 
@@ -51,12 +51,17 @@ My Everything Widget follows a clean architecture pattern with clear separation 
 
 **Purpose**: Define data structures and business entities
 
+**Location**: `models/` and `window/models/`
+
 **Components**:
-- `AppShortcut`: Represents an application shortcut
+
+- `AppShortcut`: Represents an application shortcut (EXE, URL, FOLDER)
 - `AppCategory`: Represents a category for organizing apps
 - `LaunchType`: Enum for different launch types (EXE, URL, FOLDER)
+- `Note`: Represents a note with content, position, and span information
 
 **Responsibilities**:
+
 - Data validation
 - Business rule enforcement
 - Immutability where appropriate
@@ -65,42 +70,74 @@ My Everything Widget follows a clean architecture pattern with clear separation 
 
 **Purpose**: Handle business logic and external integrations
 
+**Location**: `services/`
+
 **Components**:
+
 - `AppLauncherService`: Launches applications, URLs, and folders
+- `StorageService`: Manages persistent state storage (JSON)
+- `ClipboardService`: Handles clipboard operations
+- `ImageCacheService`: Manages image caching
+- `ImageStorageService`: Handles image storage
+- `ImageGridCalculator`: Calculates image grid dimensions
 
 **Responsibilities**:
+
 - Platform-specific operations
 - External system integration
 - Error handling
+- Data persistence
 
 ### Window Layer
 
 **Purpose**: Manage application state and coordinate components
 
+**Location**: `window/`
+
 **Components**:
-- `AppState`: Global application state manager
+
+- `AppState`: Global application state manager (categories, apps, notes)
+- `ContentManager`: Main coordinator for UI components (replaces TabManager wrapper)
 - `MainWindow`: Main application window controller
+- `DialogManager`: Manages all dialog operations
+- `TabManager`: Tab management (located in `window/ui/tabs/`)
+- `GridPopulator`: Populates grid with items
+- `ItemMover`: Handles drag-and-drop operations
+- `NoteActions`: Manages note-related actions
 
 **Responsibilities**:
+
 - State management
 - Component coordination
 - Event handling
+- Grid layout management
 
 ### Widgets Layer
 
 **Purpose**: UI components and user interaction
 
+**Location**: `widgets/`
+
 **Components**:
-- `CustomTitleBar`: Custom window title bar
+
+- `CustomTitleBar`: Custom window title bar with drag-to-move
 - `AppCard`: Individual app card display
-- `AddAppButton`: Floating action button
-- `AppPickerDialog`: Dialog for adding/editing apps
-- `IconPickerDialog`: Dialog for selecting icons
+- `NoteCard`: Individual note card display
+- `ImageCard`: Individual image card display
+- `AddItemDialog`: Unified dialog for adding apps, notes, and images
+- `AppPickerDialog`: Dialog for editing apps
+- `IconPickerDialog`: Dialog for selecting icons (emoji, material icons, custom)
+- `DraggableTabBar`: Draggable tab bar for categories
+- `GridDropZone`: Grid drop zone for drag-and-drop
+- `DraggableMixin`: Mixin for draggable widgets
+- `ResizableMixin`: Mixin for resizable widgets
 
 **Responsibilities**:
+
 - UI rendering
 - User input handling
 - Visual feedback
+- Drag-and-drop interactions
 
 ## Data Flow
 
@@ -109,7 +146,7 @@ User Action
     ↓
 Widget (UI)
     ↓
-MainWindow (Controller)
+ContentManager (Coordinator)
     ↓
 AppState (State Manager)
     ↓
@@ -117,9 +154,11 @@ Service (Business Logic)
     ↓
 External System / State Update
     ↓
-Signal Emission
+Signal Emission (state_changed)
     ↓
-UI Update
+ContentManager Refresh
+    ↓
+UI Update (GridPopulator, TabManager)
 ```
 
 ## State Management
@@ -135,13 +174,14 @@ UI Update
 ### Example Flow
 
 ```python
-# User adds app
-dialog = AppPickerDialog()
+# User adds app via AddItemDialog
+dialog = AddItemDialog()
 if dialog.exec():
     app = dialog.get_app()
     app_state.add_app(app)  # Modifies state
     # state_changed signal emitted
-    # MainWindow._on_state_changed() called
+    # ContentManager._on_state_changed() called
+    # GridPopulator refreshes grid
     # UI updated automatically
 ```
 
@@ -164,6 +204,7 @@ def launch(self, shortcut: AppShortcut) -> bool:
     except Exception as e:
         logger.error(f"Failed to launch {shortcut.name}: {e}")
         return False
+
 
 # Window layer
 def _launch_app(self, app: AppShortcut):
@@ -206,12 +247,22 @@ def _launch_app(self, app: AppShortcut):
 2. Follow widget naming conventions
 3. Add to `widgets/__init__.py`
 4. Write tests
+5. If draggable/resizable, use `DraggableMixin`/`ResizableMixin`
 
 ### Adding New Categories
 
-1. Extend `AppState._load_initial_data()`
-2. Update category list
-3. UI updates automatically via signals
+1. Categories are managed dynamically via `AppState.add_category()`
+2. UI updates automatically via signals
+3. Categories are persisted to JSON state file
+
+### Adding New Item Types
+
+1. Add model class (e.g., `Image` in `window/models/`)
+2. Update `AppState` to manage the new type
+3. Create card widget (e.g., `ImageCard`)
+4. Update `CardFactory` to create the new card type
+5. Update `GridPopulator` to handle the new type
+6. Update `AddItemDialog` to support creating the new type
 
 ## Performance Considerations
 

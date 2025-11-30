@@ -1,162 +1,93 @@
-# CLAUDE Development Guidelines
+# Development Guidelines for AI Assistant
 
-## UI Testing System
+This document provides guidelines and references for AI assistants working on this project.
 
-### Humanized Test DSL
+## Documentation
 
-All UI tests for drag-and-drop operations MUST be written using the Humanized Test DSL format. This format provides a
-human-readable way to define grid states and test actions.
+All project documentation is located in the `docs/general/` directory:
 
-#### Test File Format
+- **[Development Guidelines](docs/general/DEVELOPMENT.md)** - UI testing system, test DSL format, and testing workflow
+- **[Architecture Documentation](docs/general/ARCHITECTURE.md)** - Project structure, component architecture, and design
+  principles
+- **[Contributing Guide](docs/general/CONTRIBUTING.md)** - How to contribute, code style, and development setup
+- **[Changelog](docs/general/CHANGELOG.md)** - Project history and version changes
 
-Test files are located in `tests/humanized/drag/` directory. Each test file follows this format:
+## Key Principles
 
-```
-Rows: 5
-Columns: 5
+### Testing
 
-Initial:
-.  .  .  .  .
-N1 N1 .  .  A1
-.  .  .  .  .
-.  .  .  .  .
-.  .  .  .  .
+- **DO NOT** ask the user to manually test
+- **DO** write humanized UI tests using the DSL format (see [Development Guidelines](docs/general/DEVELOPMENT.md))
+- **DO** run tests automatically using `scripts\test_humanized_ui.bat`
+- **DO** verify tests pass or correctly identify bugs before fixing
 
-Action:
-Drag(N1,R2C4)
+### Code Quality
 
-Expected:
-.  .  .  .  .
-A1 .  .  N1 N1
-.  .  .  .  .
-.  .  .  .  .
-.  .  .  .  .
-```
+- Follow PEP 8 style guide
+- Use type hints where appropriate
+- Write docstrings for public methods and classes
+- Keep methods small and focused (< 50 lines)
+- Follow clean code principles (see [Architecture Documentation](docs/general/ARCHITECTURE.md))
 
-#### Notation
+### Project Structure
 
-- **Apps**: `A1`, `A2`, `A3`, etc.
-- **Notes**: `N1`, `N2`, `N3`, etc.
-- **Images**: `I1`, `I2`, `I3`, etc.
-- **Empty cells**: `.` (dot)
-- **Multi-span items**: Show all cells they occupy (e.g., `N1 N1` for a 2x1 note)
+- Source code in root: `models/`, `services/`, `widgets/`, `window/`
+- Tests in `tests/` directory
+- Scripts in `scripts/` directory
+- Documentation in `docs/general/` directory
+- Virtual environment: `.venv` (not `venv`)
 
-#### Actions
+### State Management
 
-**Drag Action:**
+- Application state managed by `AppState` class
+- UI coordination handled by `ContentManager`
+- State persisted to JSON file (default: `%LOCALAPPDATA%\MyEverythingWidget\app_state.json`)
+- Test state isolated in `tests/tmp/app_state.json` (gitignored)
 
-```
-Drag(ItemID,TargetPosition)
-```
+## Quick Reference
 
-Example: `Drag(N1,R2C4)` - Drags item N1 to row 2, column 4 (1-indexed)
-
-**Create Action:**
-
-```
-Create(NOTE, "note content", N1)
-Create(APP, "app name", A1)
-```
-
-Creates a new item and assigns it the specified ID.
-
-#### Running Tests
-
-**Run all tests:**
+### Running Tests
 
 ```bash
-.\test_humanized_ui.bat
+# Unit tests
+pytest tests/ -v --ignore=tests/visual
+
+# Humanized UI tests
+.\scripts\test_humanized_ui.bat
+
+# Specific test
+.\scripts\test_humanized_ui.bat test_name
 ```
 
-**Run specific test:**
+### Test File Format
 
-```bash
-.\test_humanized_ui.bat swap_note_and_app
-# or
-.\test_humanized_ui.bat swap_note_and_app.dsl
-```
+Humanized tests use `.dsl` extension and `snake_case` naming:
 
-### Test State Management
+- Location: `tests/humanized/drag/`, `tests/humanized/tabs/`, etc.
+- Format: See [Development Guidelines - Test File Format](docs/general/DEVELOPMENT.md#test-file-format)
 
-#### JSON State Files
+### Main Components
 
-All test state files are located in `tests/state/` directory:
+- **ContentManager**: Main UI coordinator (use this, not TabManager wrapper)
+- **AppState**: Global state manager
+- **GridPopulator**: Populates grid with items
+- **ItemMover**: Handles drag-and-drop operations
+- **NoteActions**: Manages note-related actions
 
-- `app_state.json` - Main test state file (used by UI tests)
-- `app_state_backup.json` - Backup of user state (created automatically)
+For detailed architecture, see [Architecture Documentation](docs/general/ARCHITECTURE.md).
 
-#### State Isolation
+## Important Notes
 
-- UI tests use `tests/state/app_state.json` to avoid affecting user's actual state
-- Tests automatically backup and restore state
-- Each test starts with a clean state
+1. **Never commit or push** - User rule: "Never commit, never push"
+2. **Code must be clean** - Follow clean code principles
+3. **Test-driven development** - Write tests first, then implement
+4. **No Turkish comments** - All code comments must be in English
+5. **Automated testing** - Always use automated tests, never ask for manual testing
 
-#### State File Structure
+## When in Doubt
 
-```json
-{
-  "categories": [],
-  "apps": [],
-  "notes": []
-}
-```
-
-### Testing Workflow
-
-**IMPORTANT:** When testing UI functionality, especially drag-and-drop operations:
-
-1. **DO NOT** ask the user to manually test
-2. **DO** write a humanized test file in `tests/humanized/drag/`
-3. **DO** run the test using `test_humanized_ui.bat`
-4. **DO** verify the test passes or correctly identifies the bug
-5. **DO** fix the bug and ensure the test passes
-
-#### Example Workflow
-
-1. User reports: "2x1 note becomes 1x1 when dragged"
-2. Create test file: `tests/humanized/drag/2x1_note_right_edge.dsl`
-3. Write test with `Create(NOTE, "content", N1)` and `Drag(N1, R2C3)`
-4. Run: `.\test_humanized_ui.bat 2x1_note_right_edge`
-5. Test fails, confirming the bug
-6. Fix the bug in code
-7. Re-run test to verify fix
-
-### Test Runner Features
-
-The `humanized_ui_runner.py`:
-
-- Automatically creates test category and items
-- Opens the application window
-- Performs drag-drop operations using PyAutoGUI
-- Compares actual vs expected results
-- Shows detailed differences if test fails
-- Cleans up state after test
-
-### Best Practices
-
-1. **Always write tests first** (TDD approach)
-2. **Use descriptive test names** that explain what is being tested
-3. **Include comments** in test files for complex scenarios
-4. **Test edge cases**: right edge, bottom edge, multi-span items
-5. **Verify span information**: Tests check both position AND span (row_span, col_span)
-
-### Test File Naming
-
-- **Format**: `snake_case.dsl`
-- **Extension**: `.dsl` (required - Domain Specific Language)
-- **Examples**:
-    - `swap_note_and_app.dsl`
-    - `2x1_note_right_edge.dsl`
-    - `switch_between_tabs.dsl`
-    - `open_add_dialog.dsl`
-- **Rules**:
-    - Always use `snake_case` (lowercase with underscores)
-    - Always include `.dsl` extension
-    - Use descriptive names that explain what is being tested
-    - No "or" or other conjunctions - each file tests one scenario
-- **Organization**:
-    - `tests/humanized/drag/` - Drag-and-drop tests
-    - `tests/humanized/tabs/` - Tab switching tests
-    - `tests/humanized/dialogs/` - Dialog tests
-    - `tests/humanized/` - Other general tests
+- Check [Development Guidelines](docs/general/DEVELOPMENT.md) for testing procedures
+- Check [Architecture Documentation](docs/general/ARCHITECTURE.md) for component structure
+- Check [Contributing Guide](docs/general/CONTRIBUTING.md) for code style and setup
+- Check existing code for patterns and conventions
 

@@ -39,16 +39,16 @@ A lightweight, modern desktop widget application for quick access to your favori
 2. **Create and activate virtual environment:**
    ```bash
    # Windows PowerShell
-   python -m venv venv
-   .\venv\Scripts\Activate.ps1
+   python -m venv .venv
+   .\.venv\Scripts\Activate.ps1
    
    # Windows CMD
-   python -m venv venv
-   venv\Scripts\activate.bat
+   python -m venv .venv
+   .venv\Scripts\activate.bat
    
    # Linux/Mac
-   python3 -m venv venv
-   source venv/bin/activate
+   python3 -m venv .venv
+   source .venv/bin/activate
    ```
 
 3. **Install dependencies:**
@@ -58,10 +58,6 @@ A lightweight, modern desktop widget application for quick access to your favori
 
 4. **Run the application:**
    ```bash
-   # Quick launcher (Windows)
-   .\run.bat          # CMD
-   .\run.ps1          # PowerShell
-   
    # Manual
    python main.py
    ```
@@ -76,11 +72,16 @@ MyEverythingWidget/
 │   └── category.py        # AppCategory
 ├── window/                 # Window components
 │   ├── main_window.py     # Main application window
-│   └── app_state.py       # Global state management
+│   ├── app_state.py       # Global state management
+│   ├── content_manager.py # UI coordinator
+│   ├── grid/              # Grid layout system
+│   └── ui/                # UI components (tabs, notes)
 ├── widgets/                # UI widgets
 │   ├── custom_title_bar.py
 │   ├── app_card.py
-│   ├── add_app_button.py
+│   ├── note_card.py
+│   ├── image_card.py
+│   ├── add_item_dialog.py
 │   ├── app_picker_dialog.py
 │   └── icon_picker_dialog.py
 ├── services/               # Business logic
@@ -89,8 +90,13 @@ MyEverythingWidget/
 │   ├── test_app_state.py
 │   ├── test_app_card.py
 │   └── visual/            # Visual regression tests
-├── flutter_version/        # Flutter implementation (legacy)
-└── docs/                   # Documentation
+├── scripts/                # Utility scripts
+│   ├── run_test_mode.bat
+│   └── test_humanized_ui.bat
+├── docs/                   # Documentation
+│   ├── general/           # General documentation
+│   └── tasks/             # Task-specific documentation
+└── .venv/                  # Virtual environment (gitignored)
 ```
 
 ## Testing
@@ -102,9 +108,11 @@ The project has comprehensive unit tests covering:
 - App card creation with various icon types (emoji, image, default)
 - Main window tab switching and state changes
 - Tab management operations
+- Grid layout and drag-and-drop operations
+- Note and image management
 
 ```bash
-# Run all unit tests
+# Run all unit tests (excluding visual tests)
 python -m pytest tests/ -v --ignore=tests/visual
 
 # Run specific test file
@@ -116,11 +124,29 @@ python -m pytest tests/test_main_window.py -v
 python -m pytest tests/ -v --cov=. --cov-report=html
 ```
 
+### Humanized UI Tests
+
+The project uses a DSL-based UI testing system for automated drag-and-drop and UI interaction tests:
+
+```bash
+# Run all humanized UI tests
+.\scripts\test_humanized_ui.bat
+
+# Run specific test
+.\scripts\test_humanized_ui.bat test_name
+```
+
+Test files are located in `tests/humanized/` and use the `.dsl` format.
+See [Development Guidelines](docs/general/DEVELOPMENT.md) for details.
+
 **Test Coverage:**
 - `test_app_state.py` - State management tests
 - `test_app_card.py` - Widget creation with all icon types
 - `test_main_window.py` - Window operations, tab switching, state changes
 - `test_tab_management.py` - Tab creation, removal, updates
+- `test_drag_drop.py` - Drag-and-drop operations
+- `test_grid_layout.py` - Grid layout calculations
+- `humanized/drag/*.dsl` - UI interaction tests
 
 ## Architecture
 
@@ -166,7 +192,9 @@ python -m pytest tests/ -v --cov=. --cov-report=html
 - `AppState` loads this file when it exists and saves on every add/update/remove so new tabs and cards stay in sync across runs.
 
 ### Logging
-- Logging is configured in `main.py` using `logging.basicConfig(level=logging.DEBUG, …)`, so debug messages appear when running `run.ps1` or `main.py`.
+
+- Logging is configured in `main.py` using `logging.basicConfig(level=logging.DEBUG, …)`, so debug messages appear when
+  running `main.py`.
 - Wheel scroll navigation still feels delayed compared to the scroll buttons; see the TODO for tracking the future smoothing fix.
 - `widgets/draggable_tab_bar.py` reports wheel, press, release, and scroll button events, while `window/tab_manager.py` logs `_on_tab_clicked` calls, making navigation issues easier to trace.
 
@@ -176,7 +204,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Contributing
 
-Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
+Contributions are welcome! Please read [CONTRIBUTING.md](docs/general/CONTRIBUTING.md) for details on our code of
+conduct and the process for submitting pull requests.
 
 ## Acknowledgments
 

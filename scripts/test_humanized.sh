@@ -3,7 +3,7 @@
 # Humanized Test Runner for Unix/Linux/Mac
 # Usage: ./test_humanized.sh [test_name]
 
-cd "$(dirname "$0")"
+cd "$(dirname "$0")/.."
 
 if [ -z "$1" ]; then
     ./.venv/bin/python tests/humanized_runner.py
