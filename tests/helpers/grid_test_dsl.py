@@ -59,6 +59,12 @@ class CreateAction:
 
 
 @dataclass
+class LaunchAction:
+    """Represents a launch action (for apps)."""
+    item_id: str  # ID of app to launch (e.g., 'A1')
+
+
+@dataclass
 class GridState:
     """Represents grid state."""
     rows: int
@@ -98,7 +104,7 @@ class GridTestDSL:
         self.cols = 5
         self.initial_state: GridState = None
         self.expected_state: GridState = None
-        self.actions: List[DragAction | CreateAction] = []
+        self.actions: List[DragAction | CreateAction | LaunchAction] = []
 
     def parse(self, dsl_text: str) -> 'GridTestDSL':
         """Parse DSL text and return self for chaining."""
@@ -224,6 +230,12 @@ class GridTestDSL:
             content = create_match.group(2)
             item_id = create_match.group(3)
             return CreateAction(item_type, content, item_id)
+
+        # Format: Launch(A1)
+        launch_match = re.search(r'Launch\((\w+)\)', line)
+        if launch_match:
+            item_id = launch_match.group(1)
+            return LaunchAction(item_id)
         
         return None
 

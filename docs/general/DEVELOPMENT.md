@@ -60,6 +60,27 @@ Create(APP, "app name", A1)
 
 Creates a new item and assigns it the specified ID.
 
+- **Create(NOTE, "content", ID)**: Creates a note with the specified content using the quick note entry widget
+- **Create(APP, "name", ID)**: Creates an app with the specified name
+  - Opens Add Item Dialog via FAB button
+  - Fills in app name and path (uses mock executable for testing)
+  - Mock executables are created in `tests/tmp/mock_apps/` and cleaned up automatically
+
+**Launch Action:**
+
+```
+Launch(A1)
+```
+
+Launches an app by clicking on its card.
+
+- **Launch(ID)**: Clicks on the app card with the specified ID
+- Tracks the launched process (if psutil is available)
+- Processes are automatically cleaned up after test
+
+- **Create(NOTE, "content", ID)**: Creates a note with the specified content
+- **Create(APP, "name", ID)**: Creates an app with the specified name (uses mock executable for testing)
+
 #### Running Tests
 
 **Run all tests:**

@@ -37,38 +37,40 @@ This document contains tasks that were identified in TODO5 but not yet completed
 
 - [x] `Create(NOTE, "content", ID)` formatını parse et ✅
 - [x] Note oluşturma ✅
-- [ ] `Create(APP, "name", ID)` formatını parse et (henüz yapılmadı)
-- [ ] App oluşturma (tüm alt görevler)
+- [x] `Create(APP, "name", ID)` formatını parse et ✅
+- [x] App oluşturma ✅
 
-**Remaining Tasks:**
+**Completed Tasks:**
 
-1. **Create App Action:**
-    - [ ] `Create(APP, "name", ID)` formatını parse et
-    - [ ] FAB butonuna tıkla (Add Item Dialog açılır)
-    - [ ] "App" sekmesine geç
-    - [ ] App name input'una ismi yaz
-    - [ ] Mock executable dosya oluştur (geçici dizinde)
-    - [ ] Path input'una mock dosya yolunu yaz
-    - [ ] Icon seç (opsiyonel, default icon kullanılabilir)
-    - [ ] Add butonuna tıkla
-    - [ ] Oluşturulan app'i ID ile eşleştir
+1. **Create App Action:** ✅
+    - [x] `Create(APP, "name", ID)` formatını parse et
+    - [x] FAB butonuna tıkla (Add Item Dialog açılır)
+    - [x] "App" sekmesine geç
+    - [x] App name input'una ismi yaz
+    - [x] Mock executable dosya oluştur (geçici dizinde)
+    - [x] Path input'una mock dosya yolunu yaz
+    - [x] Add butonuna tıkla
+    - [x] Oluşturulan app'i ID ile eşleştir
 
-2. **Mock executable dosya oluşturma:**
-    - [ ] Test için geçici bir `.exe` veya `.bat` dosyası oluştur
-    - [ ] Dosya içeriği minimal olabilir (echo gibi)
-    - [ ] Test sonunda temizlenmeli
+2. **Mock executable dosya oluşturma:** ✅
+    - [x] Test için geçici bir `.bat` dosyası oluştur
+    - [x] Dosya içeriği minimal (echo app name)
+    - [x] Test sonunda temizlenmeli (cleanup_mock_executables)
 
-3. **Mock app dizini oluşturma:**
-    - [ ] Test için geçici bir dizin oluştur
-    - [ ] İçine mock executable koy
-    - [ ] Test sonunda temizlenmeli
+3. **Mock app dizini oluşturma:** ✅
+    - [x] Test için geçici bir dizin oluştur (`tests/tmp/mock_apps/`)
+    - [x] İçine mock executable koy
+    - [x] Test sonunda temizlenmeli
 
-4. **App launch testi:**
-    - [ ] Oluşturulan app'e tıklandığında açılabilmeli
-    - [ ] Mock executable çalıştırılabilmeli
-    - [ ] Test sonunda process temizlenmeli
+4. **App launch testi:** ✅
+    - [x] Oluşturulan app'e tıklandığında açılabilmeli
+    - [x] Mock executable çalıştırılabilmeli
+    - [x] Test sonunda process temizlenmeli
+    - [x] `Launch(A1)` action eklendi
+    - [x] Process tracking eklendi (psutil kullanarak)
+    - [x] Cleanup fonksiyonu eklendi
 
-5. **Test formatı örneği:**
+5. **Test formatı örneği:** ✅
    ```
    Action:
    Create(NOTE, "Test note content", N1)
@@ -76,7 +78,6 @@ This document contains tasks that were identified in TODO5 but not yet completed
    Drag(N1, R1C2)
    ```
 
-6. **Documentation:**
-    - [ ] Mevcut testleri güncelle (gerekirse)
-    - [ ] Dokümantasyon güncelle
+6. **Documentation:** ✅
+    - [x] Dokümantasyon güncelle (DEVELOPMENT.md)
 

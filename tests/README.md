@@ -194,6 +194,7 @@ def test_add_app():
 
 Create a `.dsl` file in `tests/humanized/drag/`:
 
+**Example 1: Drag and Drop**
 ```
 Rows: 5
 Columns: 5
@@ -211,6 +212,58 @@ Drag(N1,R1C3)
 Expected:
 .  .  .  .  .
 A1 .  .  N1 N1
+.  .  .  .  .
+.  .  .  .  .
+.  .  .  .  .
+```
+
+**Example 2: Create and Drag**
+
+```
+Rows: 5
+Columns: 5
+
+Initial:
+.  .  .  .  .
+.  .  .  .  .
+.  .  .  .  .
+.  .  .  .  .
+.  .  .  .  .
+
+Action:
+Create(NOTE, "Test Note", N1)
+Create(APP, "Test App", A1)
+Drag(N1, R1C2)
+
+Expected:
+.  .  .  .  .
+.  .  N1 .  A1
+.  .  .  .  .
+.  .  .  .  .
+.  .  .  .  .
+```
+
+**Example 3: Create, Launch, and Drag**
+
+```
+Rows: 5
+Columns: 5
+
+Initial:
+.  .  .  .  .
+.  .  .  .  .
+.  .  .  .  .
+.  .  .  .  .
+.  .  .  .  .
+
+Action:
+Create(APP, "Test App", A1)
+Launch(A1)
+Create(NOTE, "Test Note", N1)
+
+Expected:
+.  .  .  .  .
+A1 .  .  .  N1
 .  .  .  .  .
 .  .  .  .  .
 .  .  .  .  .
