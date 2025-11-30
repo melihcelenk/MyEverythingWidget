@@ -145,8 +145,10 @@ class ItemMover:
             item.grid_col = col
             self._app_state.update_app(item)  # Save to persist
         else:  # Note
+            # Preserve col_span and row_span when moving
             updated = replace(item, grid_row=row, grid_col=col)
-            self._logger.info("MOVE NOTE: new grid_col=%d", updated.grid_col)
+            self._logger.info("MOVE NOTE: new grid_col=%d, span=%dx%d",
+                              updated.grid_col, updated.col_span, updated.row_span)
             self._app_state.update_note(updated)
 
     def _find_item_at_cells(self, category: str, cells: set, exclude_id: str = None):

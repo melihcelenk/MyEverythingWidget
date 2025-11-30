@@ -154,7 +154,8 @@ class GridPopulator:
 
         notes_with_grid = [n for n in notes if n.grid_row is not None and n.grid_col is not None]
         notes_without_grid = [n for n in notes if n.grid_row is None or n.grid_col is None]
-        notes_to_update = []
+        notes_to_update = []  # For collision fixes (don't update state)
+        newly_placed_notes = []  # For new notes (update state)
 
         # Place notes with explicit positions
         for note in notes_with_grid:
@@ -204,7 +205,7 @@ class GridPopulator:
 
             row, col = cell
             updated_note = replace(note, grid_row=row, grid_col=col, col_span=col_span, row_span=row_span)
-            notes_to_update.append(updated_note)
+            newly_placed_notes.append(updated_note)  # New notes need state update
 
             card = self._create_note_card(updated_note, category)
             if card:
@@ -213,9 +214,10 @@ class GridPopulator:
                     for c in range(col, col + col_span):
                         occupied.add((r, c))
 
-        # Don't update state in populate - it's called during refresh and would overwrite changes
-        # State updates should only happen through explicit user actions (move, resize, etc.)
-        # Auto-placed notes should be saved elsewhere (e.g., when first added)
+        # Update state for newly auto-placed notes (first time placement)
+        # This is safe because these notes had no grid position before
+        for updated_note in newly_placed_notes:
+            self._app_state.update_note(updated_note)
 
     def _create_note_card(self, note, category):
         """Create appropriate card for a note."""
