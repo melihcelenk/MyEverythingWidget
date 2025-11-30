@@ -49,10 +49,20 @@ window/
 | 2.3 | `CellCalculator` sınıfı oluştur - hücre hesaplama    | ✅ `window/grid/cell_calculator.py`       |
 | 2.4 | `DropHandler` sınıfı oluştur - drop işlemleri        | ✅ `window/grid/drop_handler.py`          |
 | 2.5 | `CardFactory` sınıfı oluştur - card oluşturma        | ✅ `window/cards/card_factory.py`         |
-| 2.6 | `TabManager`'ı sadeleştir                            | ⏳                                        |
-| 2.7 | Tüm testlerin geçtiğini doğrula                      | ✅ 192 test passed                        |
-| 2.8 | Grid sabitleri tek yerde (`constants.py`)            | ✅ `window/grid/constants.py`             |
-| 2.9 | Grid modülü testleri                                 | ✅ `tests/test_grid_module.py` (50 tests) |
+| 2.6 | Grid sabitleri tek yerde (`constants.py`)            | ✅ `window/grid/constants.py`             |
+| 2.7 | Grid modülü testleri                                 | ✅ `tests/test_grid_module.py` (50 tests) |
+| 2.8 | Tüm testlerin geçtiğini doğrula                      | ✅ 192 test passed                        |
+
+### 2.9 TabManager Kademeli Entegrasyon
+
+| #     | Görev                                              | Durum            |
+|-------|----------------------------------------------------|------------------|
+| 2.9.1 | `_pos_to_grid_cell` → `CellCalculator.pos_to_cell` | ✅                |
+| 2.9.2 | `_get_occupied_cells` → (kept, uses same logic)    | ✅ (no change)    |
+| 2.9.3 | `_find_first_available_cell` → `CellCalculator`    | ✅                |
+| 2.9.4 | `_on_grid_drop` → (kept, complex integration)      | ⏸️ (future work) |
+| 2.9.5 | Constants import from `window.grid.constants`      | ✅                |
+| 2.9.6 | Test çalıştır, hata varsa düzelt                   | ✅ 192 passed     |
 
 ---
 

@@ -17,6 +17,10 @@ from widgets.draggable_tab_bar import DraggableTabBar
 from widgets.grid_drop_zone import GridDropZone
 from widgets.image_card import ImageCard
 from widgets.note_card import NoteCard
+from window.grid import (
+    GRID_COLS, GRID_ROWS, CELL_WIDTH, CELL_HEIGHT, SPACING,
+    CellCalculator
+)
 from window.models.note import Note, NoteType
 
 
@@ -95,21 +99,8 @@ class TabManager:
         Returns:
             (row, col) tuple or None if position is outside grid
         """
-        if grid_layout.count() == 0:
-            return (0, 0)
-
-        # Get grid geometry info (must match GridDropZone constants)
-        CELL_WIDTH = GridDropZone.CELL_WIDTH + GridDropZone.SPACING
-        CELL_HEIGHT = GridDropZone.CELL_HEIGHT + GridDropZone.SPACING
-
-        col = pos.x() // CELL_WIDTH
-        row = pos.y() // CELL_HEIGHT
-
-        # Clamp to valid range
-        col = max(0, min(col, GridDropZone.GRID_COLS - 1))
-        row = max(0, min(row, GridDropZone.GRID_ROWS - 1))
-
-        return (row, col)
+        # Use CellCalculator for consistent position conversion
+        return CellCalculator.pos_to_cell(pos.x(), pos.y())
 
     def _get_occupied_cells(self, category_name: str) -> set[tuple[int, int]]:
         """Get set of occupied grid cells for a category.
@@ -191,28 +182,8 @@ class TabManager:
         Returns:
             (row, col) tuple for the first available position, or None if grid is full
         """
-        for row in range(GridDropZone.GRID_ROWS):
-            for col in range(GridDropZone.GRID_COLS):
-                # Check if item would overflow grid bounds
-                if col + col_span > GridDropZone.GRID_COLS:
-                    continue
-                if row + row_span > GridDropZone.GRID_ROWS:
-                    continue
-
-                # Check if all required cells are free
-                can_fit = True
-                for r in range(row, row + row_span):
-                    for c in range(col, col + col_span):
-                        if (r, c) in occupied:
-                            can_fit = False
-                            break
-                    if not can_fit:
-                        break
-
-                if can_fit:
-                    return (row, col)
-
-        return None  # Grid is full
+        # Use CellCalculator for consistent cell finding
+        return CellCalculator.find_first_available_cell(occupied, row_span, col_span)
 
     def create_tab_widget(self) -> QTabWidget:
         """Create and configure tab widget"""
@@ -294,7 +265,7 @@ class TabManager:
         grid_container.gridDropped.connect(self._on_grid_drop)
 
         grid_layout = QGridLayout(grid_container)
-        grid_layout.setSpacing(GridDropZone.SPACING)
+        grid_layout.setSpacing(SPACING)
         grid_layout.setContentsMargins(
             GridDropZone.MARGIN_LEFT,
             GridDropZone.MARGIN_TOP,
@@ -303,13 +274,13 @@ class TabManager:
         )
 
         # Set fixed column widths (3 columns)
-        for i in range(GridDropZone.GRID_COLS):
-            grid_layout.setColumnMinimumWidth(i, GridDropZone.CELL_WIDTH)
+        for i in range(GRID_COLS):
+            grid_layout.setColumnMinimumWidth(i, CELL_WIDTH)
             grid_layout.setColumnStretch(i, 0)
 
         # Set fixed row heights (5 rows)
-        for i in range(GridDropZone.GRID_ROWS):
-            grid_layout.setRowMinimumHeight(i, GridDropZone.CELL_HEIGHT)
+        for i in range(GRID_ROWS):
+            grid_layout.setRowMinimumHeight(i, CELL_HEIGHT)
             grid_layout.setRowStretch(i, 0)
 
         # Store references
@@ -684,10 +655,10 @@ class TabManager:
         col_span = getattr(dragged_item, 'col_span', 1)
 
         # Check grid bounds (3x5 fixed grid)
-        if target_col + col_span > GridDropZone.GRID_COLS:
+        if target_col + col_span > GRID_COLS:
             self._logger.warning("Drop would overflow grid columns")
             return
-        if target_row + row_span > GridDropZone.GRID_ROWS:
+        if target_row + row_span > GRID_ROWS:
             self._logger.warning("Drop would overflow grid rows")
             return
 
@@ -732,8 +703,8 @@ class TabManager:
 
         # Check if colliding item fits at source position
         if source_row is not None and source_col is not None:
-            if (source_col + colliding_span_col <= GridDropZone.GRID_COLS and
-                    source_row + colliding_span_row <= GridDropZone.GRID_ROWS):
+            if (source_col + colliding_span_col <= GRID_COLS and
+                    source_row + colliding_span_row <= GRID_ROWS):
                 # Swap is possible
                 self._logger.info("Swapping items")
                 self._move_item(dragged_item, target_row, target_col)
