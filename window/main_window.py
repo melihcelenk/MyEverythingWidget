@@ -15,10 +15,10 @@ from services.image_storage_service import ImageStorageService
 from widgets.add_item_dialog import AddItemDialog
 from widgets.custom_title_bar import CustomTitleBar
 from window.app_state import AppState
+from window.content_manager import ContentManager
 from window.dialog_manager import DialogManager
 from window.grid.constants import TOTAL_WIDTH, TOTAL_HEIGHT
 from window.models.note import Note, NoteType
-from window.tab_manager import TabManager
 
 
 class MainWindow(QMainWindow):
@@ -46,16 +46,22 @@ class MainWindow(QMainWindow):
     def _init_managers(self):
         """Initialize manager objects"""
         self._dialog_manager = DialogManager(self, self._app_state)
-        self._tab_manager = TabManager(
-            app_state=self._app_state,
-            on_app_tap=self._launch_app,
-            on_app_edit=lambda app: self._dialog_manager.show_edit_app_dialog(app),
-            on_app_rename=lambda app: self._dialog_manager.show_rename_app_dialog(app),
-            on_app_change_icon=lambda app: self._dialog_manager.show_change_icon_dialog(app),
-            on_app_delete=lambda app: self._dialog_manager.show_delete_app_dialog(app),
-            on_add_category=self._on_add_category,
-            on_edit_category=lambda cat: self._dialog_manager.show_edit_category_dialog(cat),
-            on_delete_category=lambda cat: self._dialog_manager.show_delete_category_dialog(cat),
+        self._content_manager = ContentManager(self._app_state)
+
+        # Set app callbacks
+        self._content_manager.set_app_callbacks(
+            on_tap=self._launch_app,
+            on_edit=lambda app: self._dialog_manager.show_edit_app_dialog(app),
+            on_rename=lambda app: self._dialog_manager.show_rename_app_dialog(app),
+            on_change_icon=lambda app: self._dialog_manager.show_change_icon_dialog(app),
+            on_delete=lambda app: self._dialog_manager.show_delete_app_dialog(app),
+        )
+
+        # Set category callbacks
+        self._content_manager.set_category_callbacks(
+            on_add=self._on_add_category,
+            on_edit=lambda cat: self._dialog_manager.show_edit_category_dialog(cat),
+            on_delete=lambda cat: self._dialog_manager.show_delete_category_dialog(cat),
         )
 
     def _init_ui(self):
@@ -77,7 +83,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(self._title_bar)
 
         # Tab widget
-        self._tab_widget = self._tab_manager.create_tab_widget()
+        self._tab_widget = self._content_manager.create_tab_widget()
         layout.addWidget(self._tab_widget)
 
         # Floating add button (unified: App/Note/Image)
@@ -133,7 +139,7 @@ class MainWindow(QMainWindow):
 
         self._tab_widget.blockSignals(True)
         try:
-            self._tab_manager.update_tabs()
+            self._content_manager.update_tabs()
 
             if current_category_id:
                 for i, category in enumerate(self._app_state.categories):
@@ -142,7 +148,7 @@ class MainWindow(QMainWindow):
                         break
             elif self._tab_widget.count() > 1:
                 self._tab_widget.setCurrentIndex(0)
-            self._tab_manager.refresh_notes_tab()
+            self._content_manager.refresh_current_tab()
         finally:
             self._tab_widget.blockSignals(False)
 
@@ -202,6 +208,11 @@ class MainWindow(QMainWindow):
         if 0 <= current_index < len(self._app_state.categories):
             return self._app_state.categories[current_index].name
         return self._app_state.categories[0].name
+
+    @property
+    def _tab_manager(self):
+        """Backward compatibility property for tests."""
+        return self._content_manager
 
     # === Actions ===
 

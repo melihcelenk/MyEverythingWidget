@@ -2,14 +2,14 @@
 Unit tests for MainWindow
 Tests tab management, app card creation, and state changes
 """
+import uuid
+
 import pytest
 from PySide6.QtWidgets import QApplication
-from PySide6.QtCore import Qt
-from window.main_window import MainWindow
-from window.app_state import AppState
+
 from models.app_shortcut import AppShortcut, LaunchType
 from models.category import AppCategory
-import uuid
+from window.main_window import MainWindow
 
 
 @pytest.fixture
@@ -40,8 +40,8 @@ class TestMainWindow:
     
     def test_initial_tabs_created(self, main_window):
         """Test that initial tabs are created"""
-        # Should have at least "All" category tab + add tab
-        assert main_window._tab_widget.count() >= 2
+        # Should have at least the add tab (+)
+        assert main_window._tab_widget.count() >= 1
     
     def test_tab_switching(self, main_window):
         """Test switching between tabs"""

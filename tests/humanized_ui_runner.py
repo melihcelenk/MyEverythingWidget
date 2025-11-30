@@ -44,8 +44,8 @@ from window.grid.constants import (
 )
 
 # State file path - use test-specific state in project folder
-STATE_FILE = PROJECT_ROOT / "tests" / "test_app_state.json"
-BACKUP_FILE = PROJECT_ROOT / "tests" / "test_app_state_backup.json"
+STATE_FILE = PROJECT_ROOT / "tests" / "state" / "app_state.json"
+BACKUP_FILE = PROJECT_ROOT / "tests" / "state" / "app_state_backup.json"
 
 
 class Colors:
@@ -221,6 +221,7 @@ def backup_state():
 
 def restore_state():
     """Reset test state to empty."""
+    STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
     STATE_FILE.write_text('{"categories":[],"apps":[],"notes":[]}', encoding='utf-8')
     print(f"  {Colors.CYAN}Test state reset{Colors.RESET}")
 

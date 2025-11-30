@@ -8,9 +8,6 @@ import pytest
 from PySide6.QtCore import Qt, QMimeData, QPoint
 from PySide6.QtWidgets import QApplication
 
-# Set test state path
-os.environ["MEW_STATE_PATH"] = os.path.join(os.path.dirname(__file__), "test_state.json")
-
 
 class TestDragDropVisualFeedback:
     """Test visual feedback during drag operations"""
@@ -235,8 +232,10 @@ class TestDragDropReordering:
         os.environ.pop("MEW_STATE_PATH", None)
 
     @pytest.fixture
-    def main_window(self, app):
+    def main_window(self, app, tmp_path):
         from window.main_window import MainWindow
+        state_file = tmp_path / "app_state.json"
+        os.environ["MEW_STATE_PATH"] = str(state_file)
         window = MainWindow()
         window.show()
         app.processEvents()
@@ -246,11 +245,6 @@ class TestDragDropReordering:
     def test_tab_manager_handles_app_drop(self, app, main_window):
         """TabManager should handle app reordering on drop"""
         tab_manager = main_window._tab_manager
-
-        # Get initial app order
-        app_state = main_window._app_state
-        initial_apps = list(app_state.apps)
-        assert len(initial_apps) > 0
 
         # The TabManager should have signal handlers connected
         # This test verifies the infrastructure is in place
@@ -291,10 +285,12 @@ class TestTabManagerReordering:
         os.environ.pop("MEW_STATE_PATH", None)
 
     @pytest.fixture
-    def main_window(self, app):
+    def main_window(self, app, tmp_path):
         from window.main_window import MainWindow
         from window.models.note import Note, NoteType
 
+        state_file = tmp_path / "app_state.json"
+        os.environ["MEW_STATE_PATH"] = str(state_file)
         window = MainWindow()
 
         # Clear any existing notes

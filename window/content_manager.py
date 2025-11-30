@@ -133,3 +133,13 @@ class ContentManager:
     def _reorder_app(self, app, target_app):
         """Swap app positions."""
         self._mover._swap_apps(app, target_app)
+
+    @property
+    def _category_grids(self):
+        """Backward compatibility: return dict of category_id -> grid_layout."""
+        grids = {}
+        for category in self._app_state.categories:
+            page = self._tab_manager.get_page(category.id)
+            if page and hasattr(page, '_grid_layout'):
+                grids[category.id] = page._grid_layout
+        return grids
