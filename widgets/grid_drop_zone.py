@@ -165,26 +165,25 @@ class GridDropZone(QWidget):
         """Paint visual feedback during drag
 
         Highlights all cells that the item will occupy (based on span).
+        Finds widget positions from layout for accurate highlighting.
         """
         super().paintEvent(event)
 
         if not self._drag_active or self._hover_cell is None:
             return
 
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-
+        layout = self.layout()
         row, col = self._hover_cell
         col_span = self._dragging_col_span
         row_span = self._dragging_row_span
 
-        # Calculate pixel position (accounting for margins)
-        x = self.MARGIN_LEFT + col * (self.CELL_WIDTH + self.SPACING)
-        y = self.MARGIN_TOP + row * (self.CELL_HEIGHT + self.SPACING)
+        # Try to find actual widget position at target cell or nearby
+        x, y, total_width, total_height = self._calculate_highlight_rect(
+            layout, row, col, row_span, col_span
+        )
 
-        # Calculate total size (accounting for spacing between cells)
-        total_width = col_span * self.CELL_WIDTH + (col_span - 1) * self.SPACING
-        total_height = row_span * self.CELL_HEIGHT + (row_span - 1) * self.SPACING
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
 
         # Semi-transparent blue highlight
         painter.fillRect(
@@ -205,13 +204,69 @@ class GridDropZone(QWidget):
             pen.setWidth(1)
             painter.setPen(pen)
 
+            cell_w = self.CELL_WIDTH + self.SPACING
+            cell_h = self.CELL_HEIGHT + self.SPACING
+
             for c in range(1, col_span):
-                line_x = x + c * (self.CELL_WIDTH + self.SPACING)
+                line_x = x + c * cell_w
                 painter.drawLine(line_x, y, line_x, y + total_height)
 
             for r in range(1, row_span):
-                line_y = y + r * (self.CELL_HEIGHT + self.SPACING)
+                line_y = y + r * cell_h
                 painter.drawLine(x, line_y, x + total_width, line_y)
+
+    def _calculate_highlight_rect(self, layout, row: int, col: int,
+                                  row_span: int, col_span: int) -> tuple:
+        """Calculate highlight rectangle using widget positions.
+        
+        Returns:
+            Tuple of (x, y, width, height)
+        """
+        cell_w = self.CELL_WIDTH + self.SPACING
+        cell_h = self.CELL_HEIGHT + self.SPACING
+
+        # Get actual layout margins
+        if layout:
+            margins = layout.contentsMargins()
+            margin_left = margins.left()
+            margin_top = margins.top()
+            spacing = layout.spacing()
+            if spacing >= 0:
+                cell_w = self.CELL_WIDTH + spacing
+                cell_h = self.CELL_HEIGHT + spacing
+        else:
+            margin_left = self.MARGIN_LEFT
+            margin_top = self.MARGIN_TOP
+
+        # Find reference widget to calibrate position
+        ref_x, ref_y, ref_row, ref_col = None, None, None, None
+        if layout:
+            for r in range(self.GRID_ROWS):
+                for c in range(self.GRID_COLS):
+                    item = layout.itemAtPosition(r, c)
+                    if item and item.widget():
+                        widget = item.widget()
+                        ref_x = widget.x()
+                        ref_y = widget.y()
+                        ref_row = r
+                        ref_col = c
+                        break
+                if ref_x is not None:
+                    break
+
+        # Calculate position based on reference or fallback to margins
+        if ref_x is not None:
+            x = ref_x + (col - ref_col) * cell_w
+            y = ref_y + (row - ref_row) * cell_h
+        else:
+            x = margin_left + col * cell_w
+            y = margin_top + row * cell_h
+
+        # Calculate size
+        total_width = col_span * self.CELL_WIDTH + (col_span - 1) * self.SPACING
+        total_height = row_span * self.CELL_HEIGHT + (row_span - 1) * self.SPACING
+
+        return x, y, total_width, total_height
 
     def _pos_to_cell(self, pos: QPoint) -> tuple[int, int] | None:
         """Convert mouse position to grid cell coordinates.

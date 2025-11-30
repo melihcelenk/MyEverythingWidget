@@ -476,6 +476,30 @@ class TabManager:
             col_span = note.col_span
             row_span = note.row_span
 
+            # Check for collision BEFORE placing
+            note_cells = set()
+            for r in range(note.grid_row, note.grid_row + row_span):
+                for c in range(note.grid_col, note.grid_col + col_span):
+                    note_cells.add((r, c))
+
+            collision = note_cells & occupied
+            if collision:
+                self._logger.warning(
+                    "Note %s at (%d,%d) span %dx%d collides with occupied cells: %s",
+                    note.id[:8], note.grid_row, note.grid_col, col_span, row_span, collision
+                )
+                # Find a new position for this note
+                new_cell = self._find_first_available_cell(occupied, row_span, col_span)
+                if new_cell:
+                    new_row, new_col = new_cell
+                    self._logger.info("Relocating note %s to (%d,%d)", note.id[:8], new_row, new_col)
+                    updated_note = replace(note, grid_row=new_row, grid_col=new_col)
+                    notes_to_update.append(updated_note)
+                    note = updated_note  # Use new position
+                else:
+                    self._logger.warning("No space to relocate note %s, skipping", note.id[:8])
+                    continue
+
             if note.type == NoteType.IMAGE:
                 pixmap = self._image_cache.get(note.content)
                 if pixmap is not None:
@@ -489,9 +513,11 @@ class TabManager:
                     card.relocateRequested.connect(self._on_relocate_note)
                     card.setAcceptDrops(False)
 
-                    # Use image card's calculated span (based on aspect ratio)
-                    col_span = card.col_span
-                    row_span = card.row_span
+                    # ALWAYS use span from note model - user may have resized to 1x1
+                    col_span = note.col_span
+                    row_span = note.row_span
+                    # Update card to match model
+                    card.set_span(col_span, row_span)
 
                     layout.addWidget(card, note.grid_row, note.grid_col, row_span, col_span)
 
@@ -852,15 +878,30 @@ class TabManager:
         self._quick_refresh_current_tab()
 
     def _on_resize_card(self, card, col_span: int, row_span: int):
-        """Handle card resize request"""
+        """Handle card resize request and persist to state"""
+        from dataclasses import replace
+        
         self._logger.debug("Resize card: col=%d, row=%d", col_span, row_span)
 
         # Update the card's size
         card.set_span(col_span, row_span)
         card.disable_resize_mode()
 
-        # Refresh the grid to update layout
-        # TODO: Update note/image span in app_state for persistence
+        # Find and update the note in state
+        note_id = None
+        if hasattr(card, 'note'):
+            note_id = card.note.id
+        elif hasattr(card, '_image_id'):
+            note_id = card._image_id
+
+        if note_id:
+            note = next((n for n in self._app_state.notes if n.id == note_id), None)
+            if note:
+                updated_note = replace(note, col_span=col_span, row_span=row_span)
+                self._app_state.update_note(updated_note)
+                self._logger.info("Saved note span: %s -> %dx%d", note_id, col_span, row_span)
+
+        self._quick_refresh_current_tab()
 
     def _quick_refresh_current_tab(self):
         """Fast refresh - uses QTimer to batch updates and avoid blocking UI"""

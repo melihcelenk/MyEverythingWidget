@@ -15,9 +15,9 @@ from window.models.note import Note, NoteType
 class TestGridSpacing:
     """Test grid cell dimensions and spacing"""
 
-    # Grid constants - must match widget constants
-    CELL_WIDTH = 90
-    CELL_HEIGHT = 100
+    # Grid constants - must match widget constants (updated to 80x80)
+    CELL_WIDTH = 80
+    CELL_HEIGHT = 80
     SPACING = 4
     GRID_COLUMNS = 3
 
@@ -243,8 +243,8 @@ class TestGridAlignment:
 class TestGridOverflow:
     """Test that items don't overflow the window"""
 
-    CELL_WIDTH = 90
-    CELL_HEIGHT = 100
+    CELL_WIDTH = 80
+    CELL_HEIGHT = 80
     SPACING = 4
 
     def test_note_card_does_not_overflow_window(self, qtbot):
@@ -285,7 +285,7 @@ class TestGridOverflow:
 
         # Set fixed column widths
         for i in range(3):
-            layout.setColumnMinimumWidth(i, 90)
+            layout.setColumnMinimumWidth(i, 80)
             layout.setColumnStretch(i, 0)
 
         # 2x1 image in columns 0-1
@@ -329,7 +329,7 @@ class TestGridOverflow:
 
         # Set fixed column widths
         for i in range(3):
-            layout.setColumnMinimumWidth(i, 90)
+            layout.setColumnMinimumWidth(i, 80)
             layout.setColumnStretch(i, 0)
 
         # Create 2x1 image (narrow horizontal)
