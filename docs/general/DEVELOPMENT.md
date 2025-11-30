@@ -95,6 +95,8 @@ Launches an app by clicking on its card.
 .\tests\test_humanized_ui.bat swap_note_and_app
 # or
 .\tests\test_humanized_ui.bat swap_note_and_app.dsl
+# or directly with Python:
+.\tests\humanized_ui_runner.py swap_note_and_app
 ```
 
 ### Test State Management
@@ -129,7 +131,7 @@ All test state files are located in `tests/state/` and `tests/tmp/` directories:
 
 1. **DO NOT** ask the user to manually test
 2. **DO** write a humanized test file in `tests/humanized/drag/`
-3. **DO** run the test using `scripts\test_humanized_ui.bat`
+3. **DO** run the test using `.\tests\test_humanized_ui.bat` or `.\tests\humanized_ui_runner.py`
 4. **DO** verify the test passes or correctly identifies the bug
 5. **DO** fix the bug and ensure the test passes
 
@@ -138,7 +140,7 @@ All test state files are located in `tests/state/` and `tests/tmp/` directories:
 1. User reports: "2x1 note becomes 1x1 when dragged"
 2. Create test file: `tests/humanized/drag/2x1_note_right_edge.dsl`
 3. Write test with `Create(NOTE, "content", N1)` and `Drag(N1, R2C3)`
-4. Run: `.\tests\test_humanized_ui.bat 2x1_note_right_edge`
+4. Run: `.\tests\test_humanized_ui.bat 2x1_note_right_edge` or `.\tests\humanized_ui_runner.py 2x1_note_right_edge`
 5. Test fails, confirming the bug
 6. Fix the bug in code
 7. Re-run test to verify fix

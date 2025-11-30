@@ -14,8 +14,8 @@ Create(APP, "Test App", A1)
 Drag(N1, R1C2)
 
 Expected:
-.  .  .  .  .
-.  .  N1 N1 .  .
+A1 .  .  .  .
+.  .  N1 N1 .
 .  .  .  .  .
 .  .  .  .  .
 .  .  .  .  .

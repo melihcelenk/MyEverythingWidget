@@ -10,13 +10,9 @@ Runs grid tests with REAL UI:
 """
 import json
 import os
-import re
 import subprocess
 import sys
 import time
-import uuid
-from dataclasses import dataclass, field
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Dict, List, Tuple, Optional
 
@@ -38,11 +34,17 @@ except ImportError:
     print("ERROR: pygetwindow not installed. Run: pip install pygetwindow")
     sys.exit(1)
 
-# Grid constants (copied from window.grid.constants to avoid PySide6 dependency)
-CELL_WIDTH = 80
-CELL_HEIGHT = 80
-SPACING = 0
-MARGIN_LEFT = 4
+# Import from new package structure
+from tests.humanized.runner.constants import (
+    CELL_WIDTH, CELL_HEIGHT, SPACING, MARGIN_LEFT,
+    Colors
+)
+from tests.humanized.runner.models import (
+    GridItem, CreateAction, DragAction, LaunchAction, TestCase
+)
+from tests.humanized.runner.state_manager import StateManager
+from tests.humanized.runner.process_manager import ProcessManager
+from tests.humanized.runner.parser import DSLParser
 
 # State file paths
 INITIAL_STATE_FILE = PROJECT_ROOT / "tests" / "state" / "initial_test_state.json"
@@ -53,135 +55,15 @@ BACKUP_FILE = TMP_DIR / "app_state_backup.json"
 MOCK_APPS_DIR = TMP_DIR / "mock_apps"
 MOCK_APPS_DIR.mkdir(parents=True, exist_ok=True)
 
-
-class Colors:
-    RED = '\033[91m'
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    BLUE = '\033[94m'
-    CYAN = '\033[96m'
-    WHITE = '\033[97m'
-    BOLD = '\033[1m'
-    RESET = '\033[0m'
+# Initialize managers
+state_manager = StateManager(INITIAL_STATE_FILE, STATE_FILE, BACKUP_FILE)
+process_manager = ProcessManager(PROJECT_ROOT, STATE_FILE)
 
 
-@dataclass
-class GridItem:
-    id: str
-    item_type: str
-    row: int
-    col: int
-    row_span: int = 1
-    col_span: int = 1
-
-
-@dataclass
-class CreateAction:
-    """Represents a create action."""
-    item_type: str  # 'NOTE' or 'APP'
-    content: str  # Note content or app name
-    item_id: str  # ID to assign (e.g., 'N1', 'A1')
-
-
-@dataclass
-class DragAction:
-    """Represents a drag action."""
-    item_id: str
-    target_row: int
-    target_col: int
-
-
-@dataclass
-class LaunchAction:
-    """Represents a launch action (for apps)."""
-    item_id: str  # ID of app to launch (e.g., 'A1')
-
-
-@dataclass
-class TestCase:
-    name: str
-    rows: int = 5
-    cols: int = 5
-    initial_items: Dict[str, GridItem] = field(default_factory=dict)
-    actions: List[DragAction | CreateAction | LaunchAction] = field(default_factory=list)
-    # Legacy fields for backward compatibility
-    action_item: str = ""
-    action_target_row: int = 0
-    action_target_col: int = 0
-    expected_items: Dict[str, GridItem] = field(default_factory=dict)
-
-
+# Parser now uses DSLParser class
 def parse_test_file(filepath: Path) -> TestCase:
     """Parse a humanized test file."""
-    test = TestCase(name=filepath.stem)
-
-    with open(filepath, 'r', encoding='utf-8') as f:
-        content = f.read()
-
-    lines = content.strip().split('\n')
-    current_section = None
-    grid_lines = []
-
-    for line in lines:
-        line = line.rstrip()
-        if line.strip().startswith('#'):
-            continue
-
-        if line.startswith('Rows:'):
-            test.rows = int(line.split(':')[1].strip())
-        elif line.startswith('Columns:'):
-            test.cols = int(line.split(':')[1].strip())
-        elif line.startswith('Initial:'):
-            if current_section == 'expected' and grid_lines:
-                test.expected_items = parse_grid(grid_lines, test.rows, test.cols)
-            current_section = 'initial'
-            grid_lines = []
-        elif line.startswith('Action:'):
-            if current_section == 'initial' and grid_lines:
-                test.initial_items = parse_grid(grid_lines, test.rows, test.cols)
-            current_section = 'action'
-            grid_lines = []
-        elif line.startswith('Expected:'):
-            if current_section == 'initial' and grid_lines:
-                test.initial_items = parse_grid(grid_lines, test.rows, test.cols)
-            current_section = 'expected'
-            grid_lines = []
-        elif current_section == 'action' and line.strip():
-            # Parse Drag action
-            match = re.search(r'Drag\((\w+)[,\s]+R(\d+)C(\d+)\)', line)
-            if not match:
-                match = re.search(r'Drag\((\w+)\).*?R(\d+)C(\d+)', line)
-            if match:
-                item_id = match.group(1)
-                target_row = int(match.group(2)) - 1
-                target_col = int(match.group(3)) - 1
-                test.actions.append(DragAction(item_id, target_row, target_col))
-                # Legacy field for backward compatibility
-                test.action_item = item_id
-                test.action_target_row = target_row
-                test.action_target_col = target_col
-            # Parse Create action
-            create_match = re.search(r'Create\((\w+),\s*"([^"]+)",\s*(\w+)\)', line)
-            if create_match:
-                item_type = create_match.group(1)
-                content = create_match.group(2)
-                item_id = create_match.group(3)
-                test.actions.append(CreateAction(item_type, content, item_id))
-            # Parse Launch action
-            launch_match = re.search(r'Launch\((\w+)\)', line)
-            if launch_match:
-                item_id = launch_match.group(1)
-                test.actions.append(LaunchAction(item_id))
-        elif current_section in ('initial', 'expected') and line.strip():
-            grid_lines.append(line)
-
-    if grid_lines:
-        if current_section == 'expected':
-            test.expected_items = parse_grid(grid_lines, test.rows, test.cols)
-        elif current_section == 'initial':
-            test.initial_items = parse_grid(grid_lines, test.rows, test.cols)
-
-    return test
+    return DSLParser.parse_file(filepath)
 
 
 def parse_grid(lines: List[str], rows: int, cols: int) -> Dict[str, GridItem]:
@@ -231,183 +113,42 @@ def parse_grid(lines: List[str], rows: int, cols: int) -> Dict[str, GridItem]:
     return items
 
 
+# State backup/restore functions now use StateManager
 def backup_state():
     """No backup needed - we use separate test state file."""
-    pass
+    state_manager.backup_state()
 
 
 def restore_state():
     """Reset test state by copying from initial state file."""
-    import shutil
-    TMP_DIR.mkdir(parents=True, exist_ok=True)
-    # Copy initial state to tmp directory
-    shutil.copy2(INITIAL_STATE_FILE, STATE_FILE)
-    print(f"  {Colors.CYAN}Test state reset from {INITIAL_STATE_FILE.name}{Colors.RESET}")
+    state_manager.restore_state()
 
 
+# State management functions now use StateManager
 def create_test_state(test: TestCase) -> dict:
-    """Create test state by starting from initial state and adding test data."""
-    import json
-
-    # Start from initial state
-    with open(INITIAL_STATE_FILE, 'r', encoding='utf-8') as f:
-        state = json.load(f)
-    
-    test_category_id = "test-category-" + str(uuid.uuid4())[:8]
-
-    # Only Test category - nothing else
-    state["categories"] = [
-        {"id": test_category_id, "name": "Test", "icon": "🧪"}
-    ]
-
-    state["apps"] = []
-    state["notes"] = []
-
-    now = datetime.now(timezone.utc).isoformat()
-
-    for item_id, item in test.initial_items.items():
-        if item.item_type == 'app':
-            state["apps"].append({
-                "id": f"test-app-{item_id}",
-                "name": f"App {item_id}",
-                "icon_path": "📱",
-                "target": "https://example.com",
-                "category": "Test",
-                "type": "url",
-                "order": 0,
-                "grid_row": item.row,
-                "grid_col": item.col,
-                "col_span": item.col_span,
-                "row_span": item.row_span
-            })
-        elif item.item_type in ('note', 'image'):
-            state["notes"].append({
-                "id": f"test-note-{item_id}",
-                "content": f"Note {item_id}",
-                "type": "image" if item.item_type == 'image' else "text",
-                "category": "Test",
-                "created_at": now,
-                "updated_at": now,
-                "order": 0,
-                "grid_row": item.row,
-                "grid_col": item.col,
-                "col_span": item.col_span,
-                "row_span": item.row_span
-            })
-
-    # Return state with test data
-    return state
+    """Create test state from test case."""
+    return state_manager.create_test_state(test)
 
 
 def write_test_state(state: dict):
     """Write state to state.json."""
-    with open(STATE_FILE, 'w', encoding='utf-8') as f:
-        json.dump(state, f, indent=2)
-    print(f"  {Colors.GREEN}Test state created{Colors.RESET}")
+    state_manager.write_state(state)
 
 
+# Process management functions now use ProcessManager
 def kill_all_mew_processes() -> bool:
     """Kill all running instances of the application. Returns True if successful within 5 seconds."""
-    import platform
-    start_time = time.time()
-
-    # On Windows, directly kill Python processes - fastest method
-    if platform.system() == 'Windows':
-        try:
-            # Kill all python.exe processes (aggressive but necessary for tests)
-            subprocess.run(
-                ['taskkill', '/F', '/IM', 'python.exe', '/T'],
-                capture_output=True,
-                timeout=3
-            )
-            time.sleep(0.5)  # Brief wait
-
-            if time.time() - start_time > 5:
-                return False
-        except subprocess.TimeoutExpired:
-            return False
-        except Exception:
-            pass
-
-    # Then close any remaining windows (quick check)
-    try:
-        all_windows = gw.getAllWindows()
-        for win in all_windows:
-            if time.time() - start_time > 5:
-                break
-            try:
-                title = win.title.lower()
-                if 'my everything' in title or 'already running' in title:
-                    try:
-                        if win.isMinimized:
-                            win.restore()
-                        win.close()
-                    except Exception:
-                        pass
-            except Exception:
-                pass
-    except Exception:
-        pass
-
-    return time.time() - start_time <= 5
+    return process_manager.kill_all_processes(5.0)
 
 
 def start_app() -> subprocess.Popen:
     """Start the application in TEST MODE."""
-    # Kill any existing instances first
-    kill_all_mew_processes()
-    
-    print(f"  {Colors.CYAN}Starting app in test mode...{Colors.RESET}")
-
-    # Set environment variable for test state
-    os.environ["MEW_STATE_PATH"] = str(STATE_FILE)
-
-    # Start new instance using shell
-    python_exe = str(PROJECT_ROOT / ".venv" / "Scripts" / "python.exe")
-    main_py = str(PROJECT_ROOT / "main.py")
-
-    proc = subprocess.Popen(
-        f'"{python_exe}" "{main_py}"',
-        shell=True,
-        cwd=str(PROJECT_ROOT)
-    )
-
-    # Wait for window - 5 second timeout
-    print(f"  {Colors.CYAN}Waiting for window (5s timeout)...{Colors.RESET}")
-    start_time = time.time()
-    for i in range(50):  # 5 seconds max
-        if time.time() - start_time > 5:
-            try:
-                proc.terminate()
-            except Exception:
-                pass
-            raise RuntimeError("App window did not appear within 5 seconds")
-        
-        time.sleep(0.1)
-
-        try:
-            windows = gw.getWindowsWithTitle("My Everything")
-            if windows:
-                time.sleep(0.5)
-                print(f"  {Colors.GREEN}Window found!{Colors.RESET}")
-                return proc
-        except Exception:
-            pass
-
-    try:
-        proc.terminate()
-    except Exception:
-        pass
-    raise RuntimeError("App window did not appear within 5 seconds")
+    return process_manager.start_app(5.0)
 
 
 def find_window() -> Tuple[int, int]:
     """Find window and return (x, y)."""
-    windows = gw.getWindowsWithTitle("My Everything")
-    if not windows:
-        raise RuntimeError("Window not found")
-
-    win = windows[0]
+    return process_manager.find_window()
 
     # Bring window to front and ensure it's visible
     try:
@@ -637,15 +378,26 @@ def perform_create_app(app_name: str, win_x: int, win_y: int) -> Path:
     dialog_x = None
     dialog_y = None
     DIALOG_WIDTH = 320
+    DIALOG_HEIGHT = 400  # Default dialog height
 
     # Method 1: Try to find by title
+    real_dialog_width = DIALOG_WIDTH
+    real_dialog_height = DIALOG_HEIGHT
     try:
         dialog_windows = gw.getWindowsWithTitle("Add Item")
         if dialog_windows:
             dialog_win = dialog_windows[0]
             dialog_x = dialog_win.left
             dialog_y = dialog_win.top
-            print(f"  {Colors.CYAN}Found dialog at ({dialog_x}, {dialog_y}){Colors.RESET}")
+            # Try to get real dimensions
+            try:
+                if hasattr(dialog_win, 'width') and hasattr(dialog_win, 'height'):
+                    real_dialog_width = dialog_win.width
+                    real_dialog_height = dialog_win.height
+            except Exception:
+                pass
+            print(
+                f"  {Colors.CYAN}Found dialog at ({dialog_x}, {dialog_y}), size: {real_dialog_width}x{real_dialog_height}{Colors.RESET}")
     except Exception:
         pass
 
@@ -668,7 +420,6 @@ def perform_create_app(app_name: str, win_x: int, win_y: int) -> Path:
         # Dialog center = parent window center
         # Parent window center: (win_x + WINDOW_WIDTH/2, win_y + WINDOW_HEIGHT/2)
         # Dialog top-left = center - (dialog_width/2, dialog_height/2)
-        DIALOG_HEIGHT = 400
         dialog_x = win_x + (WINDOW_WIDTH - DIALOG_WIDTH) // 2
         dialog_y = win_y + (WINDOW_HEIGHT - DIALOG_HEIGHT) // 2
         print(
@@ -676,71 +427,307 @@ def perform_create_app(app_name: str, win_x: int, win_y: int) -> Path:
         print(f"  {Colors.YELLOW}Parent window: ({win_x}, {win_y}), size: {WINDOW_WIDTH}x{WINDOW_HEIGHT}{Colors.RESET}")
 
     # Dialog dimensions (from AddItemDialog)
-    DIALOG_WIDTH = 320
-    DIALOG_HEIGHT = 400
+    # Note: Actual dialog may be slightly different due to window decorations
+    # From test output, actual dialog is often 336x380
+    DIALOG_WIDTH = 336  # Actual observed width
+    DIALOG_HEIGHT = 380  # Actual observed height
 
     # App tab is first tab (index 0), tab height ~32px
     TAB_HEIGHT = 32
-    TAB_WIDTH = DIALOG_WIDTH // 3  # 3 tabs
+    TAB_WIDTH = real_dialog_width // 3  # 3 tabs
     app_tab_x = dialog_x + TAB_WIDTH // 2
     app_tab_y = dialog_y + TAB_HEIGHT // 2
 
-    # Click App tab (first tab) - try multiple times if needed
+    print(f"  {Colors.CYAN}Calculated App tab position: ({app_tab_x}, {app_tab_y}){Colors.RESET}")
+    print(
+        f"  {Colors.CYAN}  Dialog: ({dialog_x}, {dialog_y}), size: {real_dialog_width}x{real_dialog_height}{Colors.RESET}")
+    print(f"  {Colors.CYAN}  Tab width: {TAB_WIDTH}px, tab center offset: {TAB_WIDTH // 2}px{Colors.RESET}")
+
+    # Click App tab (first tab)
     print(f"  {Colors.YELLOW}Clicking App tab at ({app_tab_x}, {app_tab_y}){Colors.RESET}")
     pyautogui.click(app_tab_x, app_tab_y)
     time.sleep(0.8)  # Wait for tab to switch
 
-    # App name input - below tabs, with margins
-    # Layout: tab (32px) + margin (16px) + label (20px) + input (25px)
-    INPUT_MARGIN_TOP = 16 + 20  # Label + margin
-    INPUT_HEIGHT = 25
-    name_input_x = dialog_x + 16 + 80  # Left margin + offset to center of input
-    name_input_y = dialog_y + TAB_HEIGHT + INPUT_MARGIN_TOP + INPUT_HEIGHT // 2
+    # Re-find dialog to get real position and dimensions after tab switch
+    # Wait a bit for dialog to fully render
+    time.sleep(0.5)
+    try:
+        dialog_windows = gw.getWindowsWithTitle("Add Item")
+        if dialog_windows:
+            dialog_win = dialog_windows[0]
+            dialog_x = dialog_win.left
+            dialog_y = dialog_win.top
+            # Try to get real dimensions - pygetwindow may not have width/height, use size if available
+            try:
+                if hasattr(dialog_win, 'width') and hasattr(dialog_win, 'height'):
+                    real_dialog_width = dialog_win.width
+                    real_dialog_height = dialog_win.height
+                elif hasattr(dialog_win, 'size'):
+                    # Some versions have size as (width, height)
+                    size = dialog_win.size
+                    if size and len(size) >= 2:
+                        real_dialog_width = size[0]
+                        real_dialog_height = size[1]
+            except Exception:
+                pass
+            print(
+                f"  {Colors.CYAN}Dialog position after tab switch: ({dialog_x}, {dialog_y}), size: {real_dialog_width}x{real_dialog_height}{Colors.RESET}")
+    except Exception:
+        pass
 
-    # Click name input
+    # App name input - below tabs, with margins
+    # From screenshot analysis: name input is below "App Name:" label
+    # Try multiple coordinate calculations and test which one works
+    TAB_HEIGHT = 32
+    LABEL_HEIGHT = 20
+    MARGIN_TOP = 16
+    INPUT_HEIGHT = 25
+    GAP = 12
+
+    # Try center of dialog first (most likely)
+    name_input_x = dialog_x + real_dialog_width // 2
+    # Calculate Y: tab + margin + label + gap + half input height
+    name_input_y = dialog_y + TAB_HEIGHT + MARGIN_TOP + LABEL_HEIGHT + GAP + (INPUT_HEIGHT // 2)
+
+    print(f"  {Colors.CYAN}Calculated name input position: ({name_input_x}, {name_input_y}){Colors.RESET}")
+    print(
+        f"  {Colors.CYAN}  Dialog: ({dialog_x}, {dialog_y}), size: {real_dialog_width}x{real_dialog_height}{Colors.RESET}")
+    print(
+        f"  {Colors.CYAN}  Offset from dialog top: {TAB_HEIGHT + MARGIN_TOP + LABEL_HEIGHT + GAP + (INPUT_HEIGHT // 2)}px{Colors.RESET}")
+
+    # Click name input directly
     print(f"  {Colors.YELLOW}Clicking name input at ({name_input_x}, {name_input_y}){Colors.RESET}")
     pyautogui.click(name_input_x, name_input_y)
     time.sleep(0.5)  # Wait for focus
 
+    # Click name input directly with mouse
+    print(f"  {Colors.YELLOW}Clicking name input at ({name_input_x}, {name_input_y}){Colors.RESET}")
+    pyautogui.click(name_input_x, name_input_y)
+    time.sleep(0.5)  # Wait for focus
+
+    # Verify focus by typing test character
+    print(f"  {Colors.YELLOW}Verifying focus on name input...{Colors.RESET}")
+    pyautogui.write('X', interval=0.05)
+    time.sleep(0.2)
+    pyautogui.hotkey('ctrl', 'a')
+    time.sleep(0.1)
+    pyautogui.hotkey('ctrl', 'c')
+    time.sleep(0.2)
+
+    try:
+        import pyperclip
+        test_text = pyperclip.paste()
+        if test_text.strip() == 'X':
+            print(f"  {Colors.GREEN}✓ Name input has focus{Colors.RESET}")
+            # Clear the test character
+            pyautogui.press('delete')
+            time.sleep(0.1)
+        else:
+            print(f"  {Colors.RED}✗ Focus check failed, got: '{test_text}'{Colors.RESET}")
+            print(f"  {Colors.RED}ERROR: Cannot proceed - name input focus failed{Colors.RESET}")
+            return mock_file
+    except Exception as e:
+        print(f"  {Colors.YELLOW}Could not verify focus: {e}{Colors.RESET}")
+    
     # Clear and type app name
+    print(f"  {Colors.CYAN}Typing app name: {app_name}{Colors.RESET}")
     pyautogui.hotkey('ctrl', 'a')
     time.sleep(0.1)
     pyautogui.press('delete')
     time.sleep(0.1)
     pyautogui.write(app_name, interval=0.05)
-    time.sleep(0.3)
+    time.sleep(0.5)  # Wait longer for name to be written
+
+    # STEP 1: Verify app name was written correctly
+    print(f"  {Colors.CYAN}STEP 1: Verifying app name was written...{Colors.RESET}")
+    pyautogui.hotkey('ctrl', 'a')  # Select all
+    time.sleep(0.1)
+    pyautogui.hotkey('ctrl', 'c')  # Copy to clipboard
+    time.sleep(0.2)
+
+    # Read from clipboard
+    try:
+        import pyperclip
+        clipboard_text = pyperclip.paste()
+        if clipboard_text.strip() == app_name:
+            print(f"  {Colors.GREEN}✓ App name written correctly: '{clipboard_text}'{Colors.RESET}")
+        else:
+            print(f"  {Colors.RED}✗ App name mismatch! Expected: '{app_name}', Got: '{clipboard_text}'{Colors.RESET}")
+            print(f"  {Colors.RED}ERROR: Cannot proceed - app name not written correctly{Colors.RESET}")
+            return mock_file
+    except ImportError:
+        print(f"  {Colors.YELLOW}WARNING: pyperclip not available, skipping name verification{Colors.RESET}")
+    except Exception as e:
+        print(f"  {Colors.YELLOW}WARNING: Could not verify name: {e}{Colors.RESET}")
 
     # Path input - below name input
-    # Layout: name input + spacing (12px) + label (20px) + input (25px)
-    PATH_INPUT_OFFSET = 12 + 20 + 12  # spacing + label + margin
-    path_input_x = dialog_x + 16 + 80
-    path_input_y = name_input_y + PATH_INPUT_OFFSET + INPUT_HEIGHT // 2
+    # From screenshot: path input is below name input
+    # Layout: name input (25px) + spacing (12px) + "Path / URL:" label (~20px) + gap (12px) + path input (25px)
+    # Path input center is approximately: name_input_y + (INPUT_HEIGHT // 2) + 12 (spacing) + 20 (label) + 12 (gap) + 12 (half input height)
+    PATH_INPUT_OFFSET = 12 + LABEL_HEIGHT + GAP + (INPUT_HEIGHT // 2)
+    path_input_x = dialog_x + real_dialog_width // 2  # Center of dialog (same as name input)
+    path_input_y = name_input_y + (INPUT_HEIGHT // 2) + PATH_INPUT_OFFSET
+
+    print(f"  {Colors.CYAN}Calculated path input position: ({path_input_x}, {path_input_y}){Colors.RESET}")
+    print(f"  {Colors.CYAN}  Offset from name input: {PATH_INPUT_OFFSET}px{Colors.RESET}")
 
     # Click path input
     print(f"  {Colors.YELLOW}Clicking path input at ({path_input_x}, {path_input_y}){Colors.RESET}")
     pyautogui.click(path_input_x, path_input_y)
     time.sleep(0.5)  # Wait for focus
 
-    # Type path (use absolute path)
+    # STEP 2: Type path (only if name was written correctly)
     path_str = str(mock_file.absolute())
+    print(f"  {Colors.CYAN}STEP 2: Typing path: {path_str}{Colors.RESET}")
+    # Verify file exists
+    if not mock_file.exists():
+        print(f"  {Colors.RED}ERROR: Mock file does not exist: {mock_file}{Colors.RESET}")
+        return mock_file
+    
     pyautogui.hotkey('ctrl', 'a')
     time.sleep(0.1)
     pyautogui.press('delete')
     time.sleep(0.1)
     pyautogui.write(path_str, interval=0.02)
-    time.sleep(0.3)
+    time.sleep(0.5)  # Wait longer for path to be written
 
+    # Verify path was written correctly
+    print(f"  {Colors.CYAN}STEP 2: Verifying path was written...{Colors.RESET}")
+    pyautogui.hotkey('ctrl', 'a')  # Select all
+    time.sleep(0.1)
+    pyautogui.hotkey('ctrl', 'c')  # Copy to clipboard
+    time.sleep(0.2)
+
+    # Read from clipboard
+    try:
+        import pyperclip
+        clipboard_text = pyperclip.paste()
+        if clipboard_text.strip() == path_str:
+            print(f"  {Colors.GREEN}✓ Path written correctly: '{clipboard_text}'{Colors.RESET}")
+        else:
+            print(f"  {Colors.RED}✗ Path mismatch! Expected: '{path_str}', Got: '{clipboard_text}'{Colors.RESET}")
+            print(f"  {Colors.RED}ERROR: Cannot proceed - path not written correctly{Colors.RESET}")
+            return mock_file
+    except ImportError:
+        print(f"  {Colors.YELLOW}WARNING: pyperclip not available, skipping path verification{Colors.RESET}")
+    except Exception as e:
+        print(f"  {Colors.YELLOW}WARNING: Could not verify path: {e}{Colors.RESET}")
+
+    # Try to find dialog window again after typing (in case it moved)
+    # Then use coordinate-based clicking on Add button (more reliable)
+    time.sleep(0.3)  # Brief wait after typing
+
+    # Try to find dialog again - verify it's still open and get real dimensions
+    dialog_still_open = False
+    real_dialog_width = DIALOG_WIDTH
+    real_dialog_height = DIALOG_HEIGHT
+    try:
+        dialog_windows = gw.getWindowsWithTitle("Add Item")
+        if dialog_windows:
+            dialog_win = dialog_windows[0]
+            dialog_x = dialog_win.left
+            dialog_y = dialog_win.top
+            # Try to get real dimensions if available
+            try:
+                real_dialog_width = dialog_win.width if hasattr(dialog_win, 'width') else DIALOG_WIDTH
+                real_dialog_height = dialog_win.height if hasattr(dialog_win, 'height') else DIALOG_HEIGHT
+            except Exception:
+                pass
+            dialog_still_open = True
+            print(
+                f"  {Colors.CYAN}Dialog still open at ({dialog_x}, {dialog_y}), size: {real_dialog_width}x{real_dialog_height}{Colors.RESET}")
+        else:
+            print(f"  {Colors.RED}WARNING: Dialog not found after typing path{Colors.RESET}")
+    except Exception as e:
+        print(f"  {Colors.YELLOW}Could not verify dialog: {e}{Colors.RESET}")
+
+    if not dialog_still_open:
+        print(f"  {Colors.RED}ERROR: Dialog closed unexpectedly{Colors.RESET}")
+        return mock_file
+    
     # Add button - at bottom of dialog
-    # Button is near bottom, with some margin
-    ADD_BUTTON_Y_OFFSET = DIALOG_HEIGHT - 60  # Near bottom, accounting for padding
-    add_button_x = dialog_x + DIALOG_WIDTH // 2
-    add_button_y = dialog_y + ADD_BUTTON_Y_OFFSET
+    # Button is at the bottom of the dialog, centered horizontally
+    # Dialog has padding/margins, button is typically 30-40px from bottom edge
+    # Button height is typically 30-35px, so center is at (height - 30 - 15) = height - 45
+    BUTTON_HEIGHT = 35
+    BUTTON_MARGIN_BOTTOM = 15  # Margin from bottom
+    ADD_BUTTON_Y_CENTER = real_dialog_height - BUTTON_MARGIN_BOTTOM - (BUTTON_HEIGHT // 2)
+    add_button_x = dialog_x + real_dialog_width // 2
+    add_button_y = dialog_y + ADD_BUTTON_Y_CENTER
 
-    # Click Add button
-    print(f"  {Colors.YELLOW}Clicking Add button at ({add_button_x}, {add_button_y}){Colors.RESET}")
-    pyautogui.click(add_button_x, add_button_y)
-    time.sleep(2.0)  # Wait longer for app to be created and dialog to close
+    print(
+        f"  {Colors.CYAN}Calculated Add button position: ({add_button_x}, {add_button_y}) using dialog size {real_dialog_width}x{real_dialog_height}{Colors.RESET}")
+    print(f"  {Colors.CYAN}Button center offset from dialog top: {ADD_BUTTON_Y_CENTER}px{Colors.RESET}")
 
+    # STEP 3: Click Add button (only if name and path were written correctly)
+    print(f"  {Colors.CYAN}STEP 3: Clicking Add button...{Colors.RESET}")
+
+    # Take screenshot to verify dialog and find Add button position
+    # Save screenshot for debugging
+    try:
+        screenshot_path = TMP_DIR / "dialog_screenshot.png"
+        screenshot = pyautogui.screenshot(region=(dialog_x, dialog_y, real_dialog_width, real_dialog_height))
+        screenshot.save(screenshot_path)
+        print(f"  {Colors.CYAN}Screenshot saved to {screenshot_path} for debugging{Colors.RESET}")
+    except Exception as e:
+        print(f"  {Colors.YELLOW}Could not take screenshot: {e}{Colors.RESET}")
+
+    # Try to locate "Add App" text on screen using pyautogui's locateOnScreen
+    # This is more reliable than coordinate-based clicking
+    try:
+        # Try to find Add button by text (if pyautogui supports it)
+        # Alternative: Use image recognition if we have a reference image
+        print(f"  {Colors.YELLOW}Attempting to locate Add button...{Colors.RESET}")
+
+        # Method: Use Tab navigation to focus on Add button, then get its position
+        # Tab order from path input: Browse button -> Change Icon button -> Add App button
+        # But we need to be careful - there might be more tab stops
+        print(f"  {Colors.YELLOW}Tab navigation: Moving from path input to Add button...{Colors.RESET}")
+        pyautogui.press('tab')  # Move to Browse button
+        time.sleep(0.2)
+        pyautogui.press('tab')  # Move to Change Icon button  
+        time.sleep(0.2)
+        pyautogui.press('tab')  # Move to Add App button (hopefully)
+        time.sleep(0.5)  # Wait longer for focus to settle
+
+        # Try Space key first (sometimes works better than Enter for buttons)
+        print(f"  {Colors.YELLOW}Add button should have focus, trying Space key...{Colors.RESET}")
+        pyautogui.press('space')
+        time.sleep(1.0)
+
+        # If that didn't work, try Enter
+        try:
+            remaining_dialogs = gw.getWindowsWithTitle("Add Item")
+            if remaining_dialogs:
+                print(f"  {Colors.YELLOW}Dialog still open after Space, trying Enter...{Colors.RESET}")
+                pyautogui.press('enter')
+                time.sleep(1.0)
+        except Exception:
+            pass
+
+        # If that didn't work, try clicking at calculated position
+        try:
+            remaining_dialogs = gw.getWindowsWithTitle("Add Item")
+            if remaining_dialogs:
+                print(
+                    f"  {Colors.YELLOW}Dialog still open after Tab+Enter, trying click at ({add_button_x}, {add_button_y})...{Colors.RESET}")
+                # Move mouse to button position first to verify it's visible
+                pyautogui.moveTo(add_button_x, add_button_y, duration=0.2)
+                time.sleep(0.2)
+                pyautogui.click(add_button_x, add_button_y)
+                time.sleep(1.0)
+        except Exception as e:
+            print(f"  {Colors.YELLOW}Click failed: {e}{Colors.RESET}")
+    except Exception as e:
+        print(f"  {Colors.YELLOW}Tab navigation failed: {e}{Colors.RESET}")
+        # Fallback: Try clicking at calculated position
+        print(
+            f"  {Colors.YELLOW}Falling back to coordinate-based click at ({add_button_x}, {add_button_y})...{Colors.RESET}")
+        pyautogui.click(add_button_x, add_button_y)
+        time.sleep(1.0)
+
+    time.sleep(1.0)  # Final wait for app to be created and dialog to close
+    
     return mock_file
 
 
@@ -949,8 +936,7 @@ def run_ui_test(test: TestCase) -> bool:
                         perform_create_note(action.content, win_x, win_y)
                         # After creating, read state to get the created item's position
                         time.sleep(1.0)  # Wait longer for state to save
-                        state_content = STATE_FILE.read_text(encoding='utf-8')
-                        created_state = json.loads(state_content)
+                        created_state = state_manager.read_state()
                         # Find the created note (should be the last one or match content)
                         created_note = None
                         notes = created_state.get("notes", [])
@@ -1001,20 +987,57 @@ def run_ui_test(test: TestCase) -> bool:
                                 f"  {Colors.RED}Note with content '{action.content}' not found in state{Colors.RESET}")
                     elif action.item_type == 'APP':
                         mock_file = perform_create_app(action.content, win_x, win_y)
-                        # After creating, read state to get the created item's position
-                        time.sleep(1.0)  # Wait longer for state to save
-                        state_content = STATE_FILE.read_text(encoding='utf-8')
-                        created_state = json.loads(state_content)
-                        # Find the created app (should match name)
-                        created_app = None
-                        apps = created_state.get("apps", [])
-                        print(f"  {Colors.CYAN}Found {len(apps)} apps in state{Colors.RESET}")
-                        for app in apps:
-                            print(
-                                f"  {Colors.CYAN}App: id={app.get('id')}, name='{app.get('name')}', row={app.get('grid_row')}, col={app.get('grid_col')}{Colors.RESET}")
-                            if app.get("name") == action.content:
-                                created_app = app
+
+                        # CRITICAL: First verify dialog closed
+                        print(f"  {Colors.CYAN}Verifying dialog closed...{Colors.RESET}")
+                        dialog_closed = False
+                        for check in range(3):
+                            time.sleep(0.5)
+                            try:
+                                dialog_windows = gw.getWindowsWithTitle("Add Item")
+                                if not dialog_windows:
+                                    dialog_closed = True
+                                    print(f"  {Colors.GREEN}Dialog closed successfully{Colors.RESET}")
+                                    break
+                                else:
+                                    print(f"  {Colors.YELLOW}Dialog still open (check {check + 1}/3){Colors.RESET}")
+                            except Exception:
+                                dialog_closed = True  # Assume closed if we can't check
                                 break
+
+                        if not dialog_closed:
+                            print(f"  {Colors.RED}ERROR: Dialog did not close after clicking Add button{Colors.RESET}")
+                            print(f"  {Colors.RED}App creation failed. Aborting test.{Colors.RESET}")
+                            return False  # Abort test completely
+
+                        # After dialog closed, verify app was added to state
+                        # Retry mechanism: wait and retry if app not found
+                        created_app = None
+                        max_retries = 5
+                        for retry in range(max_retries):
+                            time.sleep(0.5 if retry > 0 else 1.0)  # Wait longer on first attempt
+                            state_content = STATE_FILE.read_text(encoding='utf-8')
+                            created_state = json.loads(state_content)
+                            apps = created_state.get("apps", [])
+                            print(
+                                f"  {Colors.CYAN}Found {len(apps)} apps in state (attempt {retry + 1}/{max_retries}){Colors.RESET}")
+                            for app in apps:
+                                print(
+                                    f"  {Colors.CYAN}App: id={app.get('id')}, name='{app.get('name')}', row={app.get('grid_row')}, col={app.get('grid_col')}{Colors.RESET}")
+                                if app.get("name") == action.content:
+                                    created_app = app
+                                    break
+                            if created_app:
+                                break
+                            if retry < max_retries - 1:
+                                print(f"  {Colors.YELLOW}App not found yet, retrying...{Colors.RESET}")
+
+                        if not created_app:
+                            print(
+                                f"  {Colors.RED}ERROR: App '{action.content}' not found in state after {max_retries} attempts{Colors.RESET}")
+                            print(f"  {Colors.RED}App creation failed. Aborting test.{Colors.RESET}")
+                            return False  # Abort test completely
+                        
                         if created_app:
                             # Get position - if None, wait a bit more for auto-placement
                             grid_row = created_app.get('grid_row')
@@ -1092,8 +1115,7 @@ def run_ui_test(test: TestCase) -> bool:
 
         # Read actual state
         print(f"\n  {Colors.CYAN}Reading state from: {STATE_FILE}{Colors.RESET}")
-        state_content = STATE_FILE.read_text(encoding='utf-8')
-        actual_state = json.loads(state_content)
+        actual_state = state_manager.read_state()
 
         # Debug: show actual positions
         for note in actual_state.get("notes", []):
