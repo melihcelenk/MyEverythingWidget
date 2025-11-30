@@ -306,6 +306,74 @@ tests pass (10 pre-existing failures unrelated to cleanup).
 
 ---
 
+### Enhancement: Create Action in Humanized Tests ⚠️
+
+**Goal:**
+
+- Humanized test formatına `Create` aksiyonu eklemek
+- Test senaryolarında yeni item oluşturma işlemlerini desteklemek
+
+**Requirements:**
+
+1. **Create Note Action:**
+    - Syntax: `Create(NOTE, "note content", N1)`
+    - Yeni bir not oluşturur ve belirtilen ID'ye (N1) atar
+    - Not içeriği belirtilen string olmalı
+    - Test sisteminde not oluşturma işlemini simüle etmeli
+
+2. **Create App Action:**
+    - Syntax: `Create(APP, "app name", A1)`
+    - Yeni bir app oluşturur ve belirtilen ID'ye (A1) atar
+    - Mock bir executable dosya oluşturmalı (test için)
+    - Mock bir app dizini oluşturmalı (test için)
+    - App'i açabilmeli (launch edilebilmeli)
+    - Test sisteminde app oluşturma işlemini simüle etmeli
+
+**Implementation Tasks:**
+
+- [x] `tests/helpers/grid_test_dsl.py`'ye `Create` aksiyonu parser'ı ekle
+- [x] `Create` aksiyonu için syntax parsing:
+    - [x] `Create(NOTE, "content", ID)` formatını parse et
+    - [ ] `Create(APP, "name", ID)` formatını parse et (henüz yapılmadı)
+- [x] `tests/humanized_ui_runner.py`'ye `Create` aksiyonu executor'ı ekle
+- [x] Note oluşturma:
+    - [x] Quick note entry widget'ını bul
+    - [x] Text input'a içeriği yaz
+    - [x] Enter'a bas veya Add butonuna tıkla
+    - [x] Oluşturulan notu ID ile eşleştir (action.item_id ile)
+- [ ] App oluşturma:
+    - FAB butonuna tıkla (Add Item Dialog açılır)
+    - "App" sekmesine geç
+    - App name input'una ismi yaz
+    - Mock executable dosya oluştur (geçici dizinde)
+    - Path input'una mock dosya yolunu yaz
+    - Icon seç (opsiyonel, default icon kullanılabilir)
+    - Add butonuna tıkla
+    - Oluşturulan app'i ID ile eşleştir
+- [ ] Mock executable dosya oluşturma:
+    - Test için geçici bir `.exe` veya `.bat` dosyası oluştur
+    - Dosya içeriği minimal olabilir (echo gibi)
+    - Test sonunda temizlenmeli
+- [ ] Mock app dizini oluşturma:
+    - Test için geçici bir dizin oluştur
+    - İçine mock executable koy
+    - Test sonunda temizlenmeli
+- [ ] App launch testi:
+    - Oluşturulan app'e tıklandığında açılabilmeli
+    - Mock executable çalıştırılabilmeli
+    - Test sonunda process temizlenmeli
+- [ ] Test formatı örneği:
+  ```
+  Action:
+  Create(NOTE, "Test note content", N1)
+  Create(APP, "Test App", A1)
+  Drag(N1, R1C2)
+  ```
+- [ ] Mevcut testleri güncelle (gerekirse)
+- [ ] Dokümantasyon güncelle
+
+---
+
 ## Notes
 
 - All deletions should be done carefully

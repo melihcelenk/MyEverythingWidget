@@ -51,6 +51,14 @@ class DragAction:
 
 
 @dataclass
+class CreateAction:
+    """Represents a create action."""
+    item_type: str  # 'NOTE' or 'APP'
+    content: str  # Note content or app name
+    item_id: str  # ID to assign (e.g., 'N1', 'A1')
+
+
+@dataclass
 class GridState:
     """Represents grid state."""
     rows: int
@@ -90,7 +98,7 @@ class GridTestDSL:
         self.cols = 5
         self.initial_state: GridState = None
         self.expected_state: GridState = None
-        self.action: DragAction = None
+        self.actions: List[DragAction | CreateAction] = []
 
     def parse(self, dsl_text: str) -> 'GridTestDSL':
         """Parse DSL text and return self for chaining."""
@@ -120,9 +128,13 @@ class GridTestDSL:
             elif line.startswith('Action:'):
                 if current_section == 'initial' and section_lines:
                     self.initial_state = self._parse_grid(section_lines)
-                self.action = self._parse_action(line)
                 current_section = 'action'
                 section_lines = []
+            elif current_section == 'action':
+                # Parse action line
+                action = self._parse_action(line)
+                if action:
+                    self.actions.append(action)
             elif current_section in ('initial', 'expected'):
                 section_lines.append(line)
 
@@ -190,16 +202,29 @@ class GridTestDSL:
 
         return state
 
-    def _parse_action(self, line: str) -> DragAction:
+    def _parse_action(self, line: str) -> Optional[DragAction | CreateAction]:
         """Parse action line."""
-        # Format: Action: Drag(N1) to R2C4
-        match = re.search(r'Drag\((\w+)\).*?R(\d+)C(\d+)', line)
-        if match:
-            item_id = match.group(1)
+        line = line.strip()
+        if not line:
+            return None
+
+        # Format: Drag(N1) to R2C4
+        drag_match = re.search(r'Drag\((\w+)\).*?R(\d+)C(\d+)', line)
+        if drag_match:
+            item_id = drag_match.group(1)
             # Convert to 0-based index
-            target_row = int(match.group(2)) - 1
-            target_col = int(match.group(3)) - 1
+            target_row = int(drag_match.group(2)) - 1
+            target_col = int(drag_match.group(3)) - 1
             return DragAction(item_id, target_row, target_col)
+
+        # Format: Create(NOTE, "content", N1) or Create(APP, "name", A1)
+        create_match = re.search(r'Create\((\w+),\s*"([^"]+)",\s*(\w+)\)', line)
+        if create_match:
+            item_type = create_match.group(1)
+            content = create_match.group(2)
+            item_id = create_match.group(3)
+            return CreateAction(item_type, content, item_id)
+        
         return None
 
     def create_mock_state(self) -> MagicMock:

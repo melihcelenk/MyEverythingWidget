@@ -70,11 +70,29 @@ class GridItem:
 
 
 @dataclass
+class CreateAction:
+    """Represents a create action."""
+    item_type: str  # 'NOTE' or 'APP'
+    content: str  # Note content or app name
+    item_id: str  # ID to assign (e.g., 'N1', 'A1')
+
+
+@dataclass
+class DragAction:
+    """Represents a drag action."""
+    item_id: str
+    target_row: int
+    target_col: int
+
+
+@dataclass
 class TestCase:
     name: str
     rows: int = 5
     cols: int = 5
     initial_items: Dict[str, GridItem] = field(default_factory=dict)
+    actions: List[DragAction | CreateAction] = field(default_factory=list)
+    # Legacy fields for backward compatibility
     action_item: str = ""
     action_target_row: int = 0
     action_target_col: int = 0
@@ -117,13 +135,26 @@ def parse_test_file(filepath: Path) -> TestCase:
             current_section = 'expected'
             grid_lines = []
         elif current_section == 'action' and line.strip():
+            # Parse Drag action
             match = re.search(r'Drag\((\w+)[,\s]+R(\d+)C(\d+)\)', line)
             if not match:
                 match = re.search(r'Drag\((\w+)\).*?R(\d+)C(\d+)', line)
             if match:
-                test.action_item = match.group(1)
-                test.action_target_row = int(match.group(2)) - 1
-                test.action_target_col = int(match.group(3)) - 1
+                item_id = match.group(1)
+                target_row = int(match.group(2)) - 1
+                target_col = int(match.group(3)) - 1
+                test.actions.append(DragAction(item_id, target_row, target_col))
+                # Legacy field for backward compatibility
+                test.action_item = item_id
+                test.action_target_row = target_row
+                test.action_target_col = target_col
+            # Parse Create action
+            create_match = re.search(r'Create\((\w+),\s*"([^"]+)",\s*(\w+)\)', line)
+            if create_match:
+                item_type = create_match.group(1)
+                content = create_match.group(2)
+                item_id = create_match.group(3)
+                test.actions.append(CreateAction(item_type, content, item_id))
         elif current_section in ('initial', 'expected') and line.strip():
             grid_lines.append(line)
 
@@ -253,8 +284,50 @@ def write_test_state(state: dict):
     print(f"  {Colors.GREEN}Test state created{Colors.RESET}")
 
 
+def kill_all_mew_processes():
+    """Kill all running instances of the application."""
+    try:
+        # Find and close all windows with "My Everything" or "Already Running" in title
+        all_windows = gw.getAllWindows()
+        for win in all_windows:
+            try:
+                title = win.title.lower()
+                if 'my everything' in title or 'already running' in title:
+                    print(f"  {Colors.YELLOW}Closing existing window: {win.title}{Colors.RESET}")
+                    win.close()
+                    time.sleep(0.2)
+            except Exception:
+                pass
+
+        # Wait for windows to close
+        time.sleep(0.5)
+
+        # Also try to kill Python processes on Windows
+        import platform
+        if platform.system() == 'Windows':
+            try:
+                # Kill all python.exe processes (aggressive but effective)
+                # We'll be more careful and only kill if we find main.py
+                result = subprocess.run(
+                    ['tasklist', '/FI', 'IMAGENAME eq python.exe', '/FO', 'CSV'],
+                    capture_output=True,
+                    text=True,
+                    timeout=3
+                )
+                # For now, just wait - the window closing should be enough
+            except Exception:
+                pass
+    except Exception as e:
+        print(f"  {Colors.YELLOW}Warning: Could not kill existing processes: {e}{Colors.RESET}")
+
+    time.sleep(0.5)  # Wait for processes to terminate
+
+
 def start_app() -> subprocess.Popen:
     """Start the application in TEST MODE."""
+    # Kill any existing instances first
+    kill_all_mew_processes()
+    
     print(f"  {Colors.CYAN}Starting app in test mode...{Colors.RESET}")
 
     # Set environment variable for test state
@@ -344,12 +417,25 @@ def build_actual_items(state: dict, test: TestCase) -> Dict[str, GridItem]:
             col_span=app.get("col_span", 1)
         )
 
+    # Build content-to-ID mapping from Create actions
+    content_to_id = {}
+    for action in test.actions:
+        if isinstance(action, CreateAction) and action.item_type == 'NOTE':
+            content_to_id[action.content] = action.item_id
+    
     for note in state.get("notes", []):
         note_id = note["id"]
-        if note_id.startswith("test-note-"):
-            short_id = note_id.replace("test-note-", "")
-        else:
-            short_id = note_id
+        note_content = note.get("content", "")
+
+        # Try to match by content first (for notes created during test)
+        short_id = content_to_id.get(note_content)
+
+        # If not found, try ID prefix
+        if short_id is None:
+            if note_id.startswith("test-note-"):
+                short_id = note_id.replace("test-note-", "")
+            else:
+                short_id = note_id
 
         items[short_id] = GridItem(
             id=short_id,
@@ -404,6 +490,44 @@ def cell_to_pixel(row: int, col: int, win_x: int, win_y: int) -> Tuple[int, int]
     return x, y
 
 
+def perform_create_note(content: str, win_x: int, win_y: int):
+    """Perform create note operation."""
+    # Use same constants as cell_to_pixel for consistency
+    TITLE_BAR_HEIGHT = 32
+    TAB_HEIGHT = 32
+    QUICK_NOTE_HEIGHT = 40
+
+    # Quick note entry is below title bar and tabs
+    # Input field is on the left side of quick note entry
+    # Quick note entry has 8px margins, input field is wide
+    quick_note_y = win_y + TITLE_BAR_HEIGHT + TAB_HEIGHT
+    input_y = quick_note_y + QUICK_NOTE_HEIGHT // 2  # Middle of quick note entry
+
+    # Input field is on the left, with some margin
+    input_x = win_x + MARGIN_LEFT + 100  # Left side, past margin (input field is wide)
+
+    print(f"  {Colors.YELLOW}Creating note: '{content}'{Colors.RESET}")
+    print(f"  {Colors.YELLOW}Clicking input at ({input_x}, {input_y}){Colors.RESET}")
+
+    # Click on input field area
+    pyautogui.click(input_x, input_y)
+    time.sleep(0.5)  # Wait for focus
+
+    # Clear any existing text (Ctrl+A, Delete)
+    pyautogui.hotkey('ctrl', 'a')
+    time.sleep(0.1)
+    pyautogui.press('delete')
+    time.sleep(0.1)
+
+    # Type content
+    pyautogui.write(content, interval=0.05)
+    time.sleep(0.3)
+
+    # Press Enter to submit
+    pyautogui.press('enter')
+    time.sleep(1.0)  # Wait longer for note to be created and state to save
+
+
 def perform_drag(source: GridItem, target_row: int, target_col: int, win_x: int, win_y: int):
     """Perform drag-drop operation."""
     source_x, source_y = cell_to_pixel(source.row, source.col, win_x, win_y)
@@ -443,10 +567,19 @@ def run_ui_test(test: TestCase) -> bool:
             row_str += f"{found or '.':3}"
         print(row_str)
 
-    # Print action
-    source_item = test.initial_items.get(test.action_item)
-    print(
-        f"\n{Colors.YELLOW}Action: Drag({test.action_item}) to R{test.action_target_row + 1}C{test.action_target_col + 1}{Colors.RESET}")
+    # Print actions
+    if test.actions:
+        print(f"\n{Colors.YELLOW}Action:{Colors.RESET}")
+        for action in test.actions:
+            if isinstance(action, DragAction):
+                print(f"  Drag({action.item_id}) to R{action.target_row + 1}C{action.target_col + 1}")
+            elif isinstance(action, CreateAction):
+                print(f"  Create({action.item_type}, \"{action.content}\", {action.item_id})")
+    elif test.action_item:
+        # Legacy support
+        source_item = test.initial_items.get(test.action_item)
+        print(
+            f"\n{Colors.YELLOW}Action: Drag({test.action_item}) to R{test.action_target_row + 1}C{test.action_target_col + 1}{Colors.RESET}")
 
     # Print expected
     print(f"\n{Colors.GREEN}Expected:{Colors.RESET}")
@@ -481,10 +614,79 @@ def run_ui_test(test: TestCase) -> bool:
         # Click Test tab
         click_test_tab(win_x, win_y)
 
-        # Perform drag
-        if source_item:
-            print(f"\n{Colors.YELLOW}Performing drag-drop...{Colors.RESET}")
-            perform_drag(source_item, test.action_target_row, test.action_target_col, win_x, win_y)
+        # Perform actions
+        if test.actions:
+            print(f"\n{Colors.YELLOW}Performing actions...{Colors.RESET}")
+            for action in test.actions:
+                if isinstance(action, CreateAction):
+                    if action.item_type == 'NOTE':
+                        perform_create_note(action.content, win_x, win_y)
+                        # After creating, read state to get the created item's position
+                        time.sleep(1.0)  # Wait longer for state to save
+                        state_content = STATE_FILE.read_text(encoding='utf-8')
+                        created_state = json.loads(state_content)
+                        # Find the created note (should be the last one or match content)
+                        created_note = None
+                        notes = created_state.get("notes", [])
+                        print(f"  {Colors.CYAN}Found {len(notes)} notes in state{Colors.RESET}")
+                        for note in notes:
+                            print(
+                                f"  {Colors.CYAN}Note: id={note.get('id')}, content='{note.get('content')}', row={note.get('grid_row')}, col={note.get('grid_col')}{Colors.RESET}")
+                            if note.get("content") == action.content:
+                                created_note = note
+                                break
+                        if created_note:
+                            # Get position - if None, wait a bit more for auto-placement
+                            grid_row = created_note.get('grid_row')
+                            grid_col = created_note.get('grid_col')
+
+                            # If position is None, wait a bit more and re-read state
+                            if grid_row is None or grid_col is None:
+                                print(
+                                    f"  {Colors.YELLOW}Note position not set yet, waiting for auto-placement...{Colors.RESET}")
+                                time.sleep(1.0)
+                                state_content = STATE_FILE.read_text(encoding='utf-8')
+                                created_state = json.loads(state_content)
+                                for note in created_state.get("notes", []):
+                                    if note.get("id") == created_note.get("id"):
+                                        grid_row = note.get('grid_row')
+                                        grid_col = note.get('grid_col')
+                                        break
+
+                            # If still None, use first available cell (0, 0) as fallback
+                            if grid_row is None:
+                                grid_row = 0
+                            if grid_col is None:
+                                grid_col = 0
+
+                            # Add to initial_items so Drag can find it
+                            test.initial_items[action.item_id] = GridItem(
+                                id=action.item_id,
+                                item_type='note',
+                                row=grid_row,
+                                col=grid_col,
+                                row_span=created_note.get('row_span', 1),
+                                col_span=created_note.get('col_span', 1)
+                            )
+                            print(
+                                f"  {Colors.GREEN}Created note {action.item_id} at ({grid_row}, {grid_col}){Colors.RESET}")
+                        else:
+                            print(
+                                f"  {Colors.RED}Note with content '{action.content}' not found in state{Colors.RESET}")
+                    else:
+                        print(f"  {Colors.RED}Unsupported create type: {action.item_type}{Colors.RESET}")
+                elif isinstance(action, DragAction):
+                    source_item = test.initial_items.get(action.item_id)
+                    if source_item:
+                        perform_drag(source_item, action.target_row, action.target_col, win_x, win_y)
+                    else:
+                        print(f"  {Colors.RED}Source item not found: {action.item_id}{Colors.RESET}")
+        elif test.action_item:
+            # Legacy support
+            source_item = test.initial_items.get(test.action_item)
+            if source_item:
+                print(f"\n{Colors.YELLOW}Performing drag-drop...{Colors.RESET}")
+                perform_drag(source_item, test.action_target_row, test.action_target_col, win_x, win_y)
 
         # Wait for state to save
         time.sleep(2)
