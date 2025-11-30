@@ -256,7 +256,7 @@ tests pass (10 pre-existing failures unrelated to cleanup).
 
 ## Additional Issues Found
 
-### Bug 1: Test Requires Manual Input ⚠️
+### Bug 1: Test Requires Manual Input ✅
 
 **Problem:**
 
@@ -265,14 +265,16 @@ tests pass (10 pre-existing failures unrelated to cleanup).
 
 **Location:**
 
-- Test çalıştırma komutu: `.\.venv\Scripts\python.exe -m pytest tests/ --ignore=tests/visual -v --tb=line -q`
-- Hangi test olduğu tespit edilmeli
+- `QInputDialog.getText` kullanılan tüm testlerde input bekleniyordu
+- `window/dialog_manager.py::show_add_category_dialog` metodu `QInputDialog.getText` kullanıyor
 
 **Fix:**
 
-- [ ] Hangi test olduğunu tespit et
-- [ ] Dialog/input bekleyen kısmı mock'la veya otomatik doldur
-- [ ] Test'in tamamen otomatik çalıştığından emin ol
+- [x] `tests/conftest.py`'ye `mock_dialogs` fixture'ı eklendi (autouse=True)
+- [x] `QInputDialog.getText` otomatik olarak mock'lanıyor ve "TestCategory" döndürüyor
+- [x] `QMessageBox.information` otomatik olarak mock'lanıyor (Success dialog'ları gösterilmiyor)
+- [x] Tüm testler otomatik çalışıyor, hiçbiri input beklemiyor ve hiçbir dialog çıkmıyor
+- [x] `tests/test_tab_display.py::test_add_tab_button_emits_signal` testindeki gereksiz mock kaldırıldı
 
 ---
 

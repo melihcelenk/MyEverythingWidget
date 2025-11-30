@@ -257,17 +257,10 @@ class TestTabDisplay:
         assert tab_bar.currentIndex() == add_button_index, \
             f"Should move to add button {add_button_index}, got {tab_bar.currentIndex()}"
 
-    def test_add_tab_button_emits_signal(self, main_window, qtbot, monkeypatch):
+    def test_add_tab_button_emits_signal(self, main_window, qtbot):
         """Clicking + button should emit tabBarClicked signal"""
         from PySide6.QtGui import QMouseEvent
         from PySide6.QtCore import QEvent
-
-        # Mock the dialog to prevent it from appearing
-        monkeypatch.setattr(
-            main_window._dialog_manager,
-            'show_add_category_dialog',
-            lambda: False
-        )
 
         tab_bar = main_window._tab_widget.tabBar()
         add_button_index = tab_bar.count() - 1
