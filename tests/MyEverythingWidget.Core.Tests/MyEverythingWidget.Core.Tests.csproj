@@ -15,6 +15,12 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <!-- Grid scenarios (the specification) and the shared DSL reader. -->
+  <ItemGroup>
+    <Compile Include="..\Shared\GridDsl\*.cs" Link="GridDsl\%(Filename)%(Extension)" />
+    <Content Include="..\Grid\*.dsl" Link="Grid\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\src\MyEverythingWidget.Core\MyEverythingWidget.Core.csproj" />
   </ItemGroup>

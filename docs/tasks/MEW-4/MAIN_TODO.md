@@ -67,7 +67,7 @@
 | Faz | Başlık | Durum | Tamamlanma | Dosya |
 |-----|--------|-------|------------|-------|
 | Faz 1 | İskelet, pencere ve MSIX | 🟢 Tamamlandı | 100% | `PHASE1.md` |
-| Faz 2 | Grid motoru, durum ve kalıcılık (Core) | ⏳ Bekliyor | 0% | `PHASE2.md` |
+| Faz 2 | Grid motoru, durum ve kalıcılık (Core) | 🟢 Tamamlandı | 100% | `PHASE2.md` |
 | Faz 3 | Grid UI: sürükle-bırak ve boyutlandırma | ⏳ Bekliyor | 0% | `PHASE3.md` |
 | Faz 4 | Kategoriler | ⏳ Bekliyor | 0% | `PHASE4.md` |
 | Faz 5 | Uygulama ekleme ve otomatik ikon | ⏳ Bekliyor | 0% | `PHASE5.md` |
@@ -493,17 +493,17 @@ Bunlar ayrı task'lara bırakılır.
 
 ## Faz 2 — Grid motoru, durum ve kalıcılık (Core)
 
-**Durum:** ⏳ Bekliyor
+**Durum:** 🟢 Tamamlandı (2026-10-30). Unit 79/79. Sonuç: `PHASE2.md` → 2.7 Sonuç.
 
 **Özet:** Sürükle-bırak kurallarının tamamı UI'sız C# kodunda, `.dsl` testleriyle.
 
 **Hedefler:**
 
-- [ ] Modeller: Category, AppItem, NoteItem, ImageItem; ortak `GridPlacement` (satır, sütun, span)
-- [ ] C# DSL ayrıştırıcı ve test üreteci (Python biçimiyle birebir uyumlu, 1 tabanlı konum)
-- [ ] `GridEngine`: G1-G6, G9, G10 ve K5
-- [ ] Mevcut üç `.dsl` + her kriter için yeni senaryolar geçiyor (K4'teki düzeltmeyle)
-- [ ] `StateStore`: versiyonlu JSON şeması, atomik yazma, bozuk dosya davranışı
+- [x] Modeller: Category, AppItem, NoteItem, ImageItem; ortak `GridPlacement` (satır, sütun, span)
+- [x] C# DSL ayrıştırıcı ve test üreteci (Python biçimiyle birebir uyumlu, 1 tabanlı konum)
+- [x] `GridEngine`: G1-G6, G9, G10 ve K5
+- [x] Mevcut üç `.dsl` + her kriter için yeni senaryolar geçiyor (K4'teki düzeltmeyle)
+- [x] `StateStore`: versiyonlu JSON şeması, atomik yazma, bozuk dosya davranışı
 
 **Detay:** `PHASE2.md`
 
