@@ -1,93 +1,50 @@
 # Development Guidelines for AI Assistant
 
-This document provides guidelines and references for AI assistants working on this project.
+My Everything Widget is a Windows desktop widget written with WinUI (Windows App SDK 2.x) and .NET 10, published
+to the Microsoft Store. The original Python/PySide6 version lives in `legacy/` with its own `CLAUDE.md`; it is
+reference material only.
 
 ## Documentation
 
-All project documentation is located in the `docs/general/` directory:
-
-- **[Development Guidelines](docs/general/DEVELOPMENT.md)** - UI testing system, test DSL format, and testing workflow
-- **[Architecture Documentation](docs/general/ARCHITECTURE.md)** - Project structure, component architecture, and design
-  principles
-- **[Contributing Guide](docs/general/CONTRIBUTING.md)** - How to contribute, code style, and development setup
-- **[Changelog](docs/general/CHANGELOG.md)** - Project history and version changes
+- **[Development Guide](docs/general/DEVELOPMENT.md)** - Build, run, test (unit and sandbox UI tests), MSIX
+- **[Architecture](docs/general/ARCHITECTURE.md)** - Projects, layers and their rules
+- **Current task:** `docs/tasks/MEW-4/MAIN_TODO.md` (WinUI rewrite) and its `PHASE{n}.md` files
 
 ## Key Principles
 
 ### Testing
 
-- **DO NOT** ask the user to manually test
-- **DO** write humanized UI tests using the DSL format (see [Development Guidelines](docs/general/DEVELOPMENT.md))
-- **DO** run tests automatically using `tests\test_humanized_ui.bat`
-- **DO** verify tests pass or correctly identify bugs before fixing
+- **DO NOT** ask the user to test manually; write automated tests and run them.
+- Unit tests: `dotnet test` (Core and Presentation; no WinUI runtime needed).
+- UI tests: `pwsh scripts/test-ui.ps1` runs them in **Windows Sandbox**.
+  - Never run UI tests on the user's desktop.
+  - Never drive the user's mouse or keyboard.
+- Grid behaviour is specified by `.dsl` files (from `legacy/tests/humanized/`); they are the source of truth.
 
-### Code Quality
+### Code
 
-- Follow PEP 8 style guide
-- Use type hints where appropriate
-- Write docstrings for public methods and classes
-- Keep methods small and focused (< 50 lines)
-- Follow clean code principles (see [Architecture Documentation](docs/general/ARCHITECTURE.md))
+- All code, comments, XML docs, log messages and commit messages are in English.
+- Build with zero warnings: `TreatWarningsAsErrors` is on for every project.
+- Core has no WinUI or Windows dependency.
+- ViewModels live in Presentation and do not reference WinUI.
+- Code-behind only applies window-level state.
+- Colours come from WinUI theme resources only; never hard-code colours.
+- Package versions are central in `Directory.Packages.props`.
 
 ### Project Structure
 
-- Source code in root: `models/`, `services/`, `widgets/`, `window/`
-- Tests in `tests/` directory (including test runner scripts)
-- Scripts in `scripts/` directory (application scripts)
-- Documentation in `docs/general/` directory
-- Virtual environment: `.venv` (not `venv`)
-
-### State Management
-
-- Application state managed by `AppState` class
-- UI coordination handled by `ContentManager`
-- State persisted to JSON file (default: `%LOCALAPPDATA%\MyEverythingWidget\app_state.json`)
-- Test state isolated in `tests/tmp/app_state.json` (gitignored)
-
-## Quick Reference
-
-### Running Tests
-
-```bash
-# Unit tests
-pytest tests/ -v --ignore=tests/visual
-
-# Humanized UI tests
-.\tests\test_humanized_ui.bat
-
-# Specific test
-.\tests\test_humanized_ui.bat test_name
-```
-
-### Test File Format
-
-Humanized tests use `.dsl` extension and `snake_case` naming:
-
-- Location: `tests/humanized/drag/`, `tests/humanized/tabs/`, etc.
-- Format: See [Development Guidelines - Test File Format](docs/general/DEVELOPMENT.md#test-file-format)
-
-### Main Components
-
-- **ContentManager**: Main UI coordinator (use this, not TabManager wrapper)
-- **AppState**: Global state manager
-- **GridPopulator**: Populates grid with items
-- **ItemMover**: Handles drag-and-drop operations
-- **NoteActions**: Manages note-related actions
-
-For detailed architecture, see [Architecture Documentation](docs/general/ARCHITECTURE.md).
+| Path | Content |
+|------|---------|
+| `src/MyEverythingWidget.Core` | Models, grid rules, settings and storage (`net10.0`) |
+| `src/MyEverythingWidget.Presentation` | ViewModels (`net10.0`, CommunityToolkit.Mvvm) |
+| `src/MyEverythingWidget.App` | WinUI app, views, MSIX manifest |
+| `tests/` | `Core.Tests`, `Presentation.Tests`, `UiTests` (FlaUI) |
+| `scripts/` | `test-ui.ps1` (sandbox UI tests), `publish-msix.ps1` |
+| `tmp/` | Temporary output (gitignored) |
 
 ## Important Notes
 
-1. **Never commit or push** - User rule: "Never commit, never push"
-2. **Code must be clean** - Follow clean code principles
-3. **Test-driven development** - Write tests first, then implement
-4. **No Turkish comments** - All code comments must be in English
-5. **Automated testing** - Always use automated tests, never ask for manual testing
-
-## When in Doubt
-
-- Check [Development Guidelines](docs/general/DEVELOPMENT.md) for testing procedures
-- Check [Architecture Documentation](docs/general/ARCHITECTURE.md) for component structure
-- Check [Contributing Guide](docs/general/CONTRIBUTING.md) for code style and setup
-- Check existing code for patterns and conventions
-
+1. **Never commit or push** - the user commits.
+2. **Test-driven development** - write the test, see it fail, then write the code.
+3. App data folder: package `LocalState` (MSIX), `%LOCALAPPDATA%\MyEverythingWidget.WinUI` (unpackaged), or
+   `MEW_DATA_DIR` (tests).

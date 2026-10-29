@@ -1,212 +1,72 @@
-# Development Guidelines
+# Development Guide
 
-## UI Testing System
+## Requirements
 
-### Humanized Test DSL
+| Tool | Version | Note |
+|------|---------|------|
+| Windows | 10 (19041) or 11 | Windows 11 Pro or Enterprise for Windows Sandbox |
+| .NET SDK | 10.0.400 or later | Pinned by `global.json` |
+| Windows Sandbox | Optional feature | Needed only for UI tests |
 
-All UI tests for drag-and-drop operations MUST be written using the Humanized Test DSL format. This format provides a
-human-readable way to define grid states and test actions.
+Visual Studio is not required; everything below runs from the command line.
 
-#### Test File Format
-
-Test files are located in `tests/humanized/drag/` directory. Each test file follows this format:
-
-```
-Rows: 5
-Columns: 5
-
-Initial:
-.  .  .  .  .
-N1 N1 .  .  A1
-.  .  .  .  .
-.  .  .  .  .
-.  .  .  .  .
-
-Action:
-Drag(N1,R1C3)
-
-Expected:
-.  .  .  .  .
-A1 .  .  N1 N1
-.  .  .  .  .
-.  .  .  .  .
-.  .  .  .  .
-```
-
-#### Notation
-
-- **Apps**: `A1`, `A2`, `A3`, etc.
-- **Notes**: `N1`, `N2`, `N3`, etc.
-- **Images**: `I1`, `I2`, `I3`, etc.
-- **Empty cells**: `.` (dot)
-- **Multi-span items**: Show all cells they occupy (e.g., `N1 N1` for a 2x1 note)
-
-#### Actions
-
-**Drag Action:**
+Enable Windows Sandbox once (administrator PowerShell, then restart):
 
 ```
-Drag(ItemID,TargetPosition)
+Enable-WindowsOptionalFeature -Online -FeatureName "Containers-DisposableClientVM" -All
 ```
 
-Example: `Drag(N1,R2C3)` - Drags item N1 to row 2, column 3 (0-indexed: second row, third column)
-
-**Create Action:**
+## Build and run
 
 ```
-Create(NOTE, "note content", N1)
-Create(APP, "app name", A1)
+dotnet build src/MyEverythingWidget.App -r win-x64 -p:Platform=x64
+src\MyEverythingWidget.App\bin\x64\Debug\net10.0-windows10.0.26100.0\win-x64\MyEverythingWidget.exe
 ```
 
-Creates a new item and assigns it the specified ID.
+- Development builds are unpackaged and self-contained.
+- Data goes to `%LOCALAPPDATA%\MyEverythingWidget.WinUI`. Set `MEW_DATA_DIR` to use another folder.
+- Unhandled exceptions are written to `logs\crash.log` in the data folder.
 
-- **Create(NOTE, "content", ID)**: Creates a note with the specified content using the quick note entry widget
-- **Create(APP, "name", ID)**: Creates an app with the specified name
-  - Opens Add Item Dialog via FAB button
-  - Fills in app name and path (uses mock executable for testing)
-  - Mock executables are created in `tests/tmp/mock_apps/` and cleaned up automatically
+## Tests
 
-**Launch Action:**
+### Unit tests
 
 ```
-Launch(A1)
+dotnet test
 ```
 
-Launches an app by clicking on its card.
+Runs `Core.Tests` and `Presentation.Tests` (xunit.v3 on Microsoft Testing Platform). They need no WinUI runtime.
 
-- **Launch(ID)**: Clicks on the app card with the specified ID
-- Tracks the launched process (if psutil is available)
-- Processes are automatically cleaned up after test
+### UI tests (Windows Sandbox)
 
-- **Create(NOTE, "content", ID)**: Creates a note with the specified content
-- **Create(APP, "name", ID)**: Creates an app with the specified name (uses mock executable for testing)
-
-#### Running Tests
-
-**Run all tests:**
-
-```bash
-.\tests\test_humanized_ui.bat
+```
+pwsh scripts/test-ui.ps1
+pwsh scripts/test-ui.ps1 -Filter "/*/*/MainWindowTests/*"
 ```
 
-**Run specific test:**
+What the script does:
 
-```bash
-.\tests\test_humanized_ui.bat swap_note_and_app
-# or
-.\tests\test_humanized_ui.bat swap_note_and_app.dsl
-# or directly with Python:
-.\tests\humanized_ui_runner.py swap_note_and_app
+1. Publishes the app and the UI tests as self-contained folders, and builds the MSIX package.
+2. Starts Windows Sandbox (minimized) with `tmp\sandbox` mapped to `C:\mew`.
+3. Inside the sandbox: installs the MSIX unsigned, runs the FlaUI tests, writes results.
+4. Closes the sandbox from the host as soon as results exist (no "Close" click needed), prints the summary and
+   exits with the test exit code.
+
+| File | Content |
+|------|---------|
+| `tmp\sandbox\results\console.txt` | Test console output |
+| `tmp\sandbox\results\results.xml` | xunit XML results |
+| `tmp\sandbox\results\install.txt` | MSIX install output |
+
+UI tests find elements by `AutomationProperties.AutomationId`; give every interactive element one.
+They wait by polling (`Wait.Until`), never with fixed sleeps.
+
+## MSIX package
+
+```
+pwsh scripts/publish-msix.ps1 -Platform x64
 ```
 
-### Test State Management
-
-#### JSON State Files
-
-All test state files are located in `tests/state/` and `tests/tmp/` directories:
-
-- `tests/state/initial_test_state.json` - Template state file (read-only, git committed)
-- `tests/tmp/app_state.json` - Working test state file (created during tests, gitignored)
-
-#### State Isolation
-
-- UI tests use `tests/tmp/app_state.json` to avoid affecting user's actual state
-- Each test starts by copying `tests/state/initial_test_state.json` to `tests/tmp/app_state.json`
-- Tests automatically clean up state after completion
-- `tests/tmp/` directory is gitignored
-
-#### State File Structure
-
-```json
-{
-  "categories": [],
-  "apps": [],
-  "notes": []
-}
-```
-
-### Testing Workflow
-
-**IMPORTANT:** When testing UI functionality, especially drag-and-drop operations:
-
-1. **DO NOT** ask the user to manually test
-2. **DO** write a humanized test file in `tests/humanized/drag/`
-3. **DO** run the test using `.\tests\test_humanized_ui.bat` or `.\tests\humanized_ui_runner.py`
-4. **DO** verify the test passes or correctly identifies the bug
-5. **DO** fix the bug and ensure the test passes
-
-#### Example Workflow
-
-1. User reports: "2x1 note becomes 1x1 when dragged"
-2. Create test file: `tests/humanized/drag/2x1_note_right_edge.dsl`
-3. Write test with `Create(NOTE, "content", N1)` and `Drag(N1, R2C3)`
-4. Run: `.\tests\test_humanized_ui.bat 2x1_note_right_edge` or `.\tests\humanized_ui_runner.py 2x1_note_right_edge`
-5. Test fails, confirming the bug
-6. Fix the bug in code
-7. Re-run test to verify fix
-
-### Test Runner Features
-
-The `humanized_ui_runner.py`:
-
-- Automatically creates test category and items
-- Opens the application window
-- Performs drag-drop operations using PyAutoGUI
-- Compares actual vs expected results
-- Shows detailed differences if test fails
-- Cleans up state after test
-
-### Troubleshooting
-
-**If tests freeze or timeout when running:**
-
-1. **Check `ProcessManager.kill_all_processes()`**:
-    - **CRITICAL**: This function must NOT kill all Python processes (`taskkill /F /IM python.exe /T`)
-    - It should only close "My Everything" windows using `pygetwindow`
-    - Killing all Python processes will terminate the test script itself, causing silent failures
-    - **Solution**: Use `gw.getWindowsWithTitle("My Everything")` and close only those windows
-
-2. **Check `safety.py` imports**:
-    - If `pynput` listener causes hangs, disable it temporarily
-    - Keyboard interrupt detection may not work reliably on Windows
-    - Mouse-based interrupts (corner detection, outside window) should still work
-
-3. **If command times out or produces no output**:
-    - Don't keep retrying the same command - investigate the root cause
-    - Check if the script is being killed by process management code
-    - Verify imports work: `python -c "from tests.humanized.utils.safety import check_user_interrupt; print('OK')"`
-    - Check syntax: `python -m py_compile tests/humanized_ui_runner.py`
-
-4. **Common issues**:
-    - Test script kills itself: Check `kill_all_processes()` implementation
-    - Import hangs: Check `pynput` listener initialization in `safety.py`
-    - No output: Script may be exiting silently - check process management code
-
-### Best Practices
-
-1. **Always write tests first** (TDD approach)
-2. **Use descriptive test names** that explain what is being tested
-3. **Include comments** in test files for complex scenarios
-4. **Test edge cases**: right edge, bottom edge, multi-span items
-5. **Verify span information**: Tests check both position AND span (row_span, col_span)
-
-### Test File Naming
-
-- **Format**: `snake_case.dsl`
-- **Extension**: `.dsl` (required - Domain Specific Language)
-- **Examples**:
-    - `swap_note_and_app.dsl`
-    - `2x1_note_right_edge.dsl`
-    - `switch_between_tabs.dsl`
-    - `open_add_dialog.dsl`
-- **Rules**:
-    - Always use `snake_case` (lowercase with underscores)
-    - Always include `.dsl` extension
-    - Use descriptive names that explain what is being tested
-    - No "or" or other conjunctions - each file tests one scenario
-- **Organization**:
-    - `tests/humanized/drag/` - Drag-and-drop tests
-    - `tests/humanized/tabs/` - Tab switching tests
-    - `tests/humanized/dialogs/` - Dialog tests
-    - `tests/humanized/` - Other general tests
-
+- Produces an unsigned package under `tmp\msix`.
+- Install it locally with `Add-AppxPackage -AllowUnsigned <path>`.
+- The manifest publisher is the unsigned-package OID. Store association replaces it (MEW-4 Faz 8).

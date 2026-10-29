@@ -52,8 +52,8 @@ for contributing.
 5. **Update documentation:**
     - Update README if needed
     - Add docstrings to new code
-    - Update [docs/general/CHANGELOG.md](docs/general/CHANGELOG.md)
-    - Update [docs/general/ARCHITECTURE.md](docs/general/ARCHITECTURE.md) if structure changes
+    - Update [CHANGELOG.md](CHANGELOG.md)
+    - Update [ARCHITECTURE.md](ARCHITECTURE.md) if structure changes
 
 6. **Commit your changes:**
    ```bash

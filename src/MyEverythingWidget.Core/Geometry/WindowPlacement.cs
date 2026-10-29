@@ -1,0 +1,49 @@
+namespace MyEverythingWidget.Core.Geometry;
+
+/// <summary>
+/// Decides where the widget window opens, given the saved bounds and the monitors that exist now.
+/// </summary>
+public static class WindowPlacement
+{
+    /// <summary>Distance, in pixels, between the default window position and the work area edges.</summary>
+    public const int EdgeMargin = 16;
+
+    /// <summary>Height of the strip at the top of the window that must be on screen so it can be dragged.</summary>
+    public const int TitleBarGripHeight = 32;
+
+    /// <summary>Minimum visible width of that strip for the window to count as reachable.</summary>
+    public const int MinimumVisibleWidth = 100;
+
+    /// <summary>
+    /// Returns <paramref name="saved"/> when the user can still reach its title bar on one of
+    /// <paramref name="workAreas"/>; otherwise returns a rectangle at the top-right corner of
+    /// <paramref name="primaryWorkArea"/>, keeping the saved size when there is one.
+    /// </summary>
+    public static PixelRect Resolve(
+        PixelRect? saved,
+        IReadOnlyList<PixelRect> workAreas,
+        PixelRect primaryWorkArea,
+        PixelSize defaultSize)
+    {
+        ArgumentNullException.ThrowIfNull(workAreas);
+
+        if (saved is { } bounds && workAreas.Any(area => IsTitleBarReachable(bounds, area)))
+        {
+            return bounds;
+        }
+
+        var size = saved?.Size ?? defaultSize;
+        return new PixelRect(
+            primaryWorkArea.Right - size.Width - EdgeMargin,
+            primaryWorkArea.Y + EdgeMargin,
+            size.Width,
+            size.Height);
+    }
+
+    private static bool IsTitleBarReachable(PixelRect window, PixelRect area)
+    {
+        var titleBarFitsVertically = window.Y >= area.Y && window.Y + TitleBarGripHeight <= area.Bottom;
+        var visibleWidth = Math.Min(window.Right, area.Right) - Math.Max(window.X, area.X);
+        return titleBarFitsVertically && visibleWidth >= MinimumVisibleWidth;
+    }
+}

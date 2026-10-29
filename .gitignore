@@ -1,74 +1,100 @@
-# Python
+# ---------------------------------------------------------------------------
+# .NET / WinUI (src/, tests/)
+# ---------------------------------------------------------------------------
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+ARM64/
+[Ll]og/
+*.user
+*.suo
+*.userprefs
+*.rsuser
+.vs/
+launchSettings.local.json
+
+# MSIX packaging output and signing material
+AppPackages/
+BundleArtifacts/
+*.msix
+*.msixbundle
+*.msixupload
+*.appx
+*.appxbundle
+*.appxupload
+*.pfx
+*.cer
+
+# Test results and coverage
+TestResults/
+*.trx
+coverage*.json
+coverage*.xml
+*.coverage
+
+# NuGet
+*.nupkg
+*.snupkg
+.nuget/
+/packages/
+
+# ---------------------------------------------------------------------------
+# Python (legacy/)
+# ---------------------------------------------------------------------------
 __pycache__/
 *.py[cod]
 *$py.class
-*.so
-.Python
-env/
-venv/
-ENV/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-*.pyc
+/.venv/
+/legacy/.venv/
 .pytest_cache/
 .coverage
 htmlcov/
-*.log
-
-# PySide6
+*.egg-info/
 *.qmlc
 *.jsc
 
-# Flutter (legacy version)
-.dart_tool/
-.flutter-plugins
-.flutter-plugins-dependencies
-.packages
-.pub-cache/
-.pub/
-.metadata
-flutter_version/
+# Legacy visual/UI test output
+screenshot_*.png
+test_screenshot.png
+legacy/tests/visual/screenshot_*.png
+/legacy/tests/tmp/
+/legacy/data/
+/data/
 
-# IDE
+# ---------------------------------------------------------------------------
+# Temporary files and logs
+# ---------------------------------------------------------------------------
+/tmp/
+/logs/
+*.log
+*.tmp
+*.bak
+nul
+
+# Keep documentation images
+!docs/**/*.png
+
+# ---------------------------------------------------------------------------
+# Secrets and local configuration
+# ---------------------------------------------------------------------------
+.env
+.env.*
+config.local.*
+
+# ---------------------------------------------------------------------------
+# IDE and OS
+# ---------------------------------------------------------------------------
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 .DS_Store
-.gitattributes
-
-# OS
 Thumbs.db
 desktop.ini
-
-# Visual test screenshots
-screenshot_*.png
-test_screenshot.png
-tests/visual/screenshot_*.png
-# Allow docs images
-!docs/**/*.png
-
-# Temporary files
-*.tmp
-*.bak
-nul
-teststest_*.py
-
-# Test temporary files
-tests/tmp/
 
 # Claude local settings
 .claude/

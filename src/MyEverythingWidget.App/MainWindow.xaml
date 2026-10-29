@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="MyEverythingWidget.App.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Window.SystemBackdrop>
+        <MicaBackdrop />
+    </Window.SystemBackdrop>
+
+    <Grid x:Name="RootGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Title bar: the drag region fills everything except the buttons on the right. -->
+        <Grid x:Name="TitleBar" Grid.Row="0" Padding="12,0,4,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Grid x:Name="TitleBarDragRegion" Grid.Column="0" Background="Transparent">
+                <TextBlock
+                    VerticalAlignment="Center"
+                    Style="{StaticResource CaptionTextBlockStyle}"
+                    Text="{x:Bind ViewModel.Title}" />
+            </Grid>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="2" VerticalAlignment="Center">
+                <ToggleButton
+                    x:Name="PinButton"
+                    AutomationProperties.AutomationId="PinButton"
+                    AutomationProperties.Name="Always on top"
+                    ToolTipService.ToolTip="Always on top"
+                    Style="{StaticResource TitleBarToggleButtonStyle}"
+                    IsChecked="{x:Bind ViewModel.IsAlwaysOnTop, Mode=OneWay}"
+                    Command="{x:Bind ViewModel.ToggleAlwaysOnTopCommand}">
+                    <FontIcon FontSize="14" Glyph="&#xE718;" />
+                </ToggleButton>
+                <Button
+                    x:Name="CloseButton"
+                    AutomationProperties.AutomationId="CloseButton"
+                    AutomationProperties.Name="Close"
+                    ToolTipService.ToolTip="Close"
+                    Style="{StaticResource TitleBarButtonStyle}"
+                    Click="OnCloseClicked">
+                    <FontIcon FontSize="12" Glyph="&#xE8BB;" />
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <!-- Content area; the item grid arrives in Faz 3. -->
+        <Grid Grid.Row="1">
+            <TextBlock
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                Style="{StaticResource BodyTextBlockStyle}"
+                Text="Nothing here yet" />
+        </Grid>
+    </Grid>
+</Window>
