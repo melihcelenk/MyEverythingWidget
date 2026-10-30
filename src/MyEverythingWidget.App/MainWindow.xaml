@@ -16,6 +16,7 @@
             <RowDefinition Height="40" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <!-- Title bar: the drag region fills everything except the buttons on the right. -->
@@ -59,7 +60,7 @@
 
         <!-- Surface under the open tab; the tab strip and title bar stay on Mica. -->
         <Border Grid.Row="2"
-                Grid.RowSpan="2"
+                Grid.RowSpan="3"
                 Background="{ThemeResource LayerFillColorDefaultBrush}"
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                 BorderThickness="0,1,0,0" />
@@ -67,13 +68,51 @@
         <views:WidgetGridView
             x:Name="GridView"
             Grid.Row="2"
+            AllowDrop="True"
+            DragOver="OnGridDragOver"
+            Drop="OnGridDrop"
             Margin="6,6,6,6"
             HorizontalAlignment="Left"
             VerticalAlignment="Top" />
 
+        <!-- Bottom bar: add items. -->
+        <Grid Grid.Row="4" Padding="8,0,8,8" ColumnSpacing="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <DropDownButton x:Name="AddItemButton"
+                            AutomationProperties.AutomationId="AddItemButton"
+                            AutomationProperties.Name="Add">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <FontIcon FontSize="14" Glyph="&#xE710;" />
+                    <TextBlock Text="Add" />
+                </StackPanel>
+                <DropDownButton.Flyout>
+                    <MenuFlyout Placement="TopEdgeAlignedLeft">
+                        <MenuFlyoutItem x:Name="AddAppMenuItem"
+                                        AutomationProperties.AutomationId="AddAppMenuItem"
+                                        Text="App…"
+                                        Click="OnAddAppClicked">
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon Glyph="&#xECAA;" />
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                    </MenuFlyout>
+                </DropDownButton.Flyout>
+            </DropDownButton>
+            <TextBlock Grid.Column="1"
+                       VerticalAlignment="Center"
+                       Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                       Style="{StaticResource CaptionTextBlockStyle}"
+                       TextTrimming="CharacterEllipsis"
+                       Text="Drop files, folders or links on the grid" />
+        </Grid>
+
         <InfoBar
             x:Name="StatusBar"
             Grid.Row="3"
+            Grid.RowSpan="2"
             Margin="8,0,8,8"
             VerticalAlignment="Bottom"
             AutomationProperties.AutomationId="StatusInfoBar"

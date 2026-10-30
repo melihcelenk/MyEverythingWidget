@@ -37,6 +37,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MyEverythingWidget.Core\MyEverythingWidget.Core.csproj" />
+    <ProjectReference Include="..\MyEverythingWidget.Infrastructure\MyEverythingWidget.Infrastructure.csproj" />
     <ProjectReference Include="..\MyEverythingWidget.Presentation\MyEverythingWidget.Presentation.csproj" />
   </ItemGroup>
 

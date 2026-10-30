@@ -70,7 +70,7 @@
 | Faz 2 | Grid motoru, durum ve kalıcılık (Core) | 🟢 Tamamlandı | 100% | `PHASE2.md` |
 | Faz 3 | Grid UI: sürükle-bırak ve boyutlandırma | 🟢 Tamamlandı | 100% | `PHASE3.md` |
 | Faz 4 | Kategoriler | 🟢 Tamamlandı | 100% | `PHASE4.md` |
-| Faz 5 | Uygulama ekleme ve otomatik ikon | ⏳ Bekliyor | 0% | `PHASE5.md` |
+| Faz 5 | Uygulama ekleme ve otomatik ikon | 🟢 Tamamlandı | 100% | `PHASE5.md` |
 | Faz 6 | Notlar, resimler ve Ctrl+V | ⏳ Bekliyor | 0% | `PHASE6.md` |
 | Faz 7 | Ayarlar ve eski veriyi içe aktarma | ⏳ Bekliyor | 0% | `PHASE7.md` |
 | Faz 8 | UI testleri, performans ve Store paketi | ⏳ Bekliyor | 0% | `PHASE8.md` |
@@ -547,17 +547,17 @@ Bunlar ayrı task'lara bırakılır.
 
 ## Faz 5 — Uygulama ekleme ve otomatik ikon
 
-**Durum:** ⏳ Bekliyor
+**Durum:** 🟢 Tamamlandı (2026-10-30). Unit 170/170, UI 33/33 (Sandbox). Sonuç: `PHASE5.md` → 5.6 Sonuç.
 
 **Özet:** Kurulu uygulama seçici, sürükle-bırakla ekleme, otomatik ikon, başlatma.
 
 **Hedefler:**
 
-- [ ] `InstalledAppsService` (Win32 + Store, arama) (U1)
-- [ ] `IconService`: exe, lnk, klasör, Store uygulaması, favicon, baş harf yedeği (U2, U4)
-- [ ] Widget'a dosya/URL bırakma (U3, U4)
-- [ ] `LauncherService`: EXE, URL, klasör; eksik hedef uyarısı (U5, U6)
-- [ ] Kart menüsü: Open, Edit, Rename, Change icon..., Reset icon, Delete
+- [x] `InstalledAppsService` (Win32 + Store, arama) (U1)
+- [x] `IconService`: exe, lnk, klasör, Store uygulaması, favicon, baş harf yedeği (U2, U4)
+- [x] Widget'a dosya/URL bırakma (U3, U4)
+- [x] `LauncherService`: EXE, URL, klasör; eksik hedef uyarısı (U5, U6)
+- [ ] Kart menüsü: Open, Edit, Rename, Change icon..., Reset icon, Delete — Rename Faz 6, Change/Reset icon Faz 8
 
 **Detay:** `PHASE5.md`
 

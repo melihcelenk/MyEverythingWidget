@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml;
 using MyEverythingWidget.Core.Grid;
 using MyEverythingWidget.Core.Settings;
 using MyEverythingWidget.Core.State;
+using MyEverythingWidget.Infrastructure.Shell;
 using MyEverythingWidget.Presentation;
 
 namespace MyEverythingWidget.App;
@@ -14,6 +15,7 @@ namespace MyEverythingWidget.App;
 public sealed partial class App : Application, IDisposable
 {
     private readonly ILoggerFactory _loggerFactory;
+    private readonly HttpClient _httpClient = new();
     private MainWindow? _mainWindow;
     private DispatcherQueue? _dispatcherQueue;
 
@@ -37,7 +39,11 @@ public sealed partial class App : Application, IDisposable
     }
 
     /// <inheritdoc />
-    public void Dispose() => _loggerFactory.Dispose();
+    public void Dispose()
+    {
+        _loggerFactory.Dispose();
+        _httpClient.Dispose();
+    }
 
     /// <inheritdoc />
     protected override void OnLaunched(LaunchActivatedEventArgs args)
@@ -49,7 +55,13 @@ public sealed partial class App : Application, IDisposable
         var stateStore = new JsonWidgetStateStore(dataDirectory, TimeProvider.System, _loggerFactory.CreateLogger<JsonWidgetStateStore>());
         var board = new WidgetBoard(stateStore, () => Guid.NewGuid().ToString("N"), GridSize.Default, _loggerFactory.CreateLogger<WidgetBoard>());
 
-        _mainWindow = new MainWindow(new MainViewModel(settingsStore), new BoardViewModel(board));
+        var iconStore = new ShellIconStore(dataDirectory, new FaviconSource(_httpClient), _loggerFactory.CreateLogger<ShellIconStore>());
+        var launcher = new ShellLauncher(_loggerFactory.CreateLogger<ShellLauncher>());
+
+        _mainWindow = new MainWindow(
+            new MainViewModel(settingsStore),
+            new BoardViewModel(board, iconStore, launcher),
+            new ShellAppsSource());
         _mainWindow.Activate();
     }
 

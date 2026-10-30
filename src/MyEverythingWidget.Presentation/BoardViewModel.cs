@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MyEverythingWidget.Core.Apps;
 using MyEverythingWidget.Core.Grid;
 using MyEverythingWidget.Core.State;
 
@@ -39,7 +40,12 @@ public sealed partial class BoardViewModel : ObservableObject
     /// <summary>Name given to a category created with the "+" button, before the user renames it.</summary>
     public const string NewCategoryName = "New category";
 
+    /// <summary>Message when some dropped or pasted things could not be turned into cards.</summary>
+    public const string SomeNotAddedMessage = "Some items could not be added. Use a full path or a web address.";
+
     private readonly WidgetBoard _board;
+    private readonly IIconStore _icons;
+    private readonly IAppLauncher _launcher;
 
     [ObservableProperty]
     public partial string? StatusMessage { get; private set; }
@@ -51,11 +57,13 @@ public sealed partial class BoardViewModel : ObservableObject
     public partial string SelectedCategoryId { get; private set; }
 
     /// <summary>Creates the view model over <paramref name="board"/> and shows its open category.</summary>
-    public BoardViewModel(WidgetBoard board)
+    public BoardViewModel(WidgetBoard board, IIconStore? icons = null, IAppLauncher? launcher = null)
     {
         ArgumentNullException.ThrowIfNull(board);
 
         _board = board;
+        _icons = icons ?? NoAppServices.Instance;
+        _launcher = launcher ?? NoAppServices.Instance;
         SelectedCategoryId = board.SelectedCategoryId;
         Synchronize();
 
@@ -144,7 +152,90 @@ public sealed partial class BoardViewModel : ObservableObject
     public bool Resize(string itemId, GridSpan span) => Report(_board.Resize(itemId, span));
 
     [RelayCommand]
-    private void Delete(string itemId) => _board.Delete(itemId);
+    private void Delete(string itemId)
+    {
+        var iconPath = (_board.Find(itemId) as AppItem)?.IconPath;
+        if (_board.Delete(itemId) && iconPath is not null)
+        {
+            _icons.DeleteIcon(iconPath);
+        }
+    }
+
+    /// <summary>Adds an app card for <paramref name="target"/> with its icon; returns whether it was added.</summary>
+    public async Task<bool> AddAppAsync(LaunchTarget target, string name, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(target);
+
+        var iconPath = await _icons.CreateIconAsync(target, cancellationToken).ConfigureAwait(true);
+        var label = string.IsNullOrWhiteSpace(name) ? target.SuggestedName : name;
+        var result = _board.AddApp(SelectedCategoryId, label, target.Target, target.Kind, iconPath);
+        if (result.Outcome != GridOutcome.Success && iconPath is not null)
+        {
+            _icons.DeleteIcon(iconPath);
+        }
+
+        return Report(result.Outcome);
+    }
+
+    /// <summary>
+    /// Adds a card for every dropped path or web address that can be opened; shows a warning for the rest.
+    /// Returns how many cards were added.
+    /// </summary>
+    public async Task<int> AddDroppedAsync(IReadOnlyList<string> texts, Func<string, bool> isDirectory)
+    {
+        ArgumentNullException.ThrowIfNull(texts);
+
+        var added = 0;
+        var skipped = false;
+        foreach (var text in texts)
+        {
+            if (LaunchTarget.Classify(text, isDirectory) is { } target)
+            {
+                if (!await AddAppAsync(target, target.SuggestedName).ConfigureAwait(true))
+                {
+                    return added;
+                }
+
+                added++;
+            }
+            else
+            {
+                skipped = true;
+            }
+        }
+
+        if (skipped)
+        {
+            ShowStatus(SomeNotAddedMessage, StatusSeverity.Warning);
+        }
+
+        return added;
+    }
+
+    /// <summary>Opens an app card; other cards are ignored. Shows why when it cannot be opened.</summary>
+    public void Launch(string itemId)
+    {
+        if (_board.Find(itemId) is not AppItem app)
+        {
+            return;
+        }
+
+        switch (_launcher.Launch(app))
+        {
+            case LaunchOutcome.Started:
+                break;
+            case LaunchOutcome.TargetMissing:
+                ShowStatus(
+                    string.Create(CultureInfo.InvariantCulture, $"“{app.Name}” could not be found. It may have been moved or uninstalled."),
+                    StatusSeverity.Warning);
+                break;
+            case LaunchOutcome.Failed:
+                ShowStatus(string.Create(CultureInfo.InvariantCulture, $"“{app.Name}” could not be opened."), StatusSeverity.Error);
+                break;
+            default:
+                throw new InvalidOperationException("Unknown launch outcome.");
+        }
+    }
 
     [RelayCommand]
     private void DismissStatus() => StatusMessage = null;

@@ -1,7 +1,9 @@
 using FlaUI.Core.Capturing;
 using MyEverythingWidget.Core.Grid;
 using MyEverythingWidget.UiTests.Infrastructure;
+using FlaUI.Core.AutomationElements;
 using GridCell = MyEverythingWidget.Core.Grid.GridCell;
+using Wait = MyEverythingWidget.UiTests.Infrastructure.Wait;
 
 namespace MyEverythingWidget.UiTests;
 
@@ -49,5 +51,33 @@ public sealed class ScreenshotTests : IDisposable
         GridDriver.Release();
 
         Assert.True(File.Exists(ShotPath("grid-during-drag")));
+    }
+
+    [Fact]
+    public void Capture_AddAppDialogAndCardsWithIcons()
+    {
+        StateFiles.Seed(_data, new Dictionary<string, GridPlacement>());
+        using var app = AppSession.Launch(_data);
+
+        foreach (var program in new[] { "cmd.exe", "notepad.exe", "taskmgr.exe" })
+        {
+            RealMouse.Click(app.Find("AddItemButton").BoundingRectangle.Center());
+            Wait.ForElement(() => app.FindInPopups("AddAppMenuItem")).AsMenuItem().Invoke();
+            var dialog = Wait.ForElement(() => app.FindInPopups("AddAppDialog"));
+            Wait.Until(() => dialog.FindFirstDescendant(c => c.ByAutomationId("InstalledAppsList"))?.FindAllChildren().Length > 0, TimeSpan.FromSeconds(30));
+            if (program == "cmd.exe")
+            {
+                Capture.Element(app.MainWindow).ToFile(ShotPath("add-app-dialog"));
+            }
+
+            Wait.ForElement(() => dialog.FindFirstDescendant(c => c.ByAutomationId("ManualTargetBox"))).AsTextBox().Text =
+                Path.Combine(Environment.SystemDirectory, program);
+            Wait.ForElement(() => dialog.FindFirstDescendant(c => c.ByAutomationId("PrimaryButton"))).AsButton().Invoke();
+            Wait.Until(() => app.FindInPopups("AddAppDialog") is null);
+        }
+
+        GridDriver.WaitForUi();
+        Capture.Element(app.MainWindow).ToFile(ShotPath("cards-with-icons"));
+        Assert.True(File.Exists(ShotPath("cards-with-icons")));
     }
 }

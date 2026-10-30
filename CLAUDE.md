@@ -37,8 +37,9 @@ reference material only.
 |------|---------|
 | `src/MyEverythingWidget.Core` | Models, grid rules, settings and storage (`net10.0`) |
 | `src/MyEverythingWidget.Presentation` | ViewModels (`net10.0`, CommunityToolkit.Mvvm) |
+| `src/MyEverythingWidget.Infrastructure` | Windows shell services: installed apps, icons, launching |
 | `src/MyEverythingWidget.App` | WinUI app, views, MSIX manifest |
-| `tests/` | `Core.Tests`, `Presentation.Tests`, `UiTests` (FlaUI) |
+| `tests/` | `Core.Tests`, `Presentation.Tests`, `Infrastructure.Tests`, `UiTests` (FlaUI), `Grid/*.dsl` |
 | `scripts/` | `test-ui.ps1` (sandbox UI tests), `publish-msix.ps1` |
 | `tmp/` | Temporary output (gitignored) |
 

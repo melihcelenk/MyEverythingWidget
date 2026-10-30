@@ -4,10 +4,12 @@
       <Platform Project="x64" />
     </Project>
     <Project Path="src/MyEverythingWidget.Core/MyEverythingWidget.Core.csproj" />
+    <Project Path="src/MyEverythingWidget.Infrastructure/MyEverythingWidget.Infrastructure.csproj" />
     <Project Path="src/MyEverythingWidget.Presentation/MyEverythingWidget.Presentation.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/MyEverythingWidget.Core.Tests/MyEverythingWidget.Core.Tests.csproj" />
+    <Project Path="tests/MyEverythingWidget.Infrastructure.Tests/MyEverythingWidget.Infrastructure.Tests.csproj" />
     <Project Path="tests/MyEverythingWidget.Presentation.Tests/MyEverythingWidget.Presentation.Tests.csproj" />
     <Project Path="tests/MyEverythingWidget.UiTests/MyEverythingWidget.UiTests.csproj">
       <Platform Project="x64" />

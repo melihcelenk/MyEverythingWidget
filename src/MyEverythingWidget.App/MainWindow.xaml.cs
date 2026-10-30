@@ -4,8 +4,11 @@ using Microsoft.UI.Composition.SystemBackdrops;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using MyEverythingWidget.App.Interop;
+using MyEverythingWidget.App.Views;
+using MyEverythingWidget.Core.Apps;
 using MyEverythingWidget.Core.Geometry;
 using MyEverythingWidget.Presentation;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.Graphics;
 using WinRT.Interop;
 
@@ -28,16 +31,21 @@ public sealed partial class MainWindow : Window
     private readonly nint _windowHandle;
     private readonly OverlappedPresenter _presenter;
 
+    private readonly IInstalledAppsSource _installedApps;
+
     /// <summary>Creates the window for <paramref name="viewModel"/> showing <paramref name="board"/>.</summary>
-    public MainWindow(MainViewModel viewModel, BoardViewModel board)
+    public MainWindow(MainViewModel viewModel, BoardViewModel board, IInstalledAppsSource installedApps)
     {
         ArgumentNullException.ThrowIfNull(viewModel);
         ArgumentNullException.ThrowIfNull(board);
+        ArgumentNullException.ThrowIfNull(installedApps);
 
         ViewModel = viewModel;
         Board = board;
+        _installedApps = installedApps;
         InitializeComponent();
         GridView.Board = board;
+        GridView.ItemInvoked += (_, item) => Board.Launch(item.Id);
         TabsView.Board = board;
 
         _windowHandle = WindowNative.GetWindowHandle(this);
@@ -141,6 +149,43 @@ public sealed partial class MainWindow : Window
     }
 
     private void OnCloseClicked(object sender, RoutedEventArgs e) => Close();
+
+    private async void OnAddAppClicked(object sender, RoutedEventArgs e)
+    {
+        var dialog = new AddAppDialog(new AddAppViewModel(Board, _installedApps, Directory.Exists), _windowHandle)
+        {
+            XamlRoot = RootGrid.XamlRoot,
+        };
+        await dialog.ShowAsync();
+    }
+
+    private void OnGridDragOver(object sender, DragEventArgs e)
+    {
+        var data = e.DataView;
+        if (data.Contains(StandardDataFormats.StorageItems) || data.Contains(StandardDataFormats.WebLink) || data.Contains(StandardDataFormats.Text))
+        {
+            e.AcceptedOperation = DataPackageOperation.Link;
+            e.DragUIOverride.Caption = "Add to widget";
+        }
+    }
+
+    /// <summary>Turns dropped files, folders and links into app cards.</summary>
+    private async void OnGridDrop(object sender, DragEventArgs e)
+    {
+        var deferral = e.GetDeferral();
+        try
+        {
+            var texts = await DroppedTexts.ReadAsync(e.DataView);
+            if (texts.Count > 0)
+            {
+                await Board.AddDroppedAsync(texts, Directory.Exists);
+            }
+        }
+        finally
+        {
+            deferral.Complete();
+        }
+    }
 
     private void OnClosed(object sender, WindowEventArgs args)
     {

@@ -11,6 +11,10 @@ public static class Bindings
     /// <summary>Returns whether <paramref name="text"/> has any content.</summary>
     public static bool HasText(string? text) => !string.IsNullOrEmpty(text);
 
+    /// <summary>Returns <see cref="Microsoft.UI.Xaml.Visibility.Visible"/> when <paramref name="visible"/> is true.</summary>
+    public static Microsoft.UI.Xaml.Visibility VisibleWhen(bool visible) =>
+        visible ? Microsoft.UI.Xaml.Visibility.Visible : Microsoft.UI.Xaml.Visibility.Collapsed;
+
     /// <summary>Maps a view-model severity to the InfoBar severity.</summary>
     public static InfoBarSeverity ToInfoBarSeverity(StatusSeverity severity) => severity switch
     {

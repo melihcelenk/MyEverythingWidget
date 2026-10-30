@@ -39,6 +39,14 @@ internal static partial class RealMouse
 
     public static void LeftUp() => Send(LeftUpFlag, 0, 0);
 
+    public static void Click(Point point)
+    {
+        MoveTo(point);
+        Thread.Sleep(50);
+        Send(LeftDownFlag, 0, 0);
+        Send(LeftUpFlag, 0, 0);
+    }
+
     public static void RightClick(Point point)
     {
         MoveTo(point);

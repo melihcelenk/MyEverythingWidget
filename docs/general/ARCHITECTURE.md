@@ -4,14 +4,18 @@
 
 ```
 MyEverythingWidget.App  ──>  MyEverythingWidget.Presentation  ──>  MyEverythingWidget.Core
-   (WinUI, windowing)          (ViewModels, MVVM)                    (models, rules, storage)
+   (WinUI, windowing)          (ViewModels, MVVM)                    (models, rules, storage, service interfaces)
+          │                                                                  ▲
+          └──────────>  MyEverythingWidget.Infrastructure  ──────────────────┘
+                          (Windows shell: installed apps, icons, launching)
 ```
 
 | Project | May reference | Must not reference |
 |---------|---------------|--------------------|
 | Core | .NET base library, `Microsoft.Extensions.Logging.Abstractions` | WinUI, Windows APIs, Presentation, App |
 | Presentation | Core, CommunityToolkit.Mvvm | WinUI, Windows APIs, App |
-| App | Core, Presentation, Windows App SDK | — |
+| Infrastructure | Core, Windows SDK projections (COM, WinRT) | WinUI, Presentation, App |
+| App | Core, Presentation, Infrastructure, Windows App SDK | — |
 
 ## Rules
 
@@ -39,4 +43,6 @@ MyEverythingWidget.App  ──>  MyEverythingWidget.Presentation  ──>  MyEve
 | File | Content |
 |------|---------|
 | `settings.json` | Window bounds and always-on-top |
+| `state.json` | Categories and items (versioned; corrupt files kept as `state.corrupt-*.json`) |
+| `icons\*.png` | App card icons (64 px) |
 | `logs\crash.log` | Unhandled exceptions |
