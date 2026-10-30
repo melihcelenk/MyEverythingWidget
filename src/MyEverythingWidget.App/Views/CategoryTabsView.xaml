@@ -20,10 +20,10 @@
             <ResourceDictionary>
                 <ResourceDictionary.ThemeDictionaries>
                     <ResourceDictionary x:Key="Light">
-                        <StaticResource x:Key="TabViewItemHeaderBackgroundSelected" ResourceKey="LayerFillColorDefaultBrush" />
+                        <StaticResource x:Key="TabViewItemHeaderBackgroundSelected" ResourceKey="SolidBackgroundFillColorSecondaryBrush" />
                     </ResourceDictionary>
                     <ResourceDictionary x:Key="Dark">
-                        <StaticResource x:Key="TabViewItemHeaderBackgroundSelected" ResourceKey="LayerFillColorDefaultBrush" />
+                        <StaticResource x:Key="TabViewItemHeaderBackgroundSelected" ResourceKey="SolidBackgroundFillColorSecondaryBrush" />
                     </ResourceDictionary>
                     <ResourceDictionary x:Key="HighContrast">
                         <StaticResource x:Key="TabViewItemHeaderBackgroundSelected" ResourceKey="SystemColorWindowColorBrush" />

@@ -72,6 +72,7 @@ public sealed partial class GridCard : UserControl
         AutomationProperties.SetName(this, Item.Title);
         AppContent.Visibility = Item.Kind == ItemKind.App ? Visibility.Visible : Visibility.Collapsed;
         NoteText.Visibility = Item.Kind == ItemKind.Note ? Visibility.Visible : Visibility.Collapsed;
+        NoteBackground.Visibility = NoteText.Visibility;
         CopyNoteButton.Visibility = NoteText.Visibility;
 
         switch (Item.Kind)

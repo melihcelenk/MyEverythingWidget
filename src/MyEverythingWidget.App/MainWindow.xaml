@@ -47,7 +47,7 @@
             <!-- Surface under the open tab; the tab strip stays on Mica. -->
             <Border Grid.Row="1"
                     Grid.RowSpan="3"
-                    Background="{ThemeResource LayerFillColorDefaultBrush}"
+                    Background="{ThemeResource SolidBackgroundFillColorSecondaryBrush}"
                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                     BorderThickness="0,1,0,0"
                     ContextFlyout="{StaticResource SurfaceAddMenu}" />
