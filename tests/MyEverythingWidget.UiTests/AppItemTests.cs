@@ -111,7 +111,7 @@ public sealed class AppItemTests : IDisposable
             RealMouse.RightClick(app.Find("Card_A1").BoundingRectangle.Center());
             Wait.ForElement(() => app.FindInPopups("ChangeIconMenuItem")).AsMenuItem().Invoke();
             var dialog = Wait.ForElement(() => app.FindInPopups("IconPickerDialog"));
-            Wait.ForElement(() => dialog.FindFirstDescendant(c => c.ByAutomationId("ResetIconButton"))).AsButton().Invoke();
+            Wait.ForElement(() => dialog.FindFirstDescendant(c => c.ByName("Reset to original"))).AsButton().Invoke();
             Assert.True(Wait.Until(() => StateFiles.ReadItem(_data, "A1") is AppItem { IconPath: not null }));
             app.ClickCloseAndWaitForExit();
         }

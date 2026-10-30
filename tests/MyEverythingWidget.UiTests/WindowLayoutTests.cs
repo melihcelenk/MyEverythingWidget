@@ -16,6 +16,29 @@ namespace MyEverythingWidget.UiTests;
 public sealed class WindowLayoutTests : IDisposable
 {
     private const string GeneralId = "c1";
+    private const string ResetIconText = "Reset to original";
+    private const string CancelText = "Cancel";
+
+    private void SeedCmd() =>
+        Seed(new AppItem("A1", GeneralId, new GridPlacement(0, 0, 1, 1), "Cmd", Path.Combine(Environment.SystemDirectory, "cmd.exe"), LaunchKind.Executable, null));
+
+    private static AutomationElement OpenIconDialog(AppSession app)
+    {
+        GridDriver.WaitForUi();
+        RealMouse.RightClick(app.Find("Card_A1").BoundingRectangle.Center());
+        Wait.ForElement(() => app.FindInPopups("ChangeIconMenuItem")).AsMenuItem().Invoke();
+        var dialog = Wait.ForElement(() => app.FindInPopups("IconPickerDialog"));
+        GridDriver.WaitForUi();
+        return dialog;
+    }
+
+    private static AutomationElement In(AutomationElement parent, Func<FlaUI.Core.Conditions.ConditionFactory, FlaUI.Core.Conditions.ConditionBase> condition) =>
+        Wait.ForElement(() => parent.FindFirstDescendant(condition));
+
+    private static void PressCtrlV()
+    {
+        FlaUI.Core.Input.Keyboard.TypeSimultaneously(FlaUI.Core.WindowsAPI.VirtualKeyShort.CONTROL, FlaUI.Core.WindowsAPI.VirtualKeyShort.KEY_V);
+    }
     private readonly AppDataFolder _data = new();
 
     public void Dispose() => _data.Dispose();
@@ -163,8 +186,8 @@ public sealed class WindowLayoutTests : IDisposable
             menuItem.AsMenuItem().Invoke();
 
             var dialog = Wait.ForElement(() => app.FindInPopups("IconPickerDialog"));
-            Assert.NotNull(dialog.FindFirstDescendant(c => c.ByAutomationId("ChooseImageButton")));
-            Assert.NotNull(dialog.FindFirstDescendant(c => c.ByAutomationId("ResetIconButton")));
+            Assert.NotNull(dialog.FindFirstDescendant(c => c.ByAutomationId("SelectIconTab")));
+            Assert.NotNull(dialog.FindFirstDescendant(c => c.ByAutomationId("SelectImageTab")));
             RealMouse.Click(Wait.ForElement(() => dialog.FindFirstDescendant(c => c.ByAutomationId("Emoji_🚀"))).BoundingRectangle.Center());
 
             Assert.True(Wait.Until(() => app.FindInPopups("IconPickerDialog") is null), "Picking an emoji should close the dialog.");
@@ -173,5 +196,101 @@ public sealed class WindowLayoutTests : IDisposable
         }
 
         Assert.Equal("🚀", Assert.IsType<AppItem>(StateFiles.ReadItem(_data, "A1")).Emoji);
+    }
+
+    [Fact]
+    public void IconDialog_InSmallestWindow_KeepsTabsResetAndCancelVisible()
+    {
+        SeedCmd();
+        using (var app = AppSession.Launch(_data))
+        {
+            var pitch = Pitch(app);
+            DragCorner(app, -(int)(5 * pitch), -(int)(5 * pitch));
+            Assert.True(Wait.Until(() => GridIs(app, pitch, rows: 2, columns: 2)));
+
+            var dialog = OpenIconDialog(app);
+            var window = app.MainWindow.BoundingRectangle;
+            var parts = new[]
+            {
+                In(dialog, c => c.ByAutomationId("SelectIconTab")),
+                In(dialog, c => c.ByAutomationId("SelectImageTab")),
+                In(dialog, c => c.ByName(ResetIconText)),
+                In(dialog, c => c.ByName(CancelText)),
+            };
+            foreach (var part in parts)
+            {
+                Assert.False(part.IsOffscreen, $"'{part.Name}' should be on screen.");
+                Assert.True(window.Contains(part.BoundingRectangle.Center()), $"'{part.Name}' {part.BoundingRectangle} should be inside the window {window}.");
+            }
+
+            Assert.True(parts[2].BoundingRectangle.Right <= parts[3].BoundingRectangle.Left, "Reset to original should be left of Cancel.");
+
+            RealMouse.Click(parts[2].BoundingRectangle.Center());
+            Assert.True(Wait.Until(() => StateFiles.ReadItem(_data, "A1") is AppItem { IconPath: not null }), "Clicking Reset should give the card its program icon.");
+            app.ClickCloseAndWaitForExit();
+        }
+    }
+
+    [Fact]
+    public void SelectImageTab_OffersBrowseAndDropArea()
+    {
+        SeedCmd();
+        using var app = AppSession.Launch(_data);
+        var dialog = OpenIconDialog(app);
+
+        RealMouse.Click(In(dialog, c => c.ByAutomationId("SelectImageTab")).BoundingRectangle.Center());
+
+        Assert.False(In(dialog, c => c.ByAutomationId("BrowseImageButton")).IsOffscreen);
+        Assert.False(In(dialog, c => c.ByAutomationId("ImageDropArea")).IsOffscreen);
+        Assert.True(Wait.Until(() => dialog.FindFirstDescendant(c => c.ByAutomationId("Emoji_🚀")) is not { IsOffscreen: false }), "The emoji grid belongs to the other tab.");
+
+        RealMouse.Click(In(dialog, c => c.ByAutomationId("SelectIconTab")).BoundingRectangle.Center());
+        Assert.False(In(dialog, c => c.ByAutomationId("Emoji_🚀")).IsOffscreen);
+    }
+
+    [Fact]
+    public void PastedPicture_InSelectImageTab_BecomesTheIcon()
+    {
+        SeedCmd();
+        using (var app = AppSession.Launch(_data))
+        {
+            var dialog = OpenIconDialog(app);
+            RealMouse.Click(In(dialog, c => c.ByAutomationId("SelectImageTab")).BoundingRectangle.Center());
+            GridDriver.WaitForUi();
+            SandboxClipboard.SetPicture(64, 64);
+
+            PressCtrlV();
+
+            Assert.True(Wait.Until(() => app.FindInPopups("IconPickerDialog") is null), "Pasting a picture should apply it and close the dialog.");
+            Assert.True(Wait.Until(() => StateFiles.ReadItem(_data, "A1") is AppItem { IconPath: not null, Emoji: null }));
+            Assert.Single(StateFiles.ReadState(_data).Items);
+            app.ClickCloseAndWaitForExit();
+        }
+    }
+
+    [Fact]
+    public void PastedImageFile_InSelectImageTab_BecomesTheIcon()
+    {
+        SeedCmd();
+        var imageFile = Path.Combine(_data.Path, "icon-source.png");
+        Directory.CreateDirectory(_data.Path);
+        using (var bitmap = new Bitmap(48, 48))
+        {
+            bitmap.Save(imageFile, System.Drawing.Imaging.ImageFormat.Png);
+        }
+
+        using (var app = AppSession.Launch(_data))
+        {
+            var dialog = OpenIconDialog(app);
+            RealMouse.Click(In(dialog, c => c.ByAutomationId("SelectImageTab")).BoundingRectangle.Center());
+            GridDriver.WaitForUi();
+            SandboxClipboard.SetFile(imageFile);
+
+            PressCtrlV();
+
+            Assert.True(Wait.Until(() => app.FindInPopups("IconPickerDialog") is null), "Pasting an image file should apply it and close the dialog.");
+            Assert.True(Wait.Until(() => StateFiles.ReadItem(_data, "A1") is AppItem { IconPath: not null }));
+            app.ClickCloseAndWaitForExit();
+        }
     }
 }

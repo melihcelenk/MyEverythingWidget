@@ -362,7 +362,9 @@ public sealed partial class MainWindow : Window
     /// <summary>Ctrl+V anywhere in the window, except in a text box, which pastes into itself.</summary>
     private async void OnPasteInvoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
     {
-        if (FocusManager.GetFocusedElement(RootGrid.XamlRoot) is TextBox)
+        // A text box pastes into itself; an open dialog (such as the icon dialog) handles its own paste.
+        if (FocusManager.GetFocusedElement(RootGrid.XamlRoot) is TextBox
+            || Microsoft.UI.Xaml.Media.VisualTreeHelper.GetOpenPopupsForXamlRoot(RootGrid.XamlRoot).Any(popup => popup.Child is ContentDialog))
         {
             return;
         }

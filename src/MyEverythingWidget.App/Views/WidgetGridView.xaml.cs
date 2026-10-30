@@ -200,7 +200,14 @@ public sealed partial class WidgetGridView : UserControl
             case IconChoice.Emoji emoji:
                 _board.SetEmoji(item.Id, emoji.Value);
                 break;
-            case IconChoice.Image:
+            case IconChoice.ImageData image:
+                await using (var imageStream = new MemoryStream(image.Bytes, writable: false))
+                {
+                    await _board.ChangeIconAsync(item.Id, imageStream);
+                }
+
+                break;
+            case IconChoice.Browse:
                 await PickIconImageAsync(item);
                 break;
             case IconChoice.Reset:

@@ -1,8 +1,13 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using MyEverythingWidget.Core.Apps;
+using Windows.ApplicationModel.DataTransfer;
+using Windows.Graphics.Imaging;
+using Windows.Storage;
+using Windows.System;
 
 namespace MyEverythingWidget.App.Views;
 
@@ -12,40 +17,112 @@ internal abstract record IconChoice
     /// <summary>Show this emoji.</summary>
     public sealed record Emoji(string Value) : IconChoice;
 
-    /// <summary>Pick an image file.</summary>
-    public sealed record Image : IconChoice;
+    /// <summary>Use this image, dropped or pasted.</summary>
+    public sealed record ImageData(byte[] Bytes) : IconChoice;
+
+    /// <summary>Pick an image file with the file picker.</summary>
+    public sealed record Browse : IconChoice;
 
     /// <summary>Go back to the icon of the program, folder or site.</summary>
     public sealed record Reset : IconChoice;
 }
 
 /// <summary>
-/// One place to change an app card's icon: click an emoji, choose an image, or reset to the original icon.
+/// One place to change an app card's icon, with two tabs: "Select icon" (an emoji grid) and "Select image" (browse,
+/// drop or Ctrl+V). "Reset to original" and "Cancel" are the dialog's own buttons, so they stay visible however small
+/// the widget is; the tab content scrolls when it does not fit.
 /// </summary>
-internal static class IconPickerDialog
+internal sealed class IconPickerDialog
 {
     private const double EmojiCellSize = 40;
     private const int EmojisPerRow = 8;
+    private const string NotAnImageMessage = "That is not an image.";
+
+    private static readonly string[] ImageExtensions = [".png", ".jpg", ".jpeg", ".gif", ".bmp", ".ico", ".webp", ".tif", ".tiff"];
+
+    private readonly ContentDialog _dialog;
+    private readonly ScrollViewer _iconPage;
+    private readonly ScrollViewer _imagePage;
+    private readonly TextBlock _imageMessage;
+    private IconChoice? _choice;
+
+    private IconPickerDialog(XamlRoot root)
+    {
+        _dialog = new ContentDialog
+        {
+            XamlRoot = root,
+            SecondaryButtonText = "Reset to original",
+            CloseButtonText = "Cancel",
+            DefaultButton = ContentDialogButton.Close,
+        };
+        AutomationProperties.SetAutomationId(_dialog, "IconPickerDialog");
+        AutomationProperties.SetName(_dialog, "Change icon");
+
+        _imageMessage = new TextBlock
+        {
+            Foreground = (Brush)Application.Current.Resources["SystemFillColorCriticalBrush"],
+            Style = (Style)Application.Current.Resources["CaptionTextBlockStyle"],
+            HorizontalAlignment = HorizontalAlignment.Center,
+        };
+        _iconPage = Page(CreateEmojiGrid());
+        _imagePage = Page(CreateImageArea());
+        _imagePage.Visibility = Visibility.Collapsed;
+
+        var tabs = CreateTabs();
+        var content = new Grid
+        {
+            RowSpacing = 8,
+            RowDefinitions = { new RowDefinition { Height = GridLength.Auto }, new RowDefinition { Height = new GridLength(1, GridUnitType.Star) } },
+        };
+        content.Children.Add(tabs);
+        content.Children.Add(_iconPage);
+        content.Children.Add(_imagePage);
+        Grid.SetRow(_iconPage, 1);
+        Grid.SetRow(_imagePage, 1);
+        content.KeyboardAccelerators.Add(PasteAccelerator());
+        _dialog.Content = content;
+    }
 
     /// <summary>Shows the dialog; returns the choice, or <see langword="null"/> when cancelled.</summary>
     public static async Task<IconChoice?> ShowAsync(XamlRoot root)
     {
-        IconChoice? choice = null;
-        var dialog = new ContentDialog
+        var picker = new IconPickerDialog(root);
+        var result = await picker._dialog.ShowAsync();
+        return result == ContentDialogResult.Secondary ? new IconChoice.Reset() : picker._choice;
+    }
+
+    private void Choose(IconChoice chosen)
+    {
+        _choice = chosen;
+        _dialog.Hide();
+    }
+
+    private static ScrollViewer Page(UIElement content) => new()
+    {
+        Content = content,
+        HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+        VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+    };
+
+    private SelectorBar CreateTabs()
+    {
+        var iconTab = new SelectorBarItem { Text = "Select icon", IsSelected = true };
+        AutomationProperties.SetAutomationId(iconTab, "SelectIconTab");
+        var imageTab = new SelectorBarItem { Text = "Select image" };
+        AutomationProperties.SetAutomationId(imageTab, "SelectImageTab");
+
+        var tabs = new SelectorBar { Items = { iconTab, imageTab } };
+        tabs.SelectionChanged += (_, _) =>
         {
-            XamlRoot = root,
-            Title = "Change icon",
-            CloseButtonText = "Cancel",
-            DefaultButton = ContentDialogButton.Close,
+            var showImage = ReferenceEquals(tabs.SelectedItem, imageTab);
+            _iconPage.Visibility = showImage ? Visibility.Collapsed : Visibility.Visible;
+            _imagePage.Visibility = showImage ? Visibility.Visible : Visibility.Collapsed;
         };
-        AutomationProperties.SetAutomationId(dialog, "IconPickerDialog");
+        return tabs;
+    }
 
-        void Choose(IconChoice chosen)
-        {
-            choice = chosen;
-            dialog.Hide();
-        }
-
+    private VariableSizedWrapGrid CreateEmojiGrid()
+    {
         var emojis = new VariableSizedWrapGrid
         {
             Orientation = Orientation.Horizontal,
@@ -73,25 +150,134 @@ internal static class IconPickerDialog
             emojis.Children.Add(button);
         }
 
-        var chooseImage = new Button { Content = "Image…" };
-        AutomationProperties.SetAutomationId(chooseImage, "ChooseImageButton");
-        chooseImage.Click += (_, _) => Choose(new IconChoice.Image());
+        return emojis;
+    }
 
-        var reset = new Button { Content = "Reset to original" };
-        AutomationProperties.SetAutomationId(reset, "ResetIconButton");
-        reset.Click += (_, _) => Choose(new IconChoice.Reset());
+    /// <summary>A dashed drop area with the Browse button; Ctrl+V anywhere in the dialog pastes too.</summary>
+    private Border CreateImageArea()
+    {
+        var browse = new Button { Content = "Browse…", HorizontalAlignment = HorizontalAlignment.Center };
+        AutomationProperties.SetAutomationId(browse, "BrowseImageButton");
+        browse.Click += (_, _) => Choose(new IconChoice.Browse());
 
-        dialog.Content = new StackPanel
+        var area = new AutomationHost
         {
-            Spacing = 12,
-            Children =
+            AllowDrop = true,
+            Content = new StackPanel
             {
-                emojis,
-                new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Children = { chooseImage, reset } },
+                Spacing = 10,
+                Padding = new Thickness(16, 24, 16, 24),
+                VerticalAlignment = VerticalAlignment.Center,
+                Children =
+                {
+                    new FontIcon { Glyph = "", FontSize = 28, Foreground = (Brush)Application.Current.Resources["TextFillColorSecondaryBrush"] },
+                    new TextBlock
+                    {
+                        Text = "Drop an image here\nor paste it with Ctrl+V",
+                        TextAlignment = TextAlignment.Center,
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        Foreground = (Brush)Application.Current.Resources["TextFillColorSecondaryBrush"],
+                    },
+                    browse,
+                    _imageMessage,
+                },
             },
         };
+        AutomationProperties.SetAutomationId(area, "ImageDropArea");
+        AutomationProperties.SetName(area, "Image drop area");
+        area.DragOver += (_, e) =>
+        {
+            if (e.DataView.Contains(StandardDataFormats.StorageItems) || e.DataView.Contains(StandardDataFormats.Bitmap))
+            {
+                e.AcceptedOperation = DataPackageOperation.Copy;
+                e.DragUIOverride.Caption = "Use as icon";
+            }
+        };
+        area.Drop += async (_, e) =>
+        {
+            var deferral = e.GetDeferral();
+            try
+            {
+                await UseImageFromAsync(e.DataView);
+            }
+            finally
+            {
+                deferral.Complete();
+            }
+        };
 
-        await dialog.ShowAsync();
-        return choice;
+        return new Border
+        {
+            Child = area,
+            CornerRadius = (CornerRadius)Application.Current.Resources["ControlCornerRadius"],
+            BorderThickness = new Thickness(1),
+            BorderBrush = (Brush)Application.Current.Resources["ControlStrongStrokeColorDefaultBrush"],
+            MinWidth = EmojiCellSize * 6,
+        };
+    }
+
+    private KeyboardAccelerator PasteAccelerator()
+    {
+        var paste = new KeyboardAccelerator { Modifiers = VirtualKeyModifiers.Control, Key = VirtualKey.V };
+        paste.Invoked += async (_, args) =>
+        {
+            args.Handled = true;
+            await UseImageFromAsync(Clipboard.GetContent());
+        };
+        return paste;
+    }
+
+    /// <summary>Uses a picture or the first image file in <paramref name="data"/>; anything else shows a short warning.</summary>
+    private async Task UseImageFromAsync(DataPackageView data)
+    {
+        if (await ReadImageAsync(data) is { } bytes)
+        {
+            Choose(new IconChoice.ImageData(bytes));
+        }
+        else
+        {
+            _imageMessage.Text = NotAnImageMessage;
+        }
+    }
+
+    private static async Task<byte[]?> ReadImageAsync(DataPackageView data)
+    {
+        if (data.Contains(StandardDataFormats.Bitmap))
+        {
+            var reference = await data.GetBitmapAsync();
+            using var stream = (await reference.OpenReadAsync()).AsStreamForRead();
+            return await ImageBytesAsync(stream);
+        }
+
+        if (data.Contains(StandardDataFormats.StorageItems))
+        {
+            var file = (await data.GetStorageItemsAsync()).OfType<StorageFile>()
+                .FirstOrDefault(item => ImageExtensions.Contains(Path.GetExtension(item.Path), StringComparer.OrdinalIgnoreCase));
+            if (file is not null)
+            {
+                using var stream = await file.OpenStreamForReadAsync();
+                return await ImageBytesAsync(stream);
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>Returns the bytes when they decode as an image, otherwise <see langword="null"/>.</summary>
+    private static async Task<byte[]?> ImageBytesAsync(Stream stream)
+    {
+        using var copy = new MemoryStream();
+        await stream.CopyToAsync(copy);
+        var bytes = copy.ToArray();
+        try
+        {
+            using var check = new MemoryStream(bytes);
+            await BitmapDecoder.CreateAsync(check.AsRandomAccessStream());
+            return bytes;
+        }
+        catch (Exception exception) when (exception is ArgumentException or System.Runtime.InteropServices.COMException)
+        {
+            return null;
+        }
     }
 }

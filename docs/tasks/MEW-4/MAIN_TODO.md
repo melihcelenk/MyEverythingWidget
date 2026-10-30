@@ -41,6 +41,7 @@
 - Faz 10 — Kompakt ikon, ikon penceresi, sağ tık, tutamaç
 - Faz 11 — Tutamaç oku ve kart renkleri
 - Faz 12 — Resme tıklayınca büyük hali
+- Faz 13 — İkon penceresi sekmeleri
 
 ---
 
@@ -82,6 +83,7 @@
 | 10 | Kompakt ikon davranışı, tek ikon penceresi, sağ tık menüsü, tutamaç | 🟢 Tamamlandı | 100% | `PHASE10.md` |
 | 11 | Boyutlandırma tutamacının oku ve kart renkleri | 🟢 Tamamlandı | 100% | `PHASE11.md` |
 | 12 | Resme tıklayınca büyük hali | 🟢 Tamamlandı | 100% | `PHASE12.md` |
+| 13 | İkon penceresi: Select icon / Select image sekmeleri | 🟢 Tamamlandı | 100% | `PHASE13.md` |
 
 <!-- Durum ikonları: 🟢 Tamamlandı (faz bitti, tüm testleri geçti) | 🟡 Kısmi (neyin beklediği faz notunda) | ⏳ Bekliyor (başlamadı) | 🔴 Bloke (bir karar ya da dış bağımlılık bekleniyor) -->
 
