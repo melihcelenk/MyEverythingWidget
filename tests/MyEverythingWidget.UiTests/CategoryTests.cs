@@ -160,9 +160,15 @@ public sealed class CategoryTests : IDisposable
             var second = app.Find("Tab_" + WorkId).BoundingRectangle;
             var start = second.Center();
             var end = new System.Drawing.Point(first.Left + 4, first.Top + (first.Height / 2));
+            GridDriver.WaitForUi();
 
+            // TabView reorders through system drag-and-drop, which starts only after the pointer has moved past the
+            // drag threshold and paused; a real hand does both.
             GridDriver.Press(start);
-            GridDriver.MoveSmoothly(start, end);
+            var pastThreshold = new System.Drawing.Point(start.X - 12, start.Y);
+            GridDriver.MoveSmoothly(start, pastThreshold);
+            GridDriver.WaitForUi();
+            GridDriver.MoveSmoothly(pastThreshold, end);
             GridDriver.WaitForUi();
             GridDriver.Release();
             Assert.True(Wait.Until(() => app.Find("Tab_" + WorkId).BoundingRectangle.Left < app.Find("Tab_" + GeneralId).BoundingRectangle.Left));

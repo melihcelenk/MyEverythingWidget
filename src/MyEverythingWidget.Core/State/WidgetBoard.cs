@@ -139,6 +139,33 @@ public sealed partial class WidgetBoard
         return true;
     }
 
+    /// <summary>Replaces the text of a note; blank text, unknown ids and non-notes are refused.</summary>
+    public bool UpdateNoteText(string itemId, string text)
+    {
+        if (string.IsNullOrWhiteSpace(text) || Find(itemId) is not NoteItem note)
+        {
+            return false;
+        }
+
+        Replace(note with { Text = text.Trim() });
+        return true;
+    }
+
+    /// <summary>Renames an app card; blank names, unknown ids and non-apps are refused.</summary>
+    public bool RenameApp(string itemId, string name)
+    {
+        if (string.IsNullOrWhiteSpace(name) || Find(itemId) is not AppItem app)
+        {
+            return false;
+        }
+
+        Replace(app with { Name = name.Trim() });
+        return true;
+    }
+
+    private void Replace(WidgetItem updated) =>
+        Commit(State with { Items = State.Items.Select(item => item.Id == updated.Id ? updated : item).ToList() });
+
     /// <summary>Opens the tab of <paramref name="categoryId"/> and remembers it for the next start.</summary>
     public void SelectCategory(string categoryId)
     {

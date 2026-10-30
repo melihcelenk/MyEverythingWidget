@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 using MyEverythingWidget.Core.Grid;
 using MyEverythingWidget.Presentation;
+using Windows.ApplicationModel.DataTransfer;
 
 namespace MyEverythingWidget.App.Views;
 
@@ -23,8 +24,8 @@ public sealed partial class GridCard : UserControl
         InitializeComponent();
 
         AutomationProperties.SetAutomationId(this, "Card_" + item.Id);
-        PointerEntered += (_, _) => ResizeHandle.Opacity = 1;
-        PointerExited += (_, _) => ResizeHandle.Opacity = 0;
+        PointerEntered += (_, _) => SetHoverParts(1);
+        PointerExited += (_, _) => SetHoverParts(0);
 
         ShowContent();
         Item.PropertyChanged += OnItemPropertyChanged;
@@ -40,6 +41,19 @@ public sealed partial class GridCard : UserControl
 
     /// <summary>Gets the resize grip, so the grid can start a resize when it is pressed.</summary>
     public UIElement ResizeGrip => ResizeHandle;
+
+    private void SetHoverParts(double opacity)
+    {
+        ResizeHandle.Opacity = opacity;
+        CopyNoteButton.Opacity = opacity;
+    }
+
+    private void OnCopyNoteClicked(object sender, RoutedEventArgs e)
+    {
+        var package = new DataPackage();
+        package.SetText(Item.Text ?? "");
+        Clipboard.SetContent(package);
+    }
 
     private void OnItemPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
@@ -57,6 +71,7 @@ public sealed partial class GridCard : UserControl
         AutomationProperties.SetName(this, Item.Title);
         AppContent.Visibility = Item.Kind == ItemKind.App ? Visibility.Visible : Visibility.Collapsed;
         NoteText.Visibility = Item.Kind == ItemKind.Note ? Visibility.Visible : Visibility.Collapsed;
+        CopyNoteButton.Visibility = NoteText.Visibility;
 
         switch (Item.Kind)
         {

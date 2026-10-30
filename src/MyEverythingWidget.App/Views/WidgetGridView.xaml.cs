@@ -109,6 +109,13 @@ public sealed partial class WidgetGridView : UserControl
         card.PointerReleased += OnCardPointerReleased;
         card.PointerCaptureLost += OnCardPointerCaptureLost;
         card.Loaded += (_, _) => EnableMoveAnimation(card);
+        card.DoubleTapped += (_, _) =>
+        {
+            if (item.Kind == ItemKind.Note)
+            {
+                _ = EditAsync(item);
+            }
+        };
         item.PropertyChanged += OnItemPropertyChanged;
 
         _cards[item.Id] = card;
@@ -135,11 +142,48 @@ public sealed partial class WidgetGridView : UserControl
         delete.Click += (_, _) => _board?.DeleteCommand.Execute(item.Id);
 
         var menu = new MenuFlyout();
+        if (item.Kind == ItemKind.Note)
+        {
+            var edit = new MenuFlyoutItem { Text = "Edit", Icon = new FontIcon { Glyph = "\uE70F" } };
+            AutomationProperties.SetAutomationId(edit, "EditNoteMenuItem");
+            edit.Click += (_, _) => _ = EditAsync(item);
+            menu.Items.Add(edit);
+        }
+        else if (item.Kind == ItemKind.App)
+        {
+            var rename = new MenuFlyoutItem { Text = "Rename", Icon = new FontIcon { Glyph = "\uE8AC" } };
+            AutomationProperties.SetAutomationId(rename, "RenameItemMenuItem");
+            rename.Click += (_, _) => _ = EditAsync(item);
+            menu.Items.Add(rename);
+        }
+
         menu.Items.Add(moveTo);
         menu.Items.Add(new MenuFlyoutSeparator());
         menu.Items.Add(delete);
         menu.Opening += (_, _) => FillMoveToMenu(moveTo, item);
         return menu;
+    }
+
+    /// <summary>Edits a note's text or an app card's name in place.</summary>
+    private async Task EditAsync(GridItemViewModel item)
+    {
+        if (_board is null || !_cards.TryGetValue(item.Id, out var card))
+        {
+            return;
+        }
+
+        if (item.Kind == ItemKind.Note)
+        {
+            if (await TextEditorDialog.ShowAsync(card.XamlRoot, "Edit note", item.Text ?? "", multiline: true) is { } text)
+            {
+                _board.EditNote(item.Id, text);
+            }
+        }
+        else if (item.Kind == ItemKind.App
+            && await TextEditorDialog.ShowAsync(card.XamlRoot, "Rename", item.Title, multiline: false) is { } name)
+        {
+            _board.RenameApp(item.Id, name);
+        }
     }
 
     /// <summary>Lists the other categories at the moment the menu opens, so new or renamed tabs appear.</summary>

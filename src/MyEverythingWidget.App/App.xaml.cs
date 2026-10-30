@@ -60,7 +60,7 @@ public sealed partial class App : Application, IDisposable
 
         _mainWindow = new MainWindow(
             new MainViewModel(settingsStore),
-            new BoardViewModel(board, iconStore, launcher),
+            new BoardViewModel(board, iconStore, launcher, new ImageStore(dataDirectory)),
             new ShellAppsSource());
         _mainWindow.Activate();
     }

@@ -50,6 +50,22 @@
                    Style="{StaticResource CaptionTextBlockStyle}"
                    Text="Image not found" />
 
+        <!-- Copy button of notes, shown while the pointer is over the card. -->
+        <Button x:Name="CopyNoteButton"
+                AutomationProperties.AutomationId="CopyNoteButton"
+                AutomationProperties.Name="Copy note"
+                ToolTipService.ToolTip="Copy"
+                Visibility="Collapsed"
+                Opacity="0"
+                Width="28" Height="28" Padding="0"
+                Margin="0,3,3,0"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Style="{StaticResource TitleBarButtonStyle}"
+                Click="OnCopyNoteClicked">
+            <FontIcon FontSize="12" Glyph="&#xE8C8;" />
+        </Button>
+
         <!-- Resize grip, shown while the pointer is over the card. -->
         <Border x:Name="ResizeHandle"
                 AutomationProperties.AutomationId="ResizeHandle"

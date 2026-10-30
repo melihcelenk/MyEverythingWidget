@@ -8,7 +8,10 @@ using MyEverythingWidget.App.Views;
 using MyEverythingWidget.Core.Apps;
 using MyEverythingWidget.Core.Geometry;
 using MyEverythingWidget.Presentation;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.Storage.Pickers;
 using Windows.Graphics;
 using WinRT.Interop;
 
@@ -157,6 +160,42 @@ public sealed partial class MainWindow : Window
             XamlRoot = RootGrid.XamlRoot,
         };
         await dialog.ShowAsync();
+    }
+
+    private async void OnAddNoteClicked(object sender, RoutedEventArgs e)
+    {
+        if (await TextEditorDialog.ShowAsync(RootGrid.XamlRoot, "Add note", "", multiline: true) is { } text)
+        {
+            Board.AddNote(text);
+        }
+    }
+
+    private async void OnAddImageClicked(object sender, RoutedEventArgs e)
+    {
+        var picker = new FileOpenPicker { SuggestedStartLocation = PickerLocationId.PicturesLibrary };
+        foreach (var extension in new[] { ".png", ".jpg", ".jpeg", ".gif", ".bmp", ".webp" })
+        {
+            picker.FileTypeFilter.Add(extension);
+        }
+
+        InitializeWithWindow.Initialize(picker, _windowHandle);
+        if (await picker.PickSingleFileAsync() is { } file)
+        {
+            await Board.AddImageFileAsync(file.Path);
+        }
+    }
+
+    /// <summary>Ctrl+V anywhere in the window, except in a text box, which pastes into itself.</summary>
+    private async void OnPasteInvoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+    {
+        if (FocusManager.GetFocusedElement(RootGrid.XamlRoot) is TextBox)
+        {
+            return;
+        }
+
+        args.Handled = true;
+        var content = await ClipboardReader.ReadAsync(Clipboard.GetContent());
+        await Board.PasteAsync(content, Directory.Exists);
     }
 
     private void OnGridDragOver(object sender, DragEventArgs e)

@@ -10,7 +10,10 @@
         <MicaBackdrop />
     </Window.SystemBackdrop>
 
-    <Grid x:Name="RootGrid">
+    <Grid x:Name="RootGrid" KeyboardAcceleratorPlacementMode="Hidden">
+        <Grid.KeyboardAccelerators>
+            <KeyboardAccelerator Modifiers="Control" Key="V" Invoked="OnPasteInvoked" />
+        </Grid.KeyboardAccelerators>
         <Grid.RowDefinitions>
             <RowDefinition Height="40" />
             <RowDefinition Height="40" />
@@ -98,6 +101,22 @@
                                 <FontIcon Glyph="&#xECAA;" />
                             </MenuFlyoutItem.Icon>
                         </MenuFlyoutItem>
+                        <MenuFlyoutItem x:Name="AddNoteMenuItem"
+                                        AutomationProperties.AutomationId="AddNoteMenuItem"
+                                        Text="Note"
+                                        Click="OnAddNoteClicked">
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon Glyph="&#xE70B;" />
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                        <MenuFlyoutItem x:Name="AddImageMenuItem"
+                                        AutomationProperties.AutomationId="AddImageMenuItem"
+                                        Text="Image…"
+                                        Click="OnAddImageClicked">
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon Glyph="&#xEB9F;" />
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
                     </MenuFlyout>
                 </DropDownButton.Flyout>
             </DropDownButton>
@@ -106,7 +125,7 @@
                        Foreground="{ThemeResource TextFillColorTertiaryBrush}"
                        Style="{StaticResource CaptionTextBlockStyle}"
                        TextTrimming="CharacterEllipsis"
-                       Text="Drop files, folders or links on the grid" />
+                       Text="Drop or paste (Ctrl+V) files, links, text or images" />
         </Grid>
 
         <InfoBar

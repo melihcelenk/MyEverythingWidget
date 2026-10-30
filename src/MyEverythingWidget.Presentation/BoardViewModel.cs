@@ -40,12 +40,16 @@ public sealed partial class BoardViewModel : ObservableObject
     /// <summary>Name given to a category created with the "+" button, before the user renames it.</summary>
     public const string NewCategoryName = "New category";
 
+    /// <summary>Message when an image file or pasted picture cannot be decoded.</summary>
+    public const string ImageNotReadMessage = "That image could not be read.";
+
     /// <summary>Message when some dropped or pasted things could not be turned into cards.</summary>
     public const string SomeNotAddedMessage = "Some items could not be added. Use a full path or a web address.";
 
     private readonly WidgetBoard _board;
     private readonly IIconStore _icons;
     private readonly IAppLauncher _launcher;
+    private readonly IImageStore? _images;
 
     [ObservableProperty]
     public partial string? StatusMessage { get; private set; }
@@ -57,13 +61,14 @@ public sealed partial class BoardViewModel : ObservableObject
     public partial string SelectedCategoryId { get; private set; }
 
     /// <summary>Creates the view model over <paramref name="board"/> and shows its open category.</summary>
-    public BoardViewModel(WidgetBoard board, IIconStore? icons = null, IAppLauncher? launcher = null)
+    public BoardViewModel(WidgetBoard board, IIconStore? icons = null, IAppLauncher? launcher = null, IImageStore? images = null)
     {
         ArgumentNullException.ThrowIfNull(board);
 
         _board = board;
         _icons = icons ?? NoAppServices.Instance;
         _launcher = launcher ?? NoAppServices.Instance;
+        _images = images;
         SelectedCategoryId = board.SelectedCategoryId;
         Synchronize();
 
@@ -154,10 +159,121 @@ public sealed partial class BoardViewModel : ObservableObject
     [RelayCommand]
     private void Delete(string itemId)
     {
-        var iconPath = (_board.Find(itemId) as AppItem)?.IconPath;
-        if (_board.Delete(itemId) && iconPath is not null)
+        var item = _board.Find(itemId);
+        if (!_board.Delete(itemId))
         {
-            _icons.DeleteIcon(iconPath);
+            return;
+        }
+
+        switch (item)
+        {
+            case AppItem { IconPath: { } iconPath }:
+                _icons.DeleteIcon(iconPath);
+                break;
+            case ImageItem image:
+                _images?.Delete(image.ImagePath);
+                break;
+        }
+    }
+
+    /// <summary>Adds a 2x1 note to the open category; blank text adds nothing.</summary>
+    public bool AddNote(string text) =>
+        !string.IsNullOrWhiteSpace(text) && Report(_board.AddNote(SelectedCategoryId, text).Outcome);
+
+    /// <summary>Replaces a note's text; blank text is ignored.</summary>
+    public bool EditNote(string itemId, string text) => _board.UpdateNoteText(itemId, text);
+
+    /// <summary>Renames an app card; a blank name is ignored.</summary>
+    public bool RenameApp(string itemId, string name) => _board.RenameApp(itemId, name);
+
+    /// <summary>Adds an image card sized by the image's aspect ratio; returns whether it was added.</summary>
+    public async Task<bool> AddImageAsync(Stream image, CancellationToken cancellationToken = default)
+    {
+        if (_images is null)
+        {
+            return false;
+        }
+
+        var stored = await _images.ImportAsync(image, cancellationToken).ConfigureAwait(true);
+        if (stored is null)
+        {
+            ShowStatus(ImageNotReadMessage, StatusSeverity.Warning);
+            return false;
+        }
+
+        var span = ImageSpan.FromPixelSize(stored.PixelWidth, stored.PixelHeight);
+        var result = _board.AddImage(SelectedCategoryId, stored.RelativePath, stored.PixelWidth, stored.PixelHeight, span);
+        if (result.Outcome != GridOutcome.Success)
+        {
+            _images.Delete(stored.RelativePath);
+        }
+
+        return Report(result.Outcome);
+    }
+
+    /// <summary>Adds an image card from an image file.</summary>
+    public async Task<bool> AddImageFileAsync(string path, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await using var stream = File.OpenRead(path);
+            return await AddImageAsync(stream, cancellationToken).ConfigureAwait(true);
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            ShowStatus(ImageNotReadMessage, StatusSeverity.Warning);
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Ctrl+V: a picture becomes an image card; image files become image cards; other files, folders and a
+    /// single web address become app cards; any other text becomes a note.
+    /// </summary>
+    public async Task PasteAsync(PastedContent content, Func<string, bool> isDirectory)
+    {
+        ArgumentNullException.ThrowIfNull(content);
+
+        if (content.OpenBitmap is not null && await content.OpenBitmap(CancellationToken.None).ConfigureAwait(true) is { } bitmap)
+        {
+            await using (bitmap.ConfigureAwait(true))
+            {
+                await AddImageAsync(bitmap).ConfigureAwait(true);
+            }
+
+            return;
+        }
+
+        if (content.FilePaths.Count > 0)
+        {
+            foreach (var image in content.FilePaths.Where(ImageFiles.IsImage))
+            {
+                await AddImageFileAsync(image).ConfigureAwait(true);
+            }
+
+            var others = content.FilePaths.Where(path => !ImageFiles.IsImage(path)).ToList();
+            if (others.Count > 0)
+            {
+                await AddDroppedAsync(others, isDirectory).ConfigureAwait(true);
+            }
+
+            return;
+        }
+
+        var text = content.Text?.Trim();
+        if (string.IsNullOrEmpty(text))
+        {
+            return;
+        }
+
+        var isSingleLine = text.IndexOfAny(['\r', '\n']) < 0;
+        if (isSingleLine && LaunchTarget.Classify(text, isDirectory) is { } target)
+        {
+            await AddAppAsync(target, target.SuggestedName).ConfigureAwait(true);
+        }
+        else
+        {
+            AddNote(text);
         }
     }
 

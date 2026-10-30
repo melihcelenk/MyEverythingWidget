@@ -71,7 +71,7 @@
 | Faz 3 | Grid UI: sürükle-bırak ve boyutlandırma | 🟢 Tamamlandı | 100% | `PHASE3.md` |
 | Faz 4 | Kategoriler | 🟢 Tamamlandı | 100% | `PHASE4.md` |
 | Faz 5 | Uygulama ekleme ve otomatik ikon | 🟢 Tamamlandı | 100% | `PHASE5.md` |
-| Faz 6 | Notlar, resimler ve Ctrl+V | ⏳ Bekliyor | 0% | `PHASE6.md` |
+| Faz 6 | Notlar, resimler ve Ctrl+V | 🟢 Tamamlandı | 100% | `PHASE6.md` |
 | Faz 7 | Ayarlar ve eski veriyi içe aktarma | ⏳ Bekliyor | 0% | `PHASE7.md` |
 | Faz 8 | UI testleri, performans ve Store paketi | ⏳ Bekliyor | 0% | `PHASE8.md` |
 
@@ -565,16 +565,16 @@ Bunlar ayrı task'lara bırakılır.
 
 ## Faz 6 — Notlar, resimler ve Ctrl+V
 
-**Durum:** ⏳ Bekliyor
+**Durum:** 🟢 Tamamlandı (2026-10-30). Unit 206/206, UI 41/41 (Sandbox). Sonuç: `PHASE6.md` → 6.5 Sonuç.
 
 **Özet:** Not ve resim kartları, hızlı not, pencere düzeyinde Ctrl+V.
 
 **Hedefler:**
 
-- [ ] Hızlı not kutusu (N1), not kartı: Copy, Edit, Resize, Move to, Delete (N2)
-- [ ] Resim kartı: dosyadan ekleme, en-boy oranından span (I2), "Image not found" yer tutucusu
-- [ ] `ClipboardService` + pencere düzeyinde Ctrl+V; içerik türü tablosu (K7, I1)
-- [ ] "Add" menüsü (FAB yerine başlıkta ya da alt çubukta tek "+" düğmesi): App, Note, Image
+- [x] Hızlı not kutusu (N1), not kartı: Copy, Edit, Resize, Move to, Delete (N2)
+- [x] Resim kartı: dosyadan ekleme, en-boy oranından span (I2), "Image not found" yer tutucusu
+- [x] `ClipboardService` + pencere düzeyinde Ctrl+V; içerik türü tablosu (K7, I1)
+- [x] "Add" menüsü (alt çubukta "+ Add" menüsü): App, Note, Image
 
 **Detay:** `PHASE6.md`
 
