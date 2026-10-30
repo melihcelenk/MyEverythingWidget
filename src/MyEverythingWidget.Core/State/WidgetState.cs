@@ -59,6 +59,10 @@ public sealed record AppItem(
     string? IconPath)
     : WidgetItem(Id, CategoryId, Placement)
 {
+    /// <summary>Gets the emoji shown instead of the icon file; <see langword="null"/> shows the icon.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? Emoji { get; init; }
+
     /// <inheritdoc />
     [JsonIgnore]
     public override ItemKind Kind => ItemKind.App;

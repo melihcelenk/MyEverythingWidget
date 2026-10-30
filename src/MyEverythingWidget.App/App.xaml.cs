@@ -64,14 +64,15 @@ public sealed partial class App : Application, IDisposable
             ? await new LegacyMigrator(stateStore, iconStore, imageStore, NewId, GridSize.Default).MigrateAsync(legacyPath, CancellationToken.None)
             : null;
 
-        var board = new WidgetBoard(stateStore, NewId, GridSize.Default, _loggerFactory.CreateLogger<WidgetBoard>());
+        var mainViewModel = new MainViewModel(settingsStore);
+        var board = new WidgetBoard(stateStore, NewId, mainViewModel.SavedGridSize, _loggerFactory.CreateLogger<WidgetBoard>());
         var boardViewModel = new BoardViewModel(board, iconStore, launcher, imageStore);
         if (migration is not null)
         {
             boardViewModel.ShowMigrationResult(migration);
         }
 
-        _mainWindow = new MainWindow(new MainViewModel(settingsStore), boardViewModel, new ShellAppsSource());
+        _mainWindow = new MainWindow(mainViewModel, boardViewModel, new ShellAppsSource());
         _mainWindow.Activate();
     }
 

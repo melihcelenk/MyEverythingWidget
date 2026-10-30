@@ -89,6 +89,33 @@ public readonly record struct GridSize(int Rows, int Columns)
     /// <summary>The widget's grid: 5 rows by 5 columns.</summary>
     public static GridSize Default { get; } = new(5, 5);
 
+    /// <summary>Smallest grid the window can be shrunk to: 2 rows by 2 columns.</summary>
+    public static GridSize Minimum { get; } = new(2, 2);
+
+    /// <summary>Largest grid the window can be grown to: 10 rows by 10 columns.</summary>
+    public static GridSize Maximum { get; } = new(10, 10);
+
+    /// <summary>Returns this size with each extent kept between <paramref name="min"/> and <paramref name="max"/>.</summary>
+    public GridSize Clamp(GridSize min, GridSize max) => new(
+        Math.Clamp(Rows, min.Rows, Math.Max(min.Rows, max.Rows)),
+        Math.Clamp(Columns, min.Columns, Math.Max(min.Columns, max.Columns)));
+
+    /// <summary>Returns the smallest size, at least <paramref name="minimum"/>, that holds every placement.</summary>
+    public static GridSize Covering(IEnumerable<GridPlacement> placements, GridSize minimum)
+    {
+        ArgumentNullException.ThrowIfNull(placements);
+
+        var rows = minimum.Rows;
+        var columns = minimum.Columns;
+        foreach (var placement in placements)
+        {
+            rows = Math.Max(rows, placement.Anchor.Row + placement.Span.Rows);
+            columns = Math.Max(columns, placement.Anchor.Column + placement.Span.Columns);
+        }
+
+        return new GridSize(rows, columns);
+    }
+
     /// <summary>Returns whether every cell of <paramref name="placement"/> is inside the grid.</summary>
     public bool Contains(GridPlacement placement) =>
         placement.Anchor.Row >= 0

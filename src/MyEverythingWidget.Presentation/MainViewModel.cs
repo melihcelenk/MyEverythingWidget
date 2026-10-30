@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MyEverythingWidget.Core.Geometry;
+using MyEverythingWidget.Core.Grid;
 using MyEverythingWidget.Core.Settings;
 
 namespace MyEverythingWidget.Presentation;
@@ -52,6 +53,28 @@ public sealed partial class MainViewModel : ObservableObject
 
     /// <summary>Records the current window bounds so the next launch reopens there.</summary>
     public void SaveWindowBounds(PixelRect bounds) => Update(_settings with { WindowBounds = bounds });
+
+    /// <summary>Gets the grid size the window reopens with.</summary>
+    public GridSize SavedGridSize => _settings.GridSize ?? GridSize.Default;
+
+    /// <summary>Records the grid size the user resized the window to.</summary>
+    public void SaveGridSize(GridSize size)
+    {
+        if (size != _settings.GridSize)
+        {
+            Update(_settings with { GridSize = size });
+        }
+    }
+
+    /// <summary>Gets a value indicating whether the widget is shrunk to its one-cell icon.</summary>
+    public bool IsCompact => _settings.IsCompact;
+
+    [RelayCommand]
+    private void ToggleCompact()
+    {
+        Update(_settings with { IsCompact = !_settings.IsCompact });
+        OnPropertyChanged(nameof(IsCompact));
+    }
 
     [RelayCommand]
     private void ToggleAlwaysOnTop()

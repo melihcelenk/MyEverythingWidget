@@ -31,17 +31,30 @@
                 </ResourceDictionary.ThemeDictionaries>
             </ResourceDictionary>
         </TabView.Resources>
+        <TabView.TabStripHeader>
+            <ContentPresenter x:Name="LeadingPresenter" VerticalAlignment="Center" />
+        </TabView.TabStripHeader>
+        <!-- The footer fills the rest of the strip: add button, the window drag area, then the window buttons. -->
         <TabView.TabStripFooter>
-            <Button x:Name="AddCategoryButton"
-                    AutomationProperties.AutomationId="AddCategoryButton"
-                    AutomationProperties.Name="Add category"
-                    ToolTipService.ToolTip="Add category"
-                    Style="{StaticResource TitleBarButtonStyle}"
-                    Margin="2,0,0,2"
-                    VerticalAlignment="Bottom"
-                    Click="OnAddClicked">
-                <FontIcon FontSize="12" Glyph="&#xE710;" />
-            </Button>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Button x:Name="AddCategoryButton"
+                        AutomationProperties.AutomationId="AddCategoryButton"
+                        AutomationProperties.Name="Add category"
+                        ToolTipService.ToolTip="Add category"
+                        Style="{StaticResource TitleBarButtonStyle}"
+                        Margin="2,0,0,0"
+                        VerticalAlignment="Center"
+                        Click="OnAddClicked">
+                    <FontIcon FontSize="12" Glyph="&#xE710;" />
+                </Button>
+                <Grid x:Name="DragArea" Grid.Column="1" MinWidth="12" Background="Transparent" />
+                <ContentPresenter x:Name="TrailingPresenter" Grid.Column="2" VerticalAlignment="Center" />
+            </Grid>
         </TabView.TabStripFooter>
     </TabView>
 </UserControl>

@@ -34,6 +34,9 @@ public sealed partial class GridItemViewModel : ObservableObject
     [ObservableProperty]
     public partial string? IconPath { get; set; }
 
+    [ObservableProperty]
+    public partial string? Emoji { get; set; }
+
     /// <summary>Creates the view model of <paramref name="item"/>.</summary>
     public GridItemViewModel(WidgetItem item)
     {
@@ -68,6 +71,7 @@ public sealed partial class GridItemViewModel : ObservableObject
             case AppItem app:
                 Title = app.Name;
                 IconPath = app.IconPath;
+                Emoji = app.Emoji;
                 break;
             case NoteItem note:
                 Title = FirstLine(note.Text);

@@ -1,4 +1,5 @@
 using MyEverythingWidget.Core.Geometry;
+using MyEverythingWidget.Core.Grid;
 
 namespace MyEverythingWidget.Core.Settings;
 
@@ -14,6 +15,12 @@ public sealed record AppSettings(bool IsAlwaysOnTop, PixelRect? WindowBounds)
 
     /// <summary>Gets the colour theme; <see cref="AppTheme.System"/> follows the Windows setting.</summary>
     public AppTheme Theme { get; init; } = AppTheme.System;
+
+    /// <summary>Gets the grid size the window was last set to; <see langword="null"/> uses <see cref="GridSize.Default"/>.</summary>
+    public GridSize? GridSize { get; init; }
+
+    /// <summary>Gets a value indicating whether the widget is shrunk to its one-cell icon.</summary>
+    public bool IsCompact { get; init; }
 }
 
 /// <summary>Colour theme of the widget.</summary>

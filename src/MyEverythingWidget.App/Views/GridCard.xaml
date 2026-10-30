@@ -14,6 +14,14 @@
         <StackPanel x:Name="AppContent" Visibility="Collapsed" VerticalAlignment="Center" Spacing="4" Padding="4,0">
             <Grid Width="36" Height="36" HorizontalAlignment="Center">
                 <Image x:Name="AppIcon" Stretch="Uniform" />
+                <TextBlock x:Name="AppEmoji"
+                           AutomationProperties.AutomationId="AppEmoji"
+                           Visibility="Collapsed"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           FontFamily="Segoe UI Emoji"
+                           FontSize="28"
+                           IsTextScaleFactorEnabled="False" />
                 <Border x:Name="AppMonogram"
                         CornerRadius="18"
                         Background="{ThemeResource AccentFillColorDefaultBrush}">
@@ -40,8 +48,13 @@
                    TextTrimming="CharacterEllipsis"
                    Style="{StaticResource BodyTextBlockStyle}" />
 
-        <!-- Image: fills the card; the rounded corners of CardRoot clip it. -->
-        <Image x:Name="ImageContent" Visibility="Collapsed" Stretch="UniformToFill" />
+        <!-- Image: shown whole, centred; the card surface shows around it. -->
+        <Image x:Name="ImageContent"
+               AutomationProperties.AutomationId="ImageContent"
+               Visibility="Collapsed"
+               Stretch="Uniform"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Center" />
         <TextBlock x:Name="ImageMissing"
                    Visibility="Collapsed"
                    HorizontalAlignment="Center"

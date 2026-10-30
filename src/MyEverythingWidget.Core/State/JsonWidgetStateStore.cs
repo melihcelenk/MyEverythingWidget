@@ -51,7 +51,7 @@ public sealed partial class JsonWidgetStateStore : IWidgetStateStore
         {
             try
             {
-                _ = new GridLayout(GridSize.Default, group.ToDictionary(item => item.Id, item => item.Placement, StringComparer.Ordinal));
+                _ = new GridLayout(GridSize.Maximum, group.ToDictionary(item => item.Id, item => item.Placement, StringComparer.Ordinal));
             }
             catch (ArgumentException exception)
             {

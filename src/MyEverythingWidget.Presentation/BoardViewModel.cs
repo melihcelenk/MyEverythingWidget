@@ -111,6 +111,22 @@ public sealed partial class BoardViewModel : ObservableObject
     /// <summary>Gets the grid size.</summary>
     public GridSize GridSize => _board.GridSize;
 
+    /// <summary>Gets the smallest grid that still holds every item.</summary>
+    public GridSize MinimumGridSize => _board.MinimumGridSize;
+
+    /// <summary>Changes the grid size (kept between <see cref="MinimumGridSize"/> and the maximum); returns the size applied.</summary>
+    public GridSize ResizeGrid(GridSize requested)
+    {
+        var before = _board.GridSize;
+        var applied = _board.ResizeGrid(requested);
+        if (applied != before)
+        {
+            OnPropertyChanged(nameof(GridSize));
+        }
+
+        return applied;
+    }
+
     /// <summary>Opens the tab of <paramref name="categoryId"/>.</summary>
     public void SelectCategory(string categoryId) => _board.SelectCategory(categoryId);
 
@@ -221,6 +237,25 @@ public sealed partial class BoardViewModel : ObservableObject
 
         var target = new LaunchTarget(app.LaunchKind, app.Target, app.Name);
         ReplaceIcon(itemId, await _icons.CreateIconAsync(target, cancellationToken).ConfigureAwait(true));
+        return true;
+    }
+
+    /// <summary>
+    /// Shows an emoji as the icon of an app card; only its first symbol is kept. Blank text changes nothing.
+    /// The previous icon file is deleted.
+    /// </summary>
+    public bool SetEmoji(string itemId, string text)
+    {
+        if (IconEmoji.Normalize(text) is not { } emoji || _board.Find(itemId) is not AppItem)
+        {
+            return false;
+        }
+
+        if (_board.SetAppEmoji(itemId, emoji) is { } oldIcon)
+        {
+            _icons.DeleteIcon(oldIcon);
+        }
+
         return true;
     }
 

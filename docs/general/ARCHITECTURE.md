@@ -42,7 +42,7 @@ MyEverythingWidget.App  ──>  MyEverythingWidget.Presentation  ──>  MyEve
 
 | File | Content |
 |------|---------|
-| `settings.json` | Window bounds and always-on-top |
+| `settings.json` | Window position, always-on-top, theme, grid size, compact mode |
 | `state.json` | Categories and items (versioned; corrupt files kept as `state.corrupt-*.json`) |
 | `icons\*.png` | App card icons (64 px) |
 | `logs\crash.log` | Unhandled exceptions |

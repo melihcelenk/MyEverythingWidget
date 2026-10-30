@@ -60,7 +60,8 @@ public sealed partial class GridCard : UserControl
         if (e.PropertyName is nameof(GridItemViewModel.Title)
             or nameof(GridItemViewModel.Text)
             or nameof(GridItemViewModel.ImagePath)
-            or nameof(GridItemViewModel.IconPath))
+            or nameof(GridItemViewModel.IconPath)
+            or nameof(GridItemViewModel.Emoji))
         {
             ShowContent();
         }
@@ -90,11 +91,15 @@ public sealed partial class GridCard : UserControl
     private void ShowApp()
     {
         AppName.Text = Item.Title;
-        var iconFile = DataFiles.Resolve(Item.IconPath);
+        var hasEmoji = Item.Emoji is not null;
+        AppEmoji.Text = Item.Emoji ?? "";
+        AppEmoji.Visibility = hasEmoji ? Visibility.Visible : Visibility.Collapsed;
+
+        var iconFile = hasEmoji ? null : DataFiles.Resolve(Item.IconPath);
         var hasIcon = iconFile is not null;
         AppIcon.Source = hasIcon ? new BitmapImage(new Uri(iconFile!)) : null;
         AppIcon.Visibility = hasIcon ? Visibility.Visible : Visibility.Collapsed;
-        AppMonogram.Visibility = hasIcon ? Visibility.Collapsed : Visibility.Visible;
+        AppMonogram.Visibility = hasIcon || hasEmoji ? Visibility.Collapsed : Visibility.Visible;
         AppMonogramText.Text = Item.Title.Length > 0 ? char.ToUpperInvariant(Item.Title[0]).ToString() : "?";
     }
 

@@ -53,4 +53,41 @@ public sealed class AppIconTests
         Assert.Equal(@"C:\Windows\System32\cmd.exe", Assert.Single(_services.IconRequests).Target);
         Assert.Equal([@"icons\old.png"], _services.DeletedIcons);
     }
+
+    [Fact]
+    public void SetEmoji_ShowsEmojiAndDeletesIconFile()
+    {
+        var board = CreateBoard();
+
+        Assert.True(board.SetEmoji("a1", " 🚀🔥 "));
+
+        var item = board.Items.Single();
+        Assert.Equal("🚀", item.Emoji);
+        Assert.Null(item.IconPath);
+        Assert.Equal([@"icons\old.png"], _services.DeletedIcons);
+    }
+
+    [Fact]
+    public void SetEmoji_Blank_ChangesNothing()
+    {
+        var board = CreateBoard();
+
+        Assert.False(board.SetEmoji("a1", "  "));
+
+        Assert.Null(board.Items.Single().Emoji);
+        Assert.Equal(@"icons\old.png", board.Items.Single().IconPath);
+    }
+
+    [Fact]
+    public async Task ResetIcon_AfterEmoji_ShowsIconAgain()
+    {
+        _services.IconToReturn = @"icons\fresh.png";
+        var board = CreateBoard();
+        board.SetEmoji("a1", "🚀");
+
+        await board.ResetIconAsync("a1", TestContext.Current.CancellationToken);
+
+        Assert.Null(board.Items.Single().Emoji);
+        Assert.Equal(@"icons\fresh.png", board.Items.Single().IconPath);
+    }
 }

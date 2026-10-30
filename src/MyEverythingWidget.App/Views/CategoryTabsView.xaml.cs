@@ -26,6 +26,23 @@ public sealed partial class CategoryTabsView : UserControl
         InitializeComponent();
     }
 
+    /// <summary>Gets or sets what is shown before the tabs (the compact button).</summary>
+    public object? LeadingContent
+    {
+        get => LeadingPresenter.Content;
+        set => LeadingPresenter.Content = value;
+    }
+
+    /// <summary>Gets or sets what is shown at the right end of the strip (the window buttons).</summary>
+    public object? TrailingContent
+    {
+        get => TrailingPresenter.Content;
+        set => TrailingPresenter.Content = value;
+    }
+
+    /// <summary>Gets the empty part of the strip, which drags the window.</summary>
+    public UIElement DragRegion => DragArea;
+
     /// <summary>Gets or sets the board whose categories are shown; set once after construction.</summary>
     public BoardViewModel? Board
     {

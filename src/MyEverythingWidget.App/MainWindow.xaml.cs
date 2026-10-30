@@ -25,17 +25,20 @@ namespace MyEverythingWidget.App;
 public sealed partial class MainWindow : Window
 {
     /// <summary>
-    /// Fixed client-area size in device-independent pixels: the 5x5 grid of 80px cells (400) plus margins, the
-    /// title bar (40), the category tabs (40) and room for the status bar.
+    /// Client area around the grid, in device-independent pixels: grid margins (6 on each side), the one-row title bar
+    /// (40) and the bottom bar (44). Must match the row heights and margins in MainWindow.xaml.
     /// </summary>
-    private static readonly PixelSize ClientSizeInDips = new(412, 560);
+    private static readonly GridWindowSizing Sizing = new(GridMetrics.CellSize, ChromeWidth: 12, ChromeHeight: 96);
 
-    private const double DefaultDpi = 96.0;
+    /// <summary>Compact mode shows one cell.</summary>
+    private const double CompactSizeInDips = GridMetrics.CellSize;
 
     private readonly nint _windowHandle;
     private readonly OverlappedPresenter _presenter;
 
     private readonly IInstalledAppsSource _installedApps;
+    private readonly CellSnappingResizer _resizer;
+    private Windows.Foundation.Point? _compactPressPoint;
 
     /// <summary>Creates the window for <paramref name="viewModel"/> showing <paramref name="board"/>.</summary>
     public MainWindow(MainViewModel viewModel, BoardViewModel board, IInstalledAppsSource installedApps)
@@ -55,18 +58,27 @@ public sealed partial class MainWindow : Window
         _windowHandle = WindowNative.GetWindowHandle(this);
         _presenter = OverlappedPresenter.Create();
         _presenter.IsMaximizable = false;
-        _presenter.IsResizable = false;
+        _presenter.IsResizable = true;
         AppWindow.SetPresenter(_presenter);
         GridView.OwnerWindowHandle = _windowHandle;
+        _resizer = new CellSnappingResizer(
+            _windowHandle,
+            Sizing,
+            Board.ResizeGrid,
+            () => Board.MinimumGridSize,
+            () => ViewModel.IsCompact ? CompactClientSize() : null,
+            () => ViewModel.SaveGridSize(Board.GridSize));
 
         ConfigureTitleBar();
         ApplyBackdropFallback();
-        var clientSize = ScaledClientSize();
-        AppWindow.ResizeClient(new SizeInt32(clientSize.Width, clientSize.Height));
+        ApplyLayoutMode();
         var bounds = ResolveStartupBounds();
         AppWindow.Move(new PointInt32(bounds.X, bounds.Y));
         _presenter.IsAlwaysOnTop = ViewModel.IsAlwaysOnTop;
         ApplyTheme();
+
+        CompactIcon.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(OnCompactPointerPressed), handledEventsToo: true);
+        CompactIcon.AddHandler(UIElement.PointerMovedEvent, new PointerEventHandler(OnCompactPointerMoved), handledEventsToo: true);
 
         ViewModel.PropertyChanged += OnViewModelPropertyChanged;
         Closed += OnClosed;
@@ -99,7 +111,7 @@ public sealed partial class MainWindow : Window
         AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "app.ico"));
         ExtendsContentIntoTitleBar = true;
         AppWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Collapsed;
-        SetTitleBar(TitleBarDragRegion);
+        SetTitleBar(TabsView.DragRegion);
     }
 
     private void ApplyBackdropFallback()
@@ -125,12 +137,45 @@ public sealed partial class MainWindow : Window
         return WindowPlacement.Resolve(saved, workAreas, primaryWorkArea, size);
     }
 
-    private PixelSize ScaledClientSize()
+    private PixelSize CompactClientSize()
     {
-        var scale = NativeMethods.GetDpiForWindow(_windowHandle) / DefaultDpi;
-        return new PixelSize(
-            (int)Math.Round(ClientSizeInDips.Width * scale),
-            (int)Math.Round(ClientSizeInDips.Height * scale));
+        var side = (int)Math.Round(CompactSizeInDips * _resizer.Scale);
+        return new PixelSize(side, side);
+    }
+
+    /// <summary>Shows the widget or its one-cell icon and sizes the window for it; the top-left corner stays put.</summary>
+    private void ApplyLayoutMode()
+    {
+        var compact = ViewModel.IsCompact;
+        ExpandedView.Visibility = compact ? Visibility.Collapsed : Visibility.Visible;
+        CompactIcon.Visibility = compact ? Visibility.Visible : Visibility.Collapsed;
+        _presenter.IsResizable = !compact;
+
+        // Windows keeps a framed window at least ~136 px wide, so the one-cell icon drops the frame and caption.
+        _presenter.SetBorderAndTitleBar(hasBorder: !compact, hasTitleBar: !compact);
+
+        var client = compact ? CompactClientSize() : Sizing.ClientSize(Board.GridSize, _resizer.Scale);
+        _resizer.ResizeClient(client);
+        if (compact)
+        {
+            // Loaded on first use only: the widget's start-up should not pay for an image it does not show.
+            CompactLogo.Source ??= new Microsoft.UI.Xaml.Media.Imaging.BitmapImage(
+                new Uri(Path.Combine(AppContext.BaseDirectory, "Assets", "Square44x44Logo.targetsize-48.png")));
+            CompactIcon.Focus(FocusState.Programmatic);
+        }
+    }
+
+    /// <summary>Keeps the window reachable after it grew (for example when the icon sat near a screen edge).</summary>
+    private void KeepOnScreen()
+    {
+        var position = AppWindow.Position;
+        var size = AppWindow.Size;
+        var current = new PixelRect(position.X, position.Y, size.Width, size.Height);
+        var resolved = WindowPlacement.Resolve(current, GetWorkAreas(), ToPixelRect(DisplayArea.Primary.WorkArea), current.Size);
+        if (resolved != current)
+        {
+            AppWindow.Move(new PointInt32(resolved.X, resolved.Y));
+        }
     }
 
     private static List<PixelRect> GetWorkAreas()
@@ -157,6 +202,43 @@ public sealed partial class MainWindow : Window
         {
             ApplyTheme();
         }
+        else if (e.PropertyName == nameof(MainViewModel.IsCompact))
+        {
+            ApplyLayoutMode();
+            KeepOnScreen();
+        }
+    }
+
+    private void OnCompactIconClicked(object sender, RoutedEventArgs e)
+    {
+        _compactPressPoint = null;
+        if (ViewModel.IsCompact)
+        {
+            ViewModel.ToggleCompactCommand.Execute(null);
+        }
+    }
+
+    private void OnCompactPointerPressed(object sender, PointerRoutedEventArgs e) =>
+        _compactPressPoint = e.GetCurrentPoint(CompactIcon).Position;
+
+    /// <summary>Dragging the compact icon moves the window, the way dragging a title bar does.</summary>
+    private void OnCompactPointerMoved(object sender, PointerRoutedEventArgs e)
+    {
+        if (_compactPressPoint is not { } start || !e.GetCurrentPoint(CompactIcon).Properties.IsLeftButtonPressed)
+        {
+            return;
+        }
+
+        var point = e.GetCurrentPoint(CompactIcon).Position;
+        if (Math.Abs(point.X - start.X) < GridMetrics.DragThreshold && Math.Abs(point.Y - start.Y) < GridMetrics.DragThreshold)
+        {
+            return;
+        }
+
+        _compactPressPoint = null;
+        CompactIcon.ReleasePointerCaptures();
+        NativeMethods.ReleaseCapture();
+        NativeMethods.SendMessage(_windowHandle, NativeMethods.NonClientLeftButtonDownMessage, NativeMethods.CaptionHitTest, 0);
     }
 
     private void OnCloseClicked(object sender, RoutedEventArgs e) => Close();
@@ -261,6 +343,7 @@ public sealed partial class MainWindow : Window
     private void OnClosed(object sender, WindowEventArgs args)
     {
         ViewModel.PropertyChanged -= OnViewModelPropertyChanged;
+        _resizer.Detach();
         var position = AppWindow.Position;
         var size = AppWindow.Size;
         ViewModel.SaveWindowBounds(new PixelRect(position.X, position.Y, size.Width, size.Height));
@@ -268,5 +351,4 @@ public sealed partial class MainWindow : Window
 
     private static PixelRect ToPixelRect(RectInt32 rect) => new(rect.X, rect.Y, rect.Width, rect.Height);
 
-    private static RectInt32 ToRectInt32(PixelRect rect) => new(rect.X, rect.Y, rect.Width, rect.Height);
 }

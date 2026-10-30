@@ -36,7 +36,6 @@ public sealed partial class WidgetBoard
         _store = store;
         _newId = newId;
         _logger = logger;
-        GridSize = gridSize;
 
         var loaded = store.Load();
         CorruptBackupPath = loaded.CorruptBackupPath;
@@ -49,6 +48,8 @@ public sealed partial class WidgetBoard
             State = WidgetState.CreateDefault(newId());
             Save();
         }
+
+        GridSize = GridSize.Covering(State.Items.Select(item => item.Placement), gridSize);
     }
 
     /// <summary>Raised after every successful change.</summary>
@@ -75,8 +76,27 @@ public sealed partial class WidgetBoard
     /// <summary>Gets where an unreadable state file was moved on startup, if that happened.</summary>
     public string? CorruptBackupPath { get; }
 
-    /// <summary>Gets the grid size of every category.</summary>
-    public GridSize GridSize { get; }
+    /// <summary>Gets the grid size of every category; it follows the window size.</summary>
+    public GridSize GridSize { get; private set; }
+
+    /// <summary>Gets the smallest grid that still holds the items of every category (at least <see cref="GridSize.Minimum"/>).</summary>
+    public GridSize MinimumGridSize => GridSize.Covering(State.Items.Select(item => item.Placement), GridSize.Minimum);
+
+    /// <summary>
+    /// Changes the grid size of every category, kept between <see cref="MinimumGridSize"/> and
+    /// <see cref="GridSize.Maximum"/>, so no item ever falls outside. Returns the size applied.
+    /// </summary>
+    public GridSize ResizeGrid(GridSize requested)
+    {
+        var applied = requested.Clamp(MinimumGridSize, GridSize.Maximum);
+        if (applied != GridSize)
+        {
+            GridSize = applied;
+            Changed?.Invoke(this, EventArgs.Empty);
+        }
+
+        return applied;
+    }
 
     /// <summary>Returns the item with <paramref name="itemId"/>, or <see langword="null"/>.</summary>
     public WidgetItem? Find(string itemId) => State.Items.FirstOrDefault(item => item.Id == itemId);
@@ -174,7 +194,24 @@ public sealed partial class WidgetBoard
             return null;
         }
 
-        Replace(app with { IconPath = iconPath });
+        Replace(app with { IconPath = iconPath, Emoji = null });
+        return app.IconPath;
+    }
+
+    /// <summary>
+    /// Shows <paramref name="emoji"/> as the icon of an app card instead of its icon file; returns the icon file that is
+    /// no longer used, or <see langword="null"/>.
+    /// </summary>
+    public string? SetAppEmoji(string itemId, string emoji)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(emoji);
+
+        if (Find(itemId) is not AppItem app)
+        {
+            return null;
+        }
+
+        Replace(app with { IconPath = null, Emoji = emoji });
         return app.IconPath;
     }
 

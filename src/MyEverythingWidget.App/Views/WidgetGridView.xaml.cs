@@ -52,17 +52,32 @@ public sealed partial class WidgetGridView : UserControl
             if (_board is not null)
             {
                 _board.Items.CollectionChanged -= OnItemsChanged;
+                _board.PropertyChanged -= OnBoardPropertyChanged;
             }
 
             _board = value;
             RebuildCards();
             if (_board is not null)
             {
-                Width = _board.GridSize.Columns * GridMetrics.CellSize;
-                Height = _board.GridSize.Rows * GridMetrics.CellSize;
+                ApplyGridSize();
                 _board.Items.CollectionChanged += OnItemsChanged;
+                _board.PropertyChanged += OnBoardPropertyChanged;
             }
         }
+    }
+
+    private void OnBoardPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(BoardViewModel.GridSize))
+        {
+            ApplyGridSize();
+        }
+    }
+
+    private void ApplyGridSize()
+    {
+        Width = _board!.GridSize.Columns * GridMetrics.CellSize;
+        Height = _board.GridSize.Rows * GridMetrics.CellSize;
     }
 
     private void RebuildCards()
@@ -164,6 +179,11 @@ public sealed partial class WidgetGridView : UserControl
             var resetIcon = new MenuFlyoutItem { Text = "Reset icon", Icon = new FontIcon { Glyph = "\uE72C" } };
             AutomationProperties.SetAutomationId(resetIcon, "ResetIconMenuItem");
             resetIcon.Click += (_, _) => _ = _board?.ResetIconAsync(item.Id);
+
+            var emoji = new MenuFlyoutItem { Text = "Use emoji…", Icon = new FontIcon { Glyph = "" } };
+            AutomationProperties.SetAutomationId(emoji, "SetEmojiMenuItem");
+            emoji.Click += (_, _) => _ = SetEmojiAsync(item);
+            menu.Items.Add(emoji);
             menu.Items.Add(resetIcon);
         }
 
@@ -176,6 +196,16 @@ public sealed partial class WidgetGridView : UserControl
 
     /// <summary>Gets or sets the window that owns file pickers opened from the card menu.</summary>
     public nint OwnerWindowHandle { get; set; }
+
+    /// <summary>Asks for an emoji to show instead of the card's icon.</summary>
+    private async Task SetEmojiAsync(GridItemViewModel item)
+    {
+        if (_board is not null
+            && await TextEditorDialog.ShowAsync(XamlRoot, "Use emoji", item.Emoji ?? "", multiline: false, placeholder: "Type an emoji or press Win + .") is { } text)
+        {
+            _board.SetEmoji(item.Id, text);
+        }
+    }
 
     /// <summary>Lets the user pick an image to use as the card's icon.</summary>
     private async Task ChangeIconAsync(GridItemViewModel item)
