@@ -37,6 +37,12 @@ public sealed partial class GridItemViewModel : ObservableObject
     [ObservableProperty]
     public partial string? Emoji { get; set; }
 
+    /// <summary>Gets the width in pixels of an image card's image; 0 for other cards.</summary>
+    public int ImagePixelWidth { get; private set; }
+
+    /// <summary>Gets the height in pixels of an image card's image; 0 for other cards.</summary>
+    public int ImagePixelHeight { get; private set; }
+
     /// <summary>Creates the view model of <paramref name="item"/>.</summary>
     public GridItemViewModel(WidgetItem item)
     {
@@ -80,6 +86,8 @@ public sealed partial class GridItemViewModel : ObservableObject
             case ImageItem image:
                 Title = Path.GetFileName(image.ImagePath);
                 ImagePath = image.ImagePath;
+                ImagePixelWidth = image.PixelWidth;
+                ImagePixelHeight = image.PixelHeight;
                 break;
         }
     }

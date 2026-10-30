@@ -94,6 +94,18 @@ internal sealed class AppSession : IDisposable
         ?? _automation.GetDesktop().FindFirstDescendant(condition =>
             condition.ByAutomationId(automationId).And(condition.ByProcessId(_application.ProcessId)));
 
+    /// <summary>
+    /// Returns another top-level window by its title, or <see langword="null"/>. Searched by title only: in the sandbox
+    /// the desktop's children do not match the launched process id.
+    /// </summary>
+    public AutomationElement? FindWindow(string title) =>
+        _automation.GetDesktop().FindFirstChild(condition => condition.ByName(title));
+
+    /// <summary>Lists the desktop's top-level windows, for failure messages.</summary>
+    public string DescribeWindows() => string.Join(", ", _automation.GetDesktop()
+        .FindAllChildren()
+        .Select(window => $"'{window.Name}' ({window.ControlType}, pid {window.Properties.ProcessId.ValueOrDefault})"));
+
     public void ClickCloseAndWaitForExit()
     {
         Find("CloseButton").AsButton().Invoke();

@@ -41,6 +41,7 @@ public sealed partial class MainWindow : Window
     private NativeMethods.NativePoint? _compactPressCursor;
     private PointInt32 _compactPressWindow;
     private bool _compactDragged;
+    private ImageViewerWindow? _imageViewer;
 
     /// <summary>Creates the window for <paramref name="viewModel"/> showing <paramref name="board"/>.</summary>
     public MainWindow(MainViewModel viewModel, BoardViewModel board, IInstalledAppsSource installedApps)
@@ -54,7 +55,7 @@ public sealed partial class MainWindow : Window
         _installedApps = installedApps;
         InitializeComponent();
         GridView.Board = board;
-        GridView.ItemInvoked += (_, item) => Board.Launch(item.Id);
+        GridView.ItemInvoked += (_, item) => OnItemInvoked(item);
         TabsView.Board = board;
 
         _windowHandle = WindowNative.GetWindowHandle(this);
@@ -274,6 +275,34 @@ public sealed partial class MainWindow : Window
 
     private void OnCloseClicked(object sender, RoutedEventArgs e) => Close();
 
+    /// <summary>A click on an app card opens it; on an image card it shows the image large.</summary>
+    private void OnItemInvoked(GridItemViewModel item)
+    {
+        if (item.Kind != Core.Grid.ItemKind.Image)
+        {
+            Board.Launch(item.Id);
+            return;
+        }
+
+        if (DataFiles.Resolve(item.ImagePath) is not { } imageFile)
+        {
+            return;
+        }
+
+        _imageViewer?.Close();
+        var workArea = ToPixelRect(DisplayArea.GetFromWindowId(AppWindow.Id, DisplayAreaFallback.Nearest).WorkArea);
+        var viewer = new ImageViewerWindow(imageFile, new PixelSize(item.ImagePixelWidth, item.ImagePixelHeight), workArea, RootGrid.ActualTheme);
+        viewer.Closed += (_, _) =>
+        {
+            if (ReferenceEquals(_imageViewer, viewer))
+            {
+                _imageViewer = null;
+            }
+        };
+        _imageViewer = viewer;
+        viewer.Activate();
+    }
+
     /// <summary>Applies the theme to the whole window (dialogs and flyouts follow the content root).</summary>
     private void ApplyTheme() => RootGrid.RequestedTheme = ViewModel.Theme switch
     {
@@ -374,6 +403,7 @@ public sealed partial class MainWindow : Window
     private void OnClosed(object sender, WindowEventArgs args)
     {
         ViewModel.PropertyChanged -= OnViewModelPropertyChanged;
+        _imageViewer?.Close();
         _resizer.Detach();
         var position = AppWindow.Position;
         var size = AppWindow.Size;
