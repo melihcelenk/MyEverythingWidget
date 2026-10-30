@@ -1,7 +1,9 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
+using MyEverythingWidget.Core.Grid;
 using MyEverythingWidget.Core.Settings;
+using MyEverythingWidget.Core.State;
 using MyEverythingWidget.Presentation;
 
 namespace MyEverythingWidget.App;
@@ -42,12 +44,12 @@ public sealed partial class App : Application, IDisposable
     {
         _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
-        var settingsStore = new JsonSettingsStore(
-            AppDataLocation.Resolve(),
-            TimeProvider.System,
-            _loggerFactory.CreateLogger<JsonSettingsStore>());
+        var dataDirectory = AppDataLocation.Resolve();
+        var settingsStore = new JsonSettingsStore(dataDirectory, TimeProvider.System, _loggerFactory.CreateLogger<JsonSettingsStore>());
+        var stateStore = new JsonWidgetStateStore(dataDirectory, TimeProvider.System, _loggerFactory.CreateLogger<JsonWidgetStateStore>());
+        var board = new WidgetBoard(stateStore, () => Guid.NewGuid().ToString("N"), GridSize.Default, _loggerFactory.CreateLogger<WidgetBoard>());
 
-        _mainWindow = new MainWindow(new MainViewModel(settingsStore));
+        _mainWindow = new MainWindow(new MainViewModel(settingsStore), new BoardViewModel(board));
         _mainWindow.Activate();
     }
 

@@ -24,4 +24,14 @@ internal static class Wait
 
         return condition();
     }
+
+    /// <summary>Returns the element as soon as <paramref name="find"/> finds it; throws on timeout.</summary>
+    public static T ForElement<T>(Func<T?> find, TimeSpan? timeout = null)
+        where T : class
+    {
+        T? found = null;
+        return Until(() => (found = find()) is not null, timeout)
+            ? found!
+            : throw new TimeoutException("The element did not appear.");
+    }
 }

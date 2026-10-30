@@ -17,38 +17,54 @@ namespace MyEverythingWidget.App;
 /// </summary>
 public sealed partial class MainWindow : Window
 {
-    /// <summary>Default size in device-independent pixels: the 5x5 grid of 80px cells plus title bar and margins.</summary>
-    private static readonly PixelSize DefaultSizeInDips = new(404, 480);
+    /// <summary>
+    /// Fixed client-area size in device-independent pixels: the 5x5 grid of 80px cells (400) plus margins, the
+    /// title bar (40), the category tabs (40) and room for the status bar.
+    /// </summary>
+    private static readonly PixelSize ClientSizeInDips = new(412, 560);
 
     private const double DefaultDpi = 96.0;
 
     private readonly nint _windowHandle;
     private readonly OverlappedPresenter _presenter;
 
-    /// <summary>Creates the window for <paramref name="viewModel"/>.</summary>
-    public MainWindow(MainViewModel viewModel)
+    /// <summary>Creates the window for <paramref name="viewModel"/> showing <paramref name="board"/>.</summary>
+    public MainWindow(MainViewModel viewModel, BoardViewModel board)
     {
         ArgumentNullException.ThrowIfNull(viewModel);
+        ArgumentNullException.ThrowIfNull(board);
 
         ViewModel = viewModel;
+        Board = board;
         InitializeComponent();
+        GridView.Board = board;
 
         _windowHandle = WindowNative.GetWindowHandle(this);
         _presenter = OverlappedPresenter.Create();
         _presenter.IsMaximizable = false;
+        _presenter.IsResizable = false;
         AppWindow.SetPresenter(_presenter);
 
         ConfigureTitleBar();
         ApplyBackdropFallback();
-        AppWindow.MoveAndResize(ToRectInt32(ResolveStartupBounds()));
+        var clientSize = ScaledClientSize();
+        AppWindow.ResizeClient(new SizeInt32(clientSize.Width, clientSize.Height));
+        var bounds = ResolveStartupBounds();
+        AppWindow.Move(new PointInt32(bounds.X, bounds.Y));
         _presenter.IsAlwaysOnTop = ViewModel.IsAlwaysOnTop;
 
         ViewModel.PropertyChanged += OnViewModelPropertyChanged;
         Closed += OnClosed;
+
+        // Start with programmatic focus on the grid, so no keyboard focus rectangle shows on the title bar buttons.
+        RootGrid.Loaded += (_, _) => GridView.Focus(FocusState.Programmatic);
     }
 
     /// <summary>Gets the view model the window binds to.</summary>
     public MainViewModel ViewModel { get; }
+
+    /// <summary>Gets the grid view model the window binds to.</summary>
+    public BoardViewModel Board { get; }
 
     /// <summary>Restores the window if needed and makes it the foreground window.</summary>
     public void BringToFront()
@@ -84,12 +100,21 @@ public sealed partial class MainWindow : Window
     {
         var workAreas = GetWorkAreas();
         var primaryWorkArea = ToPixelRect(DisplayArea.Primary.WorkArea);
-        var scale = NativeMethods.GetDpiForWindow(_windowHandle) / DefaultDpi;
-        var defaultSize = new PixelSize(
-            (int)Math.Round(DefaultSizeInDips.Width * scale),
-            (int)Math.Round(DefaultSizeInDips.Height * scale));
+        var size = new PixelSize(AppWindow.Size.Width, AppWindow.Size.Height);
 
-        return WindowPlacement.Resolve(ViewModel.SavedWindowBounds, workAreas, primaryWorkArea, defaultSize);
+        // The window has a fixed size; only the saved position is kept.
+        var saved = ViewModel.SavedWindowBounds is { } bounds
+            ? new PixelRect(bounds.X, bounds.Y, size.Width, size.Height)
+            : (PixelRect?)null;
+        return WindowPlacement.Resolve(saved, workAreas, primaryWorkArea, size);
+    }
+
+    private PixelSize ScaledClientSize()
+    {
+        var scale = NativeMethods.GetDpiForWindow(_windowHandle) / DefaultDpi;
+        return new PixelSize(
+            (int)Math.Round(ClientSizeInDips.Width * scale),
+            (int)Math.Round(ClientSizeInDips.Height * scale));
     }
 
     private static List<PixelRect> GetWorkAreas()

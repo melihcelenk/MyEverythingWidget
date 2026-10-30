@@ -68,7 +68,7 @@
 |-----|--------|-------|------------|-------|
 | Faz 1 | İskelet, pencere ve MSIX | 🟢 Tamamlandı | 100% | `PHASE1.md` |
 | Faz 2 | Grid motoru, durum ve kalıcılık (Core) | 🟢 Tamamlandı | 100% | `PHASE2.md` |
-| Faz 3 | Grid UI: sürükle-bırak ve boyutlandırma | ⏳ Bekliyor | 0% | `PHASE3.md` |
+| Faz 3 | Grid UI: sürükle-bırak ve boyutlandırma | 🟢 Tamamlandı | 100% | `PHASE3.md` |
 | Faz 4 | Kategoriler | ⏳ Bekliyor | 0% | `PHASE4.md` |
 | Faz 5 | Uygulama ekleme ve otomatik ikon | ⏳ Bekliyor | 0% | `PHASE5.md` |
 | Faz 6 | Notlar, resimler ve Ctrl+V | ⏳ Bekliyor | 0% | `PHASE6.md` |
@@ -511,18 +511,18 @@ Bunlar ayrı task'lara bırakılır.
 
 ## Faz 3 — Grid UI: sürükle-bırak ve boyutlandırma
 
-**Durum:** ⏳ Bekliyor
+**Durum:** 🟢 Tamamlandı (2026-10-30). Unit 99/99, UI 20/20 (Sandbox). Sonuç: `PHASE3.md` → 3.5 Sonuç.
 
 **Özet:** Özel grid paneli ve kartlar; sürükleme görüntüsü, hücre vurgusu, animasyon, resize.
 
 **Hedefler:**
 
-- [ ] `GridPanel` (K2) ve kart şablonları (uygulama, not, resim)
-- [ ] Sürükleme görüntüsü gerçek boyutta, imleç tutulan noktada (G7)
-- [ ] Hedef hücrelerin tamamı vurgulanıyor; geçersiz hedefte farklı vurgu (G8, G6)
-- [ ] Taşınan öğeler animasyonla kayıyor
-- [ ] Resize tutamacı, hücreye oturma (G10)
-- [ ] UI testi: `.dsl` senaryoları gerçek sürüklemeyle koşuyor (çalıştırma ortamı S2'ye bağlı)
+- [x] `GridPanel` (K2) ve kart şablonları (uygulama, not, resim)
+- [x] Sürükleme görüntüsü gerçek boyutta, imleç tutulan noktada (G7)
+- [x] Hedef hücrelerin tamamı vurgulanıyor; geçersiz hedefte farklı vurgu (G8, G6)
+- [x] Taşınan öğeler animasyonla kayıyor
+- [x] Resize tutamacı, hücreye oturma (G10)
+- [x] UI testi: `.dsl` senaryoları gerçek sürüklemeyle koşuyor (çalıştırma ortamı S2'ye bağlı)
 
 **Detay:** `PHASE3.md`
 

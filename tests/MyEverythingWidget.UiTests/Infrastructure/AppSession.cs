@@ -62,8 +62,18 @@ internal sealed class AppSession : IDisposable
     }
 
     public AutomationElement Find(string automationId) =>
-        MainWindow.FindFirstDescendant(condition => condition.ByAutomationId(automationId))
-        ?? throw new InvalidOperationException($"Element '{automationId}' not found.");
+        TryFind(automationId) ?? throw new InvalidOperationException($"Element '{automationId}' not found.");
+
+    public AutomationElement? TryFind(string automationId) =>
+        MainWindow.FindFirstDescendant(condition => condition.ByAutomationId(automationId));
+
+    /// <summary>
+    /// Finds an element of this app anywhere on the desktop; menus and flyouts live in their own popup windows.
+    /// </summary>
+    public AutomationElement? FindInPopups(string automationId) =>
+        TryFind(automationId)
+        ?? _automation.GetDesktop().FindFirstDescendant(condition =>
+            condition.ByAutomationId(automationId).And(condition.ByProcessId(_application.ProcessId)));
 
     public void ClickCloseAndWaitForExit()
     {

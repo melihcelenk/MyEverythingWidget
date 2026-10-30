@@ -47,7 +47,7 @@ pwsh scripts/test-ui.ps1 -Filter "/*/*/MainWindowTests/*"
 What the script does:
 
 1. Publishes the app and the UI tests as self-contained folders, and builds the MSIX package.
-2. Starts Windows Sandbox (minimized) with `tmp\sandbox` mapped to `C:\mew`.
+2. Starts Windows Sandbox (window moved off-screen; a minimized window drops mouse input) with `tmp\sandbox` mapped to `C:\mew`.
 3. Inside the sandbox: installs the MSIX unsigned, runs the FlaUI tests, writes results.
 4. Closes the sandbox from the host as soon as results exist (no "Close" click needed), prints the summary and
    exits with the test exit code.
