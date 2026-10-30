@@ -44,6 +44,9 @@
                 <RowDefinition Height="44" />
             </Grid.RowDefinitions>
 
+            <!-- Behind the opaque surface: EmojiFontWarmUp draws the emojis here once, where they are never seen. -->
+            <Grid x:Name="WarmUpLayer" Grid.Row="1" IsHitTestVisible="False" />
+
             <!-- Surface under the open tab; the tab strip stays on Mica. -->
             <Border Grid.Row="1"
                     Grid.RowSpan="3"

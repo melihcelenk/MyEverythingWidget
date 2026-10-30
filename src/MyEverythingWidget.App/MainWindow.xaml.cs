@@ -88,7 +88,11 @@ public sealed partial class MainWindow : Window
         Closed += OnClosed;
 
         // Start with programmatic focus on the grid, so no keyboard focus rectangle shows on the title bar buttons.
-        RootGrid.Loaded += (_, _) => GridView.Focus(FocusState.Programmatic);
+        RootGrid.Loaded += (_, _) =>
+        {
+            GridView.Focus(FocusState.Programmatic);
+            EmojiFontWarmUp.Start(WarmUpLayer, () => IconPickerDialog.Prepare(RootGrid.XamlRoot));
+        };
     }
 
     /// <summary>Gets the view model the window binds to.</summary>

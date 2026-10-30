@@ -34,7 +34,13 @@ internal sealed class AppSession : IDisposable
 
     public bool HasExited => _application.HasExited;
 
-    public static AppSession Launch(AppDataFolder data, IReadOnlyDictionary<string, string>? environment = null)
+    public static AppSession Launch(AppDataFolder data, IReadOnlyDictionary<string, string>? environment = null) =>
+        Launch(data, environment, waitUntilReady: true);
+
+    /// <summary>Launches without waiting for the content to settle, to observe what the user sees while it opens.</summary>
+    public static AppSession LaunchWithoutSettling(AppDataFolder data) => Launch(data, environment: null, waitUntilReady: false);
+
+    private static AppSession Launch(AppDataFolder data, IReadOnlyDictionary<string, string>? environment, bool waitUntilReady)
     {
         SandboxGuard.SkipUnlessAllowed();
         var startInfo = CreateStartInfo(data);
@@ -48,7 +54,11 @@ internal sealed class AppSession : IDisposable
         var window = application.GetMainWindow(automation, StartTimeout)
             ?? throw new TimeoutException("The app did not show its main window.");
         var session = new AppSession(application, automation, window);
-        session.WaitUntilReady();
+        if (waitUntilReady)
+        {
+            session.WaitUntilReady();
+        }
+
         return session;
     }
 

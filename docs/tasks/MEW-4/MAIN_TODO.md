@@ -42,6 +42,7 @@
 - Faz 11 — Tutamaç oku ve kart renkleri
 - Faz 12 — Resme tıklayınca büyük hali
 - Faz 13 — İkon penceresi sekmeleri
+- Faz 14 — İkon penceresinin geç açılması
 
 ---
 
@@ -84,6 +85,7 @@
 | 11 | Boyutlandırma tutamacının oku ve kart renkleri | 🟢 Tamamlandı | 100% | `PHASE11.md` |
 | 12 | Resme tıklayınca büyük hali | 🟢 Tamamlandı | 100% | `PHASE12.md` |
 | 13 | İkon penceresi: Select icon / Select image sekmeleri | 🟢 Tamamlandı | 100% | `PHASE13.md` |
+| 14 | İkon penceresinin geç açılması | 🟢 Tamamlandı | 100% | `PHASE14.md` |
 
 <!-- Durum ikonları: 🟢 Tamamlandı (faz bitti, tüm testleri geçti) | 🟡 Kısmi (neyin beklediği faz notunda) | ⏳ Bekliyor (başlamadı) | 🔴 Bloke (bir karar ya da dış bağımlılık bekleniyor) -->
 

@@ -44,7 +44,11 @@ internal sealed class IconPickerDialog
     private readonly ScrollViewer _iconPage;
     private readonly ScrollViewer _imagePage;
     private readonly TextBlock _imageMessage;
+    private SelectorBarItem? _iconTab;
     private IconChoice? _choice;
+
+    /// <summary>The dialog is built once per window and reused: its template and emoji grid are then already laid out.</summary>
+    private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<XamlRoot, IconPickerDialog> Instances = [];
 
     private IconPickerDialog(XamlRoot root)
     {
@@ -86,9 +90,21 @@ internal sealed class IconPickerDialog
     /// <summary>Shows the dialog; returns the choice, or <see langword="null"/> when cancelled.</summary>
     public static async Task<IconChoice?> ShowAsync(XamlRoot root)
     {
-        var picker = new IconPickerDialog(root);
+        var picker = Instances.GetValue(root, key => new IconPickerDialog(key));
+        picker.Reset();
         var result = await picker._dialog.ShowAsync();
         return result == ContentDialogResult.Secondary ? new IconChoice.Reset() : picker._choice;
+    }
+
+    /// <summary>Builds the dialog for <paramref name="root"/> ahead of its first use, so opening it is quick.</summary>
+    public static void Prepare(XamlRoot root) => Instances.GetValue(root, key => new IconPickerDialog(key));
+
+    /// <summary>Starts every showing like a new dialog: no choice, the "Select icon" tab, no warning.</summary>
+    private void Reset()
+    {
+        _choice = null;
+        _imageMessage.Text = "";
+        _iconTab!.IsSelected = true;
     }
 
     private void Choose(IconChoice chosen)
@@ -107,6 +123,7 @@ internal sealed class IconPickerDialog
     private SelectorBar CreateTabs()
     {
         var iconTab = new SelectorBarItem { Text = "Select icon", IsSelected = true };
+        _iconTab = iconTab;
         AutomationProperties.SetAutomationId(iconTab, "SelectIconTab");
         var imageTab = new SelectorBarItem { Text = "Select image" };
         AutomationProperties.SetAutomationId(imageTab, "SelectImageTab");
@@ -133,21 +150,7 @@ internal sealed class IconPickerDialog
         AutomationProperties.SetAutomationId(emojis, "IconEmojiList");
         foreach (var emoji in IconEmoji.Suggestions)
         {
-            var button = new Button
-            {
-                Content = emoji,
-                FontFamily = new FontFamily("Segoe UI Emoji"),
-                FontSize = 20,
-                Padding = new Thickness(0),
-                Width = EmojiCellSize - 4,
-                Height = EmojiCellSize - 4,
-                Background = (Brush)Application.Current.Resources["SubtleFillColorTransparentBrush"],
-                BorderThickness = new Thickness(0),
-            };
-            AutomationProperties.SetAutomationId(button, "Emoji_" + emoji);
-            AutomationProperties.SetName(button, emoji);
-            button.Click += (_, _) => Choose(new IconChoice.Emoji(emoji));
-            emojis.Children.Add(button);
+            emojis.Children.Add(new EmojiCell(emoji, EmojiCellSize - 4, () => Choose(new IconChoice.Emoji(emoji))));
         }
 
         return emojis;
