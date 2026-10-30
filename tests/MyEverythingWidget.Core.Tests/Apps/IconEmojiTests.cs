@@ -26,4 +26,12 @@ public sealed class IconEmojiTests
     {
         Assert.Null(IconEmoji.Normalize(typed));
     }
+
+    [Fact]
+    public void Suggestions_AreManyDistinctSingleSymbols()
+    {
+        Assert.True(IconEmoji.Suggestions.Count >= 40);
+        Assert.Equal(IconEmoji.Suggestions.Count, IconEmoji.Suggestions.Distinct(StringComparer.Ordinal).Count());
+        Assert.All(IconEmoji.Suggestions, emoji => Assert.Equal(emoji, IconEmoji.Normalize(emoji)));
+    }
 }

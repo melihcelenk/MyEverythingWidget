@@ -14,7 +14,7 @@ internal static class Wait
         var deadline = DateTime.UtcNow + (timeout ?? DefaultTimeout);
         while (DateTime.UtcNow < deadline)
         {
-            if (condition())
+            if (Holds(condition))
             {
                 return true;
             }
@@ -23,6 +23,19 @@ internal static class Wait
         }
 
         return condition();
+    }
+
+    /// <summary>A UI Automation call that times out while the app is busy (opening a dialog) counts as "not yet".</summary>
+    private static bool Holds(Func<bool> condition)
+    {
+        try
+        {
+            return condition();
+        }
+        catch (System.Runtime.InteropServices.COMException)
+        {
+            return false;
+        }
     }
 
     /// <summary>Returns the element as soon as <paramref name="find"/> finds it; throws on timeout.</summary>

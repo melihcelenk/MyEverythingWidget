@@ -40,6 +40,17 @@ public static class WindowPlacement
             size.Height);
     }
 
+    /// <summary>
+    /// Moves <paramref name="window"/> by the smallest amount that puts it entirely inside <paramref name="workArea"/>;
+    /// a window larger than the area keeps the area's top-left corner. The size never changes.
+    /// </summary>
+    public static PixelRect FitInside(PixelRect window, PixelRect workArea)
+    {
+        var x = Math.Max(workArea.X, Math.Min(window.X, workArea.Right - window.Width));
+        var y = Math.Max(workArea.Y, Math.Min(window.Y, workArea.Bottom - window.Height));
+        return window with { X = x, Y = y };
+    }
+
     private static bool IsTitleBarReachable(PixelRect window, PixelRect area)
     {
         var titleBarFitsVertically = window.Y >= area.Y && window.Y + TitleBarGripHeight <= area.Bottom;

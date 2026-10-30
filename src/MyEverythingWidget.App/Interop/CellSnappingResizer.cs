@@ -99,6 +99,23 @@ internal sealed class CellSnappingResizer
         SetWindowPos(_window, 0, 0, 0, size.Width, size.Height, ResizeOnlyFlags);
     }
 
+    /// <summary>Gets the client area in screen pixels: what the user sees as the window.</summary>
+    public PixelRect ClientBounds()
+    {
+        var origin = new NativePoint();
+        ClientToScreen(_window, ref origin);
+        GetClientRect(_window, out var client);
+        return new PixelRect(origin.X, origin.Y, client.Right - client.Left, client.Bottom - client.Top);
+    }
+
+    /// <summary>Moves the window so its client area's top-left corner is at (<paramref name="x"/>, <paramref name="y"/>).</summary>
+    public void MoveClientTo(int x, int y)
+    {
+        GetWindowRect(_window, out var windowRect);
+        var client = ClientBounds();
+        SetWindowPos(_window, 0, x - (client.X - windowRect.Left), y - (client.Y - windowRect.Top), 0, 0, MoveOnlyFlags);
+    }
+
     private PixelSize WindowSize(PixelSize client)
     {
         var frame = FrameSize();

@@ -38,6 +38,7 @@
 - Faz 7 — Ayarlar ve eski veriyi içe aktarma
 - Faz 8 — UI testleri, performans ve Store paketi
 - Faz 9 — İlk kullanım geri bildirimi
+- Faz 10 — Kompakt ikon, ikon penceresi, sağ tık, tutamaç
 
 ---
 
@@ -76,6 +77,7 @@
 | Faz 7 | Ayarlar ve eski veriyi içe aktarma | 🟢 Tamamlandı | 100% | `PHASE7.md` |
 | Faz 8 | UI testleri, performans ve Store paketi | 🟡 Kısmi | 90% | `PHASE8.md` |
 | Faz 9 | İlk kullanım geri bildirimi: tek satır başlık, hücre hücre boyut, kompakt mod, resim, emoji | 🟢 Tamamlandı | 100% | `PHASE9.md` |
+| Faz 10 | Kompakt ikon davranışı, tek ikon penceresi, sağ tık menüsü, tutamaç | 🟢 Tamamlandı | 100% | `PHASE10.md` |
 
 **Durum etiketleri:**
 

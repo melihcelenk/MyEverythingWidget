@@ -16,12 +16,6 @@ internal static partial class NativeMethods
     /// <summary>The user finished moving or resizing the window.</summary>
     internal const uint ExitSizeMoveMessage = 0x0232;
 
-    /// <summary>Mouse button pressed over the non-client area.</summary>
-    internal const uint NonClientLeftButtonDownMessage = 0x00A1;
-
-    /// <summary>Hit-test value of the caption, which moves the window.</summary>
-    internal const int CaptionHitTest = 2;
-
     /// <summary>Signature of a window subclass procedure (comctl32).</summary>
     [UnmanagedFunctionPointer(CallingConvention.Winapi)]
     internal delegate nint SubclassProcedure(nint window, uint message, nint wParam, nint lParam, nuint id, nuint data);
@@ -71,19 +65,23 @@ internal static partial class NativeMethods
     [return: MarshalAs(UnmanagedType.Bool)]
     internal static partial bool GetClientRect(nint windowHandle, out NativeRect rect);
 
-    [LibraryImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    internal static partial bool ReleaseCapture();
-
     /// <summary>SetWindowPos flags: keep position and z-order, do not activate.</summary>
     internal const uint ResizeOnlyFlags = 0x0002 | 0x0004 | 0x0010;
+
+    /// <summary>SetWindowPos flags: keep size and z-order, do not activate.</summary>
+    internal const uint MoveOnlyFlags = 0x0001 | 0x0004 | 0x0010;
 
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     internal static partial bool SetWindowPos(nint windowHandle, nint insertAfter, int x, int y, int width, int height, uint flags);
 
-    [LibraryImport("user32.dll", EntryPoint = "SendMessageW")]
-    internal static partial nint SendMessage(nint windowHandle, uint message, nint wParam, nint lParam);
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    internal static partial bool ClientToScreen(nint windowHandle, ref NativePoint point);
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    internal static partial bool GetCursorPos(out NativePoint point);
 
     [LibraryImport("comctl32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]

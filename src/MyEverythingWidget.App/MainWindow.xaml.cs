@@ -38,7 +38,9 @@ public sealed partial class MainWindow : Window
 
     private readonly IInstalledAppsSource _installedApps;
     private readonly CellSnappingResizer _resizer;
-    private Windows.Foundation.Point? _compactPressPoint;
+    private NativeMethods.NativePoint? _compactPressCursor;
+    private PointInt32 _compactPressWindow;
+    private bool _compactDragged;
 
     /// <summary>Creates the window for <paramref name="viewModel"/> showing <paramref name="board"/>.</summary>
     public MainWindow(MainViewModel viewModel, BoardViewModel board, IInstalledAppsSource installedApps)
@@ -74,11 +76,12 @@ public sealed partial class MainWindow : Window
         ApplyLayoutMode();
         var bounds = ResolveStartupBounds();
         AppWindow.Move(new PointInt32(bounds.X, bounds.Y));
-        _presenter.IsAlwaysOnTop = ViewModel.IsAlwaysOnTop;
+        ApplyAlwaysOnTop();
         ApplyTheme();
 
         CompactIcon.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(OnCompactPointerPressed), handledEventsToo: true);
         CompactIcon.AddHandler(UIElement.PointerMovedEvent, new PointerEventHandler(OnCompactPointerMoved), handledEventsToo: true);
+        CompactIcon.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(OnCompactPointerReleased), handledEventsToo: true);
 
         ViewModel.PropertyChanged += OnViewModelPropertyChanged;
         Closed += OnClosed;
@@ -143,10 +146,14 @@ public sealed partial class MainWindow : Window
         return new PixelSize(side, side);
     }
 
-    /// <summary>Shows the widget or its one-cell icon and sizes the window for it; the top-left corner stays put.</summary>
+    /// <summary>
+    /// Shows the widget or its one-cell icon and sizes the window for it. The visible top-left corner stays where it
+    /// was; the opened widget is then kept entirely on the icon's monitor.
+    /// </summary>
     private void ApplyLayoutMode()
     {
         var compact = ViewModel.IsCompact;
+        var corner = _resizer.ClientBounds();
         ExpandedView.Visibility = compact ? Visibility.Collapsed : Visibility.Visible;
         CompactIcon.Visibility = compact ? Visibility.Visible : Visibility.Collapsed;
         _presenter.IsResizable = !compact;
@@ -156,6 +163,14 @@ public sealed partial class MainWindow : Window
 
         var client = compact ? CompactClientSize() : Sizing.ClientSize(Board.GridSize, _resizer.Scale);
         _resizer.ResizeClient(client);
+
+        var workArea = ToPixelRect(DisplayArea.GetFromPoint(new PointInt32(corner.X, corner.Y), DisplayAreaFallback.Nearest).WorkArea);
+        var target = compact
+            ? new PixelRect(corner.X, corner.Y, client.Width, client.Height)
+            : WindowPlacement.FitInside(new PixelRect(corner.X, corner.Y, client.Width, client.Height), workArea);
+        _resizer.MoveClientTo(target.X, target.Y);
+        ApplyAlwaysOnTop();
+
         if (compact)
         {
             // Loaded on first use only: the widget's start-up should not pay for an image it does not show.
@@ -165,18 +180,8 @@ public sealed partial class MainWindow : Window
         }
     }
 
-    /// <summary>Keeps the window reachable after it grew (for example when the icon sat near a screen edge).</summary>
-    private void KeepOnScreen()
-    {
-        var position = AppWindow.Position;
-        var size = AppWindow.Size;
-        var current = new PixelRect(position.X, position.Y, size.Width, size.Height);
-        var resolved = WindowPlacement.Resolve(current, GetWorkAreas(), ToPixelRect(DisplayArea.Primary.WorkArea), current.Size);
-        if (resolved != current)
-        {
-            AppWindow.Move(new PointInt32(resolved.X, resolved.Y));
-        }
-    }
+    /// <summary>The compact icon is always on top; the widget follows the pin setting.</summary>
+    private void ApplyAlwaysOnTop() => _presenter.IsAlwaysOnTop = ViewModel.IsCompact || ViewModel.IsAlwaysOnTop;
 
     private static List<PixelRect> GetWorkAreas()
     {
@@ -196,7 +201,7 @@ public sealed partial class MainWindow : Window
     {
         if (e.PropertyName == nameof(MainViewModel.IsAlwaysOnTop))
         {
-            _presenter.IsAlwaysOnTop = ViewModel.IsAlwaysOnTop;
+            ApplyAlwaysOnTop();
         }
         else if (e.PropertyName == nameof(MainViewModel.Theme))
         {
@@ -205,40 +210,66 @@ public sealed partial class MainWindow : Window
         else if (e.PropertyName == nameof(MainViewModel.IsCompact))
         {
             ApplyLayoutMode();
-            KeepOnScreen();
         }
     }
 
     private void OnCompactIconClicked(object sender, RoutedEventArgs e)
     {
-        _compactPressPoint = null;
+        // A drag ends with the pointer still over the icon, which the button reports as a click.
+        if (_compactDragged)
+        {
+            _compactDragged = false;
+            return;
+        }
+
         if (ViewModel.IsCompact)
         {
             ViewModel.ToggleCompactCommand.Execute(null);
         }
     }
 
-    private void OnCompactPointerPressed(object sender, PointerRoutedEventArgs e) =>
-        _compactPressPoint = e.GetCurrentPoint(CompactIcon).Position;
+    private void OnCompactPointerPressed(object sender, PointerRoutedEventArgs e)
+    {
+        if (!e.GetCurrentPoint(CompactIcon).Properties.IsLeftButtonPressed)
+        {
+            return;
+        }
 
-    /// <summary>Dragging the compact icon moves the window, the way dragging a title bar does.</summary>
+        NativeMethods.GetCursorPos(out var cursor);
+        _compactPressCursor = cursor;
+        _compactPressWindow = AppWindow.Position;
+        _compactDragged = false;
+        CompactIcon.CapturePointer(e.Pointer);
+    }
+
+    /// <summary>
+    /// Dragging the compact icon moves the window with the cursor; screen coordinates are used because the window
+    /// itself moves under the pointer.
+    /// </summary>
     private void OnCompactPointerMoved(object sender, PointerRoutedEventArgs e)
     {
-        if (_compactPressPoint is not { } start || !e.GetCurrentPoint(CompactIcon).Properties.IsLeftButtonPressed)
+        if (_compactPressCursor is not { } start)
         {
             return;
         }
 
-        var point = e.GetCurrentPoint(CompactIcon).Position;
-        if (Math.Abs(point.X - start.X) < GridMetrics.DragThreshold && Math.Abs(point.Y - start.Y) < GridMetrics.DragThreshold)
+        NativeMethods.GetCursorPos(out var cursor);
+        var dx = cursor.X - start.X;
+        var dy = cursor.Y - start.Y;
+        var threshold = GridMetrics.DragThreshold * _resizer.Scale;
+        if (!_compactDragged && Math.Abs(dx) < threshold && Math.Abs(dy) < threshold)
         {
             return;
         }
 
-        _compactPressPoint = null;
+        _compactDragged = true;
+        AppWindow.Move(new PointInt32(_compactPressWindow.X + dx, _compactPressWindow.Y + dy));
+    }
+
+    private void OnCompactPointerReleased(object sender, PointerRoutedEventArgs e)
+    {
+        _compactPressCursor = null;
         CompactIcon.ReleasePointerCaptures();
-        NativeMethods.ReleaseCapture();
-        NativeMethods.SendMessage(_windowHandle, NativeMethods.NonClientLeftButtonDownMessage, NativeMethods.CaptionHitTest, 0);
     }
 
     private void OnCloseClicked(object sender, RoutedEventArgs e) => Close();

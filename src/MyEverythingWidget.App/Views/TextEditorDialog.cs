@@ -13,12 +13,11 @@ namespace MyEverythingWidget.App.Views;
 internal static class TextEditorDialog
 {
     /// <summary>Shows the dialog; returns the text, or <see langword="null"/> when cancelled.</summary>
-    public static async Task<string?> ShowAsync(XamlRoot root, string title, string initialText, bool multiline, string placeholder = "")
+    public static async Task<string?> ShowAsync(XamlRoot root, string title, string initialText, bool multiline)
     {
         var editor = new TextBox
         {
             Text = initialText,
-            PlaceholderText = placeholder,
             AcceptsReturn = multiline,
             TextWrapping = multiline ? TextWrapping.Wrap : TextWrapping.NoWrap,
             Width = 280,

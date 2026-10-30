@@ -14,6 +14,7 @@ internal sealed class AppSession : IDisposable
 
     private static readonly TimeSpan StartTimeout = TimeSpan.FromSeconds(30);
     private static readonly TimeSpan ExitTimeout = TimeSpan.FromSeconds(15);
+    private static readonly TimeSpan ReadyDelay = TimeSpan.FromMilliseconds(500);
 
     private readonly Application _application;
     private readonly UIA3Automation _automation;
@@ -46,7 +47,19 @@ internal sealed class AppSession : IDisposable
         var automation = new UIA3Automation();
         var window = application.GetMainWindow(automation, StartTimeout)
             ?? throw new TimeoutException("The app did not show its main window.");
-        return new AppSession(application, automation, window);
+        var session = new AppSession(application, automation, window);
+        session.WaitUntilReady();
+        return session;
+    }
+
+    /// <summary>
+    /// Waits until the widget's content is laid out and accepts input. The window appears before its content is ready;
+    /// a click in that moment is lost, which made tests that click right after launch fail on a cold start.
+    /// </summary>
+    private void WaitUntilReady()
+    {
+        Wait.Until(() => TryFind("WidgetGrid") is not null || TryFind("CompactIcon") is not null, StartTimeout);
+        Thread.Sleep(ReadyDelay);
     }
 
     /// <summary>Launches the installed MSIX package by its Application User Model ID.</summary>

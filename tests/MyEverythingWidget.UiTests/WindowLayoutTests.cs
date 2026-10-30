@@ -150,17 +150,24 @@ public sealed class WindowLayoutTests : IDisposable
     }
 
     [Fact]
-    public void EmojiFromMenu_ReplacesCardIcon()
+    public void EmojiPickedInIconDialog_ReplacesCardIcon()
     {
         Seed(new AppItem("A1", GeneralId, new GridPlacement(0, 0, 1, 1), "Cmd", Path.Combine(Environment.SystemDirectory, "cmd.exe"), LaunchKind.Executable, null));
         using (var app = AppSession.Launch(_data))
         {
+            GridDriver.WaitForUi();
             RealMouse.RightClick(app.Find("Card_A1").BoundingRectangle.Center());
-            Wait.ForElement(() => app.FindInPopups("SetEmojiMenuItem")).AsMenuItem().Invoke();
-            Wait.ForElement(() => app.FindInPopups("TextEditorBox")).AsTextBox().Text = "🚀";
-            var dialog = Wait.ForElement(() => app.FindInPopups("TextEditorDialog"));
-            Wait.ForElement(() => dialog.FindFirstDescendant(c => c.ByAutomationId("PrimaryButton"))).AsButton().Invoke();
+            var menuItem = Wait.ForElement(() => app.FindInPopups("ChangeIconMenuItem"));
+            Assert.Null(app.FindInPopups("SetEmojiMenuItem"));
+            Assert.Null(app.FindInPopups("ResetIconMenuItem"));
+            menuItem.AsMenuItem().Invoke();
 
+            var dialog = Wait.ForElement(() => app.FindInPopups("IconPickerDialog"));
+            Assert.NotNull(dialog.FindFirstDescendant(c => c.ByAutomationId("ChooseImageButton")));
+            Assert.NotNull(dialog.FindFirstDescendant(c => c.ByAutomationId("ResetIconButton")));
+            RealMouse.Click(Wait.ForElement(() => dialog.FindFirstDescendant(c => c.ByAutomationId("Emoji_🚀"))).BoundingRectangle.Center());
+
+            Assert.True(Wait.Until(() => app.FindInPopups("IconPickerDialog") is null), "Picking an emoji should close the dialog.");
             Assert.True(Wait.Until(() => app.Find("Card_A1").FindFirstDescendant(c => c.ByAutomationId("AppEmoji"))?.Name == "🚀"));
             app.ClickCloseAndWaitForExit();
         }

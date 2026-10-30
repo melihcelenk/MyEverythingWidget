@@ -171,20 +171,10 @@ public sealed partial class WidgetGridView : UserControl
             rename.Click += (_, _) => _ = EditAsync(item);
             menu.Items.Add(rename);
 
-            var changeIcon = new MenuFlyoutItem { Text = "Change icon\u2026", Icon = new FontIcon { Glyph = "\uEB9F" } };
+            var changeIcon = new MenuFlyoutItem { Text = "Change icon…", Icon = new FontIcon { Glyph = "" } };
             AutomationProperties.SetAutomationId(changeIcon, "ChangeIconMenuItem");
             changeIcon.Click += (_, _) => _ = ChangeIconAsync(item);
             menu.Items.Add(changeIcon);
-
-            var resetIcon = new MenuFlyoutItem { Text = "Reset icon", Icon = new FontIcon { Glyph = "\uE72C" } };
-            AutomationProperties.SetAutomationId(resetIcon, "ResetIconMenuItem");
-            resetIcon.Click += (_, _) => _ = _board?.ResetIconAsync(item.Id);
-
-            var emoji = new MenuFlyoutItem { Text = "Use emoji…", Icon = new FontIcon { Glyph = "" } };
-            AutomationProperties.SetAutomationId(emoji, "SetEmojiMenuItem");
-            emoji.Click += (_, _) => _ = SetEmojiAsync(item);
-            menu.Items.Add(emoji);
-            menu.Items.Add(resetIcon);
         }
 
         menu.Items.Add(moveTo);
@@ -197,17 +187,7 @@ public sealed partial class WidgetGridView : UserControl
     /// <summary>Gets or sets the window that owns file pickers opened from the card menu.</summary>
     public nint OwnerWindowHandle { get; set; }
 
-    /// <summary>Asks for an emoji to show instead of the card's icon.</summary>
-    private async Task SetEmojiAsync(GridItemViewModel item)
-    {
-        if (_board is not null
-            && await TextEditorDialog.ShowAsync(XamlRoot, "Use emoji", item.Emoji ?? "", multiline: false, placeholder: "Type an emoji or press Win + .") is { } text)
-        {
-            _board.SetEmoji(item.Id, text);
-        }
-    }
-
-    /// <summary>Lets the user pick an image to use as the card's icon.</summary>
+    /// <summary>Lets the user change the card's icon: an emoji, an image file, or the original icon.</summary>
     private async Task ChangeIconAsync(GridItemViewModel item)
     {
         if (_board is null)
@@ -215,6 +195,22 @@ public sealed partial class WidgetGridView : UserControl
             return;
         }
 
+        switch (await IconPickerDialog.ShowAsync(XamlRoot))
+        {
+            case IconChoice.Emoji emoji:
+                _board.SetEmoji(item.Id, emoji.Value);
+                break;
+            case IconChoice.Image:
+                await PickIconImageAsync(item);
+                break;
+            case IconChoice.Reset:
+                await _board.ResetIconAsync(item.Id);
+                break;
+        }
+    }
+
+    private async Task PickIconImageAsync(GridItemViewModel item)
+    {
         var picker = new Windows.Storage.Pickers.FileOpenPicker { SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.PicturesLibrary };
         foreach (var extension in new[] { ".png", ".jpg", ".jpeg", ".ico", ".bmp", ".gif", ".webp" })
         {
@@ -225,7 +221,7 @@ public sealed partial class WidgetGridView : UserControl
         if (await picker.PickSingleFileAsync() is { } file)
         {
             await using var stream = File.OpenRead(file.Path);
-            await _board.ChangeIconAsync(item.Id, stream);
+            await _board!.ChangeIconAsync(item.Id, stream);
         }
     }
 

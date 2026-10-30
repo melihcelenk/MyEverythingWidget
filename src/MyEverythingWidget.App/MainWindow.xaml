@@ -11,6 +11,26 @@
     </Window.SystemBackdrop>
 
     <Grid x:Name="RootGrid" KeyboardAcceleratorPlacementMode="Hidden">
+        <Grid.Resources>
+            <!-- Right-click on an empty part of the grid or its surface: the same choices as the Add button. -->
+            <MenuFlyout x:Key="SurfaceAddMenu">
+                <MenuFlyoutItem AutomationProperties.AutomationId="GridAddAppMenuItem" Text="Add app…" Click="OnAddAppClicked">
+                    <MenuFlyoutItem.Icon>
+                        <FontIcon Glyph="&#xECAA;" />
+                    </MenuFlyoutItem.Icon>
+                </MenuFlyoutItem>
+                <MenuFlyoutItem AutomationProperties.AutomationId="GridAddNoteMenuItem" Text="Add note" Click="OnAddNoteClicked">
+                    <MenuFlyoutItem.Icon>
+                        <FontIcon Glyph="&#xE70B;" />
+                    </MenuFlyoutItem.Icon>
+                </MenuFlyoutItem>
+                <MenuFlyoutItem AutomationProperties.AutomationId="GridAddImageMenuItem" Text="Add image…" Click="OnAddImageClicked">
+                    <MenuFlyoutItem.Icon>
+                        <FontIcon Glyph="&#xEB9F;" />
+                    </MenuFlyoutItem.Icon>
+                </MenuFlyoutItem>
+            </MenuFlyout>
+        </Grid.Resources>
         <Grid.KeyboardAccelerators>
             <KeyboardAccelerator Modifiers="Control" Key="V" Invoked="OnPasteInvoked" />
         </Grid.KeyboardAccelerators>
@@ -29,7 +49,8 @@
                     Grid.RowSpan="3"
                     Background="{ThemeResource LayerFillColorDefaultBrush}"
                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                    BorderThickness="0,1,0,0" />
+                    BorderThickness="0,1,0,0"
+                    ContextFlyout="{StaticResource SurfaceAddMenu}" />
 
             <!-- One-row title bar: compact button, tabs, drag area, pin and close. -->
             <views:CategoryTabsView x:Name="TabsView" Grid.Row="0" Margin="4,0,4,0">
@@ -75,6 +96,7 @@
                 AllowDrop="True"
                 DragOver="OnGridDragOver"
                 Drop="OnGridDrop"
+                ContextFlyout="{StaticResource SurfaceAddMenu}"
                 Margin="6,6,6,6"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top" />

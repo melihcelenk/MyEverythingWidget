@@ -7,6 +7,18 @@ namespace MyEverythingWidget.Core.Apps;
 /// </summary>
 public static class IconEmoji
 {
+    /// <summary>Gets the emojis offered in the icon picker, grouped loosely by topic.</summary>
+    public static IReadOnlyList<string> Suggestions { get; } =
+    [
+        "⭐", "❤️", "🔥", "✅", "📌", "🚀", "💡", "🎯",
+        "📁", "📂", "📄", "📝", "📊", "📈", "🗂️", "🗃️",
+        "💻", "🖥️", "⌨️", "🖱️", "🖨️", "📱", "🔧", "⚙️",
+        "🌐", "🔗", "📧", "💬", "📞", "📅", "⏰", "🔔",
+        "🎵", "🎬", "🎮", "📷", "🎨", "📚", "🛒", "💰",
+        "🏠", "🏢", "✈️", "🚗", "☕", "🍕", "🐱", "🐶",
+        "🔒", "🔑", "🛡️", "🐞", "🧪", "📦", "🗑️", "❓",
+    ];
+
     /// <summary>
     /// Returns the first symbol of <paramref name="text"/> (a whole emoji, including skin tones and joined
     /// sequences), or <see langword="null"/> when it is blank.

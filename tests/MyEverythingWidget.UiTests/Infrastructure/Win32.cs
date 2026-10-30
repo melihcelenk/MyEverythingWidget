@@ -32,6 +32,88 @@ internal static partial class Win32
 
     public static nint ForegroundWindow() => GetForegroundWindow();
 
+    /// <summary>Screen position of the window's client area top-left corner (what the user sees as the window corner).</summary>
+    public static System.Drawing.Point ClientOrigin(nint window)
+    {
+        var point = new NativePoint();
+        ClientToScreen(window, ref point);
+        return new System.Drawing.Point(point.X, point.Y);
+    }
+
+    /// <summary>Client area in screen coordinates.</summary>
+    public static System.Drawing.Rectangle ClientBounds(nint window)
+    {
+        GetClientRect(window, out var client);
+        var origin = ClientOrigin(window);
+        return new System.Drawing.Rectangle(origin.X, origin.Y, client.Right - client.Left, client.Bottom - client.Top);
+    }
+
+    /// <summary>Work area of the monitor that holds most of the window.</summary>
+    public static System.Drawing.Rectangle WorkAreaOf(nint window)
+    {
+        var info = new MonitorInfo { Size = Marshal.SizeOf<MonitorInfo>() };
+        GetMonitorInfoW(MonitorFromWindow(window, NearestMonitor), ref info);
+        return System.Drawing.Rectangle.FromLTRB(info.Work.Left, info.Work.Top, info.Work.Right, info.Work.Bottom);
+    }
+
+    /// <summary>Gets a value indicating whether the mouse cursor currently shows the diagonal (NW-SE) resize arrows.</summary>
+    public static bool CursorIsDiagonalResize()
+    {
+        var info = new CursorInfo { Size = Marshal.SizeOf<CursorInfo>() };
+        GetCursorInfo(ref info);
+        return info.Cursor == LoadCursorW(0, DiagonalResizeCursor);
+    }
+
+    private const uint NearestMonitor = 2;
+    private const nint DiagonalResizeCursor = 32642;
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct NativePoint
+    {
+        public int X;
+        public int Y;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct MonitorInfo
+    {
+        public int Size;
+        public Rect Monitor;
+        public Rect Work;
+        public uint Flags;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct CursorInfo
+    {
+        public int Size;
+        public uint Flags;
+        public nint Cursor;
+        public NativePoint Position;
+    }
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool ClientToScreen(nint window, ref NativePoint point);
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool GetClientRect(nint window, out Rect rect);
+
+    [LibraryImport("user32.dll")]
+    private static partial nint MonitorFromWindow(nint window, uint flags);
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool GetMonitorInfoW(nint monitor, ref MonitorInfo info);
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool GetCursorInfo(ref CursorInfo info);
+
+    [LibraryImport("user32.dll")]
+    private static partial nint LoadCursorW(nint instance, nint name);
+
     [LibraryImport("user32.dll")]
     private static partial long GetWindowLongPtrW(nint window, int index);
 
