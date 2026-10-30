@@ -16,6 +16,7 @@ public sealed partial class ShellLauncher(ILogger<ShellLauncher> logger) : IAppL
     {
         ArgumentNullException.ThrowIfNull(app);
 
+        app = app with { Target = LaunchTarget.NormalizeTarget(app.LaunchKind, app.Target) };
         if (!Exists(app))
         {
             return LaunchOutcome.TargetMissing;

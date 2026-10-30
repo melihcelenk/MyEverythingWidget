@@ -76,6 +76,16 @@ public sealed class ShellServicesTests : IDisposable
     }
 
     [Fact]
+    public async Task Icon_ForPathWithForwardSlashes_IsSavedAsPng()
+    {
+        var explorer = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "explorer.exe").Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+
+        var icon = await CreateIconStore().CreateIconAsync(new LaunchTarget(LaunchKind.Executable, explorer, "Explorer"), TestContext.Current.CancellationToken);
+
+        AssertIsPng(icon);
+    }
+
+    [Fact]
     public async Task Icon_ForMissingFile_IsNull()
     {
         var icon = await CreateIconStore().CreateIconAsync(

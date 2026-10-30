@@ -47,15 +47,16 @@ public static class LegacyImporter
             switch (candidate.Source)
             {
                 case LegacyApp app:
-                    items.Add(new AppItem(candidate.Id, candidate.CategoryId, placement, app.Name, app.Target, app.Kind, null));
-                    icons.Add(new PendingIcon(candidate.Id, new LaunchTarget(app.Kind, app.Target, app.Name)));
+                    var appTarget = LaunchTarget.NormalizeTarget(app.Kind, app.Target);
+                    items.Add(new AppItem(candidate.Id, candidate.CategoryId, placement, app.Name, appTarget, app.Kind, null));
+                    icons.Add(new PendingIcon(candidate.Id, new LaunchTarget(app.Kind, appTarget, app.Name)));
                     break;
                 case LegacyNote { Kind: LegacyNoteKind.Image } image:
                     images.Add(new PendingImage(candidate.Id, candidate.CategoryId, placement, image.Content));
                     break;
                 case LegacyNote { Kind: LegacyNoteKind.Link or LegacyNoteKind.File } link:
                     var kind = link.Kind == LegacyNoteKind.Link ? LaunchKind.Url : LaunchKind.Executable;
-                    var target = link.Content.Trim();
+                    var target = LaunchTarget.NormalizeTarget(kind, link.Content);
                     items.Add(new AppItem(candidate.Id, candidate.CategoryId, placement, NameOf(kind, target), target, kind, null));
                     icons.Add(new PendingIcon(candidate.Id, new LaunchTarget(kind, target, NameOf(kind, target))));
                     break;

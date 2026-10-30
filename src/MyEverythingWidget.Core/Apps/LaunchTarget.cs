@@ -42,6 +42,8 @@ public sealed record LaunchTarget(LaunchKind Kind, string Target, string Suggest
             return null;
         }
 
+        value = NormalizePath(value);
+
         if (isDirectory(value))
         {
             var name = Path.GetFileName(Path.TrimEndingDirectorySeparator(value));
@@ -50,6 +52,25 @@ public sealed record LaunchTarget(LaunchKind Kind, string Target, string Suggest
 
         return new LaunchTarget(LaunchKind.Executable, value, Capitalize(Path.GetFileNameWithoutExtension(value)));
     }
+
+    /// <summary>
+    /// Returns <paramref name="target"/> with Windows separators when it is a file or folder path
+    /// (<c>C:/Tools/x.exe</c> becomes <c>C:\Tools\x.exe</c>); web addresses and Apps-folder items are returned unchanged.
+    /// The Windows shell cannot open, or render the icon of, a path written with forward slashes.
+    /// </summary>
+    public static string NormalizeTarget(LaunchKind kind, string target)
+    {
+        ArgumentNullException.ThrowIfNull(target);
+
+        var trimmed = target.Trim();
+        return kind != LaunchKind.Url
+            && !trimmed.StartsWith(AppsFolderPrefix, StringComparison.OrdinalIgnoreCase)
+            && Path.IsPathFullyQualified(trimmed)
+                ? NormalizePath(trimmed)
+                : trimmed;
+    }
+
+    private static string NormalizePath(string path) => path.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
 
     private static Uri? TryParseWebAddress(string value)
     {

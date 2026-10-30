@@ -1,5 +1,7 @@
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.Marshalling;
+using MyEverythingWidget.Core.Apps;
+using MyEverythingWidget.Core.State;
 
 namespace MyEverythingWidget.Infrastructure.Shell;
 
@@ -107,8 +109,11 @@ internal static partial class ShellNative
     }
 
     /// <summary>Returns a shell item for a path, a URL-like shell path (<c>shell:AppsFolder\...</c>) or <see langword="null"/>.</summary>
+    /// <remarks>Forward slashes are turned into backslashes first; the shell rejects <c>C:/...</c> paths.</remarks>
     public static IShellItem? ItemFromParsingName(string path) =>
-        SHCreateItemFromParsingName(path, 0, ShellItemId, out var pointer) >= 0 ? Wrap<IShellItem>(pointer) : null;
+        SHCreateItemFromParsingName(LaunchTarget.NormalizeTarget(LaunchKind.Executable, path), 0, ShellItemId, out var pointer) >= 0
+            ? Wrap<IShellItem>(pointer)
+            : null;
 
     /// <summary>Reads a shell item name and frees the native string.</summary>
     public static string? Name(IShellItem item, ShellItemName nameType)
