@@ -70,27 +70,20 @@
 
 | Faz | Başlık | Durum | Tamamlanma | Dosya |
 |-----|--------|-------|------------|-------|
-| Faz 1 | İskelet, pencere ve MSIX | 🟢 Tamamlandı | 100% | `PHASE1.md` |
-| Faz 2 | Grid motoru, durum ve kalıcılık (Core) | 🟢 Tamamlandı | 100% | `PHASE2.md` |
-| Faz 3 | Grid UI: sürükle-bırak ve boyutlandırma | 🟢 Tamamlandı | 100% | `PHASE3.md` |
-| Faz 4 | Kategoriler | 🟢 Tamamlandı | 100% | `PHASE4.md` |
-| Faz 5 | Uygulama ekleme ve otomatik ikon | 🟢 Tamamlandı | 100% | `PHASE5.md` |
-| Faz 6 | Notlar, resimler ve Ctrl+V | 🟢 Tamamlandı | 100% | `PHASE6.md` |
-| Faz 7 | Ayarlar ve eski veriyi içe aktarma | 🟢 Tamamlandı | 100% | `PHASE7.md` |
-| Faz 8 | UI testleri, performans ve Store paketi | 🟡 Kısmi | 90% | `PHASE8.md` |
-| Faz 9 | İlk kullanım geri bildirimi: tek satır başlık, hücre hücre boyut, kompakt mod, resim, emoji | 🟢 Tamamlandı | 100% | `PHASE9.md` |
-| Faz 10 | Kompakt ikon davranışı, tek ikon penceresi, sağ tık menüsü, tutamaç | 🟢 Tamamlandı | 100% | `PHASE10.md` |
-| Faz 11 | Boyutlandırma tutamacının oku ve kart renkleri | 🟢 Tamamlandı | 100% | `PHASE11.md` |
-| Faz 12 | Resme tıklayınca büyük hali | 🟢 Tamamlandı | 100% | `PHASE12.md` |
+| 1 | İskelet, pencere ve MSIX | 🟢 Tamamlandı | 100% | `PHASE1.md` |
+| 2 | Grid motoru, durum ve kalıcılık (Core) | 🟢 Tamamlandı | 100% | `PHASE2.md` |
+| 3 | Grid UI: sürükle-bırak ve boyutlandırma | 🟢 Tamamlandı | 100% | `PHASE3.md` |
+| 4 | Kategoriler | 🟢 Tamamlandı | 100% | `PHASE4.md` |
+| 5 | Uygulama ekleme ve otomatik ikon | 🟢 Tamamlandı | 100% | `PHASE5.md` |
+| 6 | Notlar, resimler ve Ctrl+V | 🟢 Tamamlandı | 100% | `PHASE6.md` |
+| 7 | Ayarlar ve eski veriyi içe aktarma | 🟢 Tamamlandı | 100% | `PHASE7.md` |
+| 8 | UI testleri, performans ve Store paketi | 🟡 Kısmi | 90% | `PHASE8.md` |
+| 9 | İlk kullanım geri bildirimi: tek satır başlık, hücre hücre boyut, kompakt mod, resim, emoji | 🟢 Tamamlandı | 100% | `PHASE9.md` |
+| 10 | Kompakt ikon davranışı, tek ikon penceresi, sağ tık menüsü, tutamaç | 🟢 Tamamlandı | 100% | `PHASE10.md` |
+| 11 | Boyutlandırma tutamacının oku ve kart renkleri | 🟢 Tamamlandı | 100% | `PHASE11.md` |
+| 12 | Resme tıklayınca büyük hali | 🟢 Tamamlandı | 100% | `PHASE12.md` |
 
-**Durum etiketleri:**
-
-| Etiket | Anlamı |
-|--------|--------|
-| 🟢 Tamamlandı | Faz bitti, fazın tüm testleri geçti |
-| 🟡 Kısmi | Bir kısmı bitti; neyin beklediği faz notunda yazılı |
-| ⏳ Bekliyor | Başlamadı |
-| 🔴 Bloke | Bir karar ya da dış bağımlılık bekleniyor; neyin beklendiği yazılı |
+<!-- Durum ikonları: 🟢 Tamamlandı (faz bitti, tüm testleri geçti) | 🟡 Kısmi (neyin beklediği faz notunda) | ⏳ Bekliyor (başlamadı) | 🔴 Bloke (bir karar ya da dış bağımlılık bekleniyor) -->
 
 ---
 
