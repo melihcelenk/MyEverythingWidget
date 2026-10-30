@@ -14,9 +14,22 @@
              TabWidthMode="SizeToContent"
              SelectionChanged="OnSelectionChanged"
              TabItemsChanged="OnTabItemsChanged">
+        <!-- The open tab joins the grid surface below it (same layer colour), as in Windows 11 tabbed apps.
+             Theme dictionaries make the colour follow a theme change; a plain StaticResource would keep the start theme. -->
         <TabView.Resources>
-            <!-- The open tab joins the grid surface below it (same layer colour), as in Windows 11 tabbed apps. -->
-            <StaticResource x:Key="TabViewItemHeaderBackgroundSelected" ResourceKey="LayerFillColorDefaultBrush" />
+            <ResourceDictionary>
+                <ResourceDictionary.ThemeDictionaries>
+                    <ResourceDictionary x:Key="Light">
+                        <StaticResource x:Key="TabViewItemHeaderBackgroundSelected" ResourceKey="LayerFillColorDefaultBrush" />
+                    </ResourceDictionary>
+                    <ResourceDictionary x:Key="Dark">
+                        <StaticResource x:Key="TabViewItemHeaderBackgroundSelected" ResourceKey="LayerFillColorDefaultBrush" />
+                    </ResourceDictionary>
+                    <ResourceDictionary x:Key="HighContrast">
+                        <StaticResource x:Key="TabViewItemHeaderBackgroundSelected" ResourceKey="SystemColorWindowColorBrush" />
+                    </ResourceDictionary>
+                </ResourceDictionary.ThemeDictionaries>
+            </ResourceDictionary>
         </TabView.Resources>
         <TabView.TabStripFooter>
             <Button x:Name="AddCategoryButton"

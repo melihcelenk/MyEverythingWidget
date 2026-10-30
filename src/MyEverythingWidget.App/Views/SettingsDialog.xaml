@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentDialog
+    x:Class="MyEverythingWidget.App.Views.SettingsDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    AutomationProperties.AutomationId="SettingsDialog"
+    Title="Settings"
+    CloseButtonText="Close"
+    DefaultButton="Close">
+
+    <StackPanel Width="300" Spacing="16">
+        <RadioButtons x:Name="ThemeChoices" Header="Theme" AutomationProperties.AutomationId="ThemeChoices">
+            <RadioButton x:Name="ThemeSystem" AutomationProperties.AutomationId="ThemeSystem" Content="Use Windows setting" Checked="OnThemeChecked" />
+            <RadioButton x:Name="ThemeLight" AutomationProperties.AutomationId="ThemeLight" Content="Light" Checked="OnThemeChecked" />
+            <RadioButton x:Name="ThemeDark" AutomationProperties.AutomationId="ThemeDark" Content="Dark" Checked="OnThemeChecked" />
+        </RadioButtons>
+
+        <ToggleSwitch x:Name="AlwaysOnTopSwitch"
+                      AutomationProperties.AutomationId="AlwaysOnTopSwitch"
+                      Header="Always on top"
+                      Toggled="OnAlwaysOnTopToggled" />
+
+        <StackPanel Spacing="4">
+            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="About" />
+            <TextBlock x:Name="VersionText" AutomationProperties.AutomationId="VersionText" Style="{StaticResource BodyTextBlockStyle}" />
+            <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                       Style="{StaticResource CaptionTextBlockStyle}"
+                       TextWrapping="Wrap"
+                       Text="Your apps, notes and images stay on this PC. Nothing is sent anywhere, except that a web shortcut fetches its site icon from that site." />
+            <HyperlinkButton Padding="0" Content="Source code on GitHub" NavigateUri="https://github.com/melihcelenk/MyEverythingWidget" />
+        </StackPanel>
+    </StackPanel>
+</ContentDialog>

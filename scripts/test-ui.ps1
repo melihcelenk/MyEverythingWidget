@@ -68,8 +68,8 @@ $installed = Get-AppxPackage -Name "MyEverythingWidget"
 $filterArgument = if ($Filter) { "-filter `"$Filter`"" } else { "" }
 @"
 @echo off
+setlocal EnableDelayedExpansion
 echo started > "$sandboxRoot\results\started.txt"
-esults\started.txt"
 set MEW_UI_TEST_SANDBOX=1
 set MEW_UI_TEST_ARTIFACTS=$sandboxRoot\results\shots
 set MEW_APP_EXE=$sandboxRoot\app\MyEverythingWidget.exe
@@ -80,8 +80,20 @@ if not exist "$sandboxRoot\results\aumid.txt" (
   exit /b 2
 )
 set /p MEW_APP_AUMID=<"$sandboxRoot\results\aumid.txt"
-"$sandboxRoot\tests\MyEverythingWidget.UiTests.exe" -noColor -result-xml "$sandboxRoot\results\results.xml" $filterArgument > "$sandboxRoot\results\console.txt" 2>&1
-echo %ERRORLEVEL% > "$sandboxRoot\results\exitcode.txt"
+set TESTS="$sandboxRoot\tests\MyEverythingWidget.UiTests.exe" -noColor
+set ISOLATED=0
+rem Tests that use the system drag-and-drop loop run first, in their own process (PHASE7.md, 7.6.2).
+if "$Filter"=="" (
+  %TESTS% -trait "Isolation=OwnProcess" -result-xml "$sandboxRoot\results\results-isolated.xml" > "$sandboxRoot\results\console-isolated.txt" 2>&1
+  set ISOLATED=!ERRORLEVEL!
+  %TESTS% -trait- "Isolation=OwnProcess" -result-xml "$sandboxRoot\results\results.xml" > "$sandboxRoot\results\console.txt" 2>&1
+) else (
+  %TESTS% -result-xml "$sandboxRoot\results\results.xml" $filterArgument > "$sandboxRoot\results\console.txt" 2>&1
+)
+set MAIN=!ERRORLEVEL!
+if not "!ISOLATED!"=="0" set MAIN=!ISOLATED!
+if exist "$sandboxRoot\results\console-isolated.txt" type "$sandboxRoot\results\console-isolated.txt" >> "$sandboxRoot\results\console.txt"
+echo !MAIN! > "$sandboxRoot\results\exitcode.txt"
 "@ | Set-Content -Encoding ascii (Join-Path $runner "run.cmd")
 
 $wsbPath = Join-Path $work "ui-tests.wsb"

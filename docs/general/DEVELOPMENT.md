@@ -59,6 +59,8 @@ What the script does:
 | `tmp\sandbox\results\install.txt` | MSIX install output |
 
 UI tests find elements by `AutomationProperties.AutomationId`; give every interactive element one.
+Tests that rely on the system drag-and-drop loop (TabView reordering) carry `[Trait("Isolation", "OwnProcess")]`;
+the runner executes them first, in their own test process (see `docs/tasks/MEW-4/PHASE7.md`, 7.6.2).
 They wait by polling (`Wait.Until`), never with fixed sleeps.
 
 ## MSIX package

@@ -72,7 +72,7 @@
 | Faz 4 | Kategoriler | 🟢 Tamamlandı | 100% | `PHASE4.md` |
 | Faz 5 | Uygulama ekleme ve otomatik ikon | 🟢 Tamamlandı | 100% | `PHASE5.md` |
 | Faz 6 | Notlar, resimler ve Ctrl+V | 🟢 Tamamlandı | 100% | `PHASE6.md` |
-| Faz 7 | Ayarlar ve eski veriyi içe aktarma | ⏳ Bekliyor | 0% | `PHASE7.md` |
+| Faz 7 | Ayarlar ve eski veriyi içe aktarma | 🟢 Tamamlandı | 100% | `PHASE7.md` |
 | Faz 8 | UI testleri, performans ve Store paketi | ⏳ Bekliyor | 0% | `PHASE8.md` |
 
 **Durum etiketleri:**
@@ -582,15 +582,15 @@ Bunlar ayrı task'lara bırakılır.
 
 ## Faz 7 — Ayarlar ve eski veriyi içe aktarma
 
-**Durum:** ⏳ Bekliyor
+**Durum:** 🟢 Tamamlandı (2026-10-30). Unit 231/231, UI 47/47 (Sandbox). Sonuç: `PHASE7.md` → 7.5 Sonuç.
 
 **Özet:** Ayarlar sayfası, tema doğrulaması, Python sürümünün verisini içe aktarma.
 
 **Hedefler:**
 
-- [ ] Ayarlar: Theme (System/Light/Dark), Always on top, About
-- [ ] Açık/koyu tema UI testi (W1)
-- [ ] `LegacyImporter`: `%LOCALAPPDATA%\MyEverythingWidget\app_state.json` ve resim dosyaları (D1)
+- [x] Ayarlar: Theme (System/Light/Dark), Always on top, About
+- [x] Açık/koyu tema UI testi (W1)
+- [x] `LegacyImporter`: `%LOCALAPPDATA%\MyEverythingWidget\app_state.json` ve resim dosyaları (D1)
 
 **Detay:** `PHASE7.md`
 

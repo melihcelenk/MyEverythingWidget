@@ -88,6 +88,20 @@ public sealed partial class BoardViewModel : ObservableObject
     /// <summary>Gets the cards of the selected category.</summary>
     public ObservableCollection<GridItemViewModel> Items { get; } = [];
 
+    /// <summary>Shows the result of importing the previous version's data, when there is something to tell.</summary>
+    public void ShowMigrationResult(MigrationResult result)
+    {
+        ArgumentNullException.ThrowIfNull(result);
+
+        if (result.Message is { } message)
+        {
+            var severity = result.Outcome == MigrationOutcome.Imported && result.MissingImages == 0
+                ? StatusSeverity.Informational
+                : StatusSeverity.Warning;
+            ShowStatus(message, severity);
+        }
+    }
+
     /// <summary>Gets the category tabs in order.</summary>
     public ObservableCollection<CategoryViewModel> Categories { get; } = [];
 

@@ -37,6 +37,15 @@
             </Grid>
 
             <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="2" VerticalAlignment="Center">
+                <Button
+                    x:Name="SettingsButton"
+                    AutomationProperties.AutomationId="SettingsButton"
+                    AutomationProperties.Name="Settings"
+                    ToolTipService.ToolTip="Settings"
+                    Style="{StaticResource TitleBarButtonStyle}"
+                    Click="OnSettingsClicked">
+                    <FontIcon FontSize="14" Glyph="&#xE713;" />
+                </Button>
                 <ToggleButton
                     x:Name="PinButton"
                     AutomationProperties.AutomationId="PinButton"

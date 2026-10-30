@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using MyEverythingWidget.Core.Grid;
+using MyEverythingWidget.Core.Legacy;
 using MyEverythingWidget.Core.Settings;
 using MyEverythingWidget.Core.State;
 using MyEverythingWidget.Infrastructure.Shell;
@@ -46,23 +47,49 @@ public sealed partial class App : Application, IDisposable
     }
 
     /// <inheritdoc />
-    protected override void OnLaunched(LaunchActivatedEventArgs args)
+    protected override async void OnLaunched(LaunchActivatedEventArgs args)
     {
         _dispatcherQueue = DispatcherQueue.GetForCurrentThread();
 
         var dataDirectory = AppDataLocation.Resolve();
         var settingsStore = new JsonSettingsStore(dataDirectory, TimeProvider.System, _loggerFactory.CreateLogger<JsonSettingsStore>());
         var stateStore = new JsonWidgetStateStore(dataDirectory, TimeProvider.System, _loggerFactory.CreateLogger<JsonWidgetStateStore>());
-        var board = new WidgetBoard(stateStore, () => Guid.NewGuid().ToString("N"), GridSize.Default, _loggerFactory.CreateLogger<WidgetBoard>());
 
         var iconStore = new ShellIconStore(dataDirectory, new FaviconSource(_httpClient), _loggerFactory.CreateLogger<ShellIconStore>());
+        var imageStore = new ImageStore(dataDirectory);
         var launcher = new ShellLauncher(_loggerFactory.CreateLogger<ShellLauncher>());
 
-        _mainWindow = new MainWindow(
-            new MainViewModel(settingsStore),
-            new BoardViewModel(board, iconStore, launcher, new ImageStore(dataDirectory)),
-            new ShellAppsSource());
+        // First start of this version: bring over the Python version's items.
+        var migration = LegacyStatePath() is { } legacyPath
+            ? await new LegacyMigrator(stateStore, iconStore, imageStore, NewId, GridSize.Default).MigrateAsync(legacyPath, CancellationToken.None)
+            : null;
+
+        var board = new WidgetBoard(stateStore, NewId, GridSize.Default, _loggerFactory.CreateLogger<WidgetBoard>());
+        var boardViewModel = new BoardViewModel(board, iconStore, launcher, imageStore);
+        if (migration is not null)
+        {
+            boardViewModel.ShowMigrationResult(migration);
+        }
+
+        _mainWindow = new MainWindow(new MainViewModel(settingsStore), boardViewModel, new ShellAppsSource());
         _mainWindow.Activate();
+    }
+
+    private static string NewId() => Guid.NewGuid().ToString("N");
+
+    /// <summary>
+    /// The Python version's state file; <c>MEW_LEGACY_STATE</c> overrides it. Test runs (<c>MEW_DATA_DIR</c> set)
+    /// import only from an explicitly given file, so they never read the developer's real data.
+    /// </summary>
+    private static string? LegacyStatePath()
+    {
+        var overridePath = Environment.GetEnvironmentVariable("MEW_LEGACY_STATE");
+        if (!string.IsNullOrWhiteSpace(overridePath))
+        {
+            return overridePath;
+        }
+
+        return Environment.GetEnvironmentVariable(AppDataLocation.OverrideVariable) is null ? LegacyStateReader.DefaultPath : null;
     }
 
     private static void OnUnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)

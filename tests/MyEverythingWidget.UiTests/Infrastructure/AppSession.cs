@@ -33,10 +33,16 @@ internal sealed class AppSession : IDisposable
 
     public bool HasExited => _application.HasExited;
 
-    public static AppSession Launch(AppDataFolder data)
+    public static AppSession Launch(AppDataFolder data, IReadOnlyDictionary<string, string>? environment = null)
     {
         SandboxGuard.SkipUnlessAllowed();
-        var application = Application.Launch(CreateStartInfo(data));
+        var startInfo = CreateStartInfo(data);
+        foreach (var (name, value) in environment ?? new Dictionary<string, string>())
+        {
+            startInfo.Environment[name] = value;
+        }
+
+        var application = Application.Launch(startInfo);
         var automation = new UIA3Automation();
         var window = application.GetMainWindow(automation, StartTimeout)
             ?? throw new TimeoutException("The app did not show its main window.");

@@ -30,6 +30,23 @@ public sealed partial class MainViewModel : ObservableObject
     /// <summary>Gets a value indicating whether the window stays above other windows.</summary>
     public bool IsAlwaysOnTop => _settings.IsAlwaysOnTop;
 
+    /// <summary>Gets or sets the colour theme; changes are saved.</summary>
+    public AppTheme Theme
+    {
+        get => _settings.Theme;
+        set
+        {
+            if (value != _settings.Theme)
+            {
+                Update(_settings with { Theme = value });
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    /// <summary>Gets the app version, for the About section.</summary>
+    public string Version { get; } = typeof(MainViewModel).Assembly.GetName().Version?.ToString(3) ?? "0.0.0";
+
     /// <summary>Gets the bounds the window had when it was last saved, if any.</summary>
     public PixelRect? SavedWindowBounds => _settings.WindowBounds;
 

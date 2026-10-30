@@ -7,6 +7,7 @@ using MyEverythingWidget.App.Interop;
 using MyEverythingWidget.App.Views;
 using MyEverythingWidget.Core.Apps;
 using MyEverythingWidget.Core.Geometry;
+using MyEverythingWidget.Core.Settings;
 using MyEverythingWidget.Presentation;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
@@ -64,6 +65,7 @@ public sealed partial class MainWindow : Window
         var bounds = ResolveStartupBounds();
         AppWindow.Move(new PointInt32(bounds.X, bounds.Y));
         _presenter.IsAlwaysOnTop = ViewModel.IsAlwaysOnTop;
+        ApplyTheme();
 
         ViewModel.PropertyChanged += OnViewModelPropertyChanged;
         Closed += OnClosed;
@@ -149,9 +151,37 @@ public sealed partial class MainWindow : Window
         {
             _presenter.IsAlwaysOnTop = ViewModel.IsAlwaysOnTop;
         }
+        else if (e.PropertyName == nameof(MainViewModel.Theme))
+        {
+            ApplyTheme();
+        }
     }
 
     private void OnCloseClicked(object sender, RoutedEventArgs e) => Close();
+
+    /// <summary>Applies the theme to the whole window (dialogs and flyouts follow the content root).</summary>
+    private void ApplyTheme() => RootGrid.RequestedTheme = ViewModel.Theme switch
+    {
+        AppTheme.Light => ElementTheme.Light,
+        AppTheme.Dark => ElementTheme.Dark,
+        _ => ElementTheme.Default,
+    };
+
+    private async void OnSettingsClicked(object sender, RoutedEventArgs e)
+    {
+        var dialog = new SettingsDialog(ViewModel) { XamlRoot = RootGrid.XamlRoot, RequestedTheme = RootGrid.ActualTheme };
+        void FollowTheme(object? s, System.ComponentModel.PropertyChangedEventArgs args)
+        {
+            if (args.PropertyName == nameof(MainViewModel.Theme))
+            {
+                dialog.RequestedTheme = RootGrid.RequestedTheme == ElementTheme.Default ? ElementTheme.Default : RootGrid.RequestedTheme;
+            }
+        }
+
+        ViewModel.PropertyChanged += FollowTheme;
+        await dialog.ShowAsync();
+        ViewModel.PropertyChanged -= FollowTheme;
+    }
 
     private async void OnAddAppClicked(object sender, RoutedEventArgs e)
     {

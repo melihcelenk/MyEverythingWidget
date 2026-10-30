@@ -151,7 +151,12 @@ public sealed class CategoryTests : IDisposable
         Assert.Equal(new GridPlacement(0, 2, 1, 1), moved.Placement);
     }
 
+    /// <remarks>
+    /// Runs in its own test process before the other UI tests (trait <c>Isolation=OwnProcess</c>): TabView reorders
+    /// through the system drag-and-drop loop, which does not start after the other tests have run in the same process.
+    /// </remarks>
     [Fact]
+    [Trait("Isolation", "OwnProcess")]
     public void DraggingTab_ReordersCategories()
     {
         using (var app = AppSession.Launch(_data))
@@ -162,19 +167,34 @@ public sealed class CategoryTests : IDisposable
             var end = new System.Drawing.Point(first.Left + 4, first.Top + (first.Height / 2));
             GridDriver.WaitForUi();
 
-            // TabView reorders through system drag-and-drop, which starts only after the pointer has moved past the
-            // drag threshold and paused; a real hand does both.
-            GridDriver.Press(start);
-            var pastThreshold = new System.Drawing.Point(start.X - 12, start.Y);
-            GridDriver.MoveSmoothly(start, pastThreshold);
+            // Click the tab first, as a user would, so the window is active before the drag starts.
+            RealMouse.Click(start);
             GridDriver.WaitForUi();
-            GridDriver.MoveSmoothly(pastThreshold, end);
-            GridDriver.WaitForUi();
-            GridDriver.Release();
-            Assert.True(Wait.Until(() => app.Find("Tab_" + WorkId).BoundingRectangle.Left < app.Find("Tab_" + GeneralId).BoundingRectangle.Left));
+
+            DragTab(start, end);
+
+            var reordered = Wait.Until(() => app.Find("Tab_" + WorkId).BoundingRectangle.Left < app.Find("Tab_" + GeneralId).BoundingRectangle.Left);
+            if (!reordered)
+            {
+                Artifacts.CaptureScreen("tab-drag-failed");
+            }
+
+            Assert.True(reordered, "Dragging Work before General should reorder the tabs.");
             app.ClickCloseAndWaitForExit();
         }
 
         Assert.Equal([WorkId, GeneralId], StateFiles.ReadState(_data).Categories.Select(category => category.Id));
+    }
+
+    /// <summary>System drag-and-drop starts only after the pointer passes the drag threshold and pauses; a real hand does both.</summary>
+    private static void DragTab(System.Drawing.Point start, System.Drawing.Point end)
+    {
+        GridDriver.Press(start);
+        var pastThreshold = new System.Drawing.Point(start.X - 12, start.Y);
+        GridDriver.MoveSmoothly(start, pastThreshold);
+        GridDriver.WaitForUi();
+        GridDriver.MoveSmoothly(pastThreshold, end);
+        GridDriver.WaitForUi();
+        GridDriver.Release();
     }
 }
