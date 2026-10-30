@@ -17,6 +17,10 @@ internal sealed class FakeAppServices : IIconStore, IAppLauncher, IInstalledApps
 
     public string? IconToReturn { get; set; } = "icons/fake.png";
 
+    public string? ImportedIcon { get; set; } = "icons/imported.png";
+
+    public Task<string?> ImportIconAsync(Stream image, CancellationToken cancellationToken) => Task.FromResult(ImportedIcon);
+
     public Task<IReadOnlyList<InstalledApp>> GetAppsAsync(CancellationToken cancellationToken) =>
         Task.FromResult<IReadOnlyList<InstalledApp>>(Apps);
 

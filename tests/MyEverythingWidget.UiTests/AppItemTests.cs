@@ -103,6 +103,22 @@ public sealed class AppItemTests : IDisposable
     }
 
     [Fact]
+    public void ResetIcon_GivesCardItsProgramIcon()
+    {
+        SeedApps(new AppItem("A1", GeneralId, new GridPlacement(0, 0, 1, 1), "Command Prompt", CommandPrompt, LaunchKind.Executable, null));
+        using (var app = AppSession.Launch(_data))
+        {
+            RealMouse.RightClick(app.Find("Card_A1").BoundingRectangle.Center());
+            Wait.ForElement(() => app.FindInPopups("ResetIconMenuItem")).AsMenuItem().Invoke();
+            Assert.True(Wait.Until(() => StateFiles.ReadItem(_data, "A1") is AppItem { IconPath: not null }));
+            app.ClickCloseAndWaitForExit();
+        }
+
+        var iconPath = Assert.IsType<AppItem>(StateFiles.ReadItem(_data, "A1")).IconPath!;
+        Assert.True(File.Exists(Path.Combine(_data.Path, iconPath)));
+    }
+
+    [Fact]
     public void ClickingCardOfRemovedProgram_ShowsWarning()
     {
         SeedApps(new AppItem("A1", GeneralId, new GridPlacement(0, 0, 1, 1), "Old tool", @"C:\removed\tool.exe", LaunchKind.Executable, null));

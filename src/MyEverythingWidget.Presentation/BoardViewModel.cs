@@ -197,6 +197,41 @@ public sealed partial class BoardViewModel : ObservableObject
     /// <summary>Replaces a note's text; blank text is ignored.</summary>
     public bool EditNote(string itemId, string text) => _board.UpdateNoteText(itemId, text);
 
+    /// <summary>Uses a picked image as the icon of an app card; the previous icon file is deleted.</summary>
+    public async Task<bool> ChangeIconAsync(string itemId, Stream image, CancellationToken cancellationToken = default)
+    {
+        var iconPath = await _icons.ImportIconAsync(image, cancellationToken).ConfigureAwait(true);
+        if (iconPath is null)
+        {
+            ShowStatus(ImageNotReadMessage, StatusSeverity.Warning);
+            return false;
+        }
+
+        ReplaceIcon(itemId, iconPath);
+        return true;
+    }
+
+    /// <summary>Gives an app card its own icon again (of the program, folder or site).</summary>
+    public async Task<bool> ResetIconAsync(string itemId, CancellationToken cancellationToken = default)
+    {
+        if (_board.Find(itemId) is not AppItem app)
+        {
+            return false;
+        }
+
+        var target = new LaunchTarget(app.LaunchKind, app.Target, app.Name);
+        ReplaceIcon(itemId, await _icons.CreateIconAsync(target, cancellationToken).ConfigureAwait(true));
+        return true;
+    }
+
+    private void ReplaceIcon(string itemId, string? iconPath)
+    {
+        if (_board.SetAppIcon(itemId, iconPath) is { } oldIcon && oldIcon != iconPath)
+        {
+            _icons.DeleteIcon(oldIcon);
+        }
+    }
+
     /// <summary>Renames an app card; a blank name is ignored.</summary>
     public bool RenameApp(string itemId, string name) => _board.RenameApp(itemId, name);
 

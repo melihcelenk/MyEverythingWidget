@@ -155,6 +155,16 @@ public sealed partial class WidgetGridView : UserControl
             AutomationProperties.SetAutomationId(rename, "RenameItemMenuItem");
             rename.Click += (_, _) => _ = EditAsync(item);
             menu.Items.Add(rename);
+
+            var changeIcon = new MenuFlyoutItem { Text = "Change icon\u2026", Icon = new FontIcon { Glyph = "\uEB9F" } };
+            AutomationProperties.SetAutomationId(changeIcon, "ChangeIconMenuItem");
+            changeIcon.Click += (_, _) => _ = ChangeIconAsync(item);
+            menu.Items.Add(changeIcon);
+
+            var resetIcon = new MenuFlyoutItem { Text = "Reset icon", Icon = new FontIcon { Glyph = "\uE72C" } };
+            AutomationProperties.SetAutomationId(resetIcon, "ResetIconMenuItem");
+            resetIcon.Click += (_, _) => _ = _board?.ResetIconAsync(item.Id);
+            menu.Items.Add(resetIcon);
         }
 
         menu.Items.Add(moveTo);
@@ -162,6 +172,31 @@ public sealed partial class WidgetGridView : UserControl
         menu.Items.Add(delete);
         menu.Opening += (_, _) => FillMoveToMenu(moveTo, item);
         return menu;
+    }
+
+    /// <summary>Gets or sets the window that owns file pickers opened from the card menu.</summary>
+    public nint OwnerWindowHandle { get; set; }
+
+    /// <summary>Lets the user pick an image to use as the card's icon.</summary>
+    private async Task ChangeIconAsync(GridItemViewModel item)
+    {
+        if (_board is null)
+        {
+            return;
+        }
+
+        var picker = new Windows.Storage.Pickers.FileOpenPicker { SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.PicturesLibrary };
+        foreach (var extension in new[] { ".png", ".jpg", ".jpeg", ".ico", ".bmp", ".gif", ".webp" })
+        {
+            picker.FileTypeFilter.Add(extension);
+        }
+
+        WinRT.Interop.InitializeWithWindow.Initialize(picker, OwnerWindowHandle);
+        if (await picker.PickSingleFileAsync() is { } file)
+        {
+            await using var stream = File.OpenRead(file.Path);
+            await _board.ChangeIconAsync(item.Id, stream);
+        }
     }
 
     /// <summary>Edits a note's text or an app card's name in place.</summary>

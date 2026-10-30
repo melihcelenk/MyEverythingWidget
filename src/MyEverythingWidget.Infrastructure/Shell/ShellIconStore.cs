@@ -56,6 +56,17 @@ public sealed partial class ShellIconStore : IIconStore
     }
 
     /// <inheritdoc />
+    public async Task<string?> ImportIconAsync(Stream image, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(image);
+
+        using var buffer = new MemoryStream();
+        await image.CopyToAsync(buffer, cancellationToken).ConfigureAwait(false);
+        var png = await PngEncoding.ToPngAsync(buffer.ToArray(), IconSize).ConfigureAwait(false);
+        return png is null ? null : Save(png);
+    }
+
+    /// <inheritdoc />
     public void DeleteIcon(string relativePath)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(relativePath);

@@ -25,7 +25,13 @@ public interface IIconStore
     /// </summary>
     Task<string?> CreateIconAsync(LaunchTarget target, CancellationToken cancellationToken);
 
-    /// <summary>Deletes an icon created by <see cref="CreateIconAsync"/>; missing files are ignored.</summary>
+    /// <summary>
+    /// Saves a picked image as an icon and returns its path relative to the data folder, or <see langword="null"/>
+    /// when <paramref name="image"/> is not an image.
+    /// </summary>
+    Task<string?> ImportIconAsync(Stream image, CancellationToken cancellationToken);
+
+    /// <summary>Deletes an icon created by this store; missing files are ignored.</summary>
     void DeleteIcon(string relativePath);
 }
 
@@ -57,6 +63,9 @@ public sealed class NoAppServices : IIconStore, IAppLauncher
 
     /// <inheritdoc />
     public Task<string?> CreateIconAsync(LaunchTarget target, CancellationToken cancellationToken) => Task.FromResult<string?>(null);
+
+    /// <inheritdoc />
+    public Task<string?> ImportIconAsync(Stream image, CancellationToken cancellationToken) => Task.FromResult<string?>(null);
 
     /// <inheritdoc />
     public void DeleteIcon(string relativePath)

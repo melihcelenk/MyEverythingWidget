@@ -57,6 +57,8 @@ What the script does:
 | `tmp\sandbox\results\console.txt` | Test console output |
 | `tmp\sandbox\results\results.xml` | xunit XML results |
 | `tmp\sandbox\results\install.txt` | MSIX install output |
+| `tmp\sandbox\results\shots\*.png` | Screenshots for review (`ScreenshotTests`, theme tests) and of failures |
+| `tmp\sandbox\results\shots\performance.txt` | Start time and idle memory (`PerformanceTests`) |
 
 UI tests find elements by `AutomationProperties.AutomationId`; give every interactive element one.
 Tests that rely on the system drag-and-drop loop (TabView reordering) carry `[Trait("Isolation", "OwnProcess")]`;

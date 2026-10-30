@@ -73,7 +73,7 @@
 | Faz 5 | Uygulama ekleme ve otomatik ikon | 🟢 Tamamlandı | 100% | `PHASE5.md` |
 | Faz 6 | Notlar, resimler ve Ctrl+V | 🟢 Tamamlandı | 100% | `PHASE6.md` |
 | Faz 7 | Ayarlar ve eski veriyi içe aktarma | 🟢 Tamamlandı | 100% | `PHASE7.md` |
-| Faz 8 | UI testleri, performans ve Store paketi | ⏳ Bekliyor | 0% | `PHASE8.md` |
+| Faz 8 | UI testleri, performans ve Store paketi | 🟡 Kısmi | 90% | `PHASE8.md` |
 
 **Durum etiketleri:**
 
@@ -320,8 +320,8 @@ Plan A. Öncelik Windows ve Store; çapraz platform artık bir gereksinim değil
 
 ### ✅ Karar Kılınan Çözüm
 
-Henüz yok. Kullanıcı planın bütününü onaylamadı. Kullanıcı "S1 ve S2 cevaplanınca başla" talimatını verdi; bu
-iki karar cevaplanınca Plan A ile Faz 1'e geçilir.
+Plan A (WinUI). Kullanıcı S1 ve S2'yi cevapladıktan sonra "başla" talimatını verdi; Faz 1'den sonra Faz 1 sonucunu
+görüp commit/push ve kalan bütün fazları istedi (2026-10-30).
 
 ---
 
@@ -557,7 +557,7 @@ Bunlar ayrı task'lara bırakılır.
 - [x] `IconService`: exe, lnk, klasör, Store uygulaması, favicon, baş harf yedeği (U2, U4)
 - [x] Widget'a dosya/URL bırakma (U3, U4)
 - [x] `LauncherService`: EXE, URL, klasör; eksik hedef uyarısı (U5, U6)
-- [ ] Kart menüsü: Open, Edit, Rename, Change icon..., Reset icon, Delete — Rename Faz 6, Change/Reset icon Faz 8
+- [x] Kart menüsü: Open, Edit, Rename, Change icon..., Reset icon, Delete — Rename Faz 6, Change/Reset icon Faz 8
 
 **Detay:** `PHASE5.md`
 
@@ -598,16 +598,16 @@ Bunlar ayrı task'lara bırakılır.
 
 ## Faz 8 — UI testleri, performans ve Store paketi
 
-**Durum:** ⏳ Bekliyor
+**Durum:** 🟡 Kısmi (2026-10-30). Kod, testler (unit 236/236, UI 49/49), paketler ve dokümanlar hazır; Partner Center gönderimi kullanıcıda. Sonuç: `PHASE8.md` → 8.5 Sonuç.
 
 **Özet:** Uçtan uca test turu, bellek/başlama süresi ölçümü, Store'a hazır paket ve listeleme dokümanları.
 
 **Hedefler:**
 
-- [ ] Tüm kabul kriterlerinin testleri geçiyor (1.5'teki tablo)
-- [ ] Ölçüm: soğuk başlama süresi, boşta bellek (Python sürümüyle karşılaştırmalı)
-- [ ] Store paketi (x64 + arm64), uygulama ikonları, ekran görüntüleri
-- [ ] Store listeleme ve gizlilik politikası taslağı (TaskTimerWidget dokümanları örnek alınarak)
+- [x] Tüm kabul kriterlerinin testleri geçiyor (1.5'teki tablo)
+- [x] Ölçüm: soğuk başlama süresi, boşta bellek (Python sürümüyle karşılaştırmalı)
+- [x] Store paketi (x64 + arm64), uygulama ikonları, ekran görüntüleri
+- [x] Store listeleme ve gizlilik politikası taslağı (TaskTimerWidget dokümanları örnek alınarak)
 - [ ] Partner Center gönderimi kullanıcı tarafından yapılır
 
 **Detay:** `PHASE8.md`

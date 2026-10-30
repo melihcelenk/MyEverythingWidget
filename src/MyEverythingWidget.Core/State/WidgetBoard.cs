@@ -163,6 +163,21 @@ public sealed partial class WidgetBoard
         return true;
     }
 
+    /// <summary>
+    /// Sets the icon of an app card; returns the previous icon path, or <see langword="null"/> when there was none or
+    /// the item is not an app.
+    /// </summary>
+    public string? SetAppIcon(string itemId, string? iconPath)
+    {
+        if (Find(itemId) is not AppItem app)
+        {
+            return null;
+        }
+
+        Replace(app with { IconPath = iconPath });
+        return app.IconPath;
+    }
+
     private void Replace(WidgetItem updated) =>
         Commit(State with { Items = State.Items.Select(item => item.Id == updated.Id ? updated : item).ToList() });
 

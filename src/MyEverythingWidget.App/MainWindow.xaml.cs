@@ -57,6 +57,7 @@ public sealed partial class MainWindow : Window
         _presenter.IsMaximizable = false;
         _presenter.IsResizable = false;
         AppWindow.SetPresenter(_presenter);
+        GridView.OwnerWindowHandle = _windowHandle;
 
         ConfigureTitleBar();
         ApplyBackdropFallback();
@@ -95,6 +96,7 @@ public sealed partial class MainWindow : Window
     private void ConfigureTitleBar()
     {
         Title = ViewModel.Title;
+        AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "app.ico"));
         ExtendsContentIntoTitleBar = true;
         AppWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Collapsed;
         SetTitleBar(TitleBarDragRegion);
