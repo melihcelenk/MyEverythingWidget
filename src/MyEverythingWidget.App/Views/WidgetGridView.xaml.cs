@@ -127,13 +127,34 @@ public sealed partial class WidgetGridView : UserControl
 
     private MenuFlyout CreateCardMenu(GridItemViewModel item)
     {
-        var delete = new MenuFlyoutItem { Text = "Delete", Icon = new FontIcon { Glyph = "" } };
+        var moveTo = new MenuFlyoutSubItem { Text = "Move to", Icon = new FontIcon { Glyph = "\uE8DE" } };
+        AutomationProperties.SetAutomationId(moveTo, "MoveToMenuItem");
+
+        var delete = new MenuFlyoutItem { Text = "Delete", Icon = new FontIcon { Glyph = "\uE74D" } };
         AutomationProperties.SetAutomationId(delete, "DeleteItemMenuItem");
         delete.Click += (_, _) => _board?.DeleteCommand.Execute(item.Id);
 
         var menu = new MenuFlyout();
+        menu.Items.Add(moveTo);
+        menu.Items.Add(new MenuFlyoutSeparator());
         menu.Items.Add(delete);
+        menu.Opening += (_, _) => FillMoveToMenu(moveTo, item);
         return menu;
+    }
+
+    /// <summary>Lists the other categories at the moment the menu opens, so new or renamed tabs appear.</summary>
+    private void FillMoveToMenu(MenuFlyoutSubItem moveTo, GridItemViewModel item)
+    {
+        moveTo.Items.Clear();
+        foreach (var category in _board?.OtherCategories() ?? [])
+        {
+            var target = new MenuFlyoutItem { Text = category.Name };
+            AutomationProperties.SetAutomationId(target, "MoveTo_" + category.Id);
+            target.Click += (_, _) => _board?.MoveItemToCategory(item.Id, category.Id);
+            moveTo.Items.Add(target);
+        }
+
+        moveTo.IsEnabled = moveTo.Items.Count > 0;
     }
 
     private void OnItemPropertyChanged(object? sender, PropertyChangedEventArgs e)

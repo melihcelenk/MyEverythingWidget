@@ -36,6 +36,9 @@ public sealed partial class BoardViewModel : ObservableObject
     /// <summary>Message when a category has no free place left.</summary>
     public const string GridFullMessage = "This category is full. Remove or shrink something first.";
 
+    /// <summary>Name given to a category created with the "+" button, before the user renames it.</summary>
+    public const string NewCategoryName = "New category";
+
     private readonly WidgetBoard _board;
 
     [ObservableProperty]
@@ -47,13 +50,13 @@ public sealed partial class BoardViewModel : ObservableObject
     [ObservableProperty]
     public partial string SelectedCategoryId { get; private set; }
 
-    /// <summary>Creates the view model over <paramref name="board"/> and shows its first category.</summary>
+    /// <summary>Creates the view model over <paramref name="board"/> and shows its open category.</summary>
     public BoardViewModel(WidgetBoard board)
     {
         ArgumentNullException.ThrowIfNull(board);
 
         _board = board;
-        SelectedCategoryId = board.Categories[0].Id;
+        SelectedCategoryId = board.SelectedCategoryId;
         Synchronize();
 
         board.Changed += (_, _) => Synchronize();
@@ -72,8 +75,53 @@ public sealed partial class BoardViewModel : ObservableObject
     /// <summary>Gets the cards of the selected category.</summary>
     public ObservableCollection<GridItemViewModel> Items { get; } = [];
 
+    /// <summary>Gets the category tabs in order.</summary>
+    public ObservableCollection<CategoryViewModel> Categories { get; } = [];
+
+    /// <summary>Gets a value indicating whether a category may be deleted (the last one may not).</summary>
+    public bool CanDeleteCategory => Categories.Count > 1;
+
     /// <summary>Gets the grid size.</summary>
     public GridSize GridSize => _board.GridSize;
+
+    /// <summary>Opens the tab of <paramref name="categoryId"/>.</summary>
+    public void SelectCategory(string categoryId) => _board.SelectCategory(categoryId);
+
+    /// <summary>Adds a category at the end of the tabs and opens it.</summary>
+    public CategoryViewModel AddCategory(string name)
+    {
+        var category = _board.AddCategory(name);
+        _board.SelectCategory(category.Id);
+        return Categories.Single(tab => tab.Id == category.Id);
+    }
+
+    /// <summary>Renames a category; a blank name is ignored and returns <see langword="false"/>.</summary>
+    public bool RenameCategory(string categoryId, string name) =>
+        !string.IsNullOrWhiteSpace(name) && _board.RenameCategory(categoryId, name);
+
+    /// <summary>Deletes a category and its items; returns <see langword="false"/> for the last category.</summary>
+    public bool DeleteCategory(string categoryId) => _board.DeleteCategory(categoryId);
+
+    /// <summary>Puts the tabs in the order of <paramref name="categoryIds"/>.</summary>
+    public void ReorderCategories(IReadOnlyList<string> categoryIds) => _board.ReorderCategories(categoryIds);
+
+    /// <summary>Returns the categories other than the open one, for "Move to".</summary>
+    public IReadOnlyList<CategoryViewModel> OtherCategories() =>
+        Categories.Where(category => category.Id != SelectedCategoryId).ToList();
+
+    /// <summary>Moves a card to another category; shows a warning when that category is full.</summary>
+    public bool MoveItemToCategory(string itemId, string categoryId)
+    {
+        var outcome = _board.MoveItemToCategory(itemId, categoryId);
+        if (outcome == GridOutcome.GridFull)
+        {
+            var name = Categories.FirstOrDefault(category => category.Id == categoryId)?.Name ?? categoryId;
+            ShowStatus(string.Create(CultureInfo.InvariantCulture, $"There is no room in {name}."), StatusSeverity.Warning);
+            return false;
+        }
+
+        return Report(outcome);
+    }
 
     /// <summary>Returns where item <paramref name="itemId"/> would land if dropped at <paramref name="target"/>.</summary>
     public DropPreview PreviewDrop(string itemId, GridCell target)
@@ -134,8 +182,62 @@ public sealed partial class BoardViewModel : ObservableObject
         StatusMessage = message;
     }
 
-    /// <summary>Brings <see cref="Items"/> in line with the board, reusing existing view models.</summary>
+    /// <summary>Brings the open tab, the tabs and the cards in line with the board.</summary>
     private void Synchronize()
+    {
+        if (SelectedCategoryId != _board.SelectedCategoryId)
+        {
+            SelectedCategoryId = _board.SelectedCategoryId;
+            Items.Clear();
+        }
+
+        SynchronizeCategories();
+        SynchronizeItems();
+    }
+
+    /// <summary>Brings <see cref="Categories"/> in line with the board, reusing existing tab view models.</summary>
+    private void SynchronizeCategories()
+    {
+        var existing = Categories.ToDictionary(category => category.Id, StringComparer.Ordinal);
+        var ordered = _board.Categories.Select(category =>
+        {
+            if (!existing.TryGetValue(category.Id, out var tab))
+            {
+                tab = new CategoryViewModel(category.Id, category.Name);
+            }
+
+            tab.Name = category.Name;
+            tab.ItemCount = _board.ItemsIn(category.Id).Count();
+            tab.IsSelected = category.Id == SelectedCategoryId;
+            return tab;
+        }).ToList();
+
+        for (var index = Categories.Count - 1; index >= 0; index--)
+        {
+            if (!ordered.Contains(Categories[index]))
+            {
+                Categories.RemoveAt(index);
+            }
+        }
+
+        for (var index = 0; index < ordered.Count; index++)
+        {
+            var position = Categories.IndexOf(ordered[index]);
+            if (position < 0)
+            {
+                Categories.Insert(index, ordered[index]);
+            }
+            else if (position != index)
+            {
+                Categories.Move(position, index);
+            }
+        }
+
+        OnPropertyChanged(nameof(CanDeleteCategory));
+    }
+
+    /// <summary>Brings <see cref="Items"/> in line with the open category, reusing existing card view models.</summary>
+    private void SynchronizeItems()
     {
         var current = _board.ItemsIn(SelectedCategoryId).ToDictionary(item => item.Id, StringComparer.Ordinal);
 

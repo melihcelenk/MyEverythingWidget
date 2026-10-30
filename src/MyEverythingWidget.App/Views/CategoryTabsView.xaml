@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="MyEverythingWidget.App.Views.CategoryTabsView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <TabView x:Name="Tabs"
+             AutomationProperties.AutomationId="CategoryTabs"
+             AutomationProperties.Name="Categories"
+             VerticalAlignment="Bottom"
+             IsAddTabButtonVisible="False"
+             CanReorderTabs="True"
+             CanDragTabs="False"
+             TabWidthMode="SizeToContent"
+             SelectionChanged="OnSelectionChanged"
+             TabItemsChanged="OnTabItemsChanged">
+        <TabView.Resources>
+            <!-- The open tab joins the grid surface below it (same layer colour), as in Windows 11 tabbed apps. -->
+            <StaticResource x:Key="TabViewItemHeaderBackgroundSelected" ResourceKey="LayerFillColorDefaultBrush" />
+        </TabView.Resources>
+        <TabView.TabStripFooter>
+            <Button x:Name="AddCategoryButton"
+                    AutomationProperties.AutomationId="AddCategoryButton"
+                    AutomationProperties.Name="Add category"
+                    ToolTipService.ToolTip="Add category"
+                    Style="{StaticResource TitleBarButtonStyle}"
+                    Margin="2,0,0,2"
+                    VerticalAlignment="Bottom"
+                    Click="OnAddClicked">
+                <FontIcon FontSize="12" Glyph="&#xE710;" />
+            </Button>
+        </TabView.TabStripFooter>
+    </TabView>
+</UserControl>

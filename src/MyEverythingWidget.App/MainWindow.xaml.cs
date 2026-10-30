@@ -38,6 +38,7 @@ public sealed partial class MainWindow : Window
         Board = board;
         InitializeComponent();
         GridView.Board = board;
+        TabsView.Board = board;
 
         _windowHandle = WindowNative.GetWindowHandle(this);
         _presenter = OverlappedPresenter.Create();

@@ -60,8 +60,17 @@ public sealed partial class WidgetBoard
     /// <summary>Gets the current state.</summary>
     public WidgetState State { get; private set; }
 
+    /// <summary>Longest category name kept; longer names are cut.</summary>
+    public const int MaxCategoryNameLength = 30;
+
     /// <summary>Gets the categories in tab order.</summary>
     public IReadOnlyList<Category> Categories => State.Categories;
+
+    /// <summary>Gets the category whose tab is open; falls back to the first category.</summary>
+    public string SelectedCategoryId =>
+        State.SelectedCategoryId is { } id && State.Categories.Any(category => category.Id == id)
+            ? id
+            : State.Categories[0].Id;
 
     /// <summary>Gets where an unreadable state file was moved on startup, if that happened.</summary>
     public string? CorruptBackupPath { get; }
@@ -128,6 +137,110 @@ public sealed partial class WidgetBoard
 
         Commit(State with { Items = State.Items.Where(item => item.Id != itemId).ToList() });
         return true;
+    }
+
+    /// <summary>Opens the tab of <paramref name="categoryId"/> and remembers it for the next start.</summary>
+    public void SelectCategory(string categoryId)
+    {
+        EnsureCategory(categoryId);
+        if (State.SelectedCategoryId != categoryId)
+        {
+            Commit(State with { SelectedCategoryId = categoryId });
+        }
+    }
+
+    /// <summary>Adds a category at the end of the tabs.</summary>
+    public Category AddCategory(string name)
+    {
+        var category = new Category(_newId(), CleanName(name));
+        Commit(State with { Categories = [.. State.Categories, category] });
+        return category;
+    }
+
+    /// <summary>Renames a category; returns <see langword="false"/> when it does not exist.</summary>
+    public bool RenameCategory(string categoryId, string name)
+    {
+        var cleanName = CleanName(name);
+        if (!State.Categories.Any(category => category.Id == categoryId))
+        {
+            return false;
+        }
+
+        Commit(State with
+        {
+            Categories = State.Categories.Select(category => category.Id == categoryId ? category with { Name = cleanName } : category).ToList(),
+        });
+        return true;
+    }
+
+    /// <summary>
+    /// Deletes a category and its items. The last category cannot be deleted; returns <see langword="false"/> then,
+    /// or when the category does not exist. When the open tab is deleted, its neighbour opens.
+    /// </summary>
+    public bool DeleteCategory(string categoryId)
+    {
+        var index = State.Categories.ToList().FindIndex(category => category.Id == categoryId);
+        if (index < 0 || State.Categories.Count == 1)
+        {
+            return false;
+        }
+
+        var remaining = State.Categories.Where(category => category.Id != categoryId).ToList();
+        var selected = SelectedCategoryId == categoryId ? remaining[Math.Max(0, index - 1)].Id : State.SelectedCategoryId;
+        Commit(State with
+        {
+            Categories = remaining,
+            Items = State.Items.Where(item => item.CategoryId != categoryId).ToList(),
+            SelectedCategoryId = selected,
+        });
+        return true;
+    }
+
+    /// <summary>Puts the categories in the order of <paramref name="categoryIds"/>, which must list each category once.</summary>
+    public void ReorderCategories(IReadOnlyList<string> categoryIds)
+    {
+        ArgumentNullException.ThrowIfNull(categoryIds);
+
+        var byId = State.Categories.ToDictionary(category => category.Id, StringComparer.Ordinal);
+        if (categoryIds.Count != byId.Count || categoryIds.Distinct(StringComparer.Ordinal).Count() != byId.Count || !categoryIds.All(byId.ContainsKey))
+        {
+            throw new ArgumentException("The order must list every category exactly once.", nameof(categoryIds));
+        }
+
+        Commit(State with { Categories = categoryIds.Select(id => byId[id]).ToList() });
+    }
+
+    /// <summary>Moves an item to the first free cells of another category; the item stays when there is no room.</summary>
+    public GridOutcome MoveItemToCategory(string itemId, string categoryId)
+    {
+        EnsureCategory(categoryId);
+        if (Find(itemId) is not { } item)
+        {
+            return GridOutcome.UnknownItem;
+        }
+
+        if (item.CategoryId == categoryId)
+        {
+            return GridOutcome.Success;
+        }
+
+        var result = LayoutOf(categoryId).Add(itemId, item.Placement.Span);
+        if (!result.Succeeded)
+        {
+            return result.Outcome;
+        }
+
+        var moved = item with { CategoryId = categoryId, Placement = result.Layout.Items[itemId] };
+        Commit(State with { Items = State.Items.Select(existing => existing.Id == itemId ? moved : existing).ToList() });
+        return GridOutcome.Success;
+    }
+
+    private static string CleanName(string name)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+
+        var trimmed = name.Trim();
+        return trimmed.Length <= MaxCategoryNameLength ? trimmed : trimmed[..MaxCategoryNameLength].TrimEnd();
     }
 
     private AddResult Add(string categoryId, GridSpan span, Func<string, GridPlacement, WidgetItem> create)

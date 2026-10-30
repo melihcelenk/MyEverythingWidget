@@ -110,6 +110,9 @@ public sealed record WidgetState(int SchemaVersion, IReadOnlyList<Category> Cate
     /// <summary>Name of the category created on first run.</summary>
     public const string DefaultCategoryName = "General";
 
+    /// <summary>Gets the category whose tab was open last; <see langword="null"/> means the first one.</summary>
+    public string? SelectedCategoryId { get; init; }
+
     /// <summary>Returns the first-run state: one empty category.</summary>
     public static WidgetState CreateDefault(string categoryId) =>
         new(CurrentSchemaVersion, [new Category(categoryId, DefaultCategoryName)], []);

@@ -21,6 +21,17 @@ internal static class StateFiles
         Store(data).Save(new WidgetState(WidgetState.CurrentSchemaVersion, [new Category(CategoryId, "General")], items));
     }
 
+    /// <summary>Writes <paramref name="state"/> as the app's saved state.</summary>
+    public static void Save(AppDataFolder data, WidgetState state) => Store(data).Save(state);
+
+    /// <summary>Reads the whole state the app saved.</summary>
+    public static WidgetState ReadState(AppDataFolder data) =>
+        Store(data).Load().State ?? throw new InvalidOperationException("The app saved no state.");
+
+    /// <summary>Creates an item of the kind its id names (A app, N note, I image) in <paramref name="categoryId"/>.</summary>
+    public static WidgetItem Item(string id, string categoryId, GridPlacement placement) =>
+        CreateItem(id, placement) with { CategoryId = categoryId };
+
     /// <summary>Reads the placements the app saved.</summary>
     public static IReadOnlyDictionary<string, GridPlacement> ReadPlacements(AppDataFolder data) =>
         (Store(data).Load().State ?? throw new InvalidOperationException("The app saved no state."))

@@ -55,12 +55,19 @@
             </StackPanel>
         </Grid>
 
-        <!-- Row 1: category tabs (MEW-4 Faz 4). -->
+        <views:CategoryTabsView x:Name="TabsView" Grid.Row="1" Margin="4,0,4,0" />
+
+        <!-- Surface under the open tab; the tab strip and title bar stay on Mica. -->
+        <Border Grid.Row="2"
+                Grid.RowSpan="2"
+                Background="{ThemeResource LayerFillColorDefaultBrush}"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                BorderThickness="0,1,0,0" />
 
         <views:WidgetGridView
             x:Name="GridView"
             Grid.Row="2"
-            Margin="6,0,6,6"
+            Margin="6,6,6,6"
             HorizontalAlignment="Left"
             VerticalAlignment="Top" />
 

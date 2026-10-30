@@ -69,7 +69,7 @@
 | Faz 1 | İskelet, pencere ve MSIX | 🟢 Tamamlandı | 100% | `PHASE1.md` |
 | Faz 2 | Grid motoru, durum ve kalıcılık (Core) | 🟢 Tamamlandı | 100% | `PHASE2.md` |
 | Faz 3 | Grid UI: sürükle-bırak ve boyutlandırma | 🟢 Tamamlandı | 100% | `PHASE3.md` |
-| Faz 4 | Kategoriler | ⏳ Bekliyor | 0% | `PHASE4.md` |
+| Faz 4 | Kategoriler | 🟢 Tamamlandı | 100% | `PHASE4.md` |
 | Faz 5 | Uygulama ekleme ve otomatik ikon | ⏳ Bekliyor | 0% | `PHASE5.md` |
 | Faz 6 | Notlar, resimler ve Ctrl+V | ⏳ Bekliyor | 0% | `PHASE6.md` |
 | Faz 7 | Ayarlar ve eski veriyi içe aktarma | ⏳ Bekliyor | 0% | `PHASE7.md` |
@@ -530,16 +530,16 @@ Bunlar ayrı task'lara bırakılır.
 
 ## Faz 4 — Kategoriler
 
-**Durum:** ⏳ Bekliyor
+**Durum:** 🟢 Tamamlandı (2026-10-30). Unit 128/128, UI 28/28 (Sandbox). Sonuç: `PHASE4.md` → 4.5 Sonuç.
 
 **Özet:** Sekmeler: ekle, yeniden adlandır, sil, sürükleyerek sırala; öğeyi başka kategoriye taşı.
 
 **Hedefler:**
 
-- [ ] `TabView` ile kategori sekmeleri ve "+" sekmesi
-- [ ] Rename (satır içi), Delete (onaylı; içindeki öğe sayısı gösterilir)
-- [ ] Sekmeleri sürükleyerek sıralama, tekerlekle kaydırma
-- [ ] Kart menüsünde "Move to" → kategori; hedef kategoride ilk boş hücreye yerleşir
+- [x] `TabView` ile kategori sekmeleri ve "+" sekmesi
+- [x] Rename (satır içi), Delete (onaylı; içindeki öğe sayısı gösterilir)
+- [x] Sekmeleri sürükleyerek sıralama, tekerlekle kaydırma
+- [x] Kart menüsünde "Move to" → kategori; hedef kategoride ilk boş hücreye yerleşir
 
 **Detay:** `PHASE4.md`
 
