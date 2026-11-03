@@ -40,7 +40,7 @@ reference material only.
 | `src/MyEverythingWidget.Infrastructure` | Windows shell services: installed apps, icons, launching |
 | `src/MyEverythingWidget.App` | WinUI app, views, MSIX manifest |
 | `tests/` | `Core.Tests`, `Presentation.Tests`, `Infrastructure.Tests`, `UiTests` (FlaUI), `Grid/*.dsl` |
-| `scripts/` | `test-ui.ps1` (sandbox UI tests), `publish-msix.ps1` |
+| `scripts/` | `run.ps1` (build and start for manual testing), `test-ui.ps1` (sandbox UI tests), `publish-msix.ps1` |
 | `tmp/` | Temporary output (gitignored) |
 
 ## Important Notes

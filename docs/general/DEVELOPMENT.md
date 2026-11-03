@@ -19,6 +19,13 @@ Enable-WindowsOptionalFeature -Online -FeatureName "Containers-DisposableClientV
 ## Build and run
 
 ```
+pwsh scripts/run.ps1
+```
+
+The script closes a running instance (its settings are saved as on Close), builds Debug x64 and starts the app.
+`-NoBuild` starts the last build. By hand:
+
+```
 dotnet build src/MyEverythingWidget.App -r win-x64 -p:Platform=x64
 src\MyEverythingWidget.App\bin\x64\Debug\net10.0-windows10.0.26100.0\win-x64\MyEverythingWidget.exe
 ```
