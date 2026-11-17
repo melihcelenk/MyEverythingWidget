@@ -27,6 +27,11 @@ internal static class SandboxClipboard
             + "$c = New-Object Collections.Specialized.StringCollection; "
             + $"[void]$c.Add('{path}'); [Windows.Forms.Clipboard]::SetFileDropList($c)");
 
+    /// <summary>Gets a value indicating whether the clipboard holds a picture (as Paint or Word would paste it).</summary>
+    public static bool HasPicture() =>
+        Run("Add-Type -AssemblyName System.Windows.Forms; [Console]::Out.Write([Windows.Forms.Clipboard]::ContainsImage())")
+            .Trim().Equals("True", StringComparison.OrdinalIgnoreCase);
+
     public static string GetText() =>
         Run("Add-Type -AssemblyName System.Windows.Forms; [Console]::Out.Write([Windows.Forms.Clipboard]::GetText())");
 

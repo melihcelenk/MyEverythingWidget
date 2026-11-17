@@ -186,6 +186,40 @@ public sealed class NotesImagesPasteTests : IDisposable
         Assert.Null(board.StatusMessage);
     }
 
+    [Fact]
+    public async Task Drop_ImageFile_AddsImageNotAppCard()
+    {
+        var board = CreateBoard();
+
+        await board.AddDroppedAsync([_imageFile], _ => false);
+
+        var added = Assert.Single(_store.Current!.Items, item => item.Id.StartsWith("new", StringComparison.Ordinal));
+        Assert.IsType<ImageItem>(added);
+        Assert.Empty(_apps.IconRequests);
+    }
+
+    [Fact]
+    public async Task Drop_ImageFileAndProgram_AddsImageAndAppCard()
+    {
+        var board = CreateBoard();
+
+        await board.AddDroppedAsync([_imageFile, @"C:\Windows\System32\cmd.exe"], _ => false);
+
+        var added = _store.Current!.Items.Where(item => item.Id.StartsWith("new", StringComparison.Ordinal)).ToList();
+        Assert.Single(added.OfType<ImageItem>());
+        Assert.Single(added.OfType<AppItem>());
+    }
+
+    [Fact]
+    public async Task DropPicture_AddsImage()
+    {
+        var board = CreateBoard();
+
+        Assert.True(await board.AddDroppedPictureAsync(SomeBitmap));
+
+        Assert.IsType<ImageItem>(Assert.Single(_store.Current!.Items, item => item.Id.StartsWith("new", StringComparison.Ordinal)));
+    }
+
     private sealed class FakeImageStore : IImageStore
     {
         public (int Width, int Height)? NextSize { get; set; } = (100, 100);

@@ -98,3 +98,6 @@ desktop.ini
 
 # Claude local settings
 .claude/
+
+# BirdsAEye session records (local)
+docs/tasks/**/sessions.json

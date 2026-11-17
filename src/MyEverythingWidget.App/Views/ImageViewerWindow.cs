@@ -58,10 +58,23 @@ internal sealed partial class ImageViewerWindow : Window
         };
         AutomationProperties.SetAutomationId(root, "ImageViewer");
         root.KeyboardAccelerators.Add(CloseOnEscape());
+        root.KeyboardAccelerators.Add(CopyOnCtrlC(imageFile));
         Content = root;
 
         var bounds = ImageViewerPlacement.Fit(imageSize, workArea);
         AppWindow.MoveAndResize(new RectInt32(bounds.X, bounds.Y, bounds.Width, bounds.Height));
+    }
+
+    /// <summary>Ctrl+C copies the shown image, as a picture and as a file.</summary>
+    private static KeyboardAccelerator CopyOnCtrlC(string imageFile)
+    {
+        var copy = new KeyboardAccelerator { Modifiers = VirtualKeyModifiers.Control, Key = VirtualKey.C };
+        copy.Invoked += async (_, args) =>
+        {
+            args.Handled = true;
+            await ClipboardWriter.CopyImageAsync(imageFile);
+        };
+        return copy;
     }
 
     private KeyboardAccelerator CloseOnEscape()

@@ -1,9 +1,10 @@
 ---
 id: S1
-status: open
+status: resolved
 decider:
 priority: blocker
 asked: 2026-10-30
+resolved: 2026-11-17
 ---
 # S1 — WinUI kodu hangi repoda duracak?
 

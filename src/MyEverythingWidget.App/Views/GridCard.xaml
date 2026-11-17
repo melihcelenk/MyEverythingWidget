@@ -69,8 +69,8 @@
                    Style="{StaticResource CaptionTextBlockStyle}"
                    Text="Image not found" />
 
-        <!-- Copy button of notes, shown while the pointer is over the card. -->
-        <Button x:Name="CopyNoteButton"
+        <!-- Copy button of notes and images, shown while the pointer is over the card. -->
+        <Button x:Name="CopyButton"
                 AutomationProperties.AutomationId="CopyNoteButton"
                 AutomationProperties.Name="Copy note"
                 ToolTipService.ToolTip="Copy"
@@ -81,7 +81,7 @@
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
                 Style="{StaticResource TitleBarButtonStyle}"
-                Click="OnCopyNoteClicked">
+                Click="OnCopyClicked">
             <FontIcon FontSize="12" Glyph="&#xE8C8;" />
         </Button>
 

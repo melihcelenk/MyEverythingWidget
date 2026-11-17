@@ -1,9 +1,10 @@
 ---
 id: S3
-status: answered
+status: resolved
 decider: user
 priority: blocker
 asked: 2026-10-30
+resolved: 2026-11-18
 ---
 # S3 — "Canlıya almak" ne demek: master'a birleştirme mi?
 
@@ -68,3 +69,5 @@ A uygulandı (2026-10-30):
 - **Birleştirmedim;** kararın gereği birleştirmeyi sen GitHub'dan yapacaksın.
 - **Önerilen yöntem:** merge commit (92 commit'in geçmişi korunur).
 - **Test planında açık iki madde:** iki ekranlı elle kontrol ve Partner Center gönderimi.
+
+Kontrol: uygulandı — PR #1 açık (`feature/MEW-4-winui-rewrite` → `master`, OPEN, birleştirilmedi; birleştirme kullanıcıda).

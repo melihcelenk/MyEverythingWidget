@@ -1,9 +1,10 @@
 ---
 id: S6
-status: open
-decider:
+status: resolved
+decider: user
 priority: major
 asked: 2026-10-30
+resolved: 2026-11-18
 ---
 # S6 — İkon penceresinin geç açılması: hangi çözüm?
 
@@ -65,4 +66,27 @@ yazıp (tıklamadan pencerenin ekranda görünmesine kadar geçen süre) sonucu 
 
 ## Cevap
 
+**A — Emoji ızgarasını hafiflet + fontu arka planda ısıt**
+
 ## Sonuç
+
+A uygulandı (2026-10-31), commit `072d03c`, push'lu; PR #1 güncellendi.
+
+- **Hafif ızgara:** emoji ızgarası `Button` yerine hafif `EmojiCell` hücreleriyle. Fare, Enter/Boşluk ve UI
+  Automation (Invoke) ile seçim korunuyor.
+- **Isınma:**
+  - Önerdiğim arka plan iş parçacığı yolu işe yaramadı. Font dosyasını okumak da, DirectWrite ile önceden yerleşim
+    yaptırmak da ilk açılışı değiştirmedi; maliyet emojilerin **çizilmesinde**.
+  - Bunun yerine emojiler açılıştan sonra, görünmeyen bir katmanda (opak zeminin arkasında) 60 ms arayla birer birer
+    çiziliyor. Arayüzde fark edilir bir donma olmuyor.
+- **Yeniden kullanım:** Isınma bitince ikon penceresi bir kez kuruluyor ve her açılışta yeniden kullanılıyor.
+- **Ölçüm (Sandbox, yazılımla çizim):**
+  - İlk açılış 3,6 s → 0,4–0,6 s.
+  - Sonraki açılışlar ~0,5 s → 0,16–0,23 s.
+  - "Önce" rakamları daha yavaş bir ölçüm yöntemiyle alındı (ayrıntı `PHASE14.md` → 14.5).
+- **Bedel:** private bellek ~90 MB → ~139 MB (önceden çizilen emojiler ve hazır pencere).
+- **Test altyapısı:** UI test süreci DPI'ya duyarlı yapıldı. Sandbox ekran ölçeği değişince renk örnekleyen testler
+  eski kodda da düşüyordu.
+- **Testler:** tam UI suite 73/74 → ölçüm düzeltmesinden sonra ilgili test 3/3; unit 293/293.
+
+Kontrol: uygulandı — `EmojiCell.cs`, `EmojiFontWarmUp.cs` (`MainWindow.xaml.cs`:94), yeniden kullanılan pencere (`IconPickerDialog.Instances`), `TabAppearanceTests.IconDialog_OpensQuickly`, commit `072d03c`.

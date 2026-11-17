@@ -377,9 +377,25 @@ public sealed partial class BoardViewModel : ObservableObject
         return Report(result.Outcome);
     }
 
+    /// <summary>Adds the picture itself that was dropped (for example an image dragged from a web page).</summary>
+    public async Task<bool> AddDroppedPictureAsync(Func<CancellationToken, Task<Stream?>> openPicture)
+    {
+        ArgumentNullException.ThrowIfNull(openPicture);
+
+        if (await openPicture(CancellationToken.None).ConfigureAwait(true) is not { } picture)
+        {
+            return false;
+        }
+
+        await using (picture.ConfigureAwait(true))
+        {
+            return await AddImageAsync(picture).ConfigureAwait(true);
+        }
+    }
+
     /// <summary>
-    /// Adds a card for every dropped path or web address that can be opened; shows a warning for the rest.
-    /// Returns how many cards were added.
+    /// Adds a card for every dropped path or web address: image files become image cards, other files, folders and
+    /// web addresses become app cards; shows a warning for the rest. Returns how many cards were added.
     /// </summary>
     public async Task<int> AddDroppedAsync(IReadOnlyList<string> texts, Func<string, bool> isDirectory)
     {
@@ -389,6 +405,17 @@ public sealed partial class BoardViewModel : ObservableObject
         var skipped = false;
         foreach (var text in texts)
         {
+            var path = text.Trim().Trim('"');
+            if (Path.IsPathFullyQualified(path) && ImageFiles.IsImage(path) && File.Exists(path))
+            {
+                if (await AddImageFileAsync(path).ConfigureAwait(true))
+                {
+                    added++;
+                }
+
+                continue;
+            }
+
             if (LaunchTarget.Classify(text, isDirectory) is { } target)
             {
                 if (!await AddAppAsync(target, target.SuggestedName).ConfigureAwait(true))

@@ -329,6 +329,10 @@ public sealed partial class MainWindow : Window
         ViewModel.PropertyChanged += FollowTheme;
         await dialog.ShowAsync();
         ViewModel.PropertyChanged -= FollowTheme;
+
+        // The dialog returns keyboard focus to the Settings button, which then shows its tooltip over the grid until
+        // the user does something else; give the focus back to the grid instead.
+        GridView.Focus(FocusState.Programmatic);
     }
 
     private async void OnAddAppClicked(object sender, RoutedEventArgs e)
@@ -381,7 +385,8 @@ public sealed partial class MainWindow : Window
     private void OnGridDragOver(object sender, DragEventArgs e)
     {
         var data = e.DataView;
-        if (data.Contains(StandardDataFormats.StorageItems) || data.Contains(StandardDataFormats.WebLink) || data.Contains(StandardDataFormats.Text))
+        if (data.Contains(StandardDataFormats.StorageItems) || data.Contains(StandardDataFormats.Bitmap)
+            || data.Contains(StandardDataFormats.WebLink) || data.Contains(StandardDataFormats.Text))
         {
             e.AcceptedOperation = DataPackageOperation.Link;
             e.DragUIOverride.Caption = "Add to widget";
@@ -394,7 +399,17 @@ public sealed partial class MainWindow : Window
         var deferral = e.GetDeferral();
         try
         {
-            var texts = await DroppedTexts.ReadAsync(e.DataView);
+            var data = e.DataView;
+
+            // A picture dragged from a web page or an app carries the image itself; files and links take the other path.
+            if (data.Contains(StandardDataFormats.Bitmap) && !data.Contains(StandardDataFormats.StorageItems))
+            {
+                await Board.AddDroppedPictureAsync(async _ =>
+                    (await (await data.GetBitmapAsync()).OpenReadAsync()).AsStreamForRead());
+                return;
+            }
+
+            var texts = await DroppedTexts.ReadAsync(data);
             if (texts.Count > 0)
             {
                 await Board.AddDroppedAsync(texts, Directory.Exists);

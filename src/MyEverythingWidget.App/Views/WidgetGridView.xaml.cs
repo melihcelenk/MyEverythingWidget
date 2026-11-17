@@ -176,6 +176,19 @@ public sealed partial class WidgetGridView : UserControl
             changeIcon.Click += (_, _) => _ = ChangeIconAsync(item);
             menu.Items.Add(changeIcon);
         }
+        else if (item.Kind == ItemKind.Image)
+        {
+            var copy = new MenuFlyoutItem { Text = "Copy image", Icon = new FontIcon { Glyph = "" } };
+            AutomationProperties.SetAutomationId(copy, "CopyImageMenuItem");
+            copy.Click += async (_, _) =>
+            {
+                if (DataFiles.Resolve(item.ImagePath) is { } imageFile)
+                {
+                    await ClipboardWriter.CopyImageAsync(imageFile);
+                }
+            };
+            menu.Items.Add(copy);
+        }
 
         menu.Items.Add(moveTo);
         menu.Items.Add(new MenuFlyoutSeparator());

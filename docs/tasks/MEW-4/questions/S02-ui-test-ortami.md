@@ -1,9 +1,10 @@
 ---
 id: S2
-status: open
+status: resolved
 decider:
 priority: critical
 asked: 2026-10-30
+resolved: 2026-11-17
 ---
 # S2 — Gerçek fare kullanan UI testleri nerede koşsun?
 

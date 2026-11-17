@@ -43,6 +43,7 @@
 - Faz 12 — Resme tıklayınca büyük hali
 - Faz 13 — İkon penceresi sekmeleri
 - Faz 14 — İkon penceresinin geç açılması
+- Faz 15 — Resim kopyalama ve resim alma
 
 ---
 
@@ -86,6 +87,7 @@
 | 12 | Resme tıklayınca büyük hali | 🟢 Tamamlandı | 100% | `PHASE12.md` |
 | 13 | İkon penceresi: Select icon / Select image sekmeleri | 🟢 Tamamlandı | 100% | `PHASE13.md` |
 | 14 | İkon penceresinin geç açılması | 🟢 Tamamlandı | 100% | `PHASE14.md` |
+| 15 | Resim kopyalama ve resim alma | 🟢 Tamamlandı | 100% | `PHASE15.md` |
 
 <!-- Durum ikonları: 🟢 Tamamlandı (faz bitti, tüm testleri geçti) | 🟡 Kısmi (neyin beklediği faz notunda) | ⏳ Bekliyor (başlamadı) | 🔴 Bloke (bir karar ya da dış bağımlılık bekleniyor) -->
 

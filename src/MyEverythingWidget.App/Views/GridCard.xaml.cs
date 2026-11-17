@@ -45,11 +45,21 @@ public sealed partial class GridCard : UserControl
     private void SetHoverParts(double opacity)
     {
         ResizeHandle.Opacity = opacity;
-        CopyNoteButton.Opacity = opacity;
+        CopyButton.Opacity = opacity;
     }
 
-    private void OnCopyNoteClicked(object sender, RoutedEventArgs e)
+    private async void OnCopyClicked(object sender, RoutedEventArgs e)
     {
+        if (Item.Kind == ItemKind.Image)
+        {
+            if (DataFiles.Resolve(Item.ImagePath) is { } imageFile)
+            {
+                await ClipboardWriter.CopyImageAsync(imageFile);
+            }
+
+            return;
+        }
+
         var package = new DataPackage();
         package.SetText(Item.Text ?? "");
         Clipboard.SetContent(package);
@@ -73,7 +83,10 @@ public sealed partial class GridCard : UserControl
         AppContent.Visibility = Item.Kind == ItemKind.App ? Visibility.Visible : Visibility.Collapsed;
         NoteText.Visibility = Item.Kind == ItemKind.Note ? Visibility.Visible : Visibility.Collapsed;
         NoteBackground.Visibility = NoteText.Visibility;
-        CopyNoteButton.Visibility = NoteText.Visibility;
+        var copyable = Item.Kind is ItemKind.Note or ItemKind.Image;
+        CopyButton.Visibility = copyable ? Visibility.Visible : Visibility.Collapsed;
+        AutomationProperties.SetAutomationId(CopyButton, Item.Kind == ItemKind.Image ? "CopyImageButton" : "CopyNoteButton");
+        AutomationProperties.SetName(CopyButton, Item.Kind == ItemKind.Image ? "Copy image" : "Copy note");
 
         switch (Item.Kind)
         {

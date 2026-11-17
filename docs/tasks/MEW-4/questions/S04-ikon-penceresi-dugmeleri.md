@@ -1,9 +1,10 @@
 ---
 id: S4
-status: open
+status: resolved
 decider:
 priority: major
 asked: 2026-10-30
+resolved: 2026-11-17
 ---
 # S4 — İkon penceresindeki "Image…" ve "Reset" düğmeleri nerede dursun?
 

@@ -1,9 +1,10 @@
 ---
 id: S5
-status: answered
+status: resolved
 decider: user
 priority: major
 asked: 2026-10-30
+resolved: 2026-11-18
 ---
 # S5 — İkon penceresi: iki sekmeli düzen doğru anlaşıldı mı?
 
@@ -94,3 +95,5 @@ A uygulandı (2026-10-30), commit `ba90b16`, push'lu; PR #1 güncellendi.
     dosyayla test edildi.
   - Sonar bu turda çalıştırılamadı (IDE dosyaları tanımıyordu).
 - **Ayrıntı:** `PHASE13.md`.
+
+Kontrol: uygulandı — `IconPickerDialog.cs` (`SelectIconTab`/`SelectImageTab`, `BrowseImageButton`, `ImageDropArea`, Ctrl+V, `Reset to original` + `Cancel`), `WindowLayoutTests` 4 testi, commit `ba90b16`.
