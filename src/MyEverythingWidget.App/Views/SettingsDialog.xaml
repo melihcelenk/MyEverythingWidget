@@ -8,7 +8,16 @@
     CloseButtonText="Close"
     DefaultButton="Close">
 
-    <StackPanel Width="300" Spacing="16">
+    <StackPanel MaxWidth="320" Spacing="16">
+        <StackPanel.Resources>
+            <!-- RadioButton and ToggleSwitch have a minimum width wider than a small widget's dialog; let them wrap. -->
+            <Style TargetType="RadioButton" BasedOn="{StaticResource DefaultRadioButtonStyle}">
+                <Setter Property="MinWidth" Value="0" />
+            </Style>
+            <Style TargetType="ToggleSwitch" BasedOn="{StaticResource DefaultToggleSwitchStyle}">
+                <Setter Property="MinWidth" Value="0" />
+            </Style>
+        </StackPanel.Resources>
         <RadioButtons x:Name="ThemeChoices" Header="Theme" AutomationProperties.AutomationId="ThemeChoices">
             <RadioButton x:Name="ThemeSystem" AutomationProperties.AutomationId="ThemeSystem" Content="Use Windows setting" Checked="OnThemeChecked" />
             <RadioButton x:Name="ThemeLight" AutomationProperties.AutomationId="ThemeLight" Content="Light" Checked="OnThemeChecked" />
@@ -18,12 +27,15 @@
         <ToggleSwitch x:Name="AlwaysOnTopSwitch"
                       AutomationProperties.AutomationId="AlwaysOnTopSwitch"
                       Header="Always on top"
+                      OnContent="On"
+                      OffContent="Off"
                       Toggled="OnAlwaysOnTopToggled" />
 
         <StackPanel Spacing="4">
             <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="About" />
-            <TextBlock x:Name="VersionText" AutomationProperties.AutomationId="VersionText" Style="{StaticResource BodyTextBlockStyle}" />
-            <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+            <TextBlock x:Name="VersionText" AutomationProperties.AutomationId="VersionText" Style="{StaticResource BodyTextBlockStyle}" TextWrapping="Wrap" />
+            <TextBlock AutomationProperties.AutomationId="PrivacyText"
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                        Style="{StaticResource CaptionTextBlockStyle}"
                        TextWrapping="Wrap"
                        Text="Your apps, notes and images stay on this PC. Nothing is sent anywhere, except that a web shortcut fetches its site icon from that site." />

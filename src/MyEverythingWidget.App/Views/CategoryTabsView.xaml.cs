@@ -282,6 +282,7 @@ public sealed partial class CategoryTabsView : UserControl
                 DefaultButton = ContentDialogButton.Close,
             };
             AutomationProperties.SetAutomationId(dialog, "DeleteCategoryDialog");
+            DialogSizing.FitToWindow(dialog, XamlRoot);
             if (await dialog.ShowAsync() != ContentDialogResult.Primary)
             {
                 return;

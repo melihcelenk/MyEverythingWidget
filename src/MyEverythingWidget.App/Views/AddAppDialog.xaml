@@ -13,7 +13,7 @@
     IsPrimaryButtonEnabled="{x:Bind ViewModel.CanAdd, Mode=OneWay}"
     PrimaryButtonClick="OnAddClicked">
 
-    <StackPanel Width="300" Spacing="8">
+    <StackPanel MaxWidth="300" Spacing="8">
         <TextBox x:Name="SearchBox"
                  AutomationProperties.AutomationId="AppSearchBox"
                  AutomationProperties.Name="Search installed apps"

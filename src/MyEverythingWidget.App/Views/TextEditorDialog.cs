@@ -20,7 +20,7 @@ internal static class TextEditorDialog
             Text = initialText,
             AcceptsReturn = multiline,
             TextWrapping = multiline ? TextWrapping.Wrap : TextWrapping.NoWrap,
-            Width = 280,
+            MaxWidth = 280,
             Height = multiline ? 140 : double.NaN,
         };
         AutomationProperties.SetAutomationId(editor, "TextEditorBox");
@@ -55,6 +55,7 @@ internal static class TextEditorDialog
             editor.SelectAll();
         };
 
+        DialogSizing.FitToWindow(dialog, root);
         var result = await dialog.ShowAsync();
         return result == ContentDialogResult.Primary || savedByKey ? editor.Text : null;
     }

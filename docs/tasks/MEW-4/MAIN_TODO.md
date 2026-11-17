@@ -47,6 +47,7 @@
   - Faz 14 — İkon penceresinin geç açılması
   - Faz 15 — Resim kopyalama ve resim alma
   - Faz 16 — Kopyalama geri bildirimi, görüntüleyici menüsü ve Paint'te düzenleme
+  - Faz 17 — Ayarlar penceresinin kenar boşluğu ve yayın hazırlığı
 - Kaynaklar
 
 ---
@@ -93,6 +94,7 @@
 | 14 | İkon penceresinin geç açılması | 🟢 Tamamlandı | 100% | `PHASE14.md` |
 | 15 | Resim kopyalama ve resim alma | 🟢 Tamamlandı | 100% | `PHASE15.md` |
 | 16 | Kopyalama geri bildirimi, görüntüleyici menüsü ve Paint'te düzenleme | 🟢 Tamamlandı | 100% | `PHASE16.md` |
+| 17 | Ayarlar penceresinin kenar boşluğu ve yayın hazırlığı | 🟡 Devam ediyor | 25% | `PHASE17.md` |
 
 <!-- Durum ikonları: 🟢 Tamamlandı (faz bitti, tüm testleri geçti) | 🟡 Kısmi (neyin beklediği faz notunda) | ⏳ Bekliyor (başlamadı) | 🔴 Bloke (bir karar ya da dış bağımlılık bekleniyor) -->
 
@@ -633,6 +635,14 @@ Kopyalama düğmesine basınca düğme bir an onay işaretine dönüp "Copied" d
 aynı şekilde gösteriyor. Büyük görüntüleme penceresinde sağ tık menüsü var: "Copy" ve "Edit in Paint". Resim
 kartlarının menüsüne de "Edit in Paint" eklendi. Paint'te kaydedilen resim, widget'a geri dönülünce kartta
 yenileniyor. Düzenleme Paint'te yapıldığı için widget'ın belleği büyümüyor.
+
+### 🟡 Faz 17 — Ayarlar penceresinin kenar boşluğu ve yayın hazırlığı
+
+**Durum:** 🟡 Devam ediyor · **Tamamlanma:** 25% · **Ayrıntı:** [`PHASE17.md`](PHASE17.md)
+
+Ayarlar penceresi ve diğer iletişim kutuları artık widget'ın iki yanından boşluk bırakıyor; dar widget'ta içerik
+kırpılmıyor. Kalan iş yayına hazırlık: `master`'a birleştirme, kullanım senaryolarını anlatan README ekran
+görüntüleri (S8) ve Store gönderimi.
 
 ---
 

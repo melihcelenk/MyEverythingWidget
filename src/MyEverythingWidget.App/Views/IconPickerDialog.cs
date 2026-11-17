@@ -92,6 +92,7 @@ internal sealed class IconPickerDialog
     {
         var picker = Instances.GetValue(root, key => new IconPickerDialog(key));
         picker.Reset();
+        DialogSizing.FitToWindow(picker._dialog, root);
         var result = await picker._dialog.ShowAsync();
         return result == ContentDialogResult.Secondary ? new IconChoice.Reset() : picker._choice;
     }
@@ -215,7 +216,7 @@ internal sealed class IconPickerDialog
             CornerRadius = (CornerRadius)Application.Current.Resources["ControlCornerRadius"],
             BorderThickness = new Thickness(1),
             BorderBrush = (Brush)Application.Current.Resources["ControlStrongStrokeColorDefaultBrush"],
-            MinWidth = EmojiCellSize * 6,
+            MaxWidth = EmojiCellSize * EmojisPerRow,
         };
     }
 

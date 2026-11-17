@@ -293,4 +293,38 @@ public sealed class WindowLayoutTests : IDisposable
             app.ClickCloseAndWaitForExit();
         }
     }
+
+    [Theory]
+    [InlineData(5)]
+    [InlineData(2)]
+    public void SettingsDialog_KeepsAGapToTheWindowEdges(int columns)
+    {
+        Seed();
+        using var app = AppSession.Launch(_data);
+        var pitch = Pitch(app);
+        if (columns < 5)
+        {
+            DragCorner(app, -(int)((5 - columns) * pitch), 0);
+            Assert.True(Wait.Until(() => GridIs(app, pitch, rows: 5, columns: columns)));
+        }
+
+        RealMouse.Click(app.Find("SettingsButton").BoundingRectangle.Center());
+        var dialog = Wait.ForElement(() => app.FindInPopups("SettingsDialog"));
+        GridDriver.WaitForUi();
+        var window = Win32.ClientBounds(app.WindowHandle);
+        var scale = pitch / 80;
+
+        // A 12 px gap to the window plus the dialog's padding: 24 px normally, 12 px when the dialog is narrower than
+        // its usual 320 px.
+        var narrow = window.Width / scale - 24 < 320;
+        var inset = (int)Math.Floor((narrow ? 22 : 34) * scale);
+        var theme = Wait.ForElement(() => dialog.FindFirstDescendant(c => c.ByAutomationId("ThemeSystem"))).BoundingRectangle;
+        var close = Wait.ForElement(() => dialog.FindFirstDescendant(c => c.ByName("Close").And(c.ByControlType(FlaUI.Core.Definitions.ControlType.Button)))).BoundingRectangle;
+        Assert.True(theme.Left - window.Left >= inset, $"The dialog content {theme} should start at least {inset} px inside the window {window}.");
+        Assert.True(window.Right - close.Right >= inset, $"The dialog buttons {close} should end at least {inset} px inside the window {window}.");
+
+        var about = Wait.ForElement(() => dialog.FindFirstDescendant(c => c.ByAutomationId("PrivacyText"))).BoundingRectangle;
+        Assert.True(about.Right <= close.Right + 1, $"The about text {about} should wrap inside the dialog (buttons end at {close.Right}).");
+        FlaUI.Core.Capturing.Capture.Rectangle(window).ToFile(Artifacts.PathOf($"settings-{columns}-columns"));
+    }
 }
