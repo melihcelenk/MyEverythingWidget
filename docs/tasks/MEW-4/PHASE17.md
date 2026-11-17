@@ -1,10 +1,11 @@
 # Faz 17 — Ayarlar penceresinin kenar boşluğu ve yayın hazırlığı
 
-> **Durum:** 🟡 Devam ediyor · **Tamamlanma:** 25% · **Efor:** tahmin yazılmadı · **Task:** MEW-4
+> **Durum:** 🟡 Devam ediyor · **Tamamlanma:** 60% · **Efor:** tahmin yazılmadı · **Task:** MEW-4
 
 Ayarlar penceresi artık widget'ın iki yanından boşluk bırakıyor; aynı düzen bütün iletişim kutularına uygulandı. Widget
-2 sütuna kadar küçültülse de içerik kırpılmıyor. Bu fazın kalan işi yayına hazırlık: `master`'a birleştirme, GitHub
-README'si için kullanım senaryolarını anlatan ekran görüntüleri ve Store gönderimi.
+2 sütuna kadar küçültülse de içerik kırpılmıyor. README ve Store için beş kullanım senaryosunu anlatan ekran
+görüntüsü Sandbox'ta tek komutla (`scripts/capture-screenshots.ps1`) çekiliyor. Kalan iş `master`'a birleştirme ve
+Store gönderimi.
 
 ## Problem
 
@@ -21,27 +22,32 @@ README'si için kullanım senaryolarını anlatan ekran görüntüleri ve Store 
 - **Ayarlar içeriği:** Sabit 300 piksel genişlik kaldırıldı. RadioButton ve ToggleSwitch'in en küçük genişliği
   sıfırlandı, böylece metinler kırpılmak yerine alt satıra geçiyor. Anahtarın yazısı da "On/Off" oldu; önceden
   sistem dilinde ("Kapalı") görünüyordu.
-- **Ekran görüntüleri:** Senaryolar ve çekim yolu S8'de soruldu.
+- **Ekran görüntüleri (S8 → A):**
+  - `ShowcaseScreenshots` Sandbox'ta uydurma ama gerçekçi içerikle 5 senaryoyu kurup çekiyor.
+  - `scripts/capture-screenshots.ps1` her çekimi 1366x768'lik başlıklı bir sayfaya yerleştirip `docs/images/`'a
+    yazıyor; README ve Store aynı dosyaları kullanıyor.
 
 ## Alt fazlar
 
 | # | Ne yapılıyor | Durum |
 |---|--------------|-------|
 | 17.1 | Ayarlar ve diğer iletişim kutuları pencerenin iki yanından boşluk bırakır; dar pencerede içerik kırpılmaz. | 🟢 Tamamlandı |
-| 17.2 | GitHub README'si kullanım senaryolarını gösteren ekran görüntüleriyle güncellenir. | ⏳ Bekliyor (S8) |
+| 17.2 | GitHub README'si kullanım senaryolarını gösteren ekran görüntüleriyle güncellenir. | 🟢 Tamamlandı |
 | 17.3 | Branch `master`'a birleştirilir (PR #1). | ⏳ Bekliyor (kullanıcı) |
-| 17.4 | Store gönderimi için ekran görüntüleri ve paket hazırlanır. | ⏳ Bekliyor (S8, `PHASE8.md` → 8.6) |
+| 17.4 | Store gönderimi için ekran görüntüleri ve paket hazırlanır. | 🟡 Kısmi (görüntüler hazır; gönderim `PHASE8.md` → 8.6) |
 
 ## Nasıl kontrol edilir
 
 - [ ] Widget'ı normal boyutta açıp ayarlara gir: pencerenin sağında ve solunda boşluk görünmeli.
 - [ ] Widget'ı 2 sütuna küçültüp ayarlara gir: "Use Windows setting" alt satıra geçmeli, "Close" düğmesi tam görünmeli.
 - [ ] "Add", not düzenleme ve ikon değiştirme pencerelerinde de iki yanda boşluk olmalı.
+- [ ] `docs/images/showcase-1.png` … `showcase-5.png` dosyalarına ve GitHub'daki README'ye bak: her görüntü tek bir
+  kullanımı anlatmalı; rastgele resim ya da not olmamalı.
 
 ## Kalan
 
-- **17.2, 17.4:** S8'in cevabını bekliyor.
 - **17.3:** PR #1'i kullanıcı birleştirecek.
+- **17.4:** Store gönderimi kullanıcının Partner Center hesabıyla yapılır (`PHASE8.md` → 8.6); görüntüler hazır.
 
 ## Ayrıntılar
 
@@ -71,8 +77,28 @@ README'si için kullanım senaryolarını anlatan ekran görüntüleri ve Store 
 
 - **Mevcut durum:** README'de ekran görüntüsü yok.
 - **Problem:** Görüntüler gerçekçi kullanım senaryolarını anlatmalı; rastgele resim ve not olmamalı.
-- **Çözüm:** Senaryo listesi ve çekim yolu S8'de soruldu; cevaba göre yazılacak.
-- **Durum:** ⏳ Bekliyor (S8).
+- **Çözüm (S8 → A, Sandbox'ta otomatik):**
+  - **Senaryolar:**
+    1. Günlük başlatıcı: uygulama, klasör ve web siteleri.
+    2. Sık kopyalanan metinler: uzun bir `docker run` komutu, imza, adres, SQL sorgusu; biri "kopyalandı" durumunda.
+    3. Aceleyle alınan notlar: Ctrl+V ile panodan not.
+    4. Anlık ekran: uydurma "Ledgerly" uygulamasının hata ekranı ve bir grafik; görüntüleyicide sağ tık menüsü.
+    5. Compact ikon (koyu tema).
+  - **Gerçekçilik:**
+    - Uygulama kartları gerçek kabuk ikonlarını uygulamanın kendi `ShellIconStore`'u ile alıyor.
+    - Sandbox'ta ağ olmadığı için web kartlarında emoji var.
+  - **Çekim:**
+    - Masaüstü düz renge çevriliyor (duvar kâğıdı ve görev çubuğu görünmüyor).
+    - Her çekim pencerelerin 72 piksel çevresinden kırpılıyor.
+  - **Normal UI koşusu:** Bu sınıf `Category=Showcase` trait'iyle normal UI koşusundan çıkarıldı.
+  - **Ek düzeltme:** Test için yayımlanan uygulamaya `Assets` kopyalanmadığı için compact ikon boş görünüyordu. Assets
+    artık publish'te kopyalanıyor (`CopyToPublishDirectory`).
+- **Dosyalar:** `tests/MyEverythingWidget.UiTests/ShowcaseScreenshots.cs`, `tests/MyEverythingWidget.UiTests/Showcase/*.png`,
+  `tests/MyEverythingWidget.UiTests/MyEverythingWidget.UiTests.csproj`, `scripts/capture-screenshots.ps1`,
+  `scripts/test-ui.ps1`, `src/MyEverythingWidget.App/MyEverythingWidget.App.csproj`, `docs/images/showcase-*.png`,
+  `README.md`, `docs/general/STORE_LISTING.md`, `docs/general/DEVELOPMENT.md`
+- **Testler:** `pwsh scripts/capture-screenshots.ps1` → 5/5 çekim; görüntüler tek tek gözle kontrol edildi.
+- **Durum:** 🟢 Tamamlandı.
 
 ### 17.3 — Branch `master`'a birleştirilir (PR #1).
 
@@ -83,8 +109,9 @@ README'si için kullanım senaryolarını anlatan ekran görüntüleri ve Store 
 ### 17.4 — Store gönderimi için ekran görüntüleri ve paket hazırlanır.
 
 - **Mevcut durum:** Paket ve listeleme metni Faz 8'de hazırlandı; Store görüntüleri test verisiyle çekilmişti.
-- **Çözüm:** 17.2'deki senaryolarla Store görüntüleri, son build'den paket; gönderim `PHASE8.md` → 8.6.
-- **Durum:** ⏳ Bekliyor (S8).
+- **Çözüm:** Store görüntüleri 17.2'dekilerle aynı (1366x768, Store'un önerdiği en küçük boyut). Paket
+  `scripts/publish-msix.ps1` ile; gönderim `PHASE8.md` → 8.6.
+- **Durum:** 🟡 Kısmi (gönderim kullanıcıda).
 
 ### Doğrulanmayan / dikkat edilmesi gereken
 

@@ -84,9 +84,9 @@ set TESTS="$sandboxRoot\tests\MyEverythingWidget.UiTests.exe" -noColor
 set ISOLATED=0
 rem Tests that use the system drag-and-drop loop run first, in their own process (PHASE7.md, 7.6.2).
 if "$Filter"=="" (
-  %TESTS% -trait "Isolation=OwnProcess" -result-xml "$sandboxRoot\results\results-isolated.xml" > "$sandboxRoot\results\console-isolated.txt" 2>&1
+  %TESTS% -trait "Isolation=OwnProcess" -trait- "Category=Showcase" -result-xml "$sandboxRoot\results\results-isolated.xml" > "$sandboxRoot\results\console-isolated.txt" 2>&1
   set ISOLATED=!ERRORLEVEL!
-  %TESTS% -trait- "Isolation=OwnProcess" -result-xml "$sandboxRoot\results\results.xml" > "$sandboxRoot\results\console.txt" 2>&1
+  %TESTS% -trait- "Isolation=OwnProcess" -trait- "Category=Showcase" -result-xml "$sandboxRoot\results\results.xml" > "$sandboxRoot\results\console.txt" 2>&1
 ) else (
   %TESTS% -result-xml "$sandboxRoot\results\results.xml" $filterArgument > "$sandboxRoot\results\console.txt" 2>&1
 )

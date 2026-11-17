@@ -20,12 +20,18 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\MyEverythingWidget.Core\MyEverythingWidget.Core.csproj" />
+    <ProjectReference Include="..\..\src\MyEverythingWidget.Infrastructure\MyEverythingWidget.Infrastructure.csproj" />
   </ItemGroup>
 
   <!-- Grid scenarios (the specification) and the shared DSL reader. -->
   <ItemGroup>
     <Compile Include="..\Shared\GridDsl\*.cs" Link="GridDsl\%(Filename)%(Extension)" />
     <Content Include="..\Grid\*.dsl" Link="Grid\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <!-- Made-up images for the README and Store screenshots (ShowcaseScreenshots). -->
+  <ItemGroup>
+    <Content Include="Showcase\*.png" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <!-- The app is single-instance per user, so UI tests must never run two app sessions at once. -->

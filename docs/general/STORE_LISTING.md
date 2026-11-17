@@ -31,17 +31,15 @@ and images, arranged on a tidy grid that stays exactly where you put it.
 
 launcher, shortcuts, widget, notes, quick access, productivity, desktop, dock
 
-## Screenshots to capture
+## Screenshots
 
-The sandbox UI test run saves these under `tmp\sandbox\results\shots\`:
+`pwsh scripts/capture-screenshots.ps1` writes the five Store screenshots (1366x768, caption included) to
+`docs/images/`; the README uses the same files. Content is made up but realistic; nothing comes from a real PC.
 
-| File | Shows |
-|------|-------|
-| `cards-with-icons.png` | App cards with their own icons |
-| `grid-items.png` | Apps, notes and an image on the grid |
-| `grid-during-drag.png` | Dragging a note, target cells highlighted |
-| `add-app-dialog.png` | Picking an installed app |
-| `theme-dark.png`, `theme-light.png` | Both themes |
-
-Store screenshots should show real content (real app names, a real note); take them on a desktop at 100% or 200%
-scale after the final build.
+| File | Caption |
+|------|---------|
+| `showcase-1.png` | Your daily launcher |
+| `showcase-2.png` | Text you copy again and again |
+| `showcase-3.png` | Jot it down before it's gone |
+| `showcase-4.png` | Grab a screen the moment you see it |
+| `showcase-5.png` | Out of the way when you don't need it |
