@@ -15,6 +15,7 @@
 
 - Branch Bilgisi
 - Genel İlerleme
+- Hazırlık Durumu
 - Karar Panosu
 - 1. Task Definition
   - 1.1 Mevcut Durum
@@ -29,29 +30,32 @@
   - 2.3 Test Altyapısı Analizi
 - 3. Solution Suggestions
 - 4. Kararlar
-- Faz 1 — İskelet, pencere ve MSIX
-- Faz 2 — Grid motoru, durum ve kalıcılık (Core)
-- Faz 3 — Grid UI: sürükle-bırak ve boyutlandırma
-- Faz 4 — Kategoriler
-- Faz 5 — Uygulama ekleme ve otomatik ikon
-- Faz 6 — Notlar, resimler ve Ctrl+V
-- Faz 7 — Ayarlar ve eski veriyi içe aktarma
-- Faz 8 — UI testleri, performans ve Store paketi
-- Faz 9 — İlk kullanım geri bildirimi
-- Faz 10 — Kompakt ikon, ikon penceresi, sağ tık, tutamaç
-- Faz 11 — Tutamaç oku ve kart renkleri
-- Faz 12 — Resme tıklayınca büyük hali
-- Faz 13 — İkon penceresi sekmeleri
-- Faz 14 — İkon penceresinin geç açılması
-- Faz 15 — Resim kopyalama ve resim alma
+- Faz Özetleri
+  - Faz 1 — İskelet, pencere ve MSIX
+  - Faz 2 — Grid motoru, durum ve kalıcılık (Core)
+  - Faz 3 — Grid UI: sürükle-bırak ve boyutlandırma
+  - Faz 4 — Kategoriler
+  - Faz 5 — Uygulama ekleme ve otomatik ikon
+  - Faz 6 — Notlar, resimler ve Ctrl+V
+  - Faz 7 — Ayarlar ve eski veriyi içe aktarma
+  - Faz 8 — UI testleri, performans ve Store paketi
+  - Faz 9 — İlk kullanım geri bildirimi: tek satır başlık, hücre hücre boyut, kompakt mod, resim, emoji
+  - Faz 10 — Kompakt ikon davranışı, tek ikon penceresi, sağ tık menüsü, tutamaç
+  - Faz 11 — Boyutlandırma tutamacının oku ve kart renkleri
+  - Faz 12 — Resme tıklayınca büyük hali
+  - Faz 13 — İkon penceresi: Select icon / Select image sekmeleri
+  - Faz 14 — İkon penceresinin geç açılması
+  - Faz 15 — Resim kopyalama ve resim alma
+  - Faz 16 — Kopyalama geri bildirimi, görüntüleyici menüsü ve Paint'te düzenleme
+- Kaynaklar
 
 ---
 
 ## 🌿 Branch Bilgisi
 
-**Branch:** `feature/MEW-4-winui-rewrite`
-**Nereden açıldı:** `feature/MEW-3-drag-drop-grid-refactor`
-**Nereye merge edilecek (PR target):** `master`
+| Repo | Yol | Branch | Nereden açıldı | PR hedefi | Rolü |
+|------|-----|--------|----------------|-----------|------|
+| `MyEverythingWidget` (ana repo) | `C:\Kodlar\MyEverythingWidget` | `feature/MEW-4-winui-rewrite` | `feature/MEW-3-drag-drop-grid-refactor` | `master` | WinUI uygulaması, testler, dokümanlar |
 
 **Standart dışı durum:** Branch master'dan değil MEW-3'ten açıldı.
 
@@ -88,8 +92,20 @@
 | 13 | İkon penceresi: Select icon / Select image sekmeleri | 🟢 Tamamlandı | 100% | `PHASE13.md` |
 | 14 | İkon penceresinin geç açılması | 🟢 Tamamlandı | 100% | `PHASE14.md` |
 | 15 | Resim kopyalama ve resim alma | 🟢 Tamamlandı | 100% | `PHASE15.md` |
+| 16 | Kopyalama geri bildirimi, görüntüleyici menüsü ve Paint'te düzenleme | 🟢 Tamamlandı | 100% | `PHASE16.md` |
 
 <!-- Durum ikonları: 🟢 Tamamlandı (faz bitti, tüm testleri geçti) | 🟡 Kısmi (neyin beklediği faz notunda) | ⏳ Bekliyor (başlamadı) | 🔴 Bloke (bir karar ya da dış bağımlılık bekleniyor) -->
+
+---
+
+## ✅ Hazırlık Durumu
+
+<!-- Durum: 🟢 Tamam | 🟠 Kısmi | 🔴 Yok | — (geçerli değil). Lima eklentisi kapalı olduğu için Lima ve Tester satırları yok. -->
+
+| Bölüm | Durum | Kapsadığı | Son kontrol |
+|-------|-------|-----------|-------------|
+| Genel Dokümanlar | 🟠 Kısmi (değişti: kod değişti) | `docs/general/` → `DEVELOPMENT.md`, `ARCHITECTURE.md`, `STORE_SUBMISSION.md`, `STORE_LISTING.md`, `PRIVACY_POLICY.md` | `bd17647` |
+| Devops Notları | — | Sunucu, ortam değişkeni ya da migration yok; Store paketi `scripts/publish-msix.ps1` ile üretilir | — |
 
 ---
 
@@ -472,152 +488,151 @@ Bunlar ayrı task'lara bırakılır.
 
 ---
 
-## Faz 1 — İskelet, pencere ve MSIX
+## 🎯 Faz Özetleri
 
-**Durum:** 🟢 Tamamlandı (2026-10-30). Unit 19/19, UI 8/8 (Sandbox). Sonuç: `PHASE1.md` → 1.7 Sonuç.
+<!-- MAIN_TODO bir özet dosyasıdır: her fazın altında durum satırı ve kısa özet durur; ayrıntı faz dokümanındadır. -->
 
-**Özet:** Solution yapısı, boş ama gerçek pencere, MSIX paketi ve UI test altyapısı.
+### 🟢 Faz 1 — İskelet, pencere ve MSIX
 
-**Hedefler:**
+**Durum:** 🟢 Tamamlandı · **Tamamlanma:** 100% · **Ayrıntı:** [`PHASE1.md`](PHASE1.md)
 
-- [x] Kök `CLAUDE.md` ve `README.md` WinUI sürümü için yeniden yazılır. Python'a özgü kurallar `legacy/CLAUDE.md`'ye
-  taşınır.
-- [x] `legacy/tests/*.bat` dosyalarındaki `.venv` yolları düzeltilir; Python sürümü `legacy/` içinden
-  çalıştırılabilir kalır.
+Bu fazda WinUI ile boş ama gerçek bir widget penceresi kuruldu: özel başlık çubuğu, pin ve kapat düğmeleri, Mica arka
+plan. Pencerenin konumu, boyutu ve always-on-top durumu kapatıp açınca hatırlanıyor; uygulama ikinci kez başlatılırsa
+yeni pencere açılmıyor, mevcut pencere öne geliyor. Testler üç katmanda (Core, Presentation, Sandbox'ta UI) koşuyor ve
+uygulama MSIX paketi olarak üretilebiliyor. Grid, kart ve kategori bu fazda yok (Faz 2-4).
 
-- [x] Geliştirme ortamı: .NET 10 SDK ve Windows App SDK (kullanıcı onayıyla kurulum)
-- [x] "Planlanan Yapı"daki projeler; Core'un WinUI bağımlılığı yok
-- [x] Pencere: `SetTitleBar` ile özel başlık çubuğu, pin, kapat, Mica, konum/boyut hatırlama (W2)
-- [x] Tek kopya: `AppInstance` ile ikinci açılış mevcut pencereyi öne getirir (W3)
-- [x] Yerel MSIX paketi (test sertifikası) kurulup açılıyor
-- [x] FlaUI test projesi: uygulamayı açan/kapatan temel test
-- [x] Windows Sandbox koşucusu: `.wsb` yapılandırması, sandbox içi kurulum betiği, sonuçların `tmp/` altına
-  dönmesi. Küçültülmüş pencerede fare girdisi riski burada denenir (S2).
+### 🟢 Faz 2 — Grid motoru, durum ve kalıcılık (Core)
 
-**Detay:** `PHASE1.md`
+**Durum:** 🟢 Tamamlandı · **Tamamlanma:** 100% · **Ayrıntı:** [`PHASE2.md`](PHASE2.md)
 
----
+Bu fazda grid kurallarının tamamı UI'sız C# koduna (Core) yazıldı: öğe ekleme, taşıma, çarpışan öğelerin yer
+değiştirmesi, boyutlandırma ve silme. Kategoriler, uygulamalar, notlar ve resimlerden oluşan uygulama durumu JSON
+dosyasına güvenle kaydediliyor; dosya bozuksa yedekleniyor ve uygulama boş durumla açılıyor. Kullanıcı ekranda henüz
+bir şey görmüyor; grid'in ekrana gelmesi Faz 3'te.
 
-## Faz 2 — Grid motoru, durum ve kalıcılık (Core)
+### 🟢 Faz 3 — Grid UI: sürükle-bırak ve boyutlandırma
 
-**Durum:** 🟢 Tamamlandı (2026-10-30). Unit 79/79. Sonuç: `PHASE2.md` → 2.7 Sonuç.
+**Durum:** 🟢 Tamamlandı · **Tamamlanma:** 100% · **Ayrıntı:** [`PHASE3.md`](PHASE3.md)
 
-**Özet:** Sürükle-bırak kurallarının tamamı UI'sız C# kodunda, `.dsl` testleriyle.
+Bu fazda seçili kategorinin kartları pencerede sabit 5x5 grid üzerinde görünür oldu. Kart fareyle sürükleniyor;
+bırakılacak hücreler izinliyse accent, izinsizse kırmızı vurgulanıyor ve bırakınca kart Faz 2'deki kurallarla yerine
+kayıyor, yer değiştiren kartlar da animasyonla kayıyor. Kartın sağ alt köşesindeki tutamaçla boyut değişiyor, sağ tık
+menüsünde "Delete" var; hatalar ve uyarılar pencerenin altındaki durum çubuğunda görünüyor.
 
-**Hedefler:**
+### 🟢 Faz 4 — Kategoriler
 
-- [x] Modeller: Category, AppItem, NoteItem, ImageItem; ortak `GridPlacement` (satır, sütun, span)
-- [x] C# DSL ayrıştırıcı ve test üreteci (Python biçimiyle birebir uyumlu, 1 tabanlı konum)
-- [x] `GridEngine`: G1-G6, G9, G10 ve K5
-- [x] Mevcut üç `.dsl` + her kriter için yeni senaryolar geçiyor (K4'teki düzeltmeyle)
-- [x] `StateStore`: versiyonlu JSON şeması, atomik yazma, bozuk dosya davranışı
+**Durum:** 🟢 Tamamlandı · **Tamamlanma:** 100% · **Ayrıntı:** [`PHASE4.md`](PHASE4.md)
 
-**Detay:** `PHASE2.md`
+Bu fazda kartlar kategorilere ayrıldı ve pencerenin üstünde kategori sekmeleri göründü. Sekmeye tıklayınca o
+kategorinin kartları açılıyor; "+" ile yeni kategori ekleniyor ve adı hemen düzenleniyor; sağ tık ya da çift tıkla
+yeniden adlandırılıyor, sağ tıkla siliniyor ve sekmeler sürüklenerek sıralanıyor. Kartın sağ tık menüsündeki "Move to"
+ile kart başka kategoriye taşınıyor; açık sekme hatırlanıyor ve uygulama aynı sekmeyle açılıyor.
 
----
+### 🟢 Faz 5 — Uygulama ekleme ve otomatik ikon
 
-## Faz 3 — Grid UI: sürükle-bırak ve boyutlandırma
+**Durum:** 🟢 Tamamlandı · **Tamamlanma:** 100% · **Ayrıntı:** [`PHASE5.md`](PHASE5.md)
 
-**Durum:** 🟢 Tamamlandı (2026-10-30). Unit 99/99, UI 20/20 (Sandbox). Sonuç: `PHASE3.md` → 3.5 Sonuç.
+Widget'a artık uygulama, klasör ve web sitesi eklenebiliyor. Alttaki "+ Add" menüsünden "App…" seçilince Başlat
+menüsündeki bütün uygulamalar aranabilir bir listede çıkıyor; ya da bir yol veya web adresi yazılıyor. Explorer'dan
+dosya, klasör ya da tarayıcıdan bağlantı grid'e bırakılınca da kart oluşuyor. Kartlar kendi ikonlarıyla geliyor; karta
+tıklayınca program çalışıyor, adres tarayıcıda, klasör Explorer'da açılıyor.
 
-**Özet:** Özel grid paneli ve kartlar; sürükleme görüntüsü, hücre vurgusu, animasyon, resize.
+### 🟢 Faz 6 — Notlar, resimler ve Ctrl+V
 
-**Hedefler:**
+**Durum:** 🟢 Tamamlandı · **Tamamlanma:** 100% · **Ayrıntı:** [`PHASE6.md`](PHASE6.md)
 
-- [x] `GridPanel` (K2) ve kart şablonları (uygulama, not, resim)
-- [x] Sürükleme görüntüsü gerçek boyutta, imleç tutulan noktada (G7)
-- [x] Hedef hücrelerin tamamı vurgulanıyor; geçersiz hedefte farklı vurgu (G8, G6)
-- [x] Taşınan öğeler animasyonla kayıyor
-- [x] Resize tutamacı, hücreye oturma (G10)
-- [x] UI testi: `.dsl` senaryoları gerçek sürüklemeyle koşuyor (çalıştırma ortamı S2'ye bağlı)
+Widget'a artık not ve resim kartları eklenebiliyor. Alttaki "+ Add" menüsünde App…, Note ve Image… var; not kartındaki
+Copy düğmesi metni panoya kopyalıyor, kartlar sağ tıkla düzenlenip yeniden adlandırılabiliyor. Pencerede Ctrl+V'ye
+basınca panodaki içeriğe göre kart ekleniyor: resim resim kartı, program ya da adres uygulama kartı, diğer metin not
+kartı oluyor.
 
-**Detay:** `PHASE3.md`
+### 🟢 Faz 7 — Ayarlar ve eski veriyi içe aktarma
 
----
+**Durum:** 🟢 Tamamlandı · **Tamamlanma:** 100% · **Ayrıntı:** [`PHASE7.md`](PHASE7.md)
 
-## Faz 4 — Kategoriler
+Başlık çubuğundaki dişli düğmesi artık bir Settings penceresi açıyor: tema (Windows ayarı, açık, koyu), "Always on
+top" ve About (sürüm, gizlilik notu, GitHub bağlantısı). Değişiklikler hemen uygulanıyor ve kaydediliyor. Python
+sürümünü kullanmış biri WinUI sürümünü ilk açtığında eski kategorileri, uygulamaları, notları ve resimleri bir kez içe
+aktarılıyor; sonuç durum çubuğunda bildiriliyor.
 
-**Durum:** 🟢 Tamamlandı (2026-10-30). Unit 128/128, UI 28/28 (Sandbox). Sonuç: `PHASE4.md` → 4.5 Sonuç.
+### 🟡 Faz 8 — UI testleri, performans ve Store paketi
 
-**Özet:** Sekmeler: ekle, yeniden adlandır, sil, sürükleyerek sırala; öğeyi başka kategoriye taşı.
+**Durum:** 🟡 Kısmi · **Tamamlanma:** 90% · **Ayrıntı:** [`PHASE8.md`](PHASE8.md)
 
-**Hedefler:**
+Bu fazda widget Store'a gönderilmeye hazırlandı. Bütün kabul kriterlerinin otomatik testleri geçiyor; başlama süresi
+ve bellek ölçüldü. x64 ve ARM64 için ikon setli MSIX paketleri, Store listeleme metni, gizlilik politikası ve gönderim
+adımları hazır. Kart menüsüne "Change icon…" ve "Reset icon" eklendi. Kalan tek adım, Partner Center gönderimini
+kullanıcının kendi hesabıyla yapması.
 
-- [x] `TabView` ile kategori sekmeleri ve "+" sekmesi
-- [x] Rename (satır içi), Delete (onaylı; içindeki öğe sayısı gösterilir)
-- [x] Sekmeleri sürükleyerek sıralama, tekerlekle kaydırma
-- [x] Kart menüsünde "Move to" → kategori; hedef kategoride ilk boş hücreye yerleşir
+### 🟢 Faz 9 — İlk kullanım geri bildirimi: tek satır başlık, hücre hücre boyut, kompakt mod, resim, emoji
 
-**Detay:** `PHASE4.md`
+**Durum:** 🟢 Tamamlandı · **Tamamlanma:** 100% · **Ayrıntı:** [`PHASE9.md`](PHASE9.md)
 
----
+Uygulamanın ilk kullanımından gelen beş geri bildirim bu fazda karşılandı. Resim kartları resmi artık kırpmadan,
+tamamıyla gösteriyor; başlık çubuğu ve sekmeler tek satıra indi. Pencere kenarından sürüklenince ızgara hücre hücre
+büyüyüp küçülüyor (en az 2x2); üst çubuktaki düğmeyle widget tek hücrelik bir ikona dönüşüyor ve kart ikonunun yerine
+emoji konabiliyor.
 
-## Faz 5 — Uygulama ekleme ve otomatik ikon
+### 🟢 Faz 10 — Kompakt ikon davranışı, tek ikon penceresi, sağ tık menüsü, tutamaç
 
-**Durum:** 🟢 Tamamlandı (2026-10-30). Unit 170/170, UI 33/33 (Sandbox). Sonuç: `PHASE5.md` → 5.6 Sonuç.
+**Durum:** 🟢 Tamamlandı · **Tamamlanma:** 100% · **Ayrıntı:** [`PHASE10.md`](PHASE10.md)
 
-**Özet:** Kurulu uygulama seçici, sürükle-bırakla ekleme, otomatik ikon, başlatma.
+Faz 9'daki kompakt mod ve emoji özellikleri kullanıcı geri bildirimine göre düzeltildi. Kompakt ikon artık her zaman
+üstte duruyor, widget'ın köşesinde çıkıyor, sürüklenince fareyi izleyip bırakınca duruyor; açılan widget ikonun
+ekranına sığıyor. Emoji, kendi resmi ve sıfırlama tek bir "Change icon…" penceresinde toplandı; boş alana sağ tıkla
+ekleme menüsü açılıyor ve kartın boyutlandırma tutamacı her resimde görünüyor.
 
-**Hedefler:**
+### 🟢 Faz 11 — Boyutlandırma tutamacının oku ve kart renkleri
 
-- [x] `InstalledAppsService` (Win32 + Store, arama) (U1)
-- [x] `IconService`: exe, lnk, klasör, Store uygulaması, favicon, baş harf yedeği (U2, U4)
-- [x] Widget'a dosya/URL bırakma (U3, U4)
-- [x] `LauncherService`: EXE, URL, klasör; eksik hedef uyarısı (U5, U6)
-- [x] Kart menüsü: Open, Edit, Rename, Change icon..., Reset icon, Delete — Rename Faz 6, Change/Reset icon Faz 8
+**Durum:** 🟢 Tamamlandı · **Tamamlanma:** 100% · **Ayrıntı:** [`PHASE11.md`](PHASE11.md)
 
-**Detay:** `PHASE5.md`
+Kartın sağ altındaki boyutlandırma tutamacı düzeltildi: ok artık doğru yönü (↖↘) gösteriyor, küçük dairenin tam
+ortasında duruyor ve daire kartın tam sağ alt köşesine oturuyor. Kartlar da zeminden belirgin biçimde ayrılıyor; not
+kartları sarı. Bütün renkler tema kaynaklarından geliyor, koyu ve açık temada ayrı tonlar var.
 
----
+### 🟢 Faz 12 — Resme tıklayınca büyük hali
 
-## Faz 6 — Notlar, resimler ve Ctrl+V
+**Durum:** 🟢 Tamamlandı · **Tamamlanma:** 100% · **Ayrıntı:** [`PHASE12.md`](PHASE12.md)
 
-**Durum:** 🟢 Tamamlandı (2026-10-30). Unit 206/206, UI 41/41 (Sandbox). Sonuç: `PHASE6.md` → 6.5 Sonuç.
+Bir resim kartına tıklayınca resim ayrı bir pencerede büyük olarak açılıyor. Pencere widget'ın bulunduğu ekranın
+ortasında, resmin oranını koruyarak ve ekrana sığacak boyutta açılıyor. Esc, resme tıklama ya da sağ üstteki kapat
+düğmesi pencereyi kapatıyor; uygulama kartlarına tıklamak eskisi gibi uygulamayı açıyor.
 
-**Özet:** Not ve resim kartları, hızlı not, pencere düzeyinde Ctrl+V.
+### 🟢 Faz 13 — İkon penceresi: Select icon / Select image sekmeleri
 
-**Hedefler:**
+**Durum:** 🟢 Tamamlandı · **Tamamlanma:** 100% · **Ayrıntı:** [`PHASE13.md`](PHASE13.md)
 
-- [x] Hızlı not kutusu (N1), not kartı: Copy, Edit, Resize, Move to, Delete (N2)
-- [x] Resim kartı: dosyadan ekleme, en-boy oranından span (I2), "Image not found" yer tutucusu
-- [x] `ClipboardService` + pencere düzeyinde Ctrl+V; içerik türü tablosu (K7, I1)
-- [x] "Add" menüsü (alt çubukta "+ Add" menüsü): App, Note, Image
+İkon penceresinin üstünde artık iki sekme var: "Select icon" emoji ızgarasını, "Select image" ise resim seçme alanını
+gösteriyor. Resim "Browse…" ile seçilebiliyor, alana sürüklenebiliyor ya da Ctrl+V ile yapıştırılabiliyor. "Reset to
+original" ve "Cancel" pencerenin alt çubuğunda, Reset Cancel'ın solunda duruyor ve widget ne kadar küçük olursa olsun
+görünür kalıyor.
 
-**Detay:** `PHASE6.md`
+### 🟢 Faz 14 — İkon penceresinin geç açılması
 
----
+**Durum:** 🟢 Tamamlandı · **Tamamlanma:** 100% · **Ayrıntı:** [`PHASE14.md`](PHASE14.md)
 
-## Faz 7 — Ayarlar ve eski veriyi içe aktarma
+İkon penceresi artık menüye tıklayınca gecikmeden açılıyor. Önce gecikmenin nerede olduğu ölçüldü: ilk açılışta renkli
+emoji fontunun ilk kez çizilmesi, sonraki açılışlarda 56 düğmenin yerleşimiydi. Emoji ızgarası hafif hücrelerle
+yeniden yapıldı, emojiler uygulama açıldıktan sonra fark edilmeden önceden çiziliyor ve pencere her açılışta yeniden
+kullanılıyor.
 
-**Durum:** 🟢 Tamamlandı (2026-10-30). Unit 231/231, UI 47/47 (Sandbox). Sonuç: `PHASE7.md` → 7.5 Sonuç.
+### 🟢 Faz 15 — Resim kopyalama ve resim alma
 
-**Özet:** Ayarlar sayfası, tema doğrulaması, Python sürümünün verisini içe aktarma.
+**Durum:** 🟢 Tamamlandı · **Tamamlanma:** 100% · **Ayrıntı:** [`PHASE15.md`](PHASE15.md)
 
-**Hedefler:**
+Bir resim kartındaki resim artık panoya kopyalanabiliyor ve Paint, Word ya da bir sohbet uygulamasına
+yapıştırılabiliyor. Bunun üç yolu var: kartın üzerindeki kopyalama düğmesi, sağ tık menüsündeki "Copy image" ve büyük
+görüntüleme penceresinde Ctrl+C. Widget'a sürüklenen resim dosyaları ve resim verisi de artık uygulama kartı değil,
+resim kartı oluyor.
 
-- [x] Ayarlar: Theme (System/Light/Dark), Always on top, About
-- [x] Açık/koyu tema UI testi (W1)
-- [x] `LegacyImporter`: `%LOCALAPPDATA%\MyEverythingWidget\app_state.json` ve resim dosyaları (D1)
+### 🟢 Faz 16 — Kopyalama geri bildirimi, görüntüleyici menüsü ve Paint'te düzenleme
 
-**Detay:** `PHASE7.md`
+**Durum:** 🟢 Tamamlandı · **Tamamlanma:** 100% · **Ayrıntı:** [`PHASE16.md`](PHASE16.md)
 
----
-
-## Faz 8 — UI testleri, performans ve Store paketi
-
-**Durum:** 🟡 Kısmi (2026-10-30). Kod, testler (unit 236/236, UI 49/49), paketler ve dokümanlar hazır; Partner Center gönderimi kullanıcıda. Sonuç: `PHASE8.md` → 8.5 Sonuç.
-
-**Özet:** Uçtan uca test turu, bellek/başlama süresi ölçümü, Store'a hazır paket ve listeleme dokümanları.
-
-**Hedefler:**
-
-- [x] Tüm kabul kriterlerinin testleri geçiyor (1.5'teki tablo)
-- [x] Ölçüm: soğuk başlama süresi, boşta bellek (Python sürümüyle karşılaştırmalı)
-- [x] Store paketi (x64 + arm64), uygulama ikonları, ekran görüntüleri
-- [x] Store listeleme ve gizlilik politikası taslağı (TaskTimerWidget dokümanları örnek alınarak)
-- [ ] Partner Center gönderimi kullanıcı tarafından yapılır
-
-**Detay:** `PHASE8.md`
+Kopyalama düğmesine basınca düğme bir an onay işaretine dönüp "Copied" diyor; sağ tık menüsünden kopyalayınca da kart
+aynı şekilde gösteriyor. Büyük görüntüleme penceresinde sağ tık menüsü var: "Copy" ve "Edit in Paint". Resim
+kartlarının menüsüne de "Edit in Paint" eklendi. Paint'te kaydedilen resim, widget'a geri dönülünce kartta
+yenileniyor. Düzenleme Paint'te yapıldığı için widget'ın belleği büyümüyor.
 
 ---
 

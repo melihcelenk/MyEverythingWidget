@@ -220,6 +220,17 @@ public sealed class NotesImagesPasteTests : IDisposable
         Assert.IsType<ImageItem>(Assert.Single(_store.Current!.Items, item => item.Id.StartsWith("new", StringComparison.Ordinal)));
     }
 
+    [Fact]
+    public void ReportProblem_ShowsAWarning()
+    {
+        var board = CreateBoard();
+
+        board.ReportProblem("Paint could not be opened.");
+
+        Assert.Equal("Paint could not be opened.", board.StatusMessage);
+        Assert.Equal(StatusSeverity.Warning, board.StatusSeverity);
+    }
+
     private sealed class FakeImageStore : IImageStore
     {
         public (int Width, int Height)? NextSize { get; set; } = (100, 100);

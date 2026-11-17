@@ -82,7 +82,7 @@
                 VerticalAlignment="Top"
                 Style="{StaticResource TitleBarButtonStyle}"
                 Click="OnCopyClicked">
-            <FontIcon FontSize="12" Glyph="&#xE8C8;" />
+            <FontIcon x:Name="CopyIcon" FontSize="12" Glyph="&#xE8C8;" />
         </Button>
 
         <!-- Resize grip, shown while the pointer is over the card: a solid badge, so it stays visible on dark images,

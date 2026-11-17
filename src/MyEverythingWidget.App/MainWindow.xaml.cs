@@ -85,6 +85,15 @@ public sealed partial class MainWindow : Window
         CompactIcon.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(OnCompactPointerReleased), handledEventsToo: true);
 
         ViewModel.PropertyChanged += OnViewModelPropertyChanged;
+
+        // Coming back to the widget after editing an image in Paint shows the saved change.
+        Activated += (_, e) =>
+        {
+            if (e.WindowActivationState != WindowActivationState.Deactivated)
+            {
+                GridView.RefreshChangedImages();
+            }
+        };
         Closed += OnClosed;
 
         // Start with programmatic focus on the grid, so no keyboard focus rectangle shows on the title bar buttons.

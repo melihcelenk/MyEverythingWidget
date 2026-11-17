@@ -66,6 +66,15 @@ public sealed partial class WidgetGridView : UserControl
         }
     }
 
+    /// <summary>Reloads the image cards whose files were changed outside the widget.</summary>
+    public void RefreshChangedImages()
+    {
+        foreach (var card in _cards.Values)
+        {
+            card.RefreshImageIfChanged();
+        }
+    }
+
     private void OnBoardPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(BoardViewModel.GridSize))
@@ -182,12 +191,23 @@ public sealed partial class WidgetGridView : UserControl
             AutomationProperties.SetAutomationId(copy, "CopyImageMenuItem");
             copy.Click += async (_, _) =>
             {
-                if (DataFiles.Resolve(item.ImagePath) is { } imageFile)
+                if (_cards.TryGetValue(item.Id, out var card))
                 {
-                    await ClipboardWriter.CopyImageAsync(imageFile);
+                    await card.CopyAsync();
                 }
             };
             menu.Items.Add(copy);
+
+            var edit = new MenuFlyoutItem { Text = "Edit in Paint", Icon = new FontIcon { Glyph = "" } };
+            AutomationProperties.SetAutomationId(edit, "EditImageMenuItem");
+            edit.Click += (_, _) =>
+            {
+                if (DataFiles.Resolve(item.ImagePath) is { } imageFile && !ImageEditor.TryOpenInPaint(imageFile))
+                {
+                    _board?.ReportProblem(ImageEditor.PaintNotAvailableMessage);
+                }
+            };
+            menu.Items.Add(edit);
         }
 
         menu.Items.Add(moveTo);

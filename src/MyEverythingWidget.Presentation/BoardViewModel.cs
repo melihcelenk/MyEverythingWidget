@@ -494,6 +494,13 @@ public sealed partial class BoardViewModel : ObservableObject
         return false;
     }
 
+    /// <summary>Shows a warning that the view could not do something the user asked for.</summary>
+    public void ReportProblem(string message)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(message);
+        ShowStatus(message, StatusSeverity.Warning);
+    }
+
     private void ShowStatus(string message, StatusSeverity severity)
     {
         StatusSeverity = severity;

@@ -81,4 +81,96 @@ public sealed class ImageCopyTests : IDisposable
 
         Assert.True(Wait.Until(SandboxClipboard.HasPicture), "The clipboard should hold the picture.");
     }
+
+    [Fact]
+    public void CopyButton_ShowsThatTheImageWasCopied()
+    {
+        using var app = LaunchWithImage();
+        var card = app.Find("Card_I1");
+        RealMouse.MoveTo(card.BoundingRectangle.Center());
+        GridDriver.WaitForUi();
+        var copy = Wait.ForElement(() => card.FindFirstDescendant(c => c.ByAutomationId("CopyImageButton")));
+
+        RealMouse.Click(copy.BoundingRectangle.Center());
+
+        Assert.True(Wait.Until(() => copy.Name == "Copied", TimeSpan.FromSeconds(1)), $"The button should say it copied; it says '{copy.Name}'.");
+        Assert.True(Wait.Until(() => copy.Name == "Copy image", TimeSpan.FromSeconds(4)), "The button should go back to normal after a moment.");
+    }
+
+    [Fact]
+    public void CopyImageMenuItem_ShowsThatTheImageWasCopied()
+    {
+        using var app = LaunchWithImage();
+        GridDriver.WaitForUi();
+        RealMouse.RightClick(app.Find("Card_I1").BoundingRectangle.Center());
+
+        Wait.ForElement(() => app.FindInPopups("CopyImageMenuItem")).AsMenuItem().Invoke();
+
+        var copy = Wait.ForElement(() => app.Find("Card_I1").FindFirstDescendant(c => c.ByAutomationId("CopyImageButton")));
+        Assert.True(Wait.Until(() => copy.Name == "Copied" && !copy.IsOffscreen, TimeSpan.FromSeconds(1)), "The card should show that the image was copied.");
+    }
+
+    [Fact]
+    public void ViewerContextMenu_CopiesAndSaysSo()
+    {
+        using var app = LaunchWithImage();
+        RealMouse.Click(app.Find("Card_I1").BoundingRectangle.Center());
+        var viewer = Wait.ForElement(() => app.FindWindow("photo.png"));
+        GridDriver.WaitForUi();
+
+        RealMouse.RightClick(viewer.BoundingRectangle.Center());
+        var copy = Wait.ForElement(() => viewer.FindFirstDescendant(c => c.ByAutomationId("ViewerCopyMenuItem")) ?? app.FindInPopups("ViewerCopyMenuItem"));
+        Assert.NotNull(viewer.FindFirstDescendant(c => c.ByAutomationId("ViewerEditMenuItem")) ?? app.FindInPopups("ViewerEditMenuItem"));
+        copy.AsMenuItem().Invoke();
+
+        Assert.True(Wait.Until(SandboxClipboard.HasPicture), "The clipboard should hold the picture.");
+        Assert.NotNull(Wait.ForElement(() => viewer.FindFirstDescendant(c => c.ByAutomationId("ViewerCopiedNotice"))));
+        Assert.NotNull(app.FindWindow("photo.png"));
+    }
+
+    [Fact]
+    public void ImageChangedOutside_IsShownWhenTheWidgetIsActivatedAgain()
+    {
+        using var app = LaunchWithImage();
+        var card = app.Find("Card_I1").BoundingRectangle;
+        Assert.True(Wait.Until(() => IsGreenish(PixelAt(card))), "The card should first show the green picture.");
+
+        using (var bitmap = new Bitmap(400, 200))
+        {
+            using (var graphics = Graphics.FromImage(bitmap))
+            {
+                graphics.Clear(Color.Crimson);
+            }
+
+            bitmap.Save(Path.Combine(_data.Path, "images", "photo.png"), ImageFormat.Png);
+        }
+
+        var window = Win32.GetBounds(app.WindowHandle);
+        RealMouse.Click(new Point(Math.Max(window.Left - 60, 5), window.Top + 60));
+        GridDriver.WaitForUi();
+        RealMouse.Click(new Point(window.Right - 120, window.Top + 18));
+        card = app.Find("Card_I1").BoundingRectangle;
+
+        Assert.True(Wait.Until(() => IsReddish(PixelAt(card)), TimeSpan.FromSeconds(5)), $"The card should show the edited picture, shows {PixelAt(card)}.");
+    }
+
+    [Fact]
+    public void EditInPaint_IsOfferedForImageCards()
+    {
+        using var app = LaunchWithImage();
+        GridDriver.WaitForUi();
+        RealMouse.RightClick(app.Find("Card_I1").BoundingRectangle.Center());
+
+        Assert.NotNull(Wait.ForElement(() => app.FindInPopups("EditImageMenuItem")));
+    }
+
+    private static Color PixelAt(Rectangle card)
+    {
+        using var screen = FlaUI.Core.Capturing.Capture.Screen().Bitmap;
+        return screen.GetPixel(card.Left + (card.Width / 2), card.Top + (card.Height / 2));
+    }
+
+    private static bool IsGreenish(Color color) => color.G > color.R + 40;
+
+    private static bool IsReddish(Color color) => color.R > color.G + 60;
 }
