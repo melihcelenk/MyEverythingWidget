@@ -22,8 +22,8 @@ public sealed partial class SettingsDialog : ContentDialog
     private static readonly Uri Personal = new("https://melihcelenk.com/");
     private static readonly Uri Website = new("https://melihcelenk.github.io/MyEverythingWidget/");
 
-    /// <summary>The publisher's Store page until the app has its own Store ID.</summary>
-    private static readonly Uri Rate = new("https://apps.microsoft.com/search/publisher?name=Melih%20Celenk");
+    /// <summary>The app's Microsoft Store page (Store ID 9NRSQN57C9FH), where it can be rated.</summary>
+    private static readonly Uri Rate = new("https://apps.microsoft.com/detail/9NRSQN57C9FH");
     private static readonly TimeSpan CopiedFeedback = TimeSpan.FromSeconds(1.5);
 
     private readonly MainViewModel _viewModel;
