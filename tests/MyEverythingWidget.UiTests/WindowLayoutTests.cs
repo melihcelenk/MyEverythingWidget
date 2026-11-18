@@ -327,4 +327,29 @@ public sealed class WindowLayoutTests : IDisposable
         Assert.True(about.Right <= close.Right + 1, $"The about text {about} should wrap inside the dialog (buttons end at {close.Right}).");
         FlaUI.Core.Capturing.Capture.Rectangle(window).ToFile(Artifacts.PathOf($"settings-{columns}-columns"));
     }
+
+    [Fact]
+    public void SettingsDialog_KeepsAGapAboveAndBelow_AndShowsItAll()
+    {
+        Seed();
+        using var app = AppSession.Launch(_data);
+        var scale = Pitch(app) / 80;
+
+        RealMouse.Click(app.Find("SettingsButton").BoundingRectangle.Center());
+        var dialog = Wait.ForElement(() => app.FindInPopups("SettingsDialog"));
+        GridDriver.WaitForUi();
+        var window = Win32.ClientBounds(app.WindowHandle);
+        var close = Wait.ForElement(() => dialog.FindFirstDescendant(c => c.ByName("Close").And(c.ByControlType(FlaUI.Core.Definitions.ControlType.Button)))).BoundingRectangle;
+        var title = Wait.ForElement(() => dialog.FindFirstDescendant(c => c.ByName("Settings").And(c.ByControlType(FlaUI.Core.Definitions.ControlType.Text)))).BoundingRectangle;
+
+        // A 12 px gap to the window plus the dialog's 24 px padding.
+        var inset = (int)Math.Floor(34 * scale);
+        Assert.True(title.Top - window.Top >= inset, $"The dialog title {title} should start at least {inset} px below the window top {window}.");
+        Assert.True(window.Bottom - close.Bottom >= inset, $"The dialog buttons {close} should end at least {inset} px above the window bottom {window}.");
+
+        // At the default size everything fits without scrolling, the About links included.
+        var source = Wait.ForElement(() => dialog.FindFirstDescendant(c => c.ByAutomationId("AboutSourceLink"))).BoundingRectangle;
+        Assert.True(source.Height > 0 && source.Bottom <= close.Top, $"The last About link {source} should be visible above the buttons {close}.");
+        FlaUI.Core.Capturing.Capture.Rectangle(window).ToFile(Artifacts.PathOf("settings-default-size"));
+    }
 }

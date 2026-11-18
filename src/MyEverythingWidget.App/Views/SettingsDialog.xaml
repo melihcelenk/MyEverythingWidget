@@ -8,38 +8,132 @@
     CloseButtonText="Close"
     DefaultButton="Close">
 
-    <StackPanel MaxWidth="320" Spacing="16">
+    <!-- The dialog does not scroll its content itself; in a small widget the About section is below the fold. -->
+    <ScrollViewer x:Name="ContentScroller"
+                  AutomationProperties.AutomationId="SettingsScroller"
+                  HorizontalScrollBarVisibility="Disabled"
+                  VerticalScrollBarVisibility="Auto">
+    <StackPanel MaxWidth="320" Spacing="14">
         <StackPanel.Resources>
-            <!-- RadioButton and ToggleSwitch have a minimum width wider than a small widget's dialog; let them wrap. -->
-            <Style TargetType="RadioButton" BasedOn="{StaticResource DefaultRadioButtonStyle}">
+            <!-- One choice of a segmented control: one word, the chosen one filled with the accent colour. -->
+            <Style x:Key="SegmentStyle" TargetType="RadioButton">
                 <Setter Property="MinWidth" Value="0" />
+                <Setter Property="Padding" Value="14,5" />
+                <Setter Property="Foreground" Value="{ThemeResource TextFillColorPrimaryBrush}" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="RadioButton">
+                            <Grid x:Name="Root" Background="Transparent">
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal" />
+                                        <VisualState x:Name="PointerOver">
+                                            <VisualState.Setters>
+                                                <Setter Target="Root.Background" Value="{ThemeResource SubtleFillColorSecondaryBrush}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Pressed">
+                                            <VisualState.Setters>
+                                                <Setter Target="Root.Background" Value="{ThemeResource SubtleFillColorTertiaryBrush}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Disabled" />
+                                    </VisualStateGroup>
+                                    <VisualStateGroup x:Name="CheckStates">
+                                        <VisualState x:Name="Checked">
+                                            <VisualState.Setters>
+                                                <Setter Target="Selection.Opacity" Value="1" />
+                                                <Setter Target="Label.Foreground" Value="{ThemeResource TextOnAccentFillColorPrimaryBrush}" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Unchecked" />
+                                        <VisualState x:Name="Indeterminate" />
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                                <Border x:Name="Selection" Background="{ThemeResource AccentFillColorDefaultBrush}" Opacity="0" />
+                                <ContentPresenter x:Name="Label"
+                                                  Padding="{TemplateBinding Padding}"
+                                                  HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center"
+                                                  Content="{TemplateBinding Content}"
+                                                  Foreground="{TemplateBinding Foreground}" />
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
             </Style>
             <Style TargetType="ToggleSwitch" BasedOn="{StaticResource DefaultToggleSwitchStyle}">
                 <Setter Property="MinWidth" Value="0" />
             </Style>
         </StackPanel.Resources>
-        <RadioButtons x:Name="ThemeChoices" Header="Theme" AutomationProperties.AutomationId="ThemeChoices">
-            <RadioButton x:Name="ThemeSystem" AutomationProperties.AutomationId="ThemeSystem" Content="Use Windows setting" Checked="OnThemeChecked" />
-            <RadioButton x:Name="ThemeLight" AutomationProperties.AutomationId="ThemeLight" Content="Light" Checked="OnThemeChecked" />
-            <RadioButton x:Name="ThemeDark" AutomationProperties.AutomationId="ThemeDark" Content="Dark" Checked="OnThemeChecked" />
-        </RadioButtons>
 
-        <ToggleSwitch x:Name="AlwaysOnTopSwitch"
-                      AutomationProperties.AutomationId="AlwaysOnTopSwitch"
-                      Header="Always on top"
-                      OnContent="On"
-                      OffContent="Off"
-                      Toggled="OnAlwaysOnTopToggled" />
+        <StackPanel Spacing="6">
+            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Theme" />
+            <Border HorizontalAlignment="Left"
+                    AutomationProperties.AutomationId="ThemeChoices"
+                    BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
+                    BorderThickness="1"
+                    CornerRadius="{ThemeResource ControlCornerRadius}">
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton x:Name="ThemeSystem" GroupName="Theme" Style="{StaticResource SegmentStyle}" AutomationProperties.AutomationId="ThemeSystem" Content="System" ToolTipService.ToolTip="Follow the Windows setting" Checked="OnThemeChecked" />
+                    <RadioButton x:Name="ThemeLight" GroupName="Theme" Style="{StaticResource SegmentStyle}" AutomationProperties.AutomationId="ThemeLight" Content="Light" Checked="OnThemeChecked" />
+                    <RadioButton x:Name="ThemeDark" GroupName="Theme" Style="{StaticResource SegmentStyle}" AutomationProperties.AutomationId="ThemeDark" Content="Dark" Checked="OnThemeChecked" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
 
-        <StackPanel Spacing="4">
-            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="About" />
-            <TextBlock x:Name="VersionText" AutomationProperties.AutomationId="VersionText" Style="{StaticResource BodyTextBlockStyle}" TextWrapping="Wrap" />
-            <TextBlock AutomationProperties.AutomationId="PrivacyText"
+        <Grid ColumnSpacing="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock VerticalAlignment="Center" Style="{StaticResource BodyStrongTextBlockStyle}" Text="Always on top" />
+            <ToggleSwitch x:Name="AlwaysOnTopSwitch"
+                          Grid.Column="1"
+                          AutomationProperties.AutomationId="AlwaysOnTopSwitch"
+                          AutomationProperties.Name="Always on top"
+                          OnContent=""
+                          OffContent=""
+                          Toggled="OnAlwaysOnTopToggled" />
+        </Grid>
+
+        <Border Height="1" Background="{ThemeResource DividerStrokeColorDefaultBrush}" />
+
+        <StackPanel Spacing="2">
+            <TextBlock x:Name="AppNameText" AutomationProperties.AutomationId="AppNameText" Style="{StaticResource BodyStrongTextBlockStyle}" TextWrapping="Wrap" />
+            <StackPanel Orientation="Horizontal" Spacing="6">
+                <TextBlock x:Name="VersionText"
+                           AutomationProperties.AutomationId="VersionText"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                           Style="{StaticResource CaptionTextBlockStyle}" />
+                <TextBlock Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource CaptionTextBlockStyle}" Text="· 2026" />
+            </StackPanel>
+            <TextBlock Margin="0,6,0,0" Style="{StaticResource BodyTextBlockStyle}" Text="Melih Çelenk" />
+            <HyperlinkButton x:Name="EmailButton" AutomationProperties.AutomationId="AboutEmailButton" Padding="0" Click="OnEmailClicked">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <FontIcon x:Name="EmailIcon" FontSize="12" Glyph="&#xE715;" />
+                    <TextBlock x:Name="EmailText" />
+                </StackPanel>
+            </HyperlinkButton>
+            <HyperlinkButton x:Name="WebsiteLink" AutomationProperties.AutomationId="AboutWebsiteLink" Padding="0">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <FontIcon FontSize="12" Glyph="&#xE774;" />
+                    <TextBlock Text="melihcelenk.com" />
+                </StackPanel>
+            </HyperlinkButton>
+            <HyperlinkButton x:Name="SourceLink" AutomationProperties.AutomationId="AboutSourceLink" Padding="0">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <FontIcon FontSize="12" Glyph="&#xE943;" />
+                    <TextBlock Text="Source code on GitHub" />
+                </StackPanel>
+            </HyperlinkButton>
+            <TextBlock Margin="0,6,0,0"
+                       AutomationProperties.AutomationId="PrivacyText"
                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                        Style="{StaticResource CaptionTextBlockStyle}"
                        TextWrapping="Wrap"
-                       Text="Your apps, notes and images stay on this PC. Nothing is sent anywhere, except that a web shortcut fetches its site icon from that site." />
-            <HyperlinkButton Padding="0" Content="Source code on GitHub" NavigateUri="https://github.com/melihcelenk/MyEverythingWidget" />
+                       Text="Everything stays on this PC; web shortcuts only fetch their site icon." />
         </StackPanel>
     </StackPanel>
+    </ScrollViewer>
 </ContentDialog>

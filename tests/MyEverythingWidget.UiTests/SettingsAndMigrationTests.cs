@@ -45,6 +45,58 @@ public sealed class SettingsAndMigrationTests : IDisposable
     }
 
     [Fact]
+    public void ThemeChoices_AreOneRowOfOneWordButtons()
+    {
+        StateFiles.Seed(_data, new Dictionary<string, Core.Grid.GridPlacement>());
+        using var app = AppSession.Launch(_data);
+        var dialog = OpenSettings(app);
+
+        var system = In(dialog, "ThemeSystem");
+        var light = In(dialog, "ThemeLight");
+        var dark = In(dialog, "ThemeDark");
+
+        Assert.Equal(["System", "Light", "Dark"], new[] { system.Name, light.Name, dark.Name });
+        Assert.Equal(system.BoundingRectangle.Top, light.BoundingRectangle.Top);
+        Assert.Equal(system.BoundingRectangle.Top, dark.BoundingRectangle.Top);
+        Assert.True(light.BoundingRectangle.Left - system.BoundingRectangle.Right <= 2, "The buttons should touch.");
+        Assert.True(dark.BoundingRectangle.Left - light.BoundingRectangle.Right <= 2, "The buttons should touch.");
+    }
+
+    [Fact]
+    public void AboutEmail_CopiesTheAddressAndSaysSo()
+    {
+        StateFiles.Seed(_data, new Dictionary<string, Core.Grid.GridPlacement>());
+        using var app = AppSession.Launch(_data);
+        var dialog = OpenSettings(app);
+        var email = In(dialog, "AboutEmailButton");
+
+        // The About section is at the bottom of the dialog; the user scrolls down to it with the mouse wheel.
+        RealMouse.MoveTo(In(dialog, "AppNameText").BoundingRectangle.Center());
+        FlaUI.Core.Input.Mouse.Scroll(-10);
+        Assert.True(Wait.Until(() => email.BoundingRectangle.Height > 0), "Scrolling should bring the e-mail button into view.");
+        GridDriver.WaitForUi();
+        RealMouse.Click(email.BoundingRectangle.Center());
+
+        // "Copied" shows for 1.5 s; reading the clipboard starts a process and takes about as long, so it comes second.
+        Assert.True(Wait.Until(() => email.Name == "Copied"), $"The e-mail button should say Copied, it says '{email.Name}'.");
+        Assert.True(Wait.Until(() => SandboxClipboard.GetText() == "info@melihcelenk.com"), "The e-mail address should be on the clipboard.");
+        Assert.True(Wait.Until(() => email.Name == "info@melihcelenk.com", TimeSpan.FromSeconds(5)), "The e-mail button should show the address again.");
+    }
+
+    [Theory]
+    [InlineData("AboutEmailButton", "Copy info@melihcelenk.com")]
+    [InlineData("AboutWebsiteLink", "https://melihcelenk.com/")]
+    [InlineData("AboutSourceLink", "https://github.com/melihcelenk/MyEverythingWidget")]
+    public void AboutLinks_TellWhereTheyGo(string automationId, string target)
+    {
+        StateFiles.Seed(_data, new Dictionary<string, Core.Grid.GridPlacement>());
+        using var app = AppSession.Launch(_data);
+        var dialog = OpenSettings(app);
+
+        Assert.Equal(target, In(dialog, automationId).HelpText);
+    }
+
+    [Fact]
     public void Theme_DarkAndLight_RepaintWithoutRestartAndArePersisted()
     {
         StateFiles.Seed(_data, new Dictionary<string, Core.Grid.GridPlacement>());
@@ -115,7 +167,8 @@ public sealed class SettingsAndMigrationTests : IDisposable
 
         var version = In(OpenSettings(app), "VersionText").Name;
 
-        Assert.Matches(@"^My Everything Widget \d+\.\d+\.\d+$", version);
+        // Name and version are on separate lines, as in TaskTimerWidget's About (PHASE17 17.10).
+        Assert.Matches(@"^Version \d+\.\d+\.\d+$", version);
     }
 
     [Fact]

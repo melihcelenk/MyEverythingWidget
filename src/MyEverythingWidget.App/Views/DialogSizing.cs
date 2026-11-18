@@ -9,7 +9,7 @@ namespace MyEverythingWidget.App.Views;
 /// </summary>
 internal static class DialogSizing
 {
-    /// <summary>Space kept between the dialog and each side of the window.</summary>
+    /// <summary>Space kept between the dialog and every edge of the window.</summary>
     public const double SideGap = 12;
 
     /// <summary>Padding inside a dialog that is narrower than its usual width; the default 24 px leaves too little room.</summary>
@@ -17,7 +17,10 @@ internal static class DialogSizing
 
     private const double DefaultMinWidth = 320;
 
-    /// <summary>Limits <paramref name="dialog"/> to the width of <paramref name="root"/> minus a gap on each side.</summary>
+    /// <summary>
+    /// Limits <paramref name="dialog"/> to the size of <paramref name="root"/> minus a gap on every side; content that
+    /// does not fit then scrolls inside the dialog.
+    /// </summary>
     public static void FitToWindow(ContentDialog dialog, XamlRoot root)
     {
         ArgumentNullException.ThrowIfNull(dialog);
@@ -26,6 +29,7 @@ internal static class DialogSizing
         var available = Math.Max(0, root.Size.Width - (2 * SideGap));
         dialog.Resources["ContentDialogMinWidth"] = Math.Min(DefaultMinWidth, available);
         dialog.Resources["ContentDialogMaxWidth"] = available;
+        dialog.Resources["ContentDialogMaxHeight"] = Math.Max(0, root.Size.Height - (2 * SideGap));
         if (available < DefaultMinWidth)
         {
             dialog.Resources["ContentDialogPadding"] = new Thickness(NarrowPadding);

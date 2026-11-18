@@ -40,6 +40,8 @@ Store gönderimi.
 | 17.7 | Compact ikon ekranın sağındayken widget ikonla hizalı açılır; küçültünce ikon yerinde kalır. | 🟢 Tamamlandı |
 | 17.8 | Repo halka açılmaya hazırlanır: görev dokümanlarının dili ve eksik standart dosyalar. | 🟡 Kısmi (halka açılınca gizli güvenlik bildirimi açılmalı) |
 | 17.9 | Compact ikon görev çubuğundan simge durumuna alınıp geri açılınca boyutunu korur. | 🟢 Tamamlandı |
+| 17.10 | Ayarlar penceresi: TaskTimerWidget tarzı About, tek satırlık tema seçimi, pencereye sığan düzen. | 🟢 Tamamlandı |
+| 17.11 | Uygulamanın adı gözden geçirilir. | ⏳ Bekliyor (S15) |
 
 ## Nasıl kontrol edilir
 
@@ -238,6 +240,54 @@ Store gönderimi.
   alınınca da aynı şekilde kalıyordu; yani kaynağı S11'di. Bu kontrol S11 kuralına göre güncellendi (widget ekrana
   sığıyor ve sağ alt köşesi ikonunkiyle aynı). S11 sonrasında bu farkın görülmemesi bir kaçırmaydı.
 - **Durum:** 🟢 Tamamlandı. `CompactAndMenuTests` 9/9; tam UI seti 88/88 + 1 ayrı süreç testi; unit testler 309/309.
+
+### 17.10 — Ayarlar penceresi: TaskTimerWidget tarzı About, tek satırlık tema seçimi, pencereye sığan düzen.
+
+- **Mevcut durum:** About bölümünde yalnız ad, sürüm, gizlilik notu ve GitHub bağlantısı vardı. Tema üç satırlık
+  radyo düğmelerindeydi. Ayarlar penceresi widget'ın üstüne ve altına yapışıyordu; içerik kaydırılamıyordu, About
+  bağlantıları varsayılan boyutta görünmüyordu.
+- **Gereksinimler:**
+  - Gereksinim (T38): About bölümü TaskTimerWidget'taki gibi olmalı: uygulama adı, sürüm, yıl, ayırıcı, geliştirici
+    adı, e-posta ve bağlantılar.
+  - Gereksinim (T38): Bağlantıların üzerine gelince gidecekleri adres görünmeli.
+  - Gereksinim (T38): melihcelenk.com'a bir bağlantı olmalı.
+  - Gereksinim (T38): E-posta adresine tıklayınca adres panoya kopyalanmalı ve kopyalandığı gösterilmeli.
+  - Gereksinim (T42): Ayarlar penceresi widget'ın içine, üstte ve altta boşluk bırakarak sığmalı; küçük ekranlar
+    için kaydırma çubuğu olmalı, ama varsayılan boyutta kaydırma gerekmemeli.
+  - Gereksinim (T42): Tema seçimi yan yana, tek kelimelik, bitişik geçiş düğmeleri olmalı.
+- **Çözüm:**
+  - **About:** Kalın uygulama adı; "Version x.y.z · 2026"; ayırıcı; "Melih Çelenk"; e-posta, melihcelenk.com ve
+    GitHub bağlantıları (ikonlu); kısaltılmış gizlilik notu.
+  - **İpuçları:** Her bağlantının ipucunda (ve UIA HelpText'te) adresi var. E-postanınkinde
+    "Copy info@melihcelenk.com" yazıyor.
+  - **E-posta:** Tıklayınca adres panoya kopyalanıyor; 1,5 saniye onay işareti ve "Copied" görünüyor. Zamanlayıcı
+    bir alanda tutuluyor; yerel değişkendeyken toplanıp hiç çalışmıyordu (testle bulundu).
+  - **Tema:** "System · Light · Dark" bitişik düğmeler; seçili olan vurgu renginde. Bunlar özel stilli
+    RadioButton'lar, yani klavye ve erişilebilirlik davranışı aynı kaldı.
+  - **Always on top:** Etiket solda, anahtar sağda, tek satır.
+  - **Sığma:** İçerik bir `ScrollViewer` içinde. `DialogSizing` artık bütün iletişim kutularının yüksekliğini de
+    pencereye göre sınırlıyor (üstte ve altta 12 piksel).
+- **Dosyalar:** `src/MyEverythingWidget.App/Views/SettingsDialog.xaml`, `src/MyEverythingWidget.App/Views/SettingsDialog.xaml.cs`,
+  `src/MyEverythingWidget.App/Views/DialogSizing.cs`
+- **Testler:**
+  - `SettingsAndMigrationTests`: `AboutEmail_CopiesTheAddressAndSaysSo`, `AboutLinks_TellWhereTheyGo` (3 bağlantı),
+    `ThemeChoices_AreOneRowOfOneWordButtons`. Hepsi önce kırmızıydı.
+  - `WindowLayoutTests.SettingsDialog_KeepsAGapAboveAndBelow_AndShowsItAll`: üstte ve altta boşluk, varsayılan
+    boyutta son About bağlantısı düğmelerin üstünde görünüyor. Önce kırmızıydı.
+  - `About_ShowsVersion` yeni düzene göre güncellendi: ad ve sürüm artık ayrı satırlarda ("Version x.y.z").
+  - E-posta testinde kaydırma (fare tekerleği) eklendi; "Copied" kontrolü pano okumasından önceye alındı. Pano
+    okuması 1–2 saniye süren bir süreç açıyor ve 1,5 saniyelik onayı kaçırıyordu.
+- **Dikkat:** 2 sütunluk en dar widget'ta tema düğmeleri ve uzun bağlantılar yatayda kırpılıyor (içerik dikeyde
+  kayıyor). Varsayılan ve daha geniş boyutlarda her şey görünüyor.
+- **Durum:** 🟢 Tamamlandı.
+
+### 17.11 — Uygulamanın adı gözden geçirilir.
+
+- **Mevcut durum:** Ad "My Everything Widget".
+- **Gereksinim (T40):** Adın hukuki açıdan uygun olup olmadığı değerlendirilmeli; daha çarpıcı bir ad önerilmeli.
+- **Çözüm:** Hızlı tarama sonucu ve aday adlar S15'te sunuldu (öneri: "Pocket Desk"). Kesin kontrol Partner Center
+  ad rezervasyonu ve marka veritabanları ile yapılmalı.
+- **Durum:** ⏳ Bekliyor (S15).
 
 ### Doğrulanmayan / dikkat edilmesi gereken
 
