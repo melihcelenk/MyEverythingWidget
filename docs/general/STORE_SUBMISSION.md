@@ -29,6 +29,20 @@ pwsh scripts/publish-msix.ps1 -Platform ARM64 -Store -OutputDirectory tmp\store-
 
 The packages are unsigned; the Store signs them during certification.
 
+### Try the Store package on this PC first
+
+Windows does not install an unsigned package that runs a full-trust `.exe`, and the Store signs the package only
+during certification. To try the exact Store package locally, sign a copy with a local test certificate whose subject
+is the Store publisher:
+
+```
+pwsh scripts/sign-local-test.ps1      # signs tmp\local-signed\<package>.msix, exports local-test.cer
+```
+
+Then, in a PowerShell window opened as administrator, run the two commands the script prints (trust the certificate in
+`Cert:\LocalMachine\TrustedPeople`, then `Add-AppxPackage`). Upload the unsigned package from `tmp\store-*`, not the
+signed copy. Remove the local install with `Get-AppxPackage MelihCelenk.MyEverythingWidget | Remove-AppxPackage`.
+
 ## 4. Submission
 
 | Partner Center section | What to enter |
