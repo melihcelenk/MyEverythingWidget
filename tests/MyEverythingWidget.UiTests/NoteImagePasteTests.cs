@@ -151,6 +151,23 @@ public sealed class NoteImagePasteTests : IDisposable
     }
 
     [Fact]
+    public void EditNoteFromMenu_ShowsEveryLine_AndSavingUnchangedKeepsThem()
+    {
+        // WinUI text boxes keep line breaks as a bare carriage return; notes saved from the editor look like this.
+        const string text = "First line of the note.\rSecond line\rThird line\rFourth line";
+        Seed(new NoteItem("N1", GeneralId, new GridPlacement(0, 0, 2, 2), text));
+        using var app = AppSession.Launch(_data);
+
+        RealMouse.RightClick(app.Find("Card_N1").BoundingRectangle.Center());
+        Wait.ForElement(() => app.FindInPopups("EditNoteMenuItem")).AsMenuItem().Invoke();
+        var shown = Editor(app).AsTextBox().Text;
+        SaveButton(app).Invoke();
+
+        Assert.Equal(text, shown);
+        Assert.Equal(text, Assert.IsType<NoteItem>(Assert.Single(ItemsAfterClose(app))).Text);
+    }
+
+    [Fact]
     public void RenameAppFromMenu_ChangesName()
     {
         Seed(new AppItem("A1", GeneralId, new GridPlacement(0, 0, 1, 1), "Cmd", Path.Combine(Environment.SystemDirectory, "cmd.exe"), LaunchKind.Executable, null));

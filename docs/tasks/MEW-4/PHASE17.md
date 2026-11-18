@@ -35,6 +35,7 @@ Store gönderimi.
 | 17.2 | GitHub README'si kullanım senaryolarını gösteren ekran görüntüleriyle güncellenir. | 🟢 Tamamlandı |
 | 17.3 | Branch `master`'a birleştirilir (PR #1). | ⏳ Bekliyor (kullanıcı) |
 | 17.4 | Store gönderimi için ekran görüntüleri ve paket hazırlanır. | 🟡 Kısmi (görüntüler hazır; gönderim `PHASE8.md` → 8.6) |
+| 17.5 | Not düzenleme penceresi çok satırlı notun tamamını gösterir. | 🟢 Tamamlandı |
 
 ## Nasıl kontrol edilir
 
@@ -112,6 +113,21 @@ Store gönderimi.
 - **Çözüm:** Store görüntüleri 17.2'dekilerle aynı (1366x768, Store'un önerdiği en küçük boyut). Paket
   `scripts/publish-msix.ps1` ile; gönderim `PHASE8.md` → 8.6.
 - **Durum:** 🟡 Kısmi (gönderim kullanıcıda).
+
+### 17.5 — Not düzenleme penceresi çok satırlı notun tamamını gösterir.
+
+- **Mevcut durum:** Çok satırlı bir notu "Edit" ile açınca metin kutusunda yalnız ilk satır görünüyor (T16).
+- **Problem:** `TextEditorDialog` önce `Text`, sonra `AcceptsReturn` veriyor; WinUI tek satırlık kutuya verilen metni
+  ilk satır sonunda kesiyor. "Save"e basılırsa notun geri kalanı silinir.
+- **Çözüm (S9 → A):** `AcceptsReturn` ve `TextWrapping` artık metinden önce veriliyor; metin kutusu kurulduktan sonra
+  `Text` atanıyor.
+- **Dosyalar:** `src/MyEverythingWidget.App/Views/TextEditorDialog.cs`
+- **Testler:** `tests/MyEverythingWidget.UiTests/NoteImagePasteTests.cs` →
+  `EditNoteFromMenu_ShowsEveryLine_AndSavingUnchangedKeepsThem`. Test dört satırlık bir notu açıyor, düzenleme
+  penceresinde dört satırın da olduğunu ve değiştirmeden kaydedince notun aynı kaldığını kontrol ediyor.
+  - Düzeltmeden önce kırmızıydı: pencerede yalnız "First line of the note." vardı.
+  - Düzeltmeden sonra `NoteImagePasteTests` 9/9 geçiyor.
+- **Durum:** 🟢 Tamamlandı.
 
 ### Doğrulanmayan / dikkat edilmesi gereken
 

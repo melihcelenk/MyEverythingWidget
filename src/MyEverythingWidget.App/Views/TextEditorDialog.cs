@@ -15,14 +15,15 @@ internal static class TextEditorDialog
     /// <summary>Shows the dialog; returns the text, or <see langword="null"/> when cancelled.</summary>
     public static async Task<string?> ShowAsync(XamlRoot root, string title, string initialText, bool multiline)
     {
+        // AcceptsReturn must be set before Text: a single-line text box cuts the text at its first line break.
         var editor = new TextBox
         {
-            Text = initialText,
             AcceptsReturn = multiline,
             TextWrapping = multiline ? TextWrapping.Wrap : TextWrapping.NoWrap,
             MaxWidth = 280,
             Height = multiline ? 140 : double.NaN,
         };
+        editor.Text = initialText;
         AutomationProperties.SetAutomationId(editor, "TextEditorBox");
         AutomationProperties.SetName(editor, title);
 
