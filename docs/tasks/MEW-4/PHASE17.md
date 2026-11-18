@@ -196,6 +196,9 @@ Store gönderimi.
 - **Çözüm:**
   - Görev dokümanları ve soru kartları için S12'de, eksikler için S13'te seçenekler sunuldu.
   - S08–S11 kartları S12'nin cevabına kadar commit'lenmedi.
+  - Issue şablonları TaskTimerWidget'tan uyarlandı (T29): `.github/ISSUE_TEMPLATE/bug-report.yml`,
+    `feature-request.yml`, `config.yml`. Hata raporunda sürüm, kurulum kaynağı, ekran ölçeği ve `logs\crash.log`
+    soruluyor. "Questions & Discussions" bağlantısı için repoda Discussions'ın açılması gerekiyor (S13).
 - **Durum:** ⏳ Bekliyor (S12, S13).
 
 ### Doğrulanmayan / dikkat edilmesi gereken
