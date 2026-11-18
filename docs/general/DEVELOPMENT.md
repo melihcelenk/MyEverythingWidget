@@ -72,17 +72,15 @@ UI tests find elements by `AutomationProperties.AutomationId`; give every intera
 ### README and Store screenshots
 
 ```
-pwsh scripts/capture-screenshots.ps1               # take them in the sandbox and lay them out (~3 min)
-pwsh scripts/capture-screenshots.ps1 -SkipCapture  # lay out the last captures again
+pwsh scripts/capture-screenshots.ps1        # take the captures in the sandbox, then build the pages (~3 min)
+python scripts/compose-store-images.py      # build the pages again from the existing captures (needs Pillow)
 ```
 
-`ShowcaseScreenshots` (trait `Category=Showcase`, skipped by the normal UI test run) seeds realistic, made-up
-content, switches the sandbox desktop to a plain colour and captures the windows. The script puts each capture on a
-1366x768 page with its caption and writes `docs/images/showcase-<n>.png`. The pictures shown inside the widget (an
-error screen, a chart) are in `tests/MyEverythingWidget.UiTests/Showcase/`.
-Tests that rely on the system drag-and-drop loop (TabView reordering) carry `[Trait("Isolation", "OwnProcess")]`;
-the runner executes them first, in their own test process (see `docs/tasks/MEW-4/PHASE7.md`, 7.6.2).
-They wait by polling (`Wait.Until`), never with fixed sleeps.
+`ShowcaseScreenshots` (trait `Category=Showcase`, skipped by the normal UI test run) seeds made-up content,
+switches the sandbox desktop to a plain colour and captures the windows into `docs/images/captures/`.
+`compose-store-images.py` builds `docs/images/store-1.png` … `store-3.png` from them: the cards and windows come from
+the captures; captions, callouts, the notes, the picture menu and the taskbar are drawn by the script. Photos and site
+icons are in `docs/images/assets/`.
 
 ## MSIX package
 

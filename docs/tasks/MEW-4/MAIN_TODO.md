@@ -94,7 +94,7 @@
 | 14 | İkon penceresinin geç açılması | 🟢 Tamamlandı | 100% | `PHASE14.md` |
 | 15 | Resim kopyalama ve resim alma | 🟢 Tamamlandı | 100% | `PHASE15.md` |
 | 16 | Kopyalama geri bildirimi, görüntüleyici menüsü ve Paint'te düzenleme | 🟢 Tamamlandı | 100% | `PHASE16.md` |
-| 17 | Ayarlar penceresinin kenar boşluğu ve yayın hazırlığı | 🟡 Devam ediyor | 60% | `PHASE17.md` |
+| 17 | Ayarlar penceresinin kenar boşluğu ve yayın hazırlığı | 🟡 Devam ediyor | 75% | `PHASE17.md` |
 
 <!-- Durum ikonları: 🟢 Tamamlandı (faz bitti, tüm testleri geçti) | 🟡 Kısmi (neyin beklediği faz notunda) | ⏳ Bekliyor (başlamadı) | 🔴 Bloke (bir karar ya da dış bağımlılık bekleniyor) -->
 
@@ -638,7 +638,7 @@ yenileniyor. Düzenleme Paint'te yapıldığı için widget'ın belleği büyüm
 
 ### 🟡 Faz 17 — Ayarlar penceresinin kenar boşluğu ve yayın hazırlığı
 
-**Durum:** 🟡 Devam ediyor · **Tamamlanma:** 60% · **Ayrıntı:** [`PHASE17.md`](PHASE17.md)
+**Durum:** 🟡 Devam ediyor · **Tamamlanma:** 75% · **Ayrıntı:** [`PHASE17.md`](PHASE17.md)
 
 Ayarlar penceresi ve diğer iletişim kutuları artık widget'ın iki yanından boşluk bırakıyor; dar widget'ta içerik
 kırpılmıyor. README ve Store için beş kullanım senaryosunun ekran görüntüleri Sandbox'ta tek komutla çekiliyor.

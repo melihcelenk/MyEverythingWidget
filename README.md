@@ -5,17 +5,11 @@ A small Windows widget that keeps your apps, notes and images one click away.
 > Rewritten with WinUI and .NET 10 for the Microsoft Store (MEW-4). The original Python/PySide6 version is in
 > [`legacy/`](legacy/README.md); its data is imported automatically on first start.
 
-## What you can use it for
+![Everything you love, one click away: apps, websites, notes and photos on your desktop](docs/images/store-1.png)
 
-![Your daily launcher: apps, folders and websites one click away](docs/images/showcase-1.png)
+![Copy it. Ctrl+V. Saved in a second: pictures, text and web links](docs/images/store-2.png)
 
-![Text you copy again and again: long commands, a signature, an address, a query](docs/images/showcase-2.png)
-
-![Jot it down before it's gone: Ctrl+V turns the clipboard text into a note](docs/images/showcase-3.png)
-
-![Grab a screen the moment you see it: paste an error screen, see it large, copy it or edit it in Paint](docs/images/showcase-4.png)
-
-![Out of the way when you don't need it: a small icon that stays on top](docs/images/showcase-5.png)
+![Always at hand, always on top: a small icon that opens the widget](docs/images/store-3.png)
 
 ## Features
 

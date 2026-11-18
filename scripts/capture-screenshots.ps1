@@ -6,7 +6,8 @@
     1. Runs the ShowcaseScreenshots UI tests through scripts/test-ui.ps1 (made-up but realistic content, nothing
        from this PC).
     2. Puts each capture on a 1366x768 canvas (the Store's recommended minimum) with a title and one line of text.
-    3. Writes the results to docs/images/showcase-<n>.png, used by README.md and the Store listing.
+    3. Writes the results to docs/images/captures/showcase-<n>.png.
+    4. Runs scripts/compose-store-images.py, which builds docs/images/store-<n>.png (README and Store) from them.
 
 .PARAMETER SkipCapture
     Re-uses the captures already in tmp\sandbox\results\shots and only lays them out again.
@@ -22,7 +23,7 @@ param(
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $shots = Join-Path $repoRoot "tmp\sandbox\results\shots"
-$output = Join-Path $repoRoot "docs\images"
+$output = Join-Path $repoRoot "docs\images\captures"
 
 if (-not $SkipCapture) {
     & (Join-Path $PSScriptRoot "test-ui.ps1") -Filter "/*/*/ShowcaseScreenshots/*"
@@ -102,3 +103,6 @@ function Write-Page([hashtable] $page) {
 }
 
 foreach ($page in $pages) { Write-Page $page }
+
+python (Join-Path $PSScriptRoot "compose-store-images.py")
+if ($LASTEXITCODE -ne 0) { throw "compose-store-images.py failed" }

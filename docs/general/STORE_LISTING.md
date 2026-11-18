@@ -33,13 +33,15 @@ launcher, shortcuts, widget, notes, quick access, productivity, desktop, dock
 
 ## Screenshots
 
-`pwsh scripts/capture-screenshots.ps1` writes the five Store screenshots (1366x768, caption included) to
-`docs/images/`; the README uses the same files. Content is made up but realistic; nothing comes from a real PC.
+Three screenshots, 1366x768 with caption, in `docs/images/` (the README uses the same files):
 
 | File | Caption |
 |------|---------|
-| `showcase-1.png` | Your daily launcher |
-| `showcase-2.png` | Text you copy again and again |
-| `showcase-3.png` | Jot it down before it's gone |
-| `showcase-4.png` | Grab a screen the moment you see it |
-| `showcase-5.png` | Out of the way when you don't need it |
+| `store-1.png` | Everything you love, one click away |
+| `store-2.png` | Copy it. Ctrl+V. Saved in a second. |
+| `store-3.png` | Always at hand, always on top |
+
+`pwsh scripts/capture-screenshots.ps1` takes the captures in Windows Sandbox (`docs/images/captures/`) and runs
+`python scripts/compose-store-images.py`, which builds the three pages from them. To change only the captions or the
+layout, run the Python script alone. Content is made up; the photos are from Unsplash (see
+`docs/images/assets/CREDITS.md`).

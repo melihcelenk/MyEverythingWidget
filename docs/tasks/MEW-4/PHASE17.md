@@ -1,6 +1,6 @@
 # Faz 17 — Ayarlar penceresinin kenar boşluğu ve yayın hazırlığı
 
-> **Durum:** 🟡 Devam ediyor · **Tamamlanma:** 60% · **Efor:** tahmin yazılmadı · **Task:** MEW-4
+> **Durum:** 🟡 Devam ediyor · **Tamamlanma:** 75% · **Efor:** tahmin yazılmadı · **Task:** MEW-4
 
 Ayarlar penceresi artık widget'ın iki yanından boşluk bırakıyor; aynı düzen bütün iletişim kutularına uygulandı. Widget
 2 sütuna kadar küçültülse de içerik kırpılmıyor. README ve Store için beş kullanım senaryosunu anlatan ekran
@@ -36,6 +36,7 @@ Store gönderimi.
 | 17.3 | Branch `master`'a birleştirilir (PR #1). | ⏳ Bekliyor (kullanıcı) |
 | 17.4 | Store gönderimi için ekran görüntüleri ve paket hazırlanır. | 🟡 Kısmi (görüntüler hazır; gönderim `PHASE8.md` → 8.6) |
 | 17.5 | Not düzenleme penceresi çok satırlı notun tamamını gösterir. | 🟢 Tamamlandı |
+| 17.6 | Tanıtım görselleri üçe iner; ilki uygulama, web sitesi, not ve fotoğrafı birlikte gösterir. | 🟢 Tamamlandı |
 
 ## Nasıl kontrol edilir
 
@@ -127,6 +128,32 @@ Store gönderimi.
   penceresinde dört satırın da olduğunu ve değiştirmeden kaydedince notun aynı kaldığını kontrol ediyor.
   - Düzeltmeden önce kırmızıydı: pencerede yalnız "First line of the note." vardı.
   - Düzeltmeden sonra `NoteImagePasteTests` 9/9 geçiyor.
+- **Durum:** 🟢 Tamamlandı.
+
+### 17.6 — Tanıtım görselleri üçe iner; ilki uygulama, web sitesi, not ve fotoğrafı birlikte gösterir.
+
+- **Mevcut durum:** Beş görsel var; ilki yalnız uygulama ikonlarından oluşuyor, 4.'sü bir hata ekranı gösteriyor (T18).
+- **Problem:** İlk görsel tek bakışta ilgi çekmeli; hata ekranı pazarlamada uygulamanın hatası gibi görünüyor.
+- **Çözüm:** Üç görselin taslağı `mockups/` altında; onaydan sonra çekilecek. Fotoğraf Unsplash lisanslı bir manzara.
+  S10'da soruldu.
+  - 2. tur (T19): metinler olumlu; web siteleri herkesin tanıdığı siteler (imdb.com, wikipedia.org…); yazılımcıya
+    özgü uygulamalar çıktı.
+  - 3. tur (T21): fotoğrafın sağ tık menüsü gerçek haliyle (Copy image, Edit in Paint, Move to, Delete) 2. görselde;
+    2. görselde not, iki fotoğraf ve uygulamalar birlikte; resmin de Ctrl+V ile eklendiği etiketle gösteriliyor.
+  - 4. tur (T22): 2. görsel Ctrl+V'ye odaklandı ("Copy it. Ctrl+V. Saved in a second."); resim, metin ve web
+    adresiyle eklenmiş üç kart vurgulu.
+  - 5. tur (T23): üç görselin altına Windows 11 tarzı görev çubuğu; widget'ın masaüstünde durduğunu gösteriyor.
+  - 6. tur (T24): 3. görselde compact ikon sağ üstte; ondan widget'a "Click to expand" yazılı ok.
+- **Son hal (T25):** Taslaklar onaylandı ve son görseller olarak kullanılıyor. Kartlar, ikonlar ve pencereler gerçek
+  Sandbox çekimlerinden alındığı için ayrıca yeniden çekim yapılmadı.
+  - `scripts/compose-store-images.py` görselleri `docs/images/captures/` altındaki çekimlerden ve
+    `docs/images/assets/` altındaki fotoğraf ve site ikonlarından üretiyor; çıktısı taslaklarla piksel piksel aynı.
+  - `scripts/capture-screenshots.ps1` çekimleri `docs/images/captures/`'a yazıp bu betiği çalıştırıyor.
+  - README ve `STORE_LISTING.md` üç görsele (`docs/images/store-1.png` … `store-3.png`) geçti.
+  - Fotoğraf kaynakları `docs/images/assets/CREDITS.md`'de.
+- **Dosyalar:** `scripts/compose-store-images.py`, `scripts/capture-screenshots.ps1`, `docs/images/store-*.png`,
+  `docs/images/captures/`, `docs/images/assets/`, `README.md`, `docs/general/STORE_LISTING.md`,
+  `docs/general/DEVELOPMENT.md`, `docs/tasks/MEW-4/mockups/`
 - **Durum:** 🟢 Tamamlandı.
 
 ### Doğrulanmayan / dikkat edilmesi gereken
