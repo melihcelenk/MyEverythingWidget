@@ -42,6 +42,7 @@ Store gönderimi.
 | 17.9 | Compact ikon görev çubuğundan simge durumuna alınıp geri açılınca boyutunu korur. | 🟢 Tamamlandı |
 | 17.10 | Ayarlar penceresi: TaskTimerWidget tarzı About, tek satırlık tema seçimi, pencereye sığan düzen. | 🟢 Tamamlandı |
 | 17.11 | Uygulamanın adı gözden geçirilir. | ⏳ Bekliyor (S15) |
+| 17.12 | About tasarımı TaskTimerWidget'takiyle aynı yapılır. | ⏳ Bekliyor (S17; web sitesi yapıldı) |
 
 ## Nasıl kontrol edilir
 
@@ -289,6 +290,22 @@ Store gönderimi.
 - **Çözüm:** Hızlı tarama sonucu ve aday adlar S15'te sunuldu (öneri: "Pocket Desk"). Kesin kontrol Partner Center
   ad rezervasyonu ve marka veritabanları ile yapılmalı.
 - **Durum:** ⏳ Bekliyor (S15).
+
+### 17.12 — About tasarımı TaskTimerWidget'takiyle aynı yapılır.
+
+- **Mevcut durum:** 17.10'daki About, Ayarlar penceresinin içinde. Görünümü TaskTimerWidget'takinden farklı: ayrı
+  açılır kart değil, bağlantılar mavi ve emoji simgeli değil, sürüm ve yıl tek satırda.
+- **Gereksinim (T46):** About tasarımı TaskTimerWidget'takiyle aynı olmalı. Tasarım, kodlamadan önce kullanıcıyla
+  netleştirilmeli.
+- **Çözüm:**
+  - **S16 cevabı:** Ayrı bir "i" düğmesi olmayacak. Ayarlar içinde, TaskTimerWidget'taki yeşil, daha küçük bir kart
+    olacak. Yazı boyutları, emojiler ve bağlantı adları aynı olacak (✉ e-posta, 🌐 Website, ⭐ Rate); sürüm ve yıl ayrı
+    satırlarda.
+  - **Website:** Repoda proje sitesi oluşturuldu (`index.html`, GitHub Pages).
+  - **Rate:** Geçici olarak Store yayıncı araması.
+  - **Taslak:** `mockups/mock-about-card.png`; onay S17'de.
+- **Dosyalar:** `index.html`, `docs/tasks/MEW-4/mockups/mock-about-card.png`
+- **Durum:** ⏳ Bekliyor (S17).
 
 ### Doğrulanmayan / dikkat edilmesi gereken
 

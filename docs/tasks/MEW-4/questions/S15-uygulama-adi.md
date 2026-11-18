@@ -30,6 +30,15 @@ Bu bir hukuki görüş değil; yalnız internette yaptığım hızlı bir tarama
     rezervasyon kabul edilmez.
   - Marka kontrolü için ad, sınıf 9 (yazılım) altında TÜRKPATENT, EUIPO ve USPTO veritabanlarında aranmalı.
 
+### Microsoft Store araması (kullanıcı, 2026-11-18)
+
+- Store'da "my everything" ve "everything" aramalarında benzer adlı bir uygulama çıkmadı (sonuçlar PowerToys, dosya
+  görüntüleyiciler ve arama araçları).
+- Yukarıdaki iki benzerlik Store'dan değil, genel web aramasından geliyor:
+  - Everything Widgets yalnız Android ve iOS'ta.
+  - Everything (voidtools) Store'da değil, kendi sitesinden dağıtılıyor.
+- Store açısından ad boşta görünüyor; kesin cevabı Partner Center ad rezervasyonu verir.
+
 ### Adaylar (hızlı taramada aynı adlı bir Windows widget'ı çıkmadı)
 
 | Ad | Neden | Taramada çıkan |
@@ -68,7 +77,11 @@ Bu bir hukuki görüş değil; yalnız internette yaptığım hızlı bir tarama
 
 ## Öneri
 
-**B** — mevcut ad yasal açıdan büyük olasılıkla sorunsuz, ama Store'da ve aramada öne çıkması zor. "Everything"
+**Güncelleme (Store aramasından sonra):** Store'da çakışma olmadığı için **A** da güçlü bir seçenek. Önce Partner
+Center'da "My Everything Widget" adını rezerve etmeyi dene; kabul edilirse A ile devam etmek en az iş. Aşağıdaki B
+gerekçesi (genel ve uzun ad, "Everything" çağrışımı) pazarlama tercihi olarak geçerli, ama hukuki bir engel değil.
+
+**İlk öneri: B** — mevcut ad yasal açıdan büyük olasılıkla sorunsuz, ama Store'da ve aramada öne çıkması zor. "Everything"
 sözcüğü de Windows'ta başka, çok bilinen bir aracı çağrıştırıyor. Kesin karar için Partner Center ad rezervasyonu ve
 marka araması şart; bunları senin hesabınla yapmak gerekiyor.
 
