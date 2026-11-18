@@ -88,6 +88,34 @@ public sealed class CompactAndMenuTests : IDisposable
     }
 
     [Fact]
+    public void CompactIcon_KeepsItsSize_AfterMinimizeAndRestoreFromTheTaskbar()
+    {
+        Seed();
+        using var app = AppSession.Launch(_data);
+        EnterCompact(app);
+        var before = Win32.ClientBounds(app.WindowHandle);
+
+        // What a taskbar click sends: minimize, then restore.
+        PostMessageW(app.WindowHandle, SystemCommand, MinimizeCommand, 0);
+        Assert.True(Wait.Until(() => IsIconic(app.WindowHandle)), "The icon should minimize.");
+        PostMessageW(app.WindowHandle, SystemCommand, RestoreCommand, 0);
+        Assert.True(Wait.Until(() => !IsIconic(app.WindowHandle)), "The icon should come back.");
+        GridDriver.WaitForUi();
+
+        Assert.Equal(before, Win32.ClientBounds(app.WindowHandle));
+    }
+
+    private const uint SystemCommand = 0x0112;
+    private const nint MinimizeCommand = 0xF020;
+    private const nint RestoreCommand = 0xF120;
+
+    [System.Runtime.InteropServices.DllImport("user32.dll")]
+    private static extern bool PostMessageW(nint window, uint message, nint wParam, nint lParam);
+
+    [System.Runtime.InteropServices.DllImport("user32.dll")]
+    private static extern bool IsIconic(nint window);
+
+    [Fact]
     public void DraggingCompactIcon_FollowsTheMouseAndStopsOnRelease()
     {
         Seed();
@@ -120,6 +148,7 @@ public sealed class CompactAndMenuTests : IDisposable
         var work = Win32.WorkAreaOf(app.WindowHandle);
         Win32.MoveTo(app.WindowHandle, work.Right - 90, work.Bottom - 90);
         GridDriver.WaitForUi();
+        var icon = Win32.ClientBounds(app.WindowHandle);
 
         RealMouse.Click(app.Find("CompactIcon").BoundingRectangle.Center());
 
@@ -127,7 +156,10 @@ public sealed class CompactAndMenuTests : IDisposable
         GridDriver.WaitForUi();
         var client = Win32.ClientBounds(app.WindowHandle);
         Assert.True(work.Contains(client), $"The widget {client} should fit inside the work area {work}.");
-        Assert.Equal((work.Right, work.Bottom), (client.Right, client.Bottom));
+
+        // The icon is in the bottom-right corner, so the widget opens from the icon's bottom-right corner
+        // (PHASE17 17.7, S11 → B); before that decision it was pushed against the work-area corner.
+        Assert.Equal((icon.Right, icon.Bottom), (client.Right, client.Bottom));
     }
 
     [Fact]

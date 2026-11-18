@@ -65,6 +65,10 @@ internal static partial class NativeMethods
     [return: MarshalAs(UnmanagedType.Bool)]
     internal static partial bool GetClientRect(nint windowHandle, out NativeRect rect);
 
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    internal static partial bool IsIconic(nint windowHandle);
+
     /// <summary>SetWindowPos flags: keep position and z-order, do not activate.</summary>
     internal const uint ResizeOnlyFlags = 0x0002 | 0x0004 | 0x0010;
 

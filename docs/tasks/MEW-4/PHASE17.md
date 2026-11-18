@@ -39,6 +39,7 @@ Store gönderimi.
 | 17.6 | Tanıtım görselleri üçe iner; ilki uygulama, web sitesi, not ve fotoğrafı birlikte gösterir. | 🟢 Tamamlandı |
 | 17.7 | Compact ikon ekranın sağındayken widget ikonla hizalı açılır; küçültünce ikon yerinde kalır. | 🟢 Tamamlandı |
 | 17.8 | Repo halka açılmaya hazırlanır: görev dokümanlarının dili ve eksik standart dosyalar. | 🟡 Kısmi (halka açılınca gizli güvenlik bildirimi açılmalı) |
+| 17.9 | Compact ikon görev çubuğundan simge durumuna alınıp geri açılınca boyutunu korur. | 🟢 Tamamlandı |
 
 ## Nasıl kontrol edilir
 
@@ -213,6 +214,30 @@ Store gönderimi.
   `gh api -X PUT repos/melihcelenk/MyEverythingWidget/private-vulnerability-reporting` ile açılmalı.
   `SECURITY.md` bu forma yönlendiriyor.
 - **Durum:** 🟡 Kısmi (halka açıldıktan sonra tek ayar).
+
+### 17.9 — Compact ikon görev çubuğundan simge durumuna alınıp geri açılınca boyutunu korur.
+
+- **Mevcut durum:** Compact ikon görev çubuğundan simge durumuna alınıp geri açılınca 80x80 yerine 234x102 oluyordu.
+- **Gereksinim (T35):** Compact ikon, simge durumuna alınıp geri açıldığında boyutunu korumalı.
+- **Problem:** Windows, pencereyi geri açarken en küçük boyutu (`WM_GETMINMAXINFO`) yeniden soruyor. O anda pencere
+  hâlâ simge konumunda, (-32000, -32000) noktasında: dış boyutu 154x22, içerik alanı boş. `CellSnappingResizer`
+  çerçeveyi bu dikdörtgenden ölçüp 154x22 sanıyordu; en küçük boyut 80+154 x 80+22 oluyordu.
+- **Çözüm:** `CellSnappingResizer.FrameSize` pencere simge durumundayken ya da simge konumundayken son geçerli
+  çerçeve ölçüsünü kullanıyor.
+- **Dosyalar:** `src/MyEverythingWidget.App/Interop/CellSnappingResizer.cs`,
+  `src/MyEverythingWidget.App/Interop/NativeMethods.cs`
+- **Testler:**
+  - `CompactAndMenuTests.CompactIcon_KeepsItsSize_AfterMinimizeAndRestoreFromTheTaskbar`: görev çubuğunun
+    gönderdiği simge durumu ve geri açma komutlarını gönderip ikonun konum ve boyutunun aynı kaldığını kontrol ediyor.
+    Düzeltmeden önce kırmızıydı (234x102).
+  - İlk deneme yalnız `IsIconic`'e bakıyordu ve yetmedi: Windows boyutu sorduğunda pencere artık "simge durumunda"
+    sayılmıyor. İkinci deneme "içerik alanı boş" ölçütünü kullandı, ama açılıştaki henüz gösterilmemiş pencereyi de
+    yakaladı. Son hal: simge durumu ya da simge konumu.
+- **S11'den kalan test düzeltmesi:** `OpeningIconNearScreenEdge_KeepsWidgetOnThatMonitor` widget'ın çalışma alanının
+  köşesine dayanmasını bekliyordu. S11 → B'den sonra widget ikonun köşesiyle hizalanıyor. Test, düzeltme geri
+  alınınca da aynı şekilde kalıyordu; yani kaynağı S11'di. Bu kontrol S11 kuralına göre güncellendi (widget ekrana
+  sığıyor ve sağ alt köşesi ikonunkiyle aynı). S11 sonrasında bu farkın görülmemesi bir kaçırmaydı.
+- **Durum:** 🟢 Tamamlandı. `CompactAndMenuTests` 9/9; tam UI seti 88/88 + 1 ayrı süreç testi; unit testler 309/309.
 
 ### Doğrulanmayan / dikkat edilmesi gereken
 

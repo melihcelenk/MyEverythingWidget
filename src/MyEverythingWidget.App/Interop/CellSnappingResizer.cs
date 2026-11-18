@@ -27,6 +27,12 @@ internal sealed class CellSnappingResizer
     private readonly SubclassProcedure _procedure;
     private readonly nint _procedurePointer;
 
+    /// <summary>Where Windows parks a minimized window.</summary>
+    private const int MinimizedPosition = -32000;
+
+    /// <summary>Frame size measured while the window was last shown; a minimized window has no meaningful frame.</summary>
+    private PixelSize _lastFrame;
+
     /// <summary>Starts snapping the window's resizing.</summary>
     /// <param name="window">Window handle.</param>
     /// <param name="sizing">Grid and chrome measures.</param>
@@ -81,11 +87,20 @@ internal sealed class CellSnappingResizer
     /// <summary>Size of the window frame around the client area, in pixels.</summary>
     private PixelSize FrameSize()
     {
+        // Minimized, and still while Windows restores it, the window is a small caption parked at (-32000, -32000)
+        // with an empty client area; that would read as a huge frame and become the minimum size, so the last real
+        // frame is used instead.
         GetWindowRect(_window, out var windowRect);
         GetClientRect(_window, out var clientRect);
-        return new PixelSize(
+        if (IsIconic(_window) || windowRect.Left <= MinimizedPosition)
+        {
+            return _lastFrame;
+        }
+
+        _lastFrame = new PixelSize(
             (windowRect.Right - windowRect.Left) - (clientRect.Right - clientRect.Left),
             (windowRect.Bottom - windowRect.Top) - (clientRect.Bottom - clientRect.Top));
+        return _lastFrame;
     }
 
     /// <summary>
