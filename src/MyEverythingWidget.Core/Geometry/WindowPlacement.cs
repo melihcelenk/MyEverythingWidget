@@ -51,6 +51,30 @@ public static class WindowPlacement
         return window with { X = x, Y = y };
     }
 
+    /// <summary>
+    /// Returns the corner of <paramref name="workArea"/> that <paramref name="rect"/> is nearest to, judged by which
+    /// half of the area its centre is in. The widget opens from, and shrinks back to, this corner of the compact icon.
+    /// </summary>
+    public static WindowCorner NearestCorner(PixelRect rect, PixelRect workArea)
+    {
+        var centreX = rect.X + (rect.Width / 2);
+        var centreY = rect.Y + (rect.Height / 2);
+        return new WindowCorner(
+            Right: centreX > workArea.X + (workArea.Width / 2),
+            Bottom: centreY > workArea.Y + (workArea.Height / 2));
+    }
+
+    /// <summary>
+    /// Returns a rectangle of <paramref name="size"/> whose <paramref name="corner"/> is at the same point as that
+    /// corner of <paramref name="anchor"/>.
+    /// </summary>
+    public static PixelRect AlignCorner(PixelRect anchor, PixelSize size, WindowCorner corner)
+    {
+        var x = corner.Right ? anchor.Right - size.Width : anchor.X;
+        var y = corner.Bottom ? anchor.Bottom - size.Height : anchor.Y;
+        return new PixelRect(x, y, size.Width, size.Height);
+    }
+
     private static bool IsTitleBarReachable(PixelRect window, PixelRect area)
     {
         var titleBarFitsVertically = window.Y >= area.Y && window.Y + TitleBarGripHeight <= area.Bottom;

@@ -41,6 +41,12 @@ public sealed partial class MainWindow : Window
     private NativeMethods.NativePoint? _compactPressCursor;
     private PointInt32 _compactPressWindow;
     private bool _compactDragged;
+
+    /// <summary>
+    /// The icon corner the widget last opened from, and where it opened; shrinking the unmoved widget goes back to
+    /// that corner so the icon returns to exactly where it was.
+    /// </summary>
+    private (WindowCorner Corner, PixelRect Widget)? _openedFrom;
     private ImageViewerWindow? _imageViewer;
 
     /// <summary>Creates the window for <paramref name="viewModel"/> showing <paramref name="board"/>.</summary>
@@ -179,9 +185,21 @@ public sealed partial class MainWindow : Window
         _resizer.ResizeClient(client);
 
         var workArea = ToPixelRect(DisplayArea.GetFromPoint(new PointInt32(corner.X, corner.Y), DisplayAreaFallback.Nearest).WorkArea);
-        var target = compact
-            ? new PixelRect(corner.X, corner.Y, client.Width, client.Height)
-            : WindowPlacement.FitInside(new PixelRect(corner.X, corner.Y, client.Width, client.Height), workArea);
+        PixelRect target;
+        if (compact)
+        {
+            // Back to the corner the widget opened from, unless the user has moved it since.
+            var side = _openedFrom is { } opened && opened.Widget == corner ? opened.Corner : WindowPlacement.NearestCorner(corner, workArea);
+            target = WindowPlacement.AlignCorner(corner, client, side);
+        }
+        else
+        {
+            // The widget opens from the icon's corner nearest the screen corner, so it grows into the screen.
+            var side = WindowPlacement.NearestCorner(corner, workArea);
+            target = WindowPlacement.FitInside(WindowPlacement.AlignCorner(corner, client, side), workArea);
+            _openedFrom = (side, target);
+        }
+
         _resizer.MoveClientTo(target.X, target.Y);
         ApplyAlwaysOnTop();
 

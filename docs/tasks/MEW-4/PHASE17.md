@@ -37,6 +37,7 @@ Store gönderimi.
 | 17.4 | Store gönderimi için ekran görüntüleri ve paket hazırlanır. | 🟡 Kısmi (görüntüler hazır; gönderim `PHASE8.md` → 8.6) |
 | 17.5 | Not düzenleme penceresi çok satırlı notun tamamını gösterir. | 🟢 Tamamlandı |
 | 17.6 | Tanıtım görselleri üçe iner; ilki uygulama, web sitesi, not ve fotoğrafı birlikte gösterir. | 🟢 Tamamlandı |
+| 17.7 | Compact ikon ekranın sağındayken widget ikonla hizalı açılır; küçültünce ikon yerinde kalır. | 🟢 Tamamlandı |
 
 ## Nasıl kontrol edilir
 
@@ -154,6 +155,33 @@ Store gönderimi.
 - **Dosyalar:** `scripts/compose-store-images.py`, `scripts/capture-screenshots.ps1`, `docs/images/store-*.png`,
   `docs/images/captures/`, `docs/images/assets/`, `README.md`, `docs/general/STORE_LISTING.md`,
   `docs/general/DEVELOPMENT.md`, `docs/tasks/MEW-4/mockups/`
+- **Durum:** 🟢 Tamamlandı.
+
+### 17.7 — Compact ikon ekranın sağındayken widget ikonla hizalı açılır; küçültünce ikon yerinde kalır.
+
+- **Mevcut durum:** Sağdaki ikona tıklayınca widget ekranın sağ kenarına yapışık açılıyor; küçültünce ikon widget'ın
+  sol üst köşesine, yani sola kayıyor (T26).
+- **Problem:** `ApplyLayoutMode` açarken ve küçültürken hep sol üst köşeyi sabit tutuyor; ekrana sığmayan widget
+  `FitInside` ile sola itiliyor.
+- **Çözüm (S11 → B, yatay ve dikey):**
+  - `WindowPlacement.NearestCorner` ikonun ekranın hangi çeyreğinde olduğunu buluyor (merkezi hangi yarıda).
+  - `WindowPlacement.AlignCorner` widget'ı ikonun o köşesinden açıyor: sağ üstteki ikonda sağ ve üst kenarlar, sağ
+    alttakinde sağ ve alt kenarlar hizalı.
+  - Küçültünce ikon aynı köşeye dönüyor. `MainWindow` açılış köşesini ve widget'ın açıldığı yeri hatırlıyor. Widget
+    sonradan taşındıysa ikon, widget'ın ekran köşesine en yakın köşesine gidiyor.
+  - Widget ilk kez küçültülünce de aynı kural geçerli. Varsayılan konum sağ üst olduğu için ikon widget'ın sağ üst
+    köşesinde çıkıyor (önceden sol üst).
+- **Dosyalar:** `src/MyEverythingWidget.Core/Geometry/WindowCorner.cs`, `src/MyEverythingWidget.Core/Geometry/WindowPlacement.cs`,
+  `src/MyEverythingWidget.App/MainWindow.xaml.cs`
+- **Testler:**
+  - `tests/MyEverythingWidget.Core.Tests/Geometry/CompactCornerTests.cs`: dört çeyrek, ikinci monitör, açılınca kenar
+    hizası, açıp kapatınca ikonun aynı yere dönmesi. Önce derlenmeyerek kırmızıydı; Core testleri 203/203 geçiyor.
+  - `CompactAndMenuTests.IconOnTheRight_OpensWithTheRightEdgesLinedUp_AndShrinksBackToTheSamePlace` (sağ üst ve
+    sağ alt). Kırmızıyken widget ikonun sağ kenarını 43 piksel geçiyordu.
+  - `CompactAndMenuTests.CompactIcon_AppearsExactlyAtTheWidgetCorner` testinin yerine
+    `CompactIcon_AppearsAtTheWidgetCornerNearestTheScreenCorner` geldi. Eski test ikonun hep widget'ın sol üst
+    köşesinde çıkmasını bekliyordu; S11 kararı bu beklentiyi değiştirdi.
+  - `CompactAndMenuTests` 8/8, `WindowLayoutTests` 12/12 geçiyor.
 - **Durum:** 🟢 Tamamlandı.
 
 ### Doğrulanmayan / dikkat edilmesi gereken

@@ -44,15 +44,47 @@ public sealed class CompactAndMenuTests : IDisposable
     }
 
     [Fact]
-    public void CompactIcon_AppearsExactlyAtTheWidgetCorner()
+    public void CompactIcon_AppearsAtTheWidgetCornerNearestTheScreenCorner()
+    {
+        // The widget opens at the top right of the screen, so the icon takes the widget's top-right corner
+        // (PHASE17 17.7, S11 → B).
+        Seed();
+        using var app = AppSession.Launch(_data);
+        var widget = Win32.ClientBounds(app.WindowHandle);
+
+        EnterCompact(app);
+        var icon = Win32.ClientBounds(app.WindowHandle);
+
+        Assert.Equal(widget.Right, icon.Right);
+        Assert.Equal(widget.Top, icon.Top);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void IconOnTheRight_OpensWithTheRightEdgesLinedUp_AndShrinksBackToTheSamePlace(bool bottom)
     {
         Seed();
         using var app = AppSession.Launch(_data);
-        var widgetCorner = Win32.ClientOrigin(app.WindowHandle);
+        EnterCompact(app);
+        var work = Win32.WorkAreaOf(app.WindowHandle);
+        var size = Win32.GetBounds(app.WindowHandle);
+        var iconWidth = size.Right - size.Left;
+        var iconHeight = size.Bottom - size.Top;
+        Win32.MoveTo(app.WindowHandle, work.Right - iconWidth - 40, bottom ? work.Bottom - iconHeight - 40 : work.Top + 40);
+        GridDriver.WaitForUi();
+        var icon = Win32.ClientBounds(app.WindowHandle);
+
+        RealMouse.Click(app.Find("CompactIcon").BoundingRectangle.Center());
+        Assert.True(Wait.Until(() => app.TryFind("WidgetGrid") is not null));
+        GridDriver.WaitForUi();
+        var widget = Win32.ClientBounds(app.WindowHandle);
+
+        Assert.Equal(icon.Right, widget.Right);
+        Assert.Equal(bottom ? icon.Bottom : icon.Top, bottom ? widget.Bottom : widget.Top);
 
         EnterCompact(app);
-
-        Assert.Equal(widgetCorner, Win32.ClientOrigin(app.WindowHandle));
+        Assert.Equal(icon, Win32.ClientBounds(app.WindowHandle));
     }
 
     [Fact]
