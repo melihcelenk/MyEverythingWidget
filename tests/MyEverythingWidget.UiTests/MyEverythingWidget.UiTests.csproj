@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <Platforms>x64;ARM64</Platforms>
+    <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FlaUI.UIA3" />
+    <PackageReference Include="xunit.v3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\MyEverythingWidget.Core\MyEverythingWidget.Core.csproj" />
+    <ProjectReference Include="..\..\src\MyEverythingWidget.Infrastructure\MyEverythingWidget.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <!-- Grid scenarios (the specification) and the shared DSL reader. -->
+  <ItemGroup>
+    <Compile Include="..\Shared\GridDsl\*.cs" Link="GridDsl\%(Filename)%(Extension)" />
+    <Content Include="..\Grid\*.dsl" Link="Grid\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <!-- Made-up images for the README and Store screenshots (ShowcaseScreenshots). -->
+  <ItemGroup>
+    <Content Include="Showcase\*.png" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <!-- The app is single-instance per user, so UI tests must never run two app sessions at once. -->
+  <ItemGroup>
+    <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

@@ -1,69 +1,103 @@
-# Miscellaneous
-*.class
-*.log
-*.pyc
-*.swp
-.DS_Store
-.atom/
-.build/
-.buildlog/
-.history
-.svn/
-.swiftpm/
-migrate_working_dir/
+# ---------------------------------------------------------------------------
+# .NET / WinUI (src/, tests/)
+# ---------------------------------------------------------------------------
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+ARM64/
+[Ll]og/
+*.user
+*.suo
+*.userprefs
+*.rsuser
+.vs/
+launchSettings.local.json
 
-# IntelliJ related
-*.iml
-*.ipr
-*.iws
-.idea/
-
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
-
-# Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
-.dart_tool/
-.flutter-plugins-dependencies
-.pub-cache/
-.pub/
-/build/
-/coverage/
-
-# Symbolication related
-app.*.symbols
-
-# Obfuscation related
-app.*.map.json
-
-# Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
-
-# Windows related
-*.exe
-*.dll
-*.pdb
+# MSIX packaging output and signing material
+AppPackages/
+BundleArtifacts/
 *.msix
+*.msixbundle
+*.msixupload
 *.appx
 *.appxbundle
-*.msixbundle
-/windows/flutter/ephemeral/
+*.appxupload
+*.pfx
+*.cer
 
-# Linux related
-/linux/flutter/ephemeral/
+# Test results and coverage
+TestResults/
+*.trx
+coverage*.json
+coverage*.xml
+*.coverage
 
-# Web related
-/web/
+# NuGet
+*.nupkg
+*.snupkg
+.nuget/
+/packages/
 
-# Test coverage
-coverage/
+# ---------------------------------------------------------------------------
+# Python (legacy/)
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+/.venv/
+/legacy/.venv/
+.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/
+*.qmlc
+*.jsc
 
-# Personal notes and temporary files
+# Legacy visual/UI test output
+screenshot_*.png
+test_screenshot.png
+legacy/tests/visual/screenshot_*.png
+/legacy/tests/tmp/
+/legacy/data/
+/data/
+
+# ---------------------------------------------------------------------------
+# Temporary files and logs
+# ---------------------------------------------------------------------------
+/tmp/
+/logs/
+*.log
+*.tmp
+*.bak
 nul
-/.claude/settings.local.json
-img.png
+
+# Keep documentation images
+!docs/**/*.png
+
+# ---------------------------------------------------------------------------
+# Secrets and local configuration
+# ---------------------------------------------------------------------------
+.env
+.env.*
+config.local.*
+
+# ---------------------------------------------------------------------------
+# IDE and OS
+# ---------------------------------------------------------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Claude local settings
+.claude/
+
+# BirdsAEye session records (local)
+docs/tasks/**/sessions.json

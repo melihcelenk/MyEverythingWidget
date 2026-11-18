@@ -1,0 +1,2 @@
+"""Visual tests package"""
+

@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A small Windows widget that keeps your apps, websites, notes and pictures one click away.">
+    <meta name="keywords" content="windows widget, desktop widget, launcher, notes, clipboard, productivity, Windows 11, open source">
+    <meta name="author" content="Melih Celenk">
+    <title>My Everything Widget - Apps, websites, notes and pictures on your desktop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 60px 20px;
+            color: white;
+        }
+
+        .logo {
+            width: 128px;
+            height: 128px;
+            margin: 0 auto 20px;
+            background: white;
+            border-radius: 24px;
+            padding: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .tagline {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            opacity: 0.95;
+        }
+
+        .badges {
+            margin: 20px 0;
+        }
+
+        .badges img {
+            margin: 5px;
+            height: 20px;
+        }
+
+        .cta-buttons {
+            margin-top: 30px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            margin: 10px;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: #667eea;
+        }
+
+        .store-badge {
+            display: inline-block;
+            background: transparent;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            line-height: 0;
+        }
+
+        .store-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .store-badge img {
+            display: block;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-outline:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        /* Main Content */
+        main {
+            background: white;
+            border-radius: 12px 12px 0 0;
+            padding: 60px 20px;
+        }
+
+        section {
+            margin-bottom: 60px;
+        }
+
+        h2 {
+            font-size: 2em;
+            margin-bottom: 30px;
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        /* Screenshots Carousel */
+        .carousel-container {
+            position: relative;
+            max-width: 800px;
+            margin: 30px auto;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .carousel {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .screenshot-item {
+            min-width: 100%;
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+
+        .screenshot-item img {
+            width: 100%;
+            max-width: 700px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .screenshot-item p {
+            margin-top: 15px;
+            color: #333;
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+
+        /* Carousel Controls */
+        .carousel-dots {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            margin: 0 6px;
+            background: #ccc;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: #667eea;
+            width: 30px;
+            border-radius: 6px;
+        }
+
+        .dot:hover {
+            background: #764ba2;
+        }
+
+        /* Features */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .feature {
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .feature:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .feature h3 {
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+
+        .feature-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        /* Download Section */
+        .download-section {
+            text-align: center;
+            padding: 60px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            margin: 40px 0;
+        }
+
+        .download-section h2 {
+            color: white;
+        }
+
+        .download-section .btn {
+            font-size: 1.2em;
+            padding: 15px 40px;
+            margin-top: 20px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            background: #2c3e50;
+            color: white;
+        }
+
+        footer a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .tagline {
+                font-size: 1.1em;
+            }
+
+            .screenshots {
+                grid-template-columns: 1fr;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="logo">
+                <img src="src/MyEverythingWidget.App/Assets/Square150x150Logo.scale-400.png" alt="My Everything Widget logo">
+            </div>
+            <h1>My Everything Widget</h1>
+            <p class="tagline">Everything you love, one click away</p>
+            <p>Your apps, favourite websites, notes and pictures, together on your desktop.</p>
+
+            <div class="badges">
+                <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT">
+                <img src="https://img.shields.io/badge/platform-Windows%2010%20%7C%2011-blue.svg" alt="Platform: Windows 10 and 11">
+                <img src="https://img.shields.io/badge/.NET-10.0-purple.svg" alt=".NET 10.0">
+                <img src="https://img.shields.io/badge/WinUI-3-brightgreen.svg" alt="WinUI 3">
+            </div>
+
+            <div style="margin: 30px 0;">
+                <a href="https://apps.microsoft.com/search/publisher?name=Melih%20Celenk" class="store-badge">
+                    <img src="https://get.microsoft.com/images/en-us%20light.svg" alt="Get it from Microsoft Store" style="height: 54px;">
+                </a>
+            </div>
+
+            <div class="cta-buttons">
+                <a href="https://github.com/melihcelenk/MyEverythingWidget" class="btn">View on GitHub</a>
+                <a href="https://github.com/melihcelenk/MyEverythingWidget/releases" class="btn btn-secondary">Download Release</a>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main>
+            <!-- Screenshots Carousel -->
+            <section id="screenshots">
+                <h2>📸 Screenshots</h2>
+                <div class="carousel-container">
+                    <div class="carousel" id="carousel">
+                        <div class="screenshot-item">
+                            <img src="docs/images/store-1.png" alt="Apps, websites, notes and photos on one widget">
+                            <p>Apps, websites, notes and photos on one small widget</p>
+                        </div>
+                        <div class="screenshot-item">
+                            <img src="docs/images/store-2.png" alt="Copy a picture, text or link and press Ctrl+V">
+                            <p>Copy a picture, text or link and press Ctrl+V: saved in a second</p>
+                        </div>
+                        <div class="screenshot-item">
+                            <img src="docs/images/store-3.png" alt="A small icon that opens the widget">
+                            <p>Tuck it into a small icon that stays on top</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-dots" id="dots">
+                    <span class="dot active" onclick="currentSlide(0)"></span>
+                    <span class="dot" onclick="currentSlide(1)"></span>
+                    <span class="dot" onclick="currentSlide(2)"></span>
+                </div>
+            </section>
+
+            <!-- Features -->
+            <section id="features">
+                <h2>✨ Features</h2>
+                <div class="features">
+                    <div class="feature">
+                        <div class="feature-icon">🚀</div>
+                        <h3>Apps and Folders</h3>
+                        <p>Open your programs, Store apps and folders with one click, each with its own icon</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">🌐</div>
+                        <h3>Websites</h3>
+                        <p>Keep your favourite sites on the desktop, shown with their own site icon</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">📝</div>
+                        <h3>Notes</h3>
+                        <p>Keep the text you use every day and copy it back with one click</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">🖼️</div>
+                        <h3>Pictures</h3>
+                        <p>See a picture large, copy it again or edit it in Paint</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">⌨️</div>
+                        <h3>Ctrl+V</h3>
+                        <p>Paste a picture, some text or a web link and it lands on the widget</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">🗂️</div>
+                        <h3>Tabs</h3>
+                        <p>Group your cards in tabs for work, home or anything else</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">🔝</div>
+                        <h3>Compact Icon</h3>
+                        <p>Shrink the widget to a small icon that stays on top, and open it with one click</p>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">🔒</div>
+                        <h3>Private</h3>
+                        <p>Everything stays on your PC; no account and no sign-in</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Download Section -->
+            <div class="download-section">
+                <h2>🚀 Get Started</h2>
+                <p>Open source and free to use.</p>
+                <a href="https://apps.microsoft.com/search/publisher?name=Melih%20Celenk" class="btn">Get it from Microsoft Store</a>
+            </div>
+
+            <!-- Additional Info -->
+            <section>
+                <h2>📚 Learn More</h2>
+                <div style="text-align: center;">
+                    <p style="margin-bottom: 20px;">
+                        <a href="https://github.com/melihcelenk/MyEverythingWidget#readme" class="btn">Documentation</a>
+                        <a href="https://github.com/melihcelenk/MyEverythingWidget/blob/master/docs/general/PRIVACY_POLICY.md" class="btn btn-outline">Privacy Policy</a>
+                    </p>
+                    <p style="color: #666;">
+                        Built with .NET 10 and WinUI 3 • Licensed under MIT License
+                    </p>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer>
+            <p>
+                Made with ❤️ by <a href="https://melihcelenk.com" target="_blank">Melih Celenk</a>
+            </p>
+            <p style="margin-top: 10px; font-size: 0.9em; opacity: 0.8;">
+                © 2026 My Everything Widget •
+                <a href="https://github.com/melihcelenk/MyEverythingWidget">GitHub</a> •
+                <a href="https://github.com/melihcelenk/MyEverythingWidget/blob/master/docs/general/PRIVACY_POLICY.md">Privacy Policy</a>
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // Carousel functionality
+        let currentSlideIndex = 0;
+        const carousel = document.getElementById('carousel');
+        const dots = document.querySelectorAll('.dot');
+        const totalSlides = 3;
+        let autoSlideInterval;
+
+        function showSlide(index) {
+            currentSlideIndex = index;
+
+            // Wrap around
+            if (currentSlideIndex >= totalSlides) {
+                currentSlideIndex = 0;
+            }
+            if (currentSlideIndex < 0) {
+                currentSlideIndex = totalSlides - 1;
+            }
+
+            // Move carousel
+            const offset = -currentSlideIndex * 100;
+            carousel.style.transform = `translateX(${offset}%)`;
+
+            // Update dots
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === currentSlideIndex);
+            });
+        }
+
+        function currentSlide(index) {
+            showSlide(index);
+            resetAutoSlide();
+        }
+
+        function nextSlide() {
+            showSlide(currentSlideIndex + 1);
+        }
+
+        function startAutoSlide() {
+            autoSlideInterval = setInterval(nextSlide, 5000); // 5 seconds
+        }
+
+        function resetAutoSlide() {
+            clearInterval(autoSlideInterval);
+            startAutoSlide();
+        }
+
+        // Start auto-sliding when page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            startAutoSlide();
+        });
+
+        // Pause on hover
+        const carouselContainer = document.querySelector('.carousel-container');
+        carouselContainer.addEventListener('mouseenter', () => {
+            clearInterval(autoSlideInterval);
+        });
+        carouselContainer.addEventListener('mouseleave', () => {
+            startAutoSlide();
+        });
+    </script>
+</body>
+</html>

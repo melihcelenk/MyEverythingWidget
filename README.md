@@ -1,104 +1,47 @@
-# MyEverythingWidget
+# My Everything Widget
 
-A lightweight desktop widget for Windows and Ubuntu that provides quick access to applications and note-taking functionality.
+[![CI](https://github.com/melihcelenk/MyEverythingWidget/actions/workflows/ci.yml/badge.svg)](https://github.com/melihcelenk/MyEverythingWidget/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-## 🎯 Features (v1.0 MVP - In Development)
+A small Windows widget that keeps your apps, websites, notes and pictures one click away.
 
-- 📱 **Application Launcher** - Quick access to your favorite apps with icon grid
-- 📝 **Note-taking** - Create and manage notes with copy-to-clipboard functionality
-- 📋 **Clipboard Paste** - Paste text and images directly with Ctrl+V
-- 🏷️ **Category Tabs** - Organize apps and notes into categories (Music, Notes, AI)
-- 🪟 **Always-on-top** - Keep the widget visible while working
-- 🎨 **Modern UI** - Clean Material Design interface
+> Built with WinUI and .NET 10. The original Python/PySide6 version is in [`legacy/`](legacy/README.md); its data
+> is imported automatically on first start.
 
-## 🚀 Getting Started
+![Everything you love, one click away: apps, websites, notes and photos on your desktop](docs/images/store-1.png)
 
-### Prerequisites
+![Copy it. Ctrl+V. Saved in a second: pictures, text and web links](docs/images/store-2.png)
 
-- Flutter 3.x or higher
-- Windows 10/11 or Ubuntu (Linux)
-- Visual Studio 2022 (for Windows development)
+![Always at hand, always on top: a small icon that opens the widget](docs/images/store-3.png)
 
-### Installation
+## Features
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/yourusername/MyEverythingWidget.git
-   cd MyEverythingWidget
-   ```
+- **A grid that stays put.** Drag cards anywhere on a fixed 5x5 grid; nothing slides around on its own. Dropping on
+  another card swaps them; notes and images can span up to 3x3 cells.
+- **Apps with their own icons.** Pick from the installed apps (desktop and Store), type a path or web address, or drop
+  a file, folder or link on the widget. Change or reset a card's icon from its menu.
+- **Notes and images.** Write a note, paste text or a screenshot with Ctrl+V, copy a note back with one click.
+- **Categories.** Tabs you can add, rename, delete and reorder; move cards between them.
+- **Windows 11 look.** Light and dark theme (or follow Windows), Mica, always on top.
+- **Private.** Everything stays on your PC ([privacy policy](docs/general/PRIVACY_POLICY.md)).
 
-2. **Install dependencies:**
-   ```bash
-   flutter pub get
-   ```
+## Development
 
-3. **Run the app:**
-   ```bash
-   flutter run -d windows
-   # or
-   flutter run -d linux
-   ```
+See the [Development Guide](docs/general/DEVELOPMENT.md) and [Architecture](docs/general/ARCHITECTURE.md).
 
-## 🛠️ Technology Stack
-
-- **Framework:** Flutter 3.x Desktop
-- **Language:** Dart
-- **State Management:** Provider
-- **Packages:**
-  - `window_manager` - Window management
-  - `provider` - State management
-  - `clipboard_watcher` - Clipboard functionality
-  - `url_launcher` - Open URLs
-  - `path_provider` - Local storage
-
-## 📦 Building for Distribution
-
-### Windows (MSIX)
-```bash
-flutter build windows --release
-flutter pub run msix:create
+```
+dotnet test                    # unit tests (Core, Presentation, Infrastructure)
+pwsh scripts/test-ui.ps1       # UI tests in Windows Sandbox
+pwsh scripts/publish-msix.ps1  # MSIX package
 ```
 
-### Linux (Snap)
-```bash
-snapcraft
-```
+Publishing: [Store Submission](docs/general/STORE_SUBMISSION.md).
 
-## 🗺️ Roadmap
+## Contributing
 
-- [x] **v1.0 (Current)** - MVP with core features
-- [ ] **v1.1** - Application picker, settings page, system tray
-- [ ] **v1.2** - Command runner, global hotkeys, search
-- [ ] **v2.0** - Cloud sync, AI integration, plugins
+Bug reports, ideas and pull requests are welcome: see [CONTRIBUTING.md](CONTRIBUTING.md). Please report security
+problems privately as described in [SECURITY.md](SECURITY.md).
 
-## 🤝 Contributing
+## License
 
-Contributions are welcome!
-
-**Development Guidelines:**
-- Follow Flutter/Dart style guidelines
-- Write clean, self-documenting code
-- Add tests for new features
-- Update documentation for API changes
-
-**Commit Format:** `[MEW-X] Description`
-**Example:** `[MEW-1] Setup Flutter project structure`
-
-## 📝 License
-
-This project is open source and available under the MIT License.
-
-## 📚 Documentation
-
-- [Technical Analysis](docs/tasks/MEW-1/ANALYSIS.md) - Platform selection and architecture
-- [Development Tasks](docs/tasks/MEW-1/TODO.md) - Current development progress
-
-## 🙏 Acknowledgments
-
-Built with [Flutter](https://flutter.dev/) - Google's UI toolkit for beautiful, natively compiled applications.
-
----
-
-**Status:** 🚧 Active Development
-**Platform:** Flutter Desktop
-**Package Name:** `my_everything_widget`
+MIT, see [LICENSE](LICENSE).

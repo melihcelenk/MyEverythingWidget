@@ -1,0 +1,25 @@
+Rows: 5
+Columns: 5
+
+Initial:
+.  .  .  .  .
+.  .  .  .  .
+.  .  .  .  .
+.  .  .  .  .
+.  .  .  .  .
+
+Action:
+# Bug: Yeni oluşturulan 2x1 not taşındığında 1x1 oluyor
+# Bu not yeni oluşturulmuş (henüz resize edilmemiş) ve 2x1 span ile görünüyor
+# Taşındığında span korunmalı
+Create(NOTE, "Test note content", N1)
+Drag(N1,R2C3)
+
+Expected:
+.  .  .  .  .
+.  .  N1 N1 .
+.  .  .  .  .
+.  .  .  .  .
+.  .  .  .  .
+
+
