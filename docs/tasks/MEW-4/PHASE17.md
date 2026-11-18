@@ -323,6 +323,13 @@ Store gönderimi.
   - Kaldırılan öğeler yüzünden iki test güncellendi: dar pencere testi gizlilik notu yerine kartı, sığma testi
     GitHub bağlantısı yerine kartı ölçüyor.
   - Sonuç: `SettingsAndMigrationTests` 13/13, ayarlar düzeni testleri 3/3.
+  - **Dar widget düzeltmesi (T53):** 4 sütunluk widget'ta içerik sağa kayıp sağdan kesiliyordu. Nedeni şuydu:
+    iletişim kutusunun en küçük genişliği 300 px'e çekilmişti, ama en büyük genişliği pencere genişliği (~326 px)
+    kalmıştı; içerik bu daha geniş alana yerleşip görünen kutunun dışına taşıyordu.
+    - `DialogSizing.FitToWindow` artık sabit genişlik verilen kutuyu iki yandan da o genişliğe bağlıyor. Dar iç
+      boşluğa da o genişliğin altında geçiyor. Genişlik vermeyen diğer kutuların davranışı değişmedi.
+    - Test: `WindowLayoutTests.SettingsDialog_ContentLinesUpWithItsTitle_InANarrowerWidget` (4 ve 3 sütun).
+      Düzeltmeden önce 4 sütunda içerik başlıktan 42 px sağdaydı; şimdi ayarlar düzeni testleri 5/5 geçiyor.
 - **Durum:** 🟢 Tamamlandı.
 
 ### Doğrulanmayan / dikkat edilmesi gereken

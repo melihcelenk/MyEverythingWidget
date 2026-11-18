@@ -23,17 +23,22 @@ internal static class DialogSizing
     /// </summary>
     /// <param name="dialog">The dialog to size.</param>
     /// <param name="root">The window the dialog opens in.</param>
-    /// <param name="width">The dialog's width when the window is wide enough; WinUI's own minimum is 320 px.</param>
-    public static void FitToWindow(ContentDialog dialog, XamlRoot root, double width = DefaultMinWidth)
+    /// <param name="width">
+    /// A fixed width for the dialog when the window is wide enough, or <see langword="null"/> to let it size to its
+    /// content between WinUI's 320 px minimum and the window. A fixed width bounds the dialog on both sides, so the
+    /// content cannot be laid out wider than the visible dialog.
+    /// </param>
+    public static void FitToWindow(ContentDialog dialog, XamlRoot root, double? width = null)
     {
         ArgumentNullException.ThrowIfNull(dialog);
         ArgumentNullException.ThrowIfNull(root);
 
         var available = Math.Max(0, root.Size.Width - (2 * SideGap));
-        dialog.Resources["ContentDialogMinWidth"] = Math.Min(width, available);
-        dialog.Resources["ContentDialogMaxWidth"] = available;
+        var usual = width ?? DefaultMinWidth;
+        dialog.Resources["ContentDialogMinWidth"] = Math.Min(usual, available);
+        dialog.Resources["ContentDialogMaxWidth"] = width is { } fixedWidth ? Math.Min(fixedWidth, available) : available;
         dialog.Resources["ContentDialogMaxHeight"] = Math.Max(0, root.Size.Height - (2 * SideGap));
-        if (available < DefaultMinWidth)
+        if (available < usual)
         {
             dialog.Resources["ContentDialogPadding"] = new Thickness(NarrowPadding);
         }

@@ -355,4 +355,26 @@ public sealed class WindowLayoutTests : IDisposable
         Assert.True(card.Height > 0 && card.Bottom <= close.Top, $"The About card {card} should be above the buttons {close}.");
         FlaUI.Core.Capturing.Capture.Rectangle(window).ToFile(Artifacts.PathOf("settings-default-size"));
     }
+
+    [Theory]
+    [InlineData(4)]
+    [InlineData(3)]
+    public void SettingsDialog_ContentLinesUpWithItsTitle_InANarrowerWidget(int columns)
+    {
+        Seed();
+        using var app = AppSession.Launch(_data);
+        var pitch = Pitch(app);
+        DragCorner(app, -(int)((5 - columns) * pitch), 0);
+        Assert.True(Wait.Until(() => GridIs(app, pitch, rows: 5, columns: columns)));
+
+        RealMouse.Click(app.Find("SettingsButton").BoundingRectangle.Center());
+        var dialog = Wait.ForElement(() => app.FindInPopups("SettingsDialog"));
+        GridDriver.WaitForUi();
+        var title = Wait.ForElement(() => dialog.FindFirstDescendant(c => c.ByName("Settings").And(c.ByControlType(FlaUI.Core.Definitions.ControlType.Text)))).BoundingRectangle;
+        var theme = Wait.ForElement(() => dialog.FindFirstDescendant(c => c.ByAutomationId("ThemeChoices"))).BoundingRectangle;
+        FlaUI.Core.Capturing.Capture.Rectangle(Win32.ClientBounds(app.WindowHandle)).ToFile(Artifacts.PathOf($"settings-{columns}-columns-aligned"));
+
+        // The content starts where the title starts; shifted content is cut off on the right.
+        Assert.True(Math.Abs(theme.Left - title.Left) <= 4, $"The content {theme} should start below the title {title}.");
+    }
 }
