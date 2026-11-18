@@ -279,6 +279,7 @@ Store gönderimi.
     okuması 1–2 saniye süren bir süreç açıyor ve 1,5 saniyelik onayı kaçırıyordu.
 - **Dikkat:** 2 sütunluk en dar widget'ta tema düğmeleri ve uzun bağlantılar yatayda kırpılıyor (içerik dikeyde
   kayıyor). Varsayılan ve daha geniş boyutlarda her şey görünüyor.
+- **Sonuç:** Tam UI seti 94/94 + 1 ayrı süreç testi; unit testler 309/309.
 - **Durum:** 🟢 Tamamlandı.
 
 ### 17.11 — Uygulamanın adı gözden geçirilir.
