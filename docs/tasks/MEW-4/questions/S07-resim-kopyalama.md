@@ -6,11 +6,11 @@ priority: major
 asked: 2026-11-03
 resolved: 2026-11-18
 ---
-# S7 — "Resim kopyalama işini geliştir": hangi yön?
+# S7 — Resim kopyalamanın geliştirilmesi: hangi yön?
 
 **Mevcut durum:** Resim kartından panoya kopyalama yok; resmi widget'a almak ise Ctrl+V, sürükle-bırak ve "Image…" ile çalışıyor.
 
-**Soru:** "Resim kopyalama" ile hangisini kastediyorsun?
+**Soru:** Resim kopyalamanın geliştirilmesi talebiyle hangisi kastediliyor?
 
 ## Bağlam
 
@@ -45,7 +45,7 @@ Bugün resimle ilgili durum şöyle:
 
 ## Öneri
 
-A. "Kopyalama" en doğrudan resmi widget'tan alıp başka yere yapıştırmak demek ve bugün hiç yok. B'deki "resim dosyasının uygulama kartı olması" da bir eksik; istersen C ile birlikte yapayım.
+A. Kopyalama en doğrudan anlamıyla resmi widget'tan alıp başka bir yere yapıştırmak demek ve bugün hiç yok. B'deki "resim dosyasının uygulama kartı olması" da bir eksik; istersen C ile birlikte yapayım.
 
 ## Cevap
 

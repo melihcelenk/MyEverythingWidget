@@ -112,7 +112,7 @@ GridStack.init({
 
 ## Mevcut Durum ve Problemler
 
-Önceki çalışmada (MEW-2) grid pozisyon sistemi eklenmeye çalışıldı ancak **çok kötü** çalışıyor. Temel problemler:
+Önceki çalışmada (MEW-2) grid pozisyon sistemi eklenmeye çalışıldı ancak beklendiği gibi çalışmıyor. Temel problemler:
 
 ### Problem 1: Sürükleme Görsel Feedback'i Yanlış
 
@@ -184,7 +184,7 @@ GridStack.init({
 3. **Boş hücreler olabilir**: Grid'de boşluklar olması normal - otomatik doldurma yok
 
 4. **Taşıma mantığı**:
-    - Nesneyi (2a, 2b)'den (3a, 3b)'ye taşımak istiyorum
+    - Nesne (2a, 2b)'den (3a, 3b)'ye taşınmak isteniyor
     - Hedef (3a, 3b) boş mu?
         - **Evet**: Nesneyi taşı, diğer hiçbir şeye dokunma
         - **Hayır**: Hedef pozisyondaki nesneyi kaynak (2a, 2b)'ye swap yap

@@ -9,14 +9,16 @@ emoji konabiliyor.
 
 ## Problem
 
-- Resimler kartta kırpılıyordu: "Resmin kırpılmasında sorun var. Resmin tamamını görmeliyim. Ekran görüntüsünde üstteki
-  resim alttan kırpılı, alttaki resim sağdan kırpılı. Bu olmamalı. Fit olmalı."
-- Üst çubuk iki satırdı ve fazla yer kaplıyordu: "Soldaki Task Timer Widget ile üstteki çubuk aynı olmalı. Uygulamada
-  hem dikeyde çok yer kaplıyor hem de 2 satır"
-- Pencere boyutu ızgaraya bağlı değildi: "Pencere boyutu grid sayısına göre küçültülebilmeli en az 2x2 olmalı."
-- Kompakt mod yoktu: "3. Resim task timer widget'ın compact modu. Açılıp kapatılabiliyor. Biz de bu widget biraz büyük
-  olduğu için 1x1 grid boyutunda bir ikon haline getirip ona basarak geniş moda erişebilmeliyiz."
-- Kart ikonu değiştirilemiyordu: "İkon olayı çok güzel olmuş, sadece emoji vs ile değiştirebilmeliyim"
+- Resimler kartta kırpılıyordu (ekran görüntüsünde üstteki resim alttan, alttaki resim sağdan kırpılı). Resim
+  kırpılmamalı, tamamı görünmeli; resim karta sığdırılmalı (fit).
+- Üst çubuk iki satırdı ve fazla yer kaplıyordu. Üst çubuk TaskTimerWidget'taki çubukla aynı olmalı; dikeyde çok yer
+  kaplamamalı ve iki satır olmamalı.
+- Pencere boyutu ızgaraya bağlı değildi. Pencere boyutu ızgara hücresi sayısına göre küçültülebilmeli; en küçük boyut
+  2x2 olmalı.
+- Kompakt mod yoktu. TaskTimerWidget'ın açılıp kapatılabilen kompakt modu gibi, widget büyük olduğu için 1x1 ızgara
+  boyutunda bir ikona dönüştürülebilmeli ve bu ikona basılarak geniş moda geçilebilmeli.
+- Kart ikonu değiştirilemiyordu. Kart ikonu emoji gibi alternatiflerle de
+  değiştirilebilmeli.
 
 ## Çözüm
 
@@ -68,7 +70,7 @@ emoji konabiliyor.
 
 - **Mevcut durum:** Resim kartı alanı dolduracak şekilde resmi kırpıyordu; üstteki resim alttan, alttaki resim sağdan
   kırpılıyordu.
-- **Problem:** Kullanıcı resmin tamamını görmek istiyor ("Fit olmalı.").
+- **Problem:** Resmin tamamı görünmeli; resim karta sığdırılmalı (fit).
 - **Çözüm:** Resim `Stretch="Uniform"` ile çiziliyor; kartın içine sığıyor, boş kalan kenarlar kart zemini olarak
   görünüyor.
 - **Dosyalar:** `src/MyEverythingWidget.App/Views/GridCard.xaml`
@@ -188,21 +190,22 @@ Eski başlık: MEW-4 Faz 9 — İlk kullanım geri bildirimi: pencere düzeni, k
 
 ---
 
-#### 9.1 İstekler (birebir)
+#### 9.1 Gereksinimler
 
-> 1. Resmin kırpılmasında sorun var. Resmin tamamını görmeliyim. Ekran görüntüsünde üstteki resim alttan kırpılı,
->    alttaki resim sağdan kırpılı. Bu olmamalı. Fit olmalı.
-> 2. Soldaki Task Timer Widget ile üstteki çubuk aynı olmalı. Uygulamada hem dikeyde çok yer kaplıyor hem de 2 satır
-> 3. Pencere boyutu grid sayısına göre küçültülebilmeli en az 2x2 olmalı.
-> 4. 3. Resim task timer widget'ın compact modu. Açılıp kapatılabiliyor. Biz de bu widget biraz büyük olduğu için
->    1x1 grid boyutunda bir ikon haline getirip ona basarak geniş moda erişebilmeliyiz.
-> 5. İkon olayı çok güzel olmuş, sadece emoji vs ile değiştirebilmeliyim
+- Gereksinim: Resim kartındaki resim kırpılmamalı, tamamı görünmeli; resim karta sığdırılmalı (fit). Ekran
+  görüntüsünde üstteki resim alttan, alttaki resim sağdan kırpılıyor.
+- Gereksinim: Üst çubuk TaskTimerWidget'taki çubukla aynı olmalı; dikeyde çok yer kaplamamalı ve iki satır olmamalı.
+- Gereksinim: Pencere boyutu ızgara hücresi sayısına göre küçültülebilmeli; en küçük boyut 2x2 olmalı.
+- Gereksinim: TaskTimerWidget'ın açılıp kapatılabilen kompakt modu gibi, widget büyük olduğu için 1x1 ızgara
+  boyutunda bir ikona dönüştürülebilmeli ve bu ikona basılarak geniş moda geçilebilmeli.
+- Gereksinim: Kart ikonu emoji gibi alternatiflerle de değiştirilebilmeli.
 
 ---
 
 #### 9.2 Kararlar
 
-Tasarım kararları kullanıcının "zevk kararlarını sen ver" talimatıyla verildi.
+Görsel tercihe dayalı kararlar talimat gereği geliştiriciye bırakıldığı için tasarım kararları geliştirici tarafından
+verildi.
 
 - **Resim:** `Stretch="Uniform"`; resim kartın içine sığar, boş kalan kenarlar kart zemini olarak görünür.
 - **Üst çubuk:** Başlık çubuğu ve sekmeler tek satırdır: solda kompakt düğmesi, sekmeler ve "+", ortada sürükleme

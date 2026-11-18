@@ -53,7 +53,8 @@ resolved: 2026-11-18
 - Pencere sekmeler ve alt düğmelerle hemen görünür; emoji ızgarası bir an sonra dolar.
 - ✅ Tıklamaya anında tepki.
 - ❌ İlk açılışta emojiler gelene kadar pencere birkaç saniye donuk kalabilir (font maliyeti yerinde durur).
-- ❌ "Önce pencere, sonra içerik" görüntüsü; şikâyet ettiğin "sonradan gelme" hissine benzeyebilir.
+- ❌ Önce pencerenin, sonra içeriğin geldiği bir görüntü oluşur; bu, bildirilen içeriğin sonradan gelmesi sorununa
+  benzeyebilir.
 
 ### C — Yalnız hafif ızgara (A'nın ilk yarısı)
 

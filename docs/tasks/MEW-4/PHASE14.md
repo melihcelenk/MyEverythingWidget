@@ -10,8 +10,8 @@ s'ye indi.
 
 ## Problem
 
-- Kullanıcının isteği (birebir): "o tab'ler sayfa açıldıktan yarım saniye filan sora geliyor. Bu da kullanıcı
-  açısından akıcılık için kötü bir deneyim. Bunun sebebini tespit et ve fixle."
+- Gereksinim: İkon penceresinde sekmeler pencere açıldıktan yaklaşık yarım saniye sonra görünüyor; bu
+  gecikme kullanım akıcılığını bozuyor. Gecikmenin sebebi tespit edilmeli ve giderilmeli.
 - Ölçümde görüldü ki sekmeler sonradan gelmiyor; pencerenin kendisi menü tıklamasından sonra geç beliriyor.
 - İlk açılış Sandbox'ta 3,3–3,6 s, sonraki açılışlar 0,5–0,8 s sürüyordu.
 
@@ -146,10 +146,10 @@ s'ye indi.
 
 ---
 
-#### 14.1 İstek (birebir)
+#### 14.1 Gereksinim
 
-> o tab'ler sayfa açıldıktan yarım saniye filan sora geliyor. Bu da kullanıcı açısından akıcılık için kötü bir
-> deneyim. Bunun sebebini tespit et ve fixle.
+- Gereksinim: İkon penceresinde sekmeler pencere açıldıktan yaklaşık yarım saniye sonra görünüyor; bu
+  gecikme kullanım akıcılığını bozuyor. Gecikmenin sebebi tespit edilmeli ve giderilmeli.
 
 ---
 

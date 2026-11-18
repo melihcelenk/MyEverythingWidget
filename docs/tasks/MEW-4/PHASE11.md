@@ -8,12 +8,11 @@ kartları sarı. Bütün renkler tema kaynaklarından geliyor, koyu ve açık te
 
 ## Problem
 
-- Okun yönü yanlıştı: "O ikonun yönü yanlış"
-- Ok ortada değildi, daire büyüktü: "O ikon bulunduğu dairenin tam ortasında olmalı, o daire de daha küçük olmalı,
-  dışına taşmamalı ama."
-- Tutamaç köşede değildi: "O ikonun konumu çerçevenin tam sağ alt köşesi olmalı. Şu an biraz yukarıda ve içeride
-  kalıyor."
-- Kartlar zeminden ayrılmıyordu: "Her bir kart belirgin bir renkle arkaplandan ayrılmalı. Not kartları sarı olmalı."
+- Okun yönü yanlıştı. Tutamaç ikonunun yönü yanlış.
+- Ok ortada değildi, daire büyüktü. İkon bulunduğu dairenin tam ortasında olmalı; daire daha küçük olmalı, ancak ikon
+  dairenin dışına taşmamalı.
+- Tutamaç köşede değildi. İkon çerçevenin tam sağ alt köşesinde olmalı; şu an biraz yukarıda ve içeride kalıyor.
+- Kartlar zeminden ayrılmıyordu. Her kart belirgin bir renkle arka plandan ayrılmalı; not kartları sarı olmalı.
 
 ## Çözüm
 
@@ -47,7 +46,7 @@ kartları sarı. Bütün renkler tema kaynaklarından geliyor, koyu ve açık te
 ### 11.1 — Tutamacın oku ↖↘ yönünü gösterir.
 
 - **Mevcut durum:** Ok ↗↙ yönündeydi.
-- **Problem:** "O ikonun yönü yanlış" — kartın sağ alt köşesinden boyutlandırma ↖↘ yönündedir.
+- **Problem:** Tutamaç ikonunun yönü yanlış — kartın sağ alt köşesinden boyutlandırma ↖↘ yönündedir.
 - **Çözüm:** Ok ↖↘ çift ok olarak çiziliyor.
 - **Dosyalar:** `src/MyEverythingWidget.App/Views/ResizeGrip.cs`
 - **Testler:** `tests/MyEverythingWidget.UiTests/CardStyleTests.cs` → `ResizeGrip_ArrowPointsTopLeftToBottomRight` (ok
@@ -81,7 +80,7 @@ kartları sarı. Bütün renkler tema kaynaklarından geliyor, koyu ve açık te
 ### 11.4 — Kartlar zeminden belirgin ayrılır ve not kartları sarıdır.
 
 - **Mevcut durum:** Kartlar zeminden belirgin bir renkle ayrılmıyordu; not kartları diğerleriyle aynı renkteydi.
-- **Problem:** "Her bir kart belirgin bir renkle arkaplandan ayrılmalı. Not kartları sarı olmalı."
+- **Problem:** Her kart belirgin bir renkle arka plandan ayrılmalı; not kartları sarı olmalı.
 - **Çözüm:** Tümü tema kaynaklarından; sabit renk yok.
   - Zemin ve seçili sekme: `SolidBackgroundFillColorSecondary` (koyu #1C1C1C, açık #EEEEEE).
   - Uygulama ve resim kartları: `SolidBackgroundFillColorQuarternary` (koyu #2C2C2C, açık #FFFFFF).
@@ -122,12 +121,13 @@ Eski başlık: MEW-4 Faz 11 — Boyutlandırma tutamacının oku ve kart renkler
 
 ---
 
-#### 11.1 İstekler (birebir)
+#### 11.1 Gereksinimler
 
-> 1- O ikonun yönü yanlış
-> 2- O ikon bulunduğu dairenin tam ortasında olmalı, o daire de daha küçük olmalı, dışına taşmamalı ama.
-> 3- O ikonun konumu çerçevenin tam sağ alt köşesi olmalı. Şu an biraz yukarıda ve içeride kalıyor.
-> 4- Her bir kart belirgin bir renkle arkaplandan ayrılmalı. Not kartları sarı olmalı.
+- Gereksinim: Boyutlandırma tutamacındaki ikonun yönü yanlış.
+- Gereksinim: İkon bulunduğu dairenin tam ortasında olmalı; daire daha küçük olmalı, ancak ikon dairenin dışına
+  taşmamalı.
+- Gereksinim: İkon çerçevenin tam sağ alt köşesinde olmalı; şu an biraz yukarıda ve içeride kalıyor.
+- Gereksinim: Her kart belirgin bir renkle arka plandan ayrılmalı; not kartları sarı olmalı.
 
 ---
 

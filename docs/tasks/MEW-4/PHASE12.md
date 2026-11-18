@@ -9,7 +9,7 @@ düğmesi pencereyi kapatıyor; uygulama kartlarına tıklamak eskisi gibi uygul
 ## Problem
 
 - Resim kartlarındaki resimler yalnız kart boyutunda görülebiliyordu; büyük halini açmanın yolu yoktu.
-- Kullanıcının isteği (birebir): "Bu resimlere tıklanınca büyük hali görülmeli."
+- Gereksinim: Resim kartlarındaki resimlere tıklanınca resmin büyük hali görüntülenmeli.
 
 ## Çözüm
 
@@ -46,7 +46,7 @@ düğmesi pencereyi kapatıyor; uygulama kartlarına tıklamak eskisi gibi uygul
 ### 12.1 — Resim kartına tıklayınca resim büyük açılır.
 
 - **Mevcut durum:** Resim yalnız kart boyutunda görülüyordu; büyük halini açmanın yolu yoktu.
-- **Problem:** Kullanıcı resmin büyük halini görmek istiyor: "Bu resimlere tıklanınca büyük hali görülmeli."
+- **Problem:** Resim kartlarındaki resimlere tıklanınca resmin büyük hali görüntülenmeli.
 - **Çözüm:**
   - Resim kartına (sürüklemeden) tıklanınca ayrı bir görüntüleme penceresi açılıyor (`ImageViewerWindow`).
   - Uygulama kartlarına tıklamak eskisi gibi uygulamayı açıyor.
@@ -114,9 +114,9 @@ düğmesi pencereyi kapatıyor; uygulama kartlarına tıklamak eskisi gibi uygul
 
 ---
 
-#### 12.1 İstek (birebir)
+#### 12.1 Gereksinim
 
-> Bu resimlere tıklanınca büyük hali görülmeli.
+- Gereksinim: Resim kartlarındaki resimlere tıklanınca resmin büyük hali görüntülenmeli.
 
 ---
 

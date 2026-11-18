@@ -9,20 +9,20 @@ ekleme menüsü açılıyor ve kartın boyutlandırma tutamacı her resimde gör
 
 ## Problem
 
-- Kompakt ikon üstte kalmıyordu: "Compact mod her zaman üstte olmalı."
-- Kompakt moda geçerken konum değişiyordu: "Compact moda geçtiğinde lokasyon değişmemeli, TaskTimerWidget bu konuda
-  iyiydi örnek alabilirsin."
-- Sürükleme bırakınca başlıyordu: "Compact modu sürüklemeye başlıyorum, sol tıkı basmayı bırakana kadar hareket
-  etmiyor. Sol tıkı bırakınca bulunduğum konuma gelip hareket etmeye başlıyor. Oysa zaten bırakmıştım. Tekrar tıklamam
-  gerekiyor konumu durdurmak için. Bu olmamalı. TaskTimerWidget bu konuda iyiydi."
-- Açılan widget diğer ekrana taşıyordu: "Sağ üstteyken tıklayınca çift ekrandayım, ikonun konumundan başlıyor. Oysa
-  bulunduğum ekrana sığmıyorsa sola kaymalı. Tam ekrana sığacak şekilde olmalı. Diğer ekrana taşmamalı."
-- İkon değiştirme dağınıktı: "Emoji seçme direkt bir menü üstünden olmalı öyle win . gibi bir saçmalığa gidilmemeli.
-  Ayrıca kendi resmimizi yükleme ve emoji ve reset ikon bu tek butonun aynı ekranında olmalı hepsi aynı işi yapıyor.
-  Ayrı ayrı butonlar olmamalı."
-- Boş alanda menü yoktu: "Boş bir yere sağ tık yapıp menü açılmalı, add yapabilmeliyim."
-- Tutamaç kötü görünüyordu: "Şu her ikone geldiğimde sağ alttaki genişletme vs ikonu kötü duruyor ve koyu resimlerde
-  görünmüyor. Yine aynı pencereyi genişlettiğimiz gibi onda da aynı çift oklu işaret görünmeli."
+- Kompakt ikon üstte kalmıyordu. Kompakt mod her zaman üstte olmalı.
+- Kompakt moda geçerken konum değişiyordu. Kompakt moda geçildiğinde konum değişmemeli; bu konuda TaskTimerWidget
+  örnek alınmalı.
+- Sürükleme bırakınca başlıyordu. Kompakt ikon sol tuş basılıyken hareket etmiyor; tuş bırakılınca imlecin konumuna
+  gelip hareket etmeye başlıyor ve durması için yeniden tıklamak gerekiyor. Bu davranış olmamalı; TaskTimerWidget bu
+  konuda doğru davranıyor.
+- Açılan widget diğer ekrana taşıyordu. Çift ekranlı düzende ikon sağ üstteyken tıklanınca widget ikonun konumundan
+  başlıyor. Widget bulunduğu ekrana sığmıyorsa sola kaymalı, tamamen o ekrana sığmalı ve diğer ekrana taşmamalı.
+- İkon değiştirme dağınıktı. Emoji doğrudan bir menüden seçilmeli; Win + . paneline yönlendirilmemeli. Kendi resmini
+  yükleme, emoji seçme ve ikonu sıfırlama aynı işi yaptığı için tek düğmenin açtığı aynı ekranda olmalı; ayrı ayrı
+  düğmeler olmamalı.
+- Boş alanda menü yoktu. Boş bir alana sağ tıklanınca menü açılmalı ve bu menüden ekleme (Add) yapılabilmeli.
+- Tutamaç kötü görünüyordu. Kartın üzerine gelindiğinde sağ altta çıkan boyutlandırma ikonu kötü görünüyor ve koyu
+  resimlerde görünmüyor; pencere boyutlandırmasında olduğu gibi çift oklu işaret görünmeli.
 
 ## Çözüm
 
@@ -69,7 +69,7 @@ ekleme menüsü açılıyor ve kartın boyutlandırma tutamacı her resimde gör
 ### 10.1 — Kompakt ikon her zaman üstte durur.
 
 - **Mevcut durum:** Kompakt ikon pin ayarına uyuyordu; pin kapalıysa diğer pencerelerin arkasında kalıyordu.
-- **Problem:** "Compact mod her zaman üstte olmalı."
+- **Problem:** Kompakt mod her zaman üstte olmalı.
 - **Çözüm:**
   - Kompakt ikon pin ayarından bağımsız olarak her zaman üstte durur. Widget açılınca pin ayarına döner.
   - TaskTimerWidget da her zaman üstte duruyor (`IsAlwaysOnTop = true`).
@@ -82,7 +82,7 @@ ekleme menüsü açılıyor ve kartın boyutlandırma tutamacı her resimde gör
 ### 10.2 — Kompakt moda geçerken pencerenin konumu değişmez.
 
 - **Mevcut durum:** Kompakt moda geçince çerçeve kaldırıldığı için ikon widget'ın köşesinden kayıyordu.
-- **Problem:** "Compact moda geçtiğinde lokasyon değişmemeli, TaskTimerWidget bu konuda iyiydi örnek alabilirsin."
+- **Problem:** Kompakt moda geçildiğinde konum değişmemeli; bu konuda TaskTimerWidget örnek alınmalı.
 - **Çözüm:**
   - İkon, widget'ın görünen sol üst köşesinde çıkar; çerçevenin kaldırılmasından doğan kayma düzeltilir.
   - TaskTimerWidget kompakt moda geçerken yalnız `AppWindow.Resize` çağırıyor; sol üst köşe yerinde kalıyor. Bizdeki
@@ -142,7 +142,7 @@ ekleme menüsü açılıyor ve kartın boyutlandırma tutamacı her resimde gör
 ### 10.6 — Boş alana sağ tıklayınca ekleme menüsü açılır.
 
 - **Mevcut durum:** Boş alana sağ tıklayınca bir şey olmuyordu; ekleme yalnız düğmelerden yapılıyordu.
-- **Problem:** "Boş bir yere sağ tık yapıp menü açılmalı, add yapabilmeliyim."
+- **Problem:** Boş bir alana sağ tıklanınca menü açılmalı ve bu menüden ekleme (Add) yapılabilmeli.
 - **Çözüm:** Izgaranın ve altındaki zeminin boş yerine sağ tıklayınca "Add app…", "Add note", "Add image…" açılır.
   Kartların kendi menüsü değişmedi.
 - **Dosyalar:** `src/MyEverythingWidget.App/MainWindow.xaml`, `src/MyEverythingWidget.App/Views/WidgetGridView.xaml.cs`
@@ -205,21 +205,21 @@ Eski başlık: MEW-4 Faz 10 — Kompakt ikon davranışı, tek ikon penceresi, s
 
 ---
 
-#### 10.1 İstekler (birebir)
+#### 10.1 Gereksinimler
 
-> 1- Compact mod her zaman üstte olmalı.
-> 2- Compact moda geçtiğinde lokasyon değişmemeli, TaskTimerWidget bu konuda iyiydi örnek alabilirsin.
-> 3- Compact modu sürüklemeye başlıyorum, sol tıkı basmayı bırakana kadar hareket etmiyor. Sol tıkı bırakınca
->    bulunduğum konuma gelip hareket etmeye başlıyor. Oysa zaten bırakmıştım. Tekrar tıklamam gerekiyor konumu
->    durdurmak için. Bu olmamalı. TaskTimerWidget bu konuda iyiydi.
-> 4- Sağ üstteyken tıklayınca çift ekrandayım, ikonun konumundan başlıyor. Oysa bulunduğum ekrana sığmıyorsa sola
->    kaymalı. Tam ekrana sığacak şekilde olmalı. Diğer ekrana taşmamalı.
-> 5- Emoji seçme direkt bir menü üstünden olmalı öyle win . gibi bir saçmalığa gidilmemeli. Ayrıca kendi resmimizi
->    yükleme ve emoji ve reset ikon bu tek butonun aynı ekranında olmalı hepsi aynı işi yapıyor. Ayrı ayrı butonlar
->    olmamalı.
-> 6- Boş bir yere sağ tık yapıp menü açılmalı, add yapabilmeliyim.
-> 7- Şu her ikone geldiğimde sağ alttaki genişletme vs ikonu kötü duruyor ve koyu resimlerde görünmüyor. Yine aynı
->    pencereyi genişlettiğimiz gibi onda da aynı çift oklu işaret görünmeli.
+- Gereksinim: Kompakt mod her zaman üstte olmalı.
+- Gereksinim: Kompakt moda geçildiğinde konum değişmemeli; bu konuda TaskTimerWidget örnek alınmalı.
+- Gereksinim: Kompakt ikon sürüklenirken sol tuş basılıyken hareket etmiyor; tuş bırakılınca imlecin konumuna gelip
+  hareket etmeye başlıyor ve durması için yeniden tıklamak gerekiyor. Bu davranış olmamalı; TaskTimerWidget bu
+  konuda doğru davranıyor.
+- Gereksinim: Çift ekranlı düzende ikon sağ üstteyken tıklanınca widget ikonun konumundan başlıyor. Widget bulunduğu
+  ekrana sığmıyorsa sola kaymalı, tamamen o ekrana sığmalı ve diğer ekrana taşmamalı.
+- Gereksinim: Emoji doğrudan bir menüden seçilmeli; Win + . paneline yönlendirilmemeli. Kendi resmini yükleme, emoji
+  seçme ve ikonu sıfırlama aynı işi yaptığı için tek düğmenin açtığı aynı ekranda olmalı; ayrı ayrı düğmeler
+  olmamalı.
+- Gereksinim: Boş bir alana sağ tıklanınca menü açılmalı ve bu menüden ekleme (Add) yapılabilmeli.
+- Gereksinim: Kartın üzerine gelindiğinde sağ altta çıkan boyutlandırma ikonu kötü görünüyor ve koyu resimlerde
+  görünmüyor; pencere boyutlandırmasında olduğu gibi çift oklu işaret görünmeli.
 
 ---
 

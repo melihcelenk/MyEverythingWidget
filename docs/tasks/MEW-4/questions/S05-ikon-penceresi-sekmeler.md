@@ -14,9 +14,10 @@ resolved: 2026-11-18
 
 ## Bağlam
 
-- İstek (birebir): "Change icon'un yerine Select icon yaz, bu bir sekme olsun, Select Image yaz bu da başka bir sekme
-  olsun. O sekmeler arasında geçiş yapılabilsin. Reset to Original Cancel'ın soluna gelsin. Image seçme tarafında
-  gözat olduğu gibi resim sürükleme veya ctrl v ile direkt yapıştırma da olsun."
+- Gereksinim: "Change icon" başlığının yerine "Select icon" adlı bir sekme, yanına da "Select image" adlı ikinci bir
+  sekme gelmeli; sekmeler arasında geçiş yapılabilmeli. "Reset to original" düğmesi "Cancel" düğmesinin soluna
+  alınmalı. Resim seçme sekmesinde dosyaya gözatmanın yanı sıra resmi sürükleyip bırakma ve Ctrl+V ile doğrudan
+  yapıştırma da desteklenmeli.
 - Bu istek S4'ün yerine geçiyor. S4'te sorduğum, düğmeleri alt çubuğa taşıyan düzeltme commit'lenmemişti. Bu plan
   onaylanırsa o düzeltme bu tasarımla değiştirilir.
 

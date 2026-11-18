@@ -127,8 +127,8 @@
 | K8 | Tema ve minimum Windows sürümü | 🟢 VERİLDİ | Sistemi izler; Windows 10 19041+ | Kararlar → K8 |
 | K9 | Kapsam sınırı | 🟢 VERİLDİ | Özellik eşitliği + düzeltmeler; yeni özellikler sonraki sürüm | Kararlar → K9 |
 
-S1 ve S2 dışındaki kararlar, kullanıcının "zevk ve tasarım kararlarını ajan versin" yönündeki talimatına göre
-ajan tarafından verildi. Kullanıcı kullanım sırasında beğenmediği bir şey görürse bu kararlar yeniden açılır.
+S1 ve S2 dışındaki kararlar, zevk ve tasarım kararlarının ajana bırakılması talimatı gereğince ajan tarafından
+verildi. Kullanıcı kullanım sırasında beğenmediği bir şey görürse bu kararlar yeniden açılır.
 
 ---
 
@@ -146,7 +146,7 @@ ajan tarafından verildi. Kullanıcı kullanım sırasında beğenmediği bir ş
   - Uygulamanın kendi ikonu alınmıyor; yerine emoji/ikon/upload sekmeli bir seçici var.
 - **Sürükle-bırak grid:** MEW-3 boyunca Qt üzerinde defalarca düzeltilmeye çalışıldı.
   - `MEW-3/TODO4.md` → "Bug 1": 2x1 not sağ kenara taşınınca bir sola yerleşiyor.
-  - Bu hata "testler geçiyor ama gerçek uygulamada sorun devam ediyor" olarak kayıtlı.
+  - Bu hata, testler geçtiği hâlde gerçek uygulamada devam eden bir sorun olarak kayıtlı.
 - **Humanized UI testleri:** Gerçek fareyi koordinatla sürüyor ve kırılgan.
   - `MEW-3/TODO6.md` → "Known Issues": `create_app_and_note` dialog koordinatları yüzünden başarısız.
 - **Store:** Python için paketleme elle ve zahmetli.
@@ -345,7 +345,7 @@ Plan A. Öncelik Windows ve Store; çapraz platform artık bir gereksinim değil
 
 ### ✅ Karar Kılınan Çözüm
 
-Plan A (WinUI). Kullanıcı S1 ve S2'yi cevapladıktan sonra "başla" talimatını verdi; Faz 1'den sonra Faz 1 sonucunu
+Plan A (WinUI). Kullanıcı S1 ve S2'yi cevapladıktan sonra başlama talimatını verdi; Faz 1'den sonra Faz 1 sonucunu
 görüp commit/push ve kalan bütün fazları istedi (2026-10-30).
 
 ---

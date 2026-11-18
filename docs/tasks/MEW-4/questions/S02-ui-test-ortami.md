@@ -67,10 +67,10 @@ Günlük işleyiş:
 
 ### C — Yalnız sen istediğinde
 
-- Gerçek fare testleri otomatik koşmaz; sen "UI testlerini koş" dediğinde koşar.
+- Gerçek fare testleri otomatik koşmaz; yalnız sen UI testlerinin koşturulmasını istediğinde koşar.
 
 - ✅ Hiç rahatsız edilmezsin.
-- ❌ Sürükle-bırak gibi asıl riskli kısım, faz sonunda doğrulanmadan kalır. "Bensiz yürüt" hedefine ters düşer.
+- ❌ Sürükle-bırak gibi asıl riskli kısım, faz sonunda doğrulanmadan kalır. İşin kullanıcı olmadan yürütülmesi hedefine ters düşer.
 
 ## Öneri
 

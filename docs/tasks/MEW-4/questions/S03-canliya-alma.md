@@ -6,11 +6,11 @@ priority: blocker
 asked: 2026-10-30
 resolved: 2026-11-18
 ---
-# S3 — "Canlıya almak" ne demek: master'a birleştirme mi?
+# S3 — Canlıya alma ne anlama geliyor: master'a birleştirme mi?
 
 **Mevcut durum:** Bütün iş `feature/MEW-4-winui-rewrite` dalında commit'li ve push'lu (`ed2fd84`); `master` hâlâ ilk sürümde (`ef9eed8`, MEW-1).
 
-**Soru:** "Canlıya al" ile bu dalın `master`'a birleştirilmesini mi kastediyorsun, birleştirme nasıl olsun?
+**Soru:** Canlıya alma talebiyle bu dalın `master`'a birleştirilmesini mi kastediyorsun, birleştirme nasıl olsun?
 
 ## Bağlam
 
@@ -25,8 +25,8 @@ resolved: 2026-11-18
 | Microsoft Store | Henüz gönderilmedi; Partner Center hesabı gerekiyor (`docs/general/STORE_SUBMISSION.md`) |
 
 - MEW-4, MEW-3'ün üstüne açıldı. Bu yüzden MEW-4'ü `master`'a almak MEW-3'ün 78 commit'ini de getirir.
-- Store'a gönderme bu oturumdan yapılamaz; kendi Partner Center hesabınla yapılır. "Release çıkarız" dediğin adım
-  büyük olasılıkla bu.
+- Store'a gönderme bu oturumdan yapılamaz; kendi Partner Center hesabınla yapılır. Talepte sürüm (release) çıkarılması olarak
+  anılan adım büyük olasılıkla bu.
 
 ## Seçenekler
 

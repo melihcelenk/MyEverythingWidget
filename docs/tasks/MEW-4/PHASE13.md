@@ -9,10 +9,10 @@ olursa olsun görünür kalıyor.
 
 ## Problem
 
-- Kullanıcının isteği (birebir): "Küçültünce bir şey görünmüyor. Yani şöyle olabilir: Change icon'un yerine Select
-  icon yaz, bu bir sekme olsun, Select Image yaz bu da başka bir sekme olsun. O sekmeler arasında geçiş yapılabilsin.
-  Reset to Original Cancel'ın soluna gelsin. Image seçme tarafında gözat olduğu gibi resim sürükleme veya ctrl v ile
-  direkt yapıştırma da olsun."
+- Gereksinim: Widget küçültüldüğünde ikon penceresinin içeriği görünmüyor. "Change icon" başlığının
+  yerine "Select icon" ve "Select Image" adlı iki sekme olmalı ve sekmeler arasında geçiş yapılabilmeli. "Reset to
+  Original" düğmesi "Cancel" düğmesinin solunda olmalı. Resim seçme sekmesinde gözat seçeneğinin yanında resim
+  sürükleme ve Ctrl+V ile doğrudan yapıştırma da desteklenmeli.
 - Faz 10'daki pencerede "Image…" ve "Reset to original" emoji ızgarasının altındaydı. Pencere widget'tan büyük
   olamadığı için küçük widget'ta ızgaranın alt satırları ve bu iki düğme kesiliyordu.
 - Testler bunu yakalamadı: düğmelere UI Automation ile basıyorlardı, ekranda görünüp görünmediklerine bakmıyorlardı.
@@ -63,7 +63,8 @@ olursa olsun görünür kalıyor.
 
 - **Mevcut durum:** Faz 10'daki pencerede başlık "Change icon" idi; "Image…" ve "Reset to original" emoji ızgarasının
   altındaydı.
-- **Problem:** Küçük widget'ta ızgaranın alt satırları ve bu iki düğme kesiliyordu: "Küçültünce bir şey görünmüyor."
+- **Problem:** Küçük widget'ta ızgaranın alt satırları ve bu iki düğme kesiliyordu; widget küçültülünce içerik
+  görünmüyordu.
 - **Çözüm:**
   - Pencere başlığı yerine `SelectorBar` ile iki sekme var: "Select icon" ve "Select image". Pencere "Select icon" ile
     açılır.
@@ -140,11 +141,12 @@ olursa olsun görünür kalıyor.
 
 ---
 
-#### 13.1 İstek (birebir)
+#### 13.1 Gereksinim
 
-> Küçültünce bir şey görünmüyor. Yani şöyle olabilir: Change icon'un yerine Select icon yaz, bu bir sekme olsun,
-> Select Image yaz bu da başka bir sekme olsun. O sekmeler arasında geçiş yapılabilsin. Reset to Original Cancel'ın
-> soluna gelsin. Image seçme tarafında gözat olduğu gibi resim sürükleme veya ctrl v ile direkt yapıştırma da olsun.
+- Gereksinim: Widget küçültüldüğünde ikon penceresinin içeriği görünmüyor. "Change icon" başlığının
+  yerine "Select icon" ve "Select Image" adlı iki sekme olmalı ve sekmeler arasında geçiş yapılabilmeli. "Reset to
+  Original" düğmesi "Cancel" düğmesinin solunda olmalı. Resim seçme sekmesinde gözat seçeneğinin yanında resim
+  sürükleme ve Ctrl+V ile doğrudan yapıştırma da desteklenmeli.
 
 ---
 

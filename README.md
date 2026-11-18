@@ -1,9 +1,12 @@
 # My Everything Widget
 
-A small Windows widget that keeps your apps, notes and images one click away.
+[![CI](https://github.com/melihcelenk/MyEverythingWidget/actions/workflows/ci.yml/badge.svg)](https://github.com/melihcelenk/MyEverythingWidget/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-> Rewritten with WinUI and .NET 10 for the Microsoft Store (MEW-4). The original Python/PySide6 version is in
-> [`legacy/`](legacy/README.md); its data is imported automatically on first start.
+A small Windows widget that keeps your apps, websites, notes and pictures one click away.
+
+> Built with WinUI and .NET 10. The original Python/PySide6 version is in [`legacy/`](legacy/README.md); its data
+> is imported automatically on first start.
 
 ![Everything you love, one click away: apps, websites, notes and photos on your desktop](docs/images/store-1.png)
 
@@ -33,6 +36,11 @@ pwsh scripts/publish-msix.ps1  # MSIX package
 ```
 
 Publishing: [Store Submission](docs/general/STORE_SUBMISSION.md).
+
+## Contributing
+
+Bug reports, ideas and pull requests are welcome: see [CONTRIBUTING.md](CONTRIBUTING.md). Please report security
+problems privately as described in [SECURITY.md](SECURITY.md).
 
 ## License
 

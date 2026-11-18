@@ -10,8 +10,8 @@ Store gönderimi.
 ## Problem
 
 - Ayarlar penceresi widget'ın bütün genişliğini kaplıyordu; iki yanda hiç boşluk yoktu (T10).
-- README'de ekran görüntüsü yok; UI testlerinin görüntüleri rastgele veriyle çekilmiş. Görüntüler kullanıcının "bunu
-  bunun için kullanabilirim" diyeceği senaryoları göstermeli (T10).
+- README'de ekran görüntüsü yok; UI testlerinin görüntüleri rastgele veriyle çekilmiş. Görüntüler, uygulamanın hangi
+  işler için kullanılabileceğini gösteren senaryoları içermeli (T10).
 
 ## Çözüm
 
@@ -38,7 +38,7 @@ Store gönderimi.
 | 17.5 | Not düzenleme penceresi çok satırlı notun tamamını gösterir. | 🟢 Tamamlandı |
 | 17.6 | Tanıtım görselleri üçe iner; ilki uygulama, web sitesi, not ve fotoğrafı birlikte gösterir. | 🟢 Tamamlandı |
 | 17.7 | Compact ikon ekranın sağındayken widget ikonla hizalı açılır; küçültünce ikon yerinde kalır. | 🟢 Tamamlandı |
-| 17.8 | Repo halka açılmaya hazırlanır: görev dokümanlarının dili ve eksik standart dosyalar. | ⏳ Bekliyor (S12, S13) |
+| 17.8 | Repo halka açılmaya hazırlanır: görev dokümanlarının dili ve eksik standart dosyalar. | 🟡 Kısmi (GitHub ayarları S14) |
 
 ## Nasıl kontrol edilir
 
@@ -59,7 +59,7 @@ Store gönderimi.
 
 - **Mevcut durum:** Ayarlar penceresi widget'ın kenarından kenarına uzanıyordu. WinUI iletişim kutuları en az 320
   piksel genişliğinde; widget ondan dar olunca kutu pencereye yapışıyordu.
-- **Problem:** "Settings'te yanlarda boşluk yok."
+- **Problem:** Ayarlar penceresinin iki yanında boşluk olmalı; şu an boşluk yok.
 - **Çözüm:**
   - Yeni `DialogSizing.FitToWindow(dialog, root)`: `ContentDialogMinWidth` ve `ContentDialogMaxWidth` kaynaklarını
     pencere genişliği eksi 2x12 piksele göre ayarlıyor; kutu 320 pikselden darsa `ContentDialogPadding` 12 piksel.
@@ -199,7 +199,17 @@ Store gönderimi.
   - Issue şablonları TaskTimerWidget'tan uyarlandı (T29): `.github/ISSUE_TEMPLATE/bug-report.yml`,
     `feature-request.yml`, `config.yml`. Hata raporunda sürüm, kurulum kaynağı, ekran ölçeği ve `logs\crash.log`
     soruluyor. "Questions & Discussions" bağlantısı için repoda Discussions'ın açılması gerekiyor (S13).
-- **Durum:** ⏳ Bekliyor (S12, S13).
+- **Yapılan (S12 → A, S13 → B):**
+  - **Doküman dili:** `MEW-1`, `MEW-3` ve `MEW-4` görev dokümanlarındaki ve soru kartlarındaki birebir alıntılar
+    resmî gereksinim cümlelerine çevrildi; anlam ve kapsam korundu. Kartlar (S08–S14) commit'lendi.
+  - **Yeni dosyalar:** `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `.github/pull_request_template.md`,
+    `.github/workflows/ci.yml`.
+  - **README:** İç iş numarası kaldırıldı; CI ve lisans rozetleri, "Contributing" bölümü eklendi.
+  - **CI:** Windows'ta derleme ve unit testler. Komutlar yerelde denendi: 309 test geçti; UI testleri Sandbox
+    dışında kendini atlıyor.
+- **Kalan:** Repo açıklaması, etiketler, Discussions ve gizli güvenlik bildirimi GitHub ayarı olduğu için S14'te
+  soruldu.
+- **Durum:** 🟡 Kısmi (S14).
 
 ### Doğrulanmayan / dikkat edilmesi gereken
 

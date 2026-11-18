@@ -398,34 +398,36 @@ This document outlines the development tasks for MyEverythingWidget v1.0 MVP.
 **Commit Format:** `[MEW-1] Description`
 **Example:** `[MEW-1] Setup Flutter project structure`
 
-MEW-3 Başlangıç Prompt:
-Tamam o biraz eski kalmış sanırım, aslında boşluk bırakılabiliyor şu an. Onu yapmaya çalıştı. Grid sistemini de yapmaya
-çalıştı. Ama çok kötü şu an. Şimdi MEW-3/TODO.md'yi oluşturacaksın. MEW-2'dekileri boş verelim. Şu an en gözle görülür
-problem şu:
+MEW-3 Başlangıç Gereksinimleri:
 
-1. Bir 2x1 notu sürüklerken 1x1'lik kare görüyorum ve aynı hizada bile görünmüyor. Ekran görüntüsündeki gibi.
-2. Üstten bir uygulama taşıdığımda üst taraf boş kalınca o satırı boşaltıyor, alt satıra atıyor. Bizim gridimiz sabit
-   olmalı, öyle kafasına göre taşıma yapmamalı. Ben orayı boş bıraktıysam boş olarak kalmalı.
-3. Taşımalarda alakasız yer değiştirmeler oluyor. Çok kötü.
+Bu dokümandaki bilgilerin bir kısmı güncelliğini yitirmiştir: grid'de boşluk bırakılabilmektedir ve grid sistemi
+uygulanmıştır, ancak beklenen şekilde çalışmamaktadır. MEW-3/TODO.md oluşturulacak, MEW-2'deki maddeler kapsam dışı
+bırakılacaktır. Şu an en belirgin problemler şunlardır:
 
-Şunları da TODO'ya yaz: Önceden yazdığım promtlardan biri:
+1. Gereksinim: Bir 2x1 not sürüklenirken 1x1 boyutunda bir kare görüntülenmekte ve bu kare notla aynı hizada
+   bulunmamaktadır (bkz. ekran görüntüsü); bu problem giderilmelidir.
+2. Gereksinim: Üstteki bir uygulama taşındığında boşalan satır temizlenmekte ve nesneler alt satıra aktarılmaktadır.
+   Grid sabit olmalı, nesneler kendiliğinden taşınmamalı; boş bırakılan alan boş kalmalıdır.
+3. Gereksinim: Taşıma işlemlerinde ilgisiz nesnelerin yerleri değişmektedir; bu problem giderilmelidir.
 
-1. bir şeyler silindikçe üstteki nesneler aşağı doğru kaymayacak, hizası değişmeyecek, yerinde kalacak.
-2. Bir notu     
-   sürükle bırak yaparken o notun kapladığı alan kadar dikdörtgen görmeliyim. MEW-2'de img.png'ye bak, ne hizası aynı ne
-   şekli aynı.
-3. Herhangi bir nesneyi bir yerden bir yere taşırken taşıdığım yerdeki o kaplanan alanlardaki   
-   kısımlarda herhangi bir nesne veya bir nesnenin bir kısmı varsa, yani gridde o pozisyonlar doluysa sadece o nesne yer
-   değiştirecek, başka hiçbir nesne yer değiştirmeyecek.
+Daha önce iletilen ve TODO'ya eklenecek gereksinimler:
 
-Ayrıca sonnet'e verdiğim promptlardan birinde şu da var, onu da yaz. Tam yapamadığı şey şu:
+1. Gereksinim: Nesneler silindikçe üstteki nesneler aşağı doğru kaymamalı, hizaları değişmemeli ve yerlerinde
+   kalmalıdır.
+2. Gereksinim: Bir not sürükle-bırak ile taşınırken notun kapladığı alan büyüklüğünde bir dikdörtgen
+   görüntülenmelidir. Mevcut durumda (bkz. MEW-2 `img.png`) dikdörtgenin ne hizası ne de şekli doğrudur.
+3. Gereksinim: Bir nesne bir yerden başka bir yere taşınırken hedefte kaplanacak hücrelerde herhangi bir nesne veya
+   bir nesnenin bir kısmı bulunuyorsa (grid'de o pozisyonlar doluysa) yalnızca o nesne yer değiştirmeli, başka hiçbir
+   nesne yer değiştirmemelidir.
 
-Mantık şu: ben bu nesneyi (işgal ettiği alanlar 2a, 2b) bir alta taşımak istiyorum, (3a, 3b). Gridde       
-alttaki taşıyacağım kısım boş mu? Eğer boşsa diğer hiçbir nesnenin yeri değişmemeli. Onlara dokunma. Onların konumları
-aynı. Taşıdığım nesneyi 2a, 2b'den 3a, 3b'ye taşıyorum. Eğer taşımakta olduğum grid'de herhangi bir nesne  
-varsa oradaki nesneyi yer varsa sadece taşıdığım kaynağın olduğu yere taşı, yer yoksa başka boş bir yere taşı. Tamamen
-Android'deki mantık. Bunun analizini yap şu an kodlamaya başlama. Ne gerekiyor iyi analiz et, belki        
-taşıma mantığını baştan yazmak gerekir. Belki gridde nesneleri tutuş şeklimiz yanlış, onları baştan yazmamız
-gerekebilir. Bu ihtiyaca göre analizini yap TODO'ya.
+Önceki bir çalışmada tam olarak karşılanamamış taşıma gereksinimi:
 
-Hiçbir maddeyi atlama. 
+- Gereksinim: (2a, 2b) hücrelerini kaplayan bir nesne bir alt satıra, (3a, 3b) hücrelerine taşındığında hedef
+  hücrelerin boş olup olmadığı kontrol edilmelidir. Hedef boşsa nesne 2a, 2b'den 3a, 3b'ye taşınmalı ve diğer hiçbir
+  nesnenin konumu değişmemelidir. Hedefte bir nesne varsa, o nesne yer varsa yalnızca taşınan nesnenin kaynak
+  konumuna, yer yoksa başka bir boş konuma taşınmalıdır. Davranış tamamen Android'deki mantıkla aynı olmalıdır.
+- Gereksinim: Kodlamaya başlanmadan önce ihtiyaç ayrıntılı olarak analiz edilmeli ve analiz TODO'ya yazılmalıdır.
+  Analizde taşıma mantığının baştan yazılmasının ve grid'de nesnelerin tutulma şeklinin baştan yazılmasının gerekip
+  gerekmediği değerlendirilmelidir.
+
+- Gereksinim: Bu maddelerin hiçbiri atlanmamalıdır.
