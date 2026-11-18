@@ -1,7 +1,7 @@
 ---
 id: S14
-status: open
-decider:
+status: answered
+decider: user
 priority: major
 asked: 2026-11-18
 ---
@@ -40,4 +40,22 @@ gerekli; açıklama ve etiketler repoyu bulunabilir yapıyor.
 
 ## Cevap
 
+**A — Dördünü de bu haliyle uygula**
+
 ## Sonuç
+
+A uygulandı; dört ayarın üçü yapıldı, biri repo halka açılınca yapılabiliyor.
+
+| # | Ayar | Durum |
+|---|------|-------|
+| 1 | Açıklama | Uygulandı (`gh repo edit`) |
+| 2 | Etiketler | Uygulandı: on etiketin hepsi |
+| 3 | Discussions | Açıldı |
+| 4 | Gizli güvenlik bildirimi | Yapılamadı: GitHub bu özelliği yalnız herkese açık repolarda sunuyor, repo şu an gizli (`gh api` 404 döndü) |
+
+- **4 için:** Repo halka açıldıktan sonra açılmalı. İki yol var:
+  - GitHub'da **Settings → Code security → Private vulnerability reporting → Enable**.
+  - Ya da şu komut: `gh api -X PUT repos/melihcelenk/MyEverythingWidget/private-vulnerability-reporting`.
+- **Etkisi:** O zamana kadar `SECURITY.md` ve `CODE_OF_CONDUCT.md`'deki form bağlantısı çalışmaz. Repo gizli olduğu
+  için şu an kimse görmüyor.
+- **Ayrıntı:** `PHASE17.md` → 17.8.

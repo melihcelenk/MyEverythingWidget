@@ -38,7 +38,7 @@ Store gönderimi.
 | 17.5 | Not düzenleme penceresi çok satırlı notun tamamını gösterir. | 🟢 Tamamlandı |
 | 17.6 | Tanıtım görselleri üçe iner; ilki uygulama, web sitesi, not ve fotoğrafı birlikte gösterir. | 🟢 Tamamlandı |
 | 17.7 | Compact ikon ekranın sağındayken widget ikonla hizalı açılır; küçültünce ikon yerinde kalır. | 🟢 Tamamlandı |
-| 17.8 | Repo halka açılmaya hazırlanır: görev dokümanlarının dili ve eksik standart dosyalar. | 🟡 Kısmi (GitHub ayarları S14) |
+| 17.8 | Repo halka açılmaya hazırlanır: görev dokümanlarının dili ve eksik standart dosyalar. | 🟡 Kısmi (halka açılınca gizli güvenlik bildirimi açılmalı) |
 
 ## Nasıl kontrol edilir
 
@@ -207,9 +207,12 @@ Store gönderimi.
   - **README:** İç iş numarası kaldırıldı; CI ve lisans rozetleri, "Contributing" bölümü eklendi.
   - **CI:** Windows'ta derleme ve unit testler. Komutlar yerelde denendi: 309 test geçti; UI testleri Sandbox
     dışında kendini atlıyor.
-- **Kalan:** Repo açıklaması, etiketler, Discussions ve gizli güvenlik bildirimi GitHub ayarı olduğu için S14'te
-  soruldu.
-- **Durum:** 🟡 Kısmi (S14).
+- **GitHub ayarları (S14 → A):** Açıklama, on etiket ve Discussions uygulandı.
+- **Kalan:** Gizli güvenlik bildirimi yalnız herkese açık repolarda açılabiliyor. Repo halka açılınca
+  **Settings → Code security → Private vulnerability reporting** ile ya da
+  `gh api -X PUT repos/melihcelenk/MyEverythingWidget/private-vulnerability-reporting` ile açılmalı.
+  `SECURITY.md` bu forma yönlendiriyor.
+- **Durum:** 🟡 Kısmi (halka açıldıktan sonra tek ayar).
 
 ### Doğrulanmayan / dikkat edilmesi gereken
 
