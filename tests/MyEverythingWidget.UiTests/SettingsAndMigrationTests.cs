@@ -111,7 +111,7 @@ public sealed class SettingsAndMigrationTests : IDisposable
     [InlineData("AboutEmailButton", "Copy info@melihcelenk.com")]
     [InlineData("AboutPersonalLink", "https://melihcelenk.com/")]
     [InlineData("AboutWebsiteLink", "https://melihcelenk.github.io/MyEverythingWidget/")]
-    [InlineData("AboutRateLink", "https://apps.microsoft.com/search/publisher?name=Melih%20Celenk")]
+    [InlineData("AboutRateLink", "https://apps.microsoft.com/detail/9NRSQN57C9FH")]
     public void AboutLinks_TellWhereTheyGo(string automationId, string target)
     {
         StateFiles.Seed(_data, new Dictionary<string, Core.Grid.GridPlacement>());

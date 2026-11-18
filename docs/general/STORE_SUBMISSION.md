@@ -7,29 +7,24 @@ publisher's account and are done by hand.
 
 1. In [Partner Center](https://partner.microsoft.com/dashboard) → Apps and games → **New product** → MSIX or PWA app,
    reserve the name **My Everything Widget**.
-2. Open **Product identity** and copy these three values into `src/MyEverythingWidget.App/Package.appxmanifest`:
+2. Open **Product identity** and copy its values into `src/MyEverythingWidget.App/StoreIdentity.json` (already
+   done for this app: `MelihCelenk.MyEverythingWidget`, Store ID `9NRSQN57C9FH`).
 
-| Partner Center | Manifest |
-|----------------|----------|
-| Package/Identity/Name | `<Identity Name="...">` |
-| Package/Identity/Publisher | `<Identity Publisher="CN=...">` |
-| Package/Properties/PublisherDisplayName | `<PublisherDisplayName>` |
-
-The manifest currently uses the unsigned-package publisher (`OID.2.25.311729368913984317654407730594956997722=1`)
-so that test builds install without a certificate. Replace it only in the Store build; the sandbox UI tests install
-the package unsigned and need the test identity.
+The manifest in the repository keeps the unsigned test publisher (`OID.2.25.311729368913984317654407730594956997722=1`)
+so that local and sandbox builds install without a certificate. `scripts/publish-msix.ps1 -Store` writes the Store
+identity into the manifest for that build only and restores it afterwards.
 
 ## 2. Version
 
-Set `<Identity Version="1.0.0.0">` for the first release. The Store requires the last number to be `0`; increase
-the first three for every submission.
+The Store version is `version` in `StoreIdentity.json` (`1.0.0.0` for the first release). The Store requires the
+last number to be `0`; increase the first three for every submission.
 
 ## 3. Build
 
 ```
 pwsh scripts/test-ui.ps1                                            # all UI tests must pass
-pwsh scripts/publish-msix.ps1 -Platform x64
-pwsh scripts/publish-msix.ps1 -Platform ARM64 -OutputDirectory tmp\msix-arm64
+pwsh scripts/publish-msix.ps1 -Platform x64 -Store -OutputDirectory tmp\store-x64
+pwsh scripts/publish-msix.ps1 -Platform ARM64 -Store -OutputDirectory tmp\store-arm64
 ```
 
 The packages are unsigned; the Store signs them during certification.
@@ -40,7 +35,7 @@ The packages are unsigned; the Store signs them during certification.
 |------------------------|---------------|
 | Packages | Upload both `.msix` files (x64 and ARM64) |
 | Store listing | Texts and screenshots from `docs/general/STORE_LISTING.md` |
-| Privacy policy URL | The published `docs/general/PRIVACY_POLICY.md` (for example through GitHub Pages, as for TaskTimerWidget) |
+| Privacy policy URL | `https://github.com/melihcelenk/MyEverythingWidget/blob/master/docs/general/PRIVACY_POLICY.md` |
 | Properties → Category | Productivity |
 | Submission options → Restricted capabilities | Explain `runFullTrust` (below) |
 

@@ -5,6 +5,8 @@
 
 A small Windows widget that keeps your apps, websites, notes and pictures one click away.
 
+<a href="https://apps.microsoft.com/detail/9NRSQN57C9FH"><img src="https://get.microsoft.com/images/en-us%20dark.svg" alt="Get it from Microsoft Store" height="48"></a>
+
 ![Everything you love, one click away: apps, websites, notes and photos on your desktop](docs/images/store-1.png)
 
 ![Copy it. Ctrl+V. Saved in a second: pictures, text and web links](docs/images/store-2.png)
