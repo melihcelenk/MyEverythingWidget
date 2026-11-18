@@ -12,12 +12,18 @@ namespace MyEverythingWidget.App.Views;
 /// </summary>
 public sealed partial class SettingsDialog : ContentDialog
 {
+    /// <summary>The dialog's width when the widget is wide enough: 252 px of content and 24 px padding on each side.</summary>
+    public const double PreferredWidth = 300;
+
     private const string Email = "info@melihcelenk.com";
     private const string CopiedText = "Copied";
-    private const string EmailGlyph = "";
-    private const string CopiedGlyph = "";
-    private static readonly Uri Website = new("https://melihcelenk.com/");
-    private static readonly Uri SourceCode = new("https://github.com/melihcelenk/MyEverythingWidget");
+    private const string EmailGlyph = "\u2709";
+    private const string CopiedGlyph = "\u2714";
+    private static readonly Uri Personal = new("https://melihcelenk.com/");
+    private static readonly Uri Website = new("https://melihcelenk.github.io/MyEverythingWidget/");
+
+    /// <summary>The publisher's Store page until the app has its own Store ID.</summary>
+    private static readonly Uri Rate = new("https://apps.microsoft.com/search/publisher?name=Melih%20Celenk");
     private static readonly TimeSpan CopiedFeedback = TimeSpan.FromSeconds(1.5);
 
     private readonly MainViewModel _viewModel;
@@ -38,10 +44,9 @@ public sealed partial class SettingsDialog : ContentDialog
         VersionText.Text = $"Version {viewModel.Version}";
         ShowEmail();
         Describe(EmailButton, $"Copy {Email}");
-        WebsiteLink.NavigateUri = Website;
-        Describe(WebsiteLink, Website.ToString());
-        SourceLink.NavigateUri = SourceCode;
-        Describe(SourceLink, SourceCode.ToString());
+        Link(PersonalLink, Personal);
+        Link(WebsiteLink, Website);
+        Link(RateLink, Rate);
         AlwaysOnTopSwitch.IsOn = viewModel.IsAlwaysOnTop;
         (viewModel.Theme switch
         {
@@ -50,6 +55,12 @@ public sealed partial class SettingsDialog : ContentDialog
             _ => ThemeSystem,
         }).IsChecked = true;
         _isLoading = false;
+    }
+
+    private static void Link(HyperlinkButton link, Uri target)
+    {
+        link.NavigateUri = target;
+        Describe(link, target.OriginalString);
     }
 
     /// <summary>Shows <paramref name="text"/> when the pointer rests on <paramref name="link"/>: where it leads.</summary>
@@ -62,7 +73,7 @@ public sealed partial class SettingsDialog : ContentDialog
     private void ShowEmail()
     {
         EmailText.Text = Email;
-        EmailIcon.Glyph = EmailGlyph;
+        EmailIcon.Text = EmailGlyph;
         AutomationProperties.SetName(EmailButton, Email);
     }
 
@@ -75,7 +86,7 @@ public sealed partial class SettingsDialog : ContentDialog
         Windows.ApplicationModel.DataTransfer.Clipboard.Flush();
 
         EmailText.Text = CopiedText;
-        EmailIcon.Glyph = CopiedGlyph;
+        EmailIcon.Text = CopiedGlyph;
         AutomationProperties.SetName(EmailButton, CopiedText);
 
         if (_copiedTimer is null)

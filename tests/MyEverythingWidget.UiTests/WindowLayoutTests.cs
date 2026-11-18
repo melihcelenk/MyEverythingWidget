@@ -323,7 +323,7 @@ public sealed class WindowLayoutTests : IDisposable
         Assert.True(theme.Left - window.Left >= inset, $"The dialog content {theme} should start at least {inset} px inside the window {window}.");
         Assert.True(window.Right - close.Right >= inset, $"The dialog buttons {close} should end at least {inset} px inside the window {window}.");
 
-        var about = Wait.ForElement(() => dialog.FindFirstDescendant(c => c.ByAutomationId("PrivacyText"))).BoundingRectangle;
+        var about = Wait.ForElement(() => dialog.FindFirstDescendant(c => c.ByAutomationId("AboutCard"))).BoundingRectangle;
         Assert.True(about.Right <= close.Right + 1, $"The about text {about} should wrap inside the dialog (buttons end at {close.Right}).");
         FlaUI.Core.Capturing.Capture.Rectangle(window).ToFile(Artifacts.PathOf($"settings-{columns}-columns"));
     }
@@ -347,9 +347,12 @@ public sealed class WindowLayoutTests : IDisposable
         Assert.True(title.Top - window.Top >= inset, $"The dialog title {title} should start at least {inset} px below the window top {window}.");
         Assert.True(window.Bottom - close.Bottom >= inset, $"The dialog buttons {close} should end at least {inset} px above the window bottom {window}.");
 
-        // At the default size everything fits without scrolling, the About links included.
-        var source = Wait.ForElement(() => dialog.FindFirstDescendant(c => c.ByAutomationId("AboutSourceLink"))).BoundingRectangle;
-        Assert.True(source.Height > 0 && source.Bottom <= close.Top, $"The last About link {source} should be visible above the buttons {close}.");
+        // At the default size everything fits without scrolling: the whole About card is above the buttons.
+        var card = Wait.ForElement(() => dialog.FindFirstDescendant(c => c.ByAutomationId("AboutCard"))).BoundingRectangle;
+        var scroller = Wait.ForElement(() => dialog.FindFirstDescendant(c => c.ByAutomationId("SettingsScroller")));
+        Assert.False(scroller.Patterns.Scroll.Pattern.VerticallyScrollable.Value,
+            "At the default size the settings should fit without scrolling.");
+        Assert.True(card.Height > 0 && card.Bottom <= close.Top, $"The About card {card} should be above the buttons {close}.");
         FlaUI.Core.Capturing.Capture.Rectangle(window).ToFile(Artifacts.PathOf("settings-default-size"));
     }
 }

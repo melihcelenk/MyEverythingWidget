@@ -13,6 +13,21 @@ asked: 2026-11-18
 
 ## Bağlam
 
+### 2. taslakta değişenler (T51)
+
+- **Ayarlar penceresi:** Daraldı; widget'ın içinde ortada, yaklaşık 300 px genişliğinde (önce 360).
+- **Kart:** İçeriğin tam genişliğinde; sağında boşluk kalmıyor.
+- **melihcelenk.com:** Geri eklendi. Sırası: ✉ e-posta, 👤 melihcelenk.com, 🌐 Website, ⭐ Rate.
+
+### Taslak görseli
+
+Solda TaskTimerWidget'taki kart (örnek), sağda Ayarlar penceresindeki yeni About kartının taslağı:
+
+![About kartı: TaskTimerWidget ile karşılaştırma](../mockups/mock-about-compare.png)
+
+Yalnız taslak: [`mockups/mock-about-card.png`](../mockups/mock-about-card.png)
+
+
 ### Taslak (`mockups/mock-about-card.png`)
 
 Ayarlar penceresinde, "Always on top" satırının altında, TaskTimerWidget'taki kartın aynısı:
@@ -24,7 +39,7 @@ Ayarlar penceresinde, "Always on top" satırının altında, TaskTimerWidget'tak
 | Satırlar | "Version 1.0.0" ve "2026" ayrı satırlarda, 11 px, #555555 |
 | Ayırıcı | 1 px, #999999 |
 | Geliştirici | "Melih Çelenk", 11 px, #555555 |
-| Bağlantılar | 11 px, #1A5AB8: "✉ info@melihcelenk.com", "🌐 Website", "⭐ Rate" |
+| Bağlantılar | 11 px, #1A5AB8: "✉ info@melihcelenk.com", "👤 melihcelenk.com", "🌐 Website", "⭐ Rate" |
 
 - **E-posta:** Tıklayınca adres panoya kopyalanır ve kısa süre "Copied" görünür (T38).
 - **Website:** Projenin GitHub Pages sitesi: `https://melihcelenk.github.io/MyEverythingWidget/`.
@@ -34,10 +49,9 @@ Ayarlar penceresinde, "Always on top" satırının altında, TaskTimerWidget'tak
   adlandırılmış kaynaklar olarak tanımlanır (`AboutCardBackgroundBrush` gibi). Kart açık ve koyu temada aynı yeşil
   kalır.
 
-### Kalkanlar ("hepsi aynı" gereği)
+### Kalkanlar
 
-- melihcelenk.com bağlantısı (T38'de istenmişti), GitHub bağlantısı ve gizlilik notu kalkar. Web sitesi, GitHub ve
-  gizlilik politikasına bağlantı veriyor. melihcelenk.com'un kalmasını istersen cevaba yaz.
+- GitHub bağlantısı ve gizlilik notu kalkar; web sitesi ikisine de bağlantı veriyor.
 
 ### Web sitesi (`index.html`, yapıldı)
 
@@ -67,3 +81,20 @@ Ayarlar penceresinde, "Always on top" satırının altında, TaskTimerWidget'tak
 ## Cevap
 
 ## Sonuç
+
+A uygulandı: kullanıcı taslağı terminalden onayladı ve uygulamaya başlanmasını istedi. Kart 2. taslaktaki gibi.
+
+- **Ayarlar penceresi:** 300 px genişliğinde (içerik 252 px). Varsayılan widget boyutunda kaydırmasız sığıyor.
+- **About kartı:**
+  - TaskTimerWidget'taki yeşil kart, içeriğin tam genişliğinde.
+  - Renkler `App.xaml`'da adlandırılmış kaynaklar (`AboutCard…Brush`), iki temada da aynı.
+  - Başlık 14 px yarı kalın, satırlar ve bağlantılar 11 px.
+  - "Version 1.0.0" ve "2026" ayrı satırlarda.
+  - Bağlantılar: ✉ e-posta (tıklayınca kopyalanır, kısa süre ✔ "Copied" görünür), 👤 melihcelenk.com, 🌐 Website
+    (proje sitesi), ⭐ Rate (Store yayıncı sayfası). Her birinin ipucunda gittiği adres var.
+- **Testler:**
+  - `AboutCard_IsTaskTimerWidgetsGreenCard_AsWideAsTheContent`: konum, genişlik ve renk.
+  - `AboutLinks_TellWhereTheyGo` (4 bağlantı).
+  - `SettingsDialog_KeepsAGapAboveAndBelow_AndShowsItAll`: kaydırma gerekmiyor.
+  - Önce kırmızıydılar; şimdi `SettingsAndMigrationTests` 13/13 ve ayarlar düzeni testleri 3/3 geçiyor.
+- **Ayrıntı:** `PHASE17.md` → 17.12.

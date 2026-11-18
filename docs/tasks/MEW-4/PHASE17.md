@@ -42,7 +42,7 @@ Store gönderimi.
 | 17.9 | Compact ikon görev çubuğundan simge durumuna alınıp geri açılınca boyutunu korur. | 🟢 Tamamlandı |
 | 17.10 | Ayarlar penceresi: TaskTimerWidget tarzı About, tek satırlık tema seçimi, pencereye sığan düzen. | 🟢 Tamamlandı |
 | 17.11 | Uygulamanın adı gözden geçirilir. | ⏳ Bekliyor (S15) |
-| 17.12 | About tasarımı TaskTimerWidget'takiyle aynı yapılır. | ⏳ Bekliyor (S17; web sitesi yapıldı) |
+| 17.12 | About tasarımı TaskTimerWidget'takiyle aynı yapılır. | 🟢 Tamamlandı |
 
 ## Nasıl kontrol edilir
 
@@ -303,9 +303,27 @@ Store gönderimi.
     satırlarda.
   - **Website:** Repoda proje sitesi oluşturuldu (`index.html`, GitHub Pages).
   - **Rate:** Geçici olarak Store yayıncı araması.
-  - **Taslak:** `mockups/mock-about-card.png`; onay S17'de.
-- **Dosyalar:** `index.html`, `docs/tasks/MEW-4/mockups/mock-about-card.png`
-- **Durum:** ⏳ Bekliyor (S17).
+  - **Taslak:** `mockups/mock-about-card.png`, `mockups/mock-about-compare.png`.
+    - 2. taslakta (T51) pencere daraldı, kart içeriğin tam genişliğine yayıldı ve melihcelenk.com geri eklendi.
+    - Kullanıcı onayladı (T52).
+  - **Kod:**
+    - Ayarlar 300 px (içerik 252 px); kart `App.xaml`'daki `AboutCard…Brush` kaynaklarıyla çiziliyor.
+    - Bağlantılar: ✉ e-posta (kopyalar), 👤 melihcelenk.com, 🌐 Website, ⭐ Rate.
+    - `DialogSizing.FitToWindow` iletişim kutusunun genişliğini parametre olarak alıyor.
+    - Kart ve tema düğmeleri UIA'da görünsün diye `AutomationHost` içinde.
+- **Dosyalar:** `index.html`, `src/MyEverythingWidget.App/App.xaml`, `src/MyEverythingWidget.App/Views/SettingsDialog.xaml`,
+  `src/MyEverythingWidget.App/Views/SettingsDialog.xaml.cs`, `src/MyEverythingWidget.App/Views/DialogSizing.cs`,
+  `src/MyEverythingWidget.App/MainWindow.xaml.cs`
+- **Testler:**
+  - `SettingsAndMigrationTests.AboutCard_IsTaskTimerWidgetsGreenCard_AsWideAsTheContent` ve `AboutLinks_TellWhereTheyGo`
+    (4 bağlantı).
+  - `WindowLayoutTests.SettingsDialog_KeepsAGapAboveAndBelow_AndShowsItAll`: artık içeriğin kaydırılabilir
+    olmadığını kontrol ediyor. Önceki hali yalnız son bağlantının görünmesine bakıyordu ve kartın alttan kesik
+    olmasını yakalamadı.
+  - Kaldırılan öğeler yüzünden iki test güncellendi: dar pencere testi gizlilik notu yerine kartı, sığma testi
+    GitHub bağlantısı yerine kartı ölçüyor.
+  - Sonuç: `SettingsAndMigrationTests` 13/13, ayarlar düzeni testleri 3/3.
+- **Durum:** 🟢 Tamamlandı.
 
 ### Doğrulanmayan / dikkat edilmesi gereken
 

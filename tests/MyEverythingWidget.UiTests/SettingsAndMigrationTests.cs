@@ -83,10 +83,35 @@ public sealed class SettingsAndMigrationTests : IDisposable
         Assert.True(Wait.Until(() => email.Name == "info@melihcelenk.com", TimeSpan.FromSeconds(5)), "The e-mail button should show the address again.");
     }
 
+    [Fact]
+    public void AboutCard_IsTaskTimerWidgetsGreenCard_AsWideAsTheContent()
+    {
+        // PHASE17 17.12 (S17): the About card of TaskTimerWidget, in a narrower Settings dialog.
+        StateFiles.Seed(_data, new Dictionary<string, Core.Grid.GridPlacement>());
+        using var app = AppSession.Launch(_data);
+        var dialog = OpenSettings(app);
+        GridDriver.WaitForUi();
+
+        var card = In(dialog, "AboutCard").BoundingRectangle;
+        var theme = In(dialog, "ThemeChoices").BoundingRectangle;
+        var close = Wait.ForElement(() => dialog.FindFirstDescendant(c => c.ByName("Close").And(c.ByControlType(FlaUI.Core.Definitions.ControlType.Button)))).BoundingRectangle;
+        var scale = app.Find("WidgetGrid").BoundingRectangle.Width / 5.0 / 80;
+
+        Assert.True(Math.Abs(card.Left - theme.Left) <= 2, $"The card {card} should start where the content starts {theme}.");
+        Assert.True(Math.Abs(card.Right - close.Right) <= 2, $"The card {card} should reach the right edge of the content {close}.");
+        Assert.True(close.Right - theme.Left <= 256 * scale, $"The content should be about 252 px wide, it is {close.Right - theme.Left}.");
+
+        using var screen = Capture.Screen().Bitmap;
+        var inside = screen.GetPixel(card.Left + 6, card.Top + 6);
+        Assert.True(Math.Abs(inside.R - 0xC8) <= 8 && Math.Abs(inside.G - 0xE6) <= 8 && Math.Abs(inside.B - 0xC0) <= 8,
+            $"The card should be TaskTimerWidget's green #C8E6C0, it is {inside}.");
+    }
+
     [Theory]
     [InlineData("AboutEmailButton", "Copy info@melihcelenk.com")]
-    [InlineData("AboutWebsiteLink", "https://melihcelenk.com/")]
-    [InlineData("AboutSourceLink", "https://github.com/melihcelenk/MyEverythingWidget")]
+    [InlineData("AboutPersonalLink", "https://melihcelenk.com/")]
+    [InlineData("AboutWebsiteLink", "https://melihcelenk.github.io/MyEverythingWidget/")]
+    [InlineData("AboutRateLink", "https://apps.microsoft.com/search/publisher?name=Melih%20Celenk")]
     public void AboutLinks_TellWhereTheyGo(string automationId, string target)
     {
         StateFiles.Seed(_data, new Dictionary<string, Core.Grid.GridPlacement>());

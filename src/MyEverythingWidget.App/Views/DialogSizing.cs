@@ -21,13 +21,16 @@ internal static class DialogSizing
     /// Limits <paramref name="dialog"/> to the size of <paramref name="root"/> minus a gap on every side; content that
     /// does not fit then scrolls inside the dialog.
     /// </summary>
-    public static void FitToWindow(ContentDialog dialog, XamlRoot root)
+    /// <param name="dialog">The dialog to size.</param>
+    /// <param name="root">The window the dialog opens in.</param>
+    /// <param name="width">The dialog's width when the window is wide enough; WinUI's own minimum is 320 px.</param>
+    public static void FitToWindow(ContentDialog dialog, XamlRoot root, double width = DefaultMinWidth)
     {
         ArgumentNullException.ThrowIfNull(dialog);
         ArgumentNullException.ThrowIfNull(root);
 
         var available = Math.Max(0, root.Size.Width - (2 * SideGap));
-        dialog.Resources["ContentDialogMinWidth"] = Math.Min(DefaultMinWidth, available);
+        dialog.Resources["ContentDialogMinWidth"] = Math.Min(width, available);
         dialog.Resources["ContentDialogMaxWidth"] = available;
         dialog.Resources["ContentDialogMaxHeight"] = Math.Max(0, root.Size.Height - (2 * SideGap));
         if (available < DefaultMinWidth)

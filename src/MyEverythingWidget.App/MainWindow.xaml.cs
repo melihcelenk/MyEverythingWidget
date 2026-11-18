@@ -345,7 +345,7 @@ public sealed partial class MainWindow : Window
     private async void OnSettingsClicked(object sender, RoutedEventArgs e)
     {
         var dialog = new SettingsDialog(ViewModel) { XamlRoot = RootGrid.XamlRoot, RequestedTheme = RootGrid.ActualTheme };
-        DialogSizing.FitToWindow(dialog, RootGrid.XamlRoot);
+        DialogSizing.FitToWindow(dialog, RootGrid.XamlRoot, SettingsDialog.PreferredWidth);
         void FollowTheme(object? s, System.ComponentModel.PropertyChangedEventArgs args)
         {
             if (args.PropertyName == nameof(MainViewModel.Theme))

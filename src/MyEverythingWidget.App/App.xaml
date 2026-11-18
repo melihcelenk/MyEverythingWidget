@@ -9,6 +9,25 @@
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
                 <ResourceDictionary Source="ms-appx:///Styles/TitleBar.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <!-- The About card is TaskTimerWidget's light green card; it keeps its colours in both themes. -->
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="AboutCardBackgroundBrush" Color="#C8E6C0" />
+                    <SolidColorBrush x:Key="AboutCardBorderBrush" Color="#88B880" />
+                    <SolidColorBrush x:Key="AboutCardTitleBrush" Color="#333333" />
+                    <SolidColorBrush x:Key="AboutCardTextBrush" Color="#555555" />
+                    <SolidColorBrush x:Key="AboutCardSeparatorBrush" Color="#999999" />
+                    <SolidColorBrush x:Key="AboutCardLinkBrush" Color="#1A5AB8" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="AboutCardBackgroundBrush" Color="#C8E6C0" />
+                    <SolidColorBrush x:Key="AboutCardBorderBrush" Color="#88B880" />
+                    <SolidColorBrush x:Key="AboutCardTitleBrush" Color="#333333" />
+                    <SolidColorBrush x:Key="AboutCardTextBrush" Color="#555555" />
+                    <SolidColorBrush x:Key="AboutCardSeparatorBrush" Color="#999999" />
+                    <SolidColorBrush x:Key="AboutCardLinkBrush" Color="#1A5AB8" />
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
