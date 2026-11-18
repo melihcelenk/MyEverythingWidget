@@ -1,9 +1,10 @@
 ---
 id: S8
-status: answered
+status: resolved
 decider: user
 priority: major
 asked: 2026-11-18
+resolved: 2026-11-18
 ---
 # S8 — GitHub ve Store ekran görüntüleri: hangi senaryolar, nasıl çekilsin?
 
@@ -88,3 +89,5 @@ A uygulandı: görüntüler Sandbox'ta otomatik çekiliyor.
 - **Nerede kullanılıyor:** README ("What you can use it for") ve `docs/general/STORE_LISTING.md` bu dosyaları
   kullanıyor.
 - **Ayrıntı:** `PHASE17.md` → 17.2.
+
+Kontrol: uygulandı — Sandbox çekimi `ShowcaseScreenshots.cs` + `scripts/capture-screenshots.ps1` ile yapılıyor, çekimler `docs/images/captures/` altında; README bunlardan üretilen `store-1..3.png`'yi kullanıyor (S10 ile üçe indi).

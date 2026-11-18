@@ -1,9 +1,10 @@
 ---
 id: S11
-status: answered
+status: resolved
 decider: user
 priority: major
 asked: 2026-11-18
+resolved: 2026-11-18
 ---
 # S11 — Compact ikon ekranın sağındayken widget hangi yöne açılsın?
 
@@ -63,3 +64,5 @@ B uygulandı (yatay ve dikey).
   - UI: `CompactAndMenuTests` 8/8 (sağ üst ve sağ altta aç-kapat dahil), `WindowLayoutTests` 12/12.
   - Tam UI seti çalıştırılmadı.
 - **Ayrıntı:** `PHASE17.md` → 17.7.
+
+Kontrol: uygulandı — `MainWindow.ApplyLayoutMode` `WindowPlacement.NearestCorner/AlignCorner` kullanıyor; `CompactCornerTests` (Core) ve `CompactAndMenuTests.IconOnTheRight_OpensWithTheRightEdgesLinedUp_AndShrinksBackToTheSamePlace` (sağ üst ve sağ alt) geçiyor.

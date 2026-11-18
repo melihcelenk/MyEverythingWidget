@@ -1,9 +1,10 @@
 ---
 id: S9
-status: answered
+status: resolved
 decider: user
 priority: major
 asked: 2026-11-18
+resolved: 2026-11-18
 ---
 # S9 — Not düzenleme penceresi yalnız ilk satırı gösteriyor: düzelteyim mi?
 
@@ -56,3 +57,5 @@ A uygulandı.
   - Düzeltmeden sonra geçiyor; sınıfın 9 testi de geçiyor.
 - **Tam UI seti:** Çalıştırılmadı (~12 dk). Değişiklik yalnız bu pencereyi etkiliyor.
 - **Ayrıntı:** `PHASE17.md` → 17.5.
+
+Kontrol: uygulandı — `TextEditorDialog.cs` `AcceptsReturn`'ü metinden önce veriyor (`editor.Text = initialText` sonra); test `NoteImagePasteTests.EditNoteFromMenu_ShowsEveryLine_AndSavingUnchangedKeepsThem` geçiyor.

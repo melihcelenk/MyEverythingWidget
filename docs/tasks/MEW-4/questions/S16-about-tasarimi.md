@@ -1,9 +1,10 @@
 ---
 id: S16
-status: answered
+status: resolved
 decider: user
 priority: major
 asked: 2026-11-18
+resolved: 2026-11-18
 ---
 # S16 — About tasarımı: TaskTimerWidget'tan neyi birebir alalım?
 
@@ -60,11 +61,26 @@ Onayından sonra önce bir taslak görsel hazırlarım; kodlamaya taslak onaylan
 
 ## Cevap
 
-i düğmesi istemiyorum. 
-O kısım aynı yeşil ama settings içinde daha küçük bir kart şeklinde
-Yazı boyutları task timer widget ile aynı olmalı, seninkiler büyük
-versiyon ve 2026 ayrı satırlar
-emojiler aynı olmalı. isimler aynı olmalı. Rate vs onların hepsi aynı, website de task için web sitesi oluştur repoda, oranın linkini koy
-rate için geçici olarak https://apps.microsoft.com/search/publisher?name=Melih%20Celenk bunu koyabilirsin.
+Seçenek A'nın değiştirilmiş hali:
+
+- Ayrı bir "i" düğmesi olmayacak.
+- About, Ayarlar penceresinin içinde, TaskTimerWidget'taki yeşil renkte ve daha küçük bir kart olacak.
+- Yazı boyutları TaskTimerWidget'takilerle aynı olacak; mevcut boyutlar büyük.
+- Sürüm ve yıl ayrı satırlarda olacak.
+- Emojiler ve bağlantı adları (Rate dahil) TaskTimerWidget'takilerle aynı olacak.
+- Website bağlantısı, repoda bu proje için oluşturulacak web sitesine gidecek.
+- Rate bağlantısı geçici olarak `https://apps.microsoft.com/search/publisher?name=Melih%20Celenk` adresine gidecek.
 
 ## Sonuç
+
+Uygulandı (taslak onayı S17'de alındı):
+
+- **Yer:** Ayrı bir "i" düğmesi yok; About, Ayarlar penceresinin içinde TaskTimerWidget'taki yeşil kart.
+- **Görünüm:** Yazı boyutları ve renkler TaskTimerWidget'takilerle aynı (başlık 14 px, satırlar 11 px). "Version
+  1.0.0" ve "2026" ayrı satırlarda.
+- **Bağlantılar:** ✉ e-posta, 👤 melihcelenk.com (T51 ile geri eklendi), 🌐 Website, ⭐ Rate.
+  - **Website:** Repoda oluşturulan proje sitesi (`index.html`, GitHub Pages).
+  - **Rate:** Geçici olarak Store yayıncı sayfası.
+- **Ayrıntı:** `PHASE17.md` → 17.12.
+
+Kontrol: uygulandı — `SettingsDialog.xaml`'da "i" düğmesi yok; Ayarlar içinde `AboutCard` (zemin `AboutCardBackgroundBrush` #C8E6C0), başlık 14 px, satırlar 11 px, "Version" ve "2026" ayrı satırlarda, ✉/👤/🌐/⭐ bağlantılar; Website proje sitesine (`index.html`), Rate yayıncı sayfasına gidiyor; `AboutCard_IsTaskTimerWidgetsGreenCard_AsWideAsTheContent` ve `AboutLinks_TellWhereTheyGo` geçiyor.

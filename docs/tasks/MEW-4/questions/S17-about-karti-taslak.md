@@ -1,9 +1,10 @@
 ---
 id: S17
-status: open
+status: resolved
 decider:
 priority: major
 asked: 2026-11-18
+resolved: 2026-11-18
 ---
 # S17 — About kartının taslağı: bu haliyle kodlayayım mı?
 

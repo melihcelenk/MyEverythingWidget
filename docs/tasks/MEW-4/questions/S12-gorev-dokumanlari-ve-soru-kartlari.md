@@ -1,9 +1,10 @@
 ---
 id: S12
-status: answered
+status: resolved
 decider: user
 priority: major
 asked: 2026-11-18
+resolved: 2026-11-18
 ---
 # S12 — Repo halka açılırken görev dokümanları ve soru kartları ne olsun?
 
@@ -89,3 +90,5 @@ A uygulandı: görev dokümanları ve soru kartları repoda kalıyor, dilleri re
 - **Commit:** Kartlar (S08–S14) temizlikten sonra commit'lendi.
 - **Bundan sonrası:** Kartlar baştan resmî dille yazılacak; asıl söz yalnız talimat defterinde kalacak.
 - **Ayrıntı:** `PHASE17.md` → 17.8.
+
+Kontrol: uygulandı — `docs/tasks` altında "İstekler (birebir)" başlığı ve gündelik dil ifadesi kalmadı (yalnız bu kartın kendi açıklaması); 17 soru kartı git'te izleniyor.

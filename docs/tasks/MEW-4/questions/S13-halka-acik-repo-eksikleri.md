@@ -1,9 +1,10 @@
 ---
 id: S13
-status: answered
+status: resolved
 decider: user
 priority: major
 asked: 2026-11-18
+resolved: 2026-11-18
 ---
 # S13 — Repoyu halka açmadan önce hangi eksikleri tamamlayayım?
 
@@ -85,3 +86,5 @@ B uygulandı: dosyadaki eksiklerin hepsi eklendi. GitHub ayarları S14'te onayı
 
 - **GitHub ayarları:** Discussions ve gizli güvenlik bildirimi (`SECURITY.md` bunu kullanıyor) S14'te soruldu.
 - **Ayrıntı:** `PHASE17.md` → 17.8.
+
+Kontrol: uygulandı — `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `.github/pull_request_template.md`, `.github/ISSUE_TEMPLATE/`, `.github/workflows/ci.yml` repoda; README'de iç iş numarası yok; son CI koşusu başarılı; açıklama ve etiketler S14 ile.

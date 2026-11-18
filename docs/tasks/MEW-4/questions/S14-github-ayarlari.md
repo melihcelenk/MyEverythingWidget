@@ -59,3 +59,5 @@ A uygulandı; dört ayarın üçü yapıldı, biri repo halka açılınca yapıl
 - **Etkisi:** O zamana kadar `SECURITY.md` ve `CODE_OF_CONDUCT.md`'deki form bağlantısı çalışmaz. Repo gizli olduğu
   için şu an kimse görmüyor.
 - **Ayrıntı:** `PHASE17.md` → 17.8.
+
+Kontrol: uygulanmadı — 4. ayar (gizli güvenlik bildirimi) uygulanamıyor: GitHub bu özelliği yalnız herkese açık repolarda sunuyor, repo gizli (`gh api …/private-vulnerability-reporting` 404); diğer üçü uygulandı (`gh repo view`: açıklama, 10 etiket, Discussions açık). Repo halka açılınca açılmalı (PHASE17 17.8).
