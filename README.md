@@ -5,9 +5,6 @@
 
 A small Windows widget that keeps your apps, websites, notes and pictures one click away.
 
-> Built with WinUI and .NET 10. The original Python/PySide6 version is in [`legacy/`](legacy/README.md); its data
-> is imported automatically on first start.
-
 ![Everything you love, one click away: apps, websites, notes and photos on your desktop](docs/images/store-1.png)
 
 ![Copy it. Ctrl+V. Saved in a second: pictures, text and web links](docs/images/store-2.png)
@@ -27,7 +24,8 @@ A small Windows widget that keeps your apps, websites, notes and pictures one cl
 
 ## Development
 
-See the [Development Guide](docs/general/DEVELOPMENT.md) and [Architecture](docs/general/ARCHITECTURE.md).
+Built with WinUI 3 and .NET 10. See the [Development Guide](docs/general/DEVELOPMENT.md) and
+[Architecture](docs/general/ARCHITECTURE.md).
 
 ```
 dotnet test                    # unit tests (Core, Presentation, Infrastructure)
@@ -36,6 +34,11 @@ pwsh scripts/publish-msix.ps1  # MSIX package
 ```
 
 Publishing: [Store Submission](docs/general/STORE_SUBMISSION.md).
+
+### Previous version
+
+The original Python/PySide6 version is in [`legacy/`](legacy/README.md). Its data is imported automatically the first
+time this version starts.
 
 ## Contributing
 
