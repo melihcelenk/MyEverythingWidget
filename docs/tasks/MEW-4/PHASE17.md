@@ -38,6 +38,7 @@ Store gönderimi.
 | 17.5 | Not düzenleme penceresi çok satırlı notun tamamını gösterir. | 🟢 Tamamlandı |
 | 17.6 | Tanıtım görselleri üçe iner; ilki uygulama, web sitesi, not ve fotoğrafı birlikte gösterir. | 🟢 Tamamlandı |
 | 17.7 | Compact ikon ekranın sağındayken widget ikonla hizalı açılır; küçültünce ikon yerinde kalır. | 🟢 Tamamlandı |
+| 17.8 | Repo halka açılmaya hazırlanır: görev dokümanlarının dili ve eksik standart dosyalar. | ⏳ Bekliyor (S12, S13) |
 
 ## Nasıl kontrol edilir
 
@@ -183,6 +184,19 @@ Store gönderimi.
     köşesinde çıkmasını bekliyordu; S11 kararı bu beklentiyi değiştirdi.
   - `CompactAndMenuTests` 8/8, `WindowLayoutTests` 12/12 geçiyor.
 - **Durum:** 🟢 Tamamlandı.
+
+### 17.8 — Repo halka açılmaya hazırlanır: görev dokümanlarının dili ve eksik standart dosyalar.
+
+- **Mevcut durum:** Repo gizli. Denetim sonucu (T28):
+  - **Temiz olanlar:** Dosyalarda ve git geçmişinde gizli bilgi, şirket iş numarası ya da kişisel dosya yolu yok.
+  - **Dil sorunu:** Faz dokümanlarında ve soru kartlarında kullanıcı mesajları birebir, gündelik dille alıntılanmış.
+  - **Eksik dosyalar:** `SECURITY.md`, `CONTRIBUTING.md`, CI, repo açıklaması ve etiketleri yok.
+- **Problem:** Gündelik dildeki alıntılar dışarıya iyi görünmüyor; ayrıca "birebir alıntı repoya yazılmaz" kuralına
+  aykırı. Eksik dosyalar da açık kaynak bir projede beklenen şeyler.
+- **Çözüm:**
+  - Görev dokümanları ve soru kartları için S12'de, eksikler için S13'te seçenekler sunuldu.
+  - S08–S11 kartları S12'nin cevabına kadar commit'lenmedi.
+- **Durum:** ⏳ Bekliyor (S12, S13).
 
 ### Doğrulanmayan / dikkat edilmesi gereken
 
