@@ -61,3 +61,8 @@ A uygulandı; dört ayarın üçü yapıldı, biri repo halka açılınca yapıl
 - **Ayrıntı:** `PHASE17.md` → 17.8.
 
 Kontrol: uygulanmadı — 4. ayar (gizli güvenlik bildirimi) uygulanamıyor: GitHub bu özelliği yalnız herkese açık repolarda sunuyor, repo gizli (`gh api …/private-vulnerability-reporting` 404); diğer üçü uygulandı (`gh repo view`: açıklama, 10 etiket, Discussions açık). Repo halka açılınca açılmalı (PHASE17 17.8).
+
+Repo halka açıldıktan sonra (2026-11-18) 4. ayar da açıldı: `gh api -X PUT …/private-vulnerability-reporting` →
+`{"enabled":true}`. Aynı anda GitHub Pages da `master` / kök dizinden açıldı (17.12, Website bağlantısı).
+
+Kontrol: uygulandı — dört ayarın dördü de açık: açıklama, 10 etiket, Discussions (`gh repo view`) ve gizli güvenlik bildirimi (`gh api …/private-vulnerability-reporting` → `{"enabled":true}`).

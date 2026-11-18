@@ -1,6 +1,6 @@
 # Faz 17 — Ayarlar penceresinin kenar boşluğu ve yayın hazırlığı
 
-> **Durum:** 🟡 Devam ediyor · **Tamamlanma:** 75% · **Efor:** tahmin yazılmadı · **Task:** MEW-4
+> **Durum:** 🟡 Devam ediyor · **Tamamlanma:** 85% · **Efor:** tahmin yazılmadı · **Task:** MEW-4
 
 Ayarlar penceresi artık widget'ın iki yanından boşluk bırakıyor; aynı düzen bütün iletişim kutularına uygulandı. Widget
 2 sütuna kadar küçültülse de içerik kırpılmıyor. README ve Store için beş kullanım senaryosunu anlatan ekran
@@ -33,12 +33,12 @@ Store gönderimi.
 |---|--------------|-------|
 | 17.1 | Ayarlar ve diğer iletişim kutuları pencerenin iki yanından boşluk bırakır; dar pencerede içerik kırpılmaz. | 🟢 Tamamlandı |
 | 17.2 | GitHub README'si kullanım senaryolarını gösteren ekran görüntüleriyle güncellenir. | 🟢 Tamamlandı |
-| 17.3 | Branch `master`'a birleştirilir (PR #1). | ⏳ Bekliyor (kullanıcı) |
+| 17.3 | Branch `master`'a birleştirilir (PR #1). | 🟢 Tamamlandı |
 | 17.4 | Store gönderimi için ekran görüntüleri ve paket hazırlanır. | 🟡 Kısmi (görüntüler hazır; gönderim `PHASE8.md` → 8.6) |
 | 17.5 | Not düzenleme penceresi çok satırlı notun tamamını gösterir. | 🟢 Tamamlandı |
 | 17.6 | Tanıtım görselleri üçe iner; ilki uygulama, web sitesi, not ve fotoğrafı birlikte gösterir. | 🟢 Tamamlandı |
 | 17.7 | Compact ikon ekranın sağındayken widget ikonla hizalı açılır; küçültünce ikon yerinde kalır. | 🟢 Tamamlandı |
-| 17.8 | Repo halka açılmaya hazırlanır: görev dokümanlarının dili ve eksik standart dosyalar. | 🟡 Kısmi (halka açılınca gizli güvenlik bildirimi açılmalı) |
+| 17.8 | Repo halka açılmaya hazırlanır: görev dokümanlarının dili ve eksik standart dosyalar. | 🟢 Tamamlandı |
 | 17.9 | Compact ikon görev çubuğundan simge durumuna alınıp geri açılınca boyutunu korur. | 🟢 Tamamlandı |
 | 17.10 | Ayarlar penceresi: TaskTimerWidget tarzı About, tek satırlık tema seçimi, pencereye sığan düzen. | 🟢 Tamamlandı |
 | 17.11 | Uygulamanın adı gözden geçirilir. | ⏳ Bekliyor (S15) |
@@ -212,11 +212,11 @@ Store gönderimi.
   - **CI:** Windows'ta derleme ve unit testler. Komutlar yerelde denendi: 309 test geçti; UI testleri Sandbox
     dışında kendini atlıyor.
 - **GitHub ayarları (S14 → A):** Açıklama, on etiket ve Discussions uygulandı.
-- **Kalan:** Gizli güvenlik bildirimi yalnız herkese açık repolarda açılabiliyor. Repo halka açılınca
-  **Settings → Code security → Private vulnerability reporting** ile ya da
-  `gh api -X PUT repos/melihcelenk/MyEverythingWidget/private-vulnerability-reporting` ile açılmalı.
-  `SECURITY.md` bu forma yönlendiriyor.
-- **Durum:** 🟡 Kısmi (halka açıldıktan sonra tek ayar).
+- **Halka açma:** Kullanıcı PR #1 ve #2'yi birleştirip repoyu halka açtı. Ardından gizli güvenlik bildirimi `gh api` ile
+  açıldı (`{"enabled":true}`).
+- **README (T57, PR #2):** Eski Python sürümü notu README'nin başından Development → "Previous version" bölümüne
+  taşındı.
+- **Durum:** 🟢 Tamamlandı.
 
 ### 17.9 — Compact ikon görev çubuğundan simge durumuna alınıp geri açılınca boyutunu korur.
 
@@ -311,6 +311,8 @@ Store gönderimi.
     - Bağlantılar: ✉ e-posta (kopyalar), 👤 melihcelenk.com, 🌐 Website, ⭐ Rate.
     - `DialogSizing.FitToWindow` iletişim kutusunun genişliğini parametre olarak alıyor.
     - Kart ve tema düğmeleri UIA'da görünsün diye `AutomationHost` içinde.
+- **Yayın (T58):** GitHub Pages `gh api -X POST …/pages` ile `master` / kök dizinden açıldı. Site
+  `https://melihcelenk.github.io/MyEverythingWidget/` adresinde yayında (200, başlık ve görseller yükleniyor).
 - **Dosyalar:** `index.html`, `src/MyEverythingWidget.App/App.xaml`, `src/MyEverythingWidget.App/Views/SettingsDialog.xaml`,
   `src/MyEverythingWidget.App/Views/SettingsDialog.xaml.cs`, `src/MyEverythingWidget.App/Views/DialogSizing.cs`,
   `src/MyEverythingWidget.App/MainWindow.xaml.cs`
