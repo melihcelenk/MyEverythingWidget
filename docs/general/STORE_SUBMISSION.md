@@ -16,8 +16,8 @@ identity into the manifest for that build only and restores it afterwards.
 
 ## 2. Version
 
-The Store version is `version` in `StoreIdentity.json` (`1.0.0.0` for the first release). The Store requires the
-last number to be `0`; increase the first three for every submission.
+The Store version is `version` in `StoreIdentity.json` (`1.0.0.0` for the first release, `1.0.1.0` for the
+"Change icon" fix). The Store requires the last number to be `0`; increase the first three for every submission.
 
 ## 3. Build
 
@@ -51,15 +51,17 @@ signed copy. Remove the local install with `Get-AppxPackage MelihCelenk.MyEveryt
 | Store listing | Texts and screenshots from `docs/general/STORE_LISTING.md` |
 | Privacy policy URL | `https://github.com/melihcelenk/MyEverythingWidget/blob/master/docs/general/PRIVACY_POLICY.md` |
 | Properties → Category | Productivity |
-| Submission options → Restricted capabilities | Explain `runFullTrust` (below) |
+| Additional Testing Information (Supplemental info) | Explain `runFullTrust` (below); Submission options only holds the publishing date |
 
 `runFullTrust` justification text:
 
 > My Everything Widget is a desktop launcher. It needs full trust to list the apps installed for the current user
 > (from the Start menu's Apps folder), to read their icons, and to start the programs, folders and links that the user
-> pins to the widget. It does not run in the background and sends no data anywhere.
+> pins to the widget. It does not run in the background and collects no personal data; the only network request is
+> the icon download from a website the user adds.
 
 ## 5. After release
 
-- Tag the commit (`v1.0.0`) and attach the two `.msix` files to a GitHub release.
+- Publish a GitHub release on the released commit (`v1.0.0`) that points to the Store page. Do not attach the Store
+  `.msix` files: they are unsigned and Windows refuses to install them.
 - Keep `docs/general/STORE_LISTING.md` in sync with the listing.

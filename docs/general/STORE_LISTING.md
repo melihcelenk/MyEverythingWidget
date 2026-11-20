@@ -29,7 +29,9 @@ and images, arranged on a tidy grid that stays exactly where you put it.
 
 ## Keywords
 
-launcher, shortcuts, widget, notes, quick access, productivity, desktop, dock
+launcher, shortcuts, widget, notes, quick access, productivity, desktop
+
+Partner Center accepts at most seven keywords.
 
 ## Screenshots
 
