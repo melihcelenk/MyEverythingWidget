@@ -120,6 +120,74 @@ public sealed class AppItemTests : IDisposable
         Assert.True(File.Exists(Path.Combine(_data.Path, iconPath)));
     }
 
+    [Theory]
+    [InlineData("Cancel")]
+    [InlineData("Reset")]
+    [InlineData("Emoji")]
+    [InlineData("Browse")]
+    [InlineData("ImageTabThenCancel")]
+    [InlineData("ImageTabThenEscape")]
+    public void IconDialog_OpensAgain_AfterItWasUsedOnce(string firstChoice)
+    {
+        SeedApps(new AppItem("A1", GeneralId, new GridPlacement(0, 2, 1, 1), "127.0.0", "http://127.0.0.1:4178/", LaunchKind.Url, null));
+        using var app = AppSession.Launch(_data);
+        GridDriver.WaitForUi();
+
+        var dialog = OpenIconDialogOn(app, "A1");
+        switch (firstChoice)
+        {
+            case "Cancel":
+                In(dialog, "CloseButton").AsButton().Invoke();
+                break;
+            case "Reset":
+                Wait.ForElement(() => dialog.FindFirstDescendant(c => c.ByName("Reset to original"))).AsButton().Invoke();
+                break;
+            case "Emoji":
+                RealMouse.Click(In(dialog, "Emoji_🚀").BoundingRectangle.Center());
+                break;
+            case "Browse":
+                RealMouse.Click(In(dialog, "SelectImageTab").BoundingRectangle.Center());
+                RealMouse.Click(In(dialog, "BrowseImageButton").BoundingRectangle.Center());
+                Thread.Sleep(3000);
+                FlaUI.Core.Input.Keyboard.Type(FlaUI.Core.WindowsAPI.VirtualKeyShort.ESCAPE);
+                break;
+            case "ImageTabThenCancel":
+                RealMouse.Click(In(dialog, "SelectImageTab").BoundingRectangle.Center());
+                GridDriver.WaitForUi();
+                In(dialog, "CloseButton").AsButton().Invoke();
+                break;
+            case "ImageTabThenEscape":
+                RealMouse.Click(In(dialog, "SelectImageTab").BoundingRectangle.Center());
+                GridDriver.WaitForUi();
+                FlaUI.Core.Input.Keyboard.Type(FlaUI.Core.WindowsAPI.VirtualKeyShort.ESCAPE);
+                break;
+        }
+
+        Assert.True(Wait.Until(() => app.FindInPopups("IconPickerDialog") is null), "The dialog should close after the first choice.");
+        GridDriver.WaitForUi();
+
+        var again = TryOpenIconDialogOn(app, "A1");
+        if (again is null)
+        {
+            Artifacts.CaptureScreen("icon-dialog-second-open-" + firstChoice);
+        }
+
+        Assert.True(again is not null, $"After '{firstChoice}', Change icon should open the dialog again.");
+        Assert.True(Process.GetProcessById(app.ProcessId).Responding, "The app should keep responding.");
+    }
+
+    private static AutomationElement OpenIconDialogOn(AppSession app, string itemId) =>
+        TryOpenIconDialogOn(app, itemId) ?? throw new InvalidOperationException("The icon dialog did not open.");
+
+    private static AutomationElement? TryOpenIconDialogOn(AppSession app, string itemId)
+    {
+        RealMouse.RightClick(app.Find("Card_" + itemId).BoundingRectangle.Center());
+        Wait.ForElement(() => app.FindInPopups("ChangeIconMenuItem")).AsMenuItem().Invoke();
+        return Wait.Until(() => app.FindInPopups("IconPickerDialog") is not null, TimeSpan.FromSeconds(10))
+            ? app.FindInPopups("IconPickerDialog")
+            : null;
+    }
+
     [Fact]
     public void ClickingCardOfRemovedProgram_ShowsWarning()
     {
