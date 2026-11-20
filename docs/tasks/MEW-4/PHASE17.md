@@ -34,7 +34,7 @@ Store gönderimi.
 | 17.1 | Ayarlar ve diğer iletişim kutuları pencerenin iki yanından boşluk bırakır; dar pencerede içerik kırpılmaz. | 🟢 Tamamlandı |
 | 17.2 | GitHub README'si kullanım senaryolarını gösteren ekran görüntüleriyle güncellenir. | 🟢 Tamamlandı |
 | 17.3 | Branch `master`'a birleştirilir (PR #1). | 🟢 Tamamlandı |
-| 17.4 | Store gönderimi için ekran görüntüleri ve paket hazırlanır. | 🟡 Kısmi (görüntüler hazır; gönderim `PHASE8.md` → 8.6) |
+| 17.4 | Store gönderimi için ekran görüntüleri ve paket hazırlanır. | 🟢 Tamamlandı |
 | 17.5 | Not düzenleme penceresi çok satırlı notun tamamını gösterir. | 🟢 Tamamlandı |
 | 17.6 | Tanıtım görselleri üçe iner; ilki uygulama, web sitesi, not ve fotoğrafı birlikte gösterir. | 🟢 Tamamlandı |
 | 17.7 | Compact ikon ekranın sağındayken widget ikonla hizalı açılır; küçültünce ikon yerinde kalır. | 🟢 Tamamlandı |
@@ -43,6 +43,8 @@ Store gönderimi.
 | 17.10 | Ayarlar penceresi: TaskTimerWidget tarzı About, tek satırlık tema seçimi, pencereye sığan düzen. | 🟢 Tamamlandı |
 | 17.11 | Uygulamanın adı gözden geçirilir. | ⏳ Bekliyor (S15) |
 | 17.12 | About tasarımı TaskTimerWidget'takiyle aynı yapılır. | 🟢 Tamamlandı |
+| 17.13 | Yayın için LinkedIn paylaşımı (İngilizce ve Türkçe) hazırlanır. | 🟡 Kısmi (metin hazır, görsel kararı kullanıcıda) |
+| 17.14 | Store sürümünde "Change icon" ikinci kez açılınca uygulama donuyor. | 🟡 Kısmi (düzeltildi; 1.0.1 gönderimi kullanıcıda) |
 
 ## Nasıl kontrol edilir
 
@@ -119,7 +121,18 @@ Store gönderimi.
 - **Mevcut durum:** Paket ve listeleme metni Faz 8'de hazırlandı; Store görüntüleri test verisiyle çekilmişti.
 - **Çözüm:** Store görüntüleri 17.2'dekilerle aynı (1366x768, Store'un önerdiği en küçük boyut). Paket
   `scripts/publish-msix.ps1` ile; gönderim `PHASE8.md` → 8.6.
-- **Durum:** 🟡 Kısmi (gönderim kullanıcıda).
+- **Gönderim (T71–T99, 2026-11-19):** Kullanıcı ilk gönderimi Partner Center'da adım adım yaptı:
+  - Fiyat ücretsiz; kategori Productivity, ikincil kategori Utilities + tools; kişisel veri yok.
+  - Yaş derecesi IARC 3+ / PEGI 3 / ESRB Everyone.
+  - Paketler x64 ve Arm64, yalnız Windows 10/11 Desktop.
+  - Listeleme metni ve üç görsel `docs/general/STORE_LISTING.md`'den; "Developed by" yayıncı adıyla aynı: Melih Celenk.
+  - `runFullTrust` gerekçesi Additional Testing Information'a yazıldı. Metin uygulamanın site ikonu indirdiğini
+    söyleyecek biçimde düzeltildi (`docs/general/STORE_SUBMISSION.md`).
+  - Gönderim sertifikasyona girdi ("In certification"); sertifikasyondan geçince kendiliğinden yayınlanacak.
+- **Yayın (T105, 2026-11-20):** Uygulama sertifikasyondan geçti ve Store'da yayında
+  (`https://apps.microsoft.com/detail/9NRSQN57C9FH`). GitHub'da `v1.0.0` release'i `master` (`055d034`) üzerinde
+  yayınlandı. Kurulum Store'dan yapılıyor; imzasız `.msix` dosyaları Windows'a kurulamadığı için release'e eklenmedi.
+- **Durum:** 🟢 Tamamlandı.
 
 ### 17.5 — Not düzenleme penceresi çok satırlı notun tamamını gösterir.
 
@@ -342,6 +355,48 @@ Store gönderimi.
   iç boşluk kararıyla birlikte yazıldı.
 - **"Off" denetimi:** İlk sürümdeki "anahtarda Off yazar" denetimi UIA'da bulunamadığı için ekran görüntüsüyle
   değiştirildi; görüntüde "Off" görünüyor.
+
+### 17.13 — Yayın için LinkedIn paylaşımı (İngilizce ve Türkçe) hazırlanır.
+
+- **Gereksinim (T107):** Kısa bir paylaşım: bir ana cümle ve üç kısa madde, İngilizce ve Türkçe. Öne çıkan özellik,
+  notun tamamının tek düğmeyle kopyalanması: metin seçmek gerekmiyor ve yanlış bir tuşla değişmiyor (şifre gibi
+  metinler için önemli). Ctrl+V ile ekleme ikinci sırada.
+- **Çözüm:** Metin sohbette verildi; repoya pazarlama metni eklenmedi.
+- **Düzeltme (T108):** İlk taslak yoğun bir özellik listesiydi ve okunmuyordu. LinkedIn yazım önerilerine göre yeniden
+  yazıldı:
+  - "See more"dan önce görünen ilk satır kısa ve tek bir fikir taşıyor.
+  - Kısa satırlar ve boşluklar kullanıldı; her madde tek fikir.
+  - Bağlantı ilk yoruma alındı.
+- **Düzeltme (T109):** Metin dört öğe türünü (uygulama, web sitesi, not, fotoğraf) birlikte anlatır; tek tıkla
+  kopyalama notların maddesinde öne çıkar.
+- **Görsel (T109):** `tmp/linkedin/linkedin-post.png` (1200x1200), `store-1` ile aynı gerçek çekimden üretildi. Uygulama,
+  fotoğraf ve web sitesi etiketleri var; notun Copy düğmesi işaretli ve yanında "Notes: one click copies the whole
+  note" açıklaması duruyor. Repoya eklenmedi.
+- **Durum:** 🟡 Kısmi.
+
+### 17.14 — Store sürümünde "Change icon" ikinci kez açılınca uygulama donuyor.
+
+- **Gereksinim (T110–T113):** Web sitesi kartında "Change icon…" ikinci kez seçildiğinde uygulama yanıt vermemeli;
+  donmanın sebebi bulunup giderilmeli.
+- **Mevcut durum:** Kullanıcının Store'dan kurduğu 1.0.0 sürümü donuyor. Menü açık kalıyor, pencere görünmüyor.
+- **İnceleme:**
+  - Kodda UI iş parçacığını bekleten bir çağrı yok. Kartın sitesi ikon isteğine hemen 404 dönüyor.
+  - `AppItemTests.IconDialog_OpensAgain_AfterItWasUsedOnce` (Sandbox) ilk seçimi Reset, emoji ve Browse yapıp pencereyi
+    ikinci kez açtı: üçü de geçti. Cancel senaryosu ilk açılışta takıldı, menü görünmedi.
+  - Donmuş sürecin dökümü (S18) sebebi gösterdi: UI iş parçacığı `IconPickerDialog.Reset()` →
+    `_iconTab.IsSelected = true` satırında WinUI'nin kodunda dönüp duruyor (bir çekirdek %100).
+  - **Tetikleyen:** "Select image" sekmesine geçip pencereyi Cancel ya da Esc ile kapatmak. Pencere tekrar kullanıldığı
+    için, ikinci açılışta sekme pencere ekranda değilken geri alınıyor ve WinUI takılıyor.
+  - **Test (kırmızı):** `ImageTabThenCancel` ve `ImageTabThenEscape` senaryoları uygulamayı donduruyor; diğer dört
+    senaryo geçiyor.
+- **Çözüm (S19 → A):** Sekme, pencere ekrana geldiğinde (`ContentDialog.Opened`) "Select icon"a alınıyor; `Reset()`
+  sekmeye dokunmuyor. Sürüm 1.0.1.0 yapıldı (`StoreIdentity.json`).
+- **Dosyalar:** `src/MyEverythingWidget.App/Views/IconPickerDialog.cs`, `src/MyEverythingWidget.App/StoreIdentity.json`
+- **Testler:**
+  - `tests/MyEverythingWidget.UiTests/AppItemTests.cs` → `IconDialog_OpensAgain_AfterItWasUsedOnce` (6 senaryo). Düzeltmeden
+    önce 4/6, sonra 6/6.
+  - Birim testleri 309/309. Tam UI takımı 103/104; geçmeyen test Sandbox fare girişi hatasıydı ve tek başına geçti.
+- **Durum:** 🟡 Kısmi (1.0.1 paketleri hazır; Store'a gönderim kullanıcıda).
 
 ### Referanslar
 

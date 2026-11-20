@@ -85,6 +85,10 @@ internal sealed class IconPickerDialog
         Grid.SetRow(_imagePage, 1);
         content.KeyboardAccelerators.Add(PasteAccelerator());
         _dialog.Content = content;
+
+        // The tab goes back to "Select icon" only once the dialog is on screen: changing the selection of a SelectorBar
+        // that is not in the visual tree makes WinUI loop forever and the app stops responding.
+        _dialog.Opened += (_, _) => _iconTab!.IsSelected = true;
     }
 
     /// <summary>Shows the dialog; returns the choice, or <see langword="null"/> when cancelled.</summary>
@@ -100,12 +104,11 @@ internal sealed class IconPickerDialog
     /// <summary>Builds the dialog for <paramref name="root"/> ahead of its first use, so opening it is quick.</summary>
     public static void Prepare(XamlRoot root) => Instances.GetValue(root, key => new IconPickerDialog(key));
 
-    /// <summary>Starts every showing like a new dialog: no choice, the "Select icon" tab, no warning.</summary>
+    /// <summary>Starts every showing like a new dialog: no choice and no warning; the tab is reset when it opens.</summary>
     private void Reset()
     {
         _choice = null;
         _imageMessage.Text = "";
-        _iconTab!.IsSelected = true;
     }
 
     private void Choose(IconChoice chosen)

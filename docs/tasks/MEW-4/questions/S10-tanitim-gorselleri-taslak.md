@@ -1,9 +1,10 @@
 ---
 id: S10
-status: open
+status: resolved
 decider:
 priority: major
 asked: 2026-11-18
+resolved: 2026-11-20
 ---
 # S10 — Üç tanıtım görselinin taslağı (6. tur): bu haliyle çekeyim mi?
 

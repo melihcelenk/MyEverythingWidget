@@ -1,9 +1,10 @@
 ---
 id: S15
-status: open
+status: resolved
 decider:
 priority: major
 asked: 2026-11-18
+resolved: 2026-11-20
 ---
 # S15 — Uygulamanın adı: "My Everything Widget" kalsın mı, değişsin mi?
 
