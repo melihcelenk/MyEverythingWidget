@@ -30,7 +30,7 @@ public sealed class SettingsAndMigrationTests : IDisposable
 
     private static void CloseDialog(AppSession app, AutomationElement dialog)
     {
-        In(dialog, "CloseButton").AsButton().Invoke();
+        In(dialog, "SettingsCloseButton").AsButton().Invoke();
         Wait.Until(() => app.FindInPopups("SettingsDialog") is null);
         GridDriver.WaitForUi();
     }
@@ -94,12 +94,13 @@ public sealed class SettingsAndMigrationTests : IDisposable
 
         var card = In(dialog, "AboutCard").BoundingRectangle;
         var theme = In(dialog, "ThemeChoices").BoundingRectangle;
-        var close = Wait.ForElement(() => dialog.FindFirstDescendant(c => c.ByName("Close").And(c.ByControlType(FlaUI.Core.Definitions.ControlType.Button)))).BoundingRectangle;
+        // The language list stretches across the content, so its right edge is the content's right edge.
+        var content = In(dialog, "LanguageChoice").BoundingRectangle;
         var scale = app.Find("WidgetGrid").BoundingRectangle.Width / 5.0 / 80;
 
         Assert.True(Math.Abs(card.Left - theme.Left) <= 2, $"The card {card} should start where the content starts {theme}.");
-        Assert.True(Math.Abs(card.Right - close.Right) <= 2, $"The card {card} should reach the right edge of the content {close}.");
-        Assert.True(close.Right - theme.Left <= 256 * scale, $"The content should be about 252 px wide, it is {close.Right - theme.Left}.");
+        Assert.True(Math.Abs(card.Right - content.Right) <= 2, $"The card {card} should reach the right edge of the content {content}.");
+        Assert.True(content.Right - theme.Left <= 256 * scale, $"The content should be about 252 px wide, it is {content.Right - theme.Left}.");
 
         using var screen = Capture.Screen().Bitmap;
         var inside = screen.GetPixel(card.Left + 6, card.Top + 6);

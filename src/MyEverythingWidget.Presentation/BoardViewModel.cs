@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using MyEverythingWidget.Core.Apps;
 using MyEverythingWidget.Core.Grid;
 using MyEverythingWidget.Core.State;
+using MyEverythingWidget.Presentation.Localization;
 
 namespace MyEverythingWidget.Presentation;
 
@@ -32,19 +33,19 @@ public sealed record DropPreview(GridPlacement Placement, bool CanDrop);
 public sealed partial class BoardViewModel : ObservableObject
 {
     /// <summary>Message when displaced items have nowhere to go.</summary>
-    public const string NoRoomMessage = "There is no room to move the other items there.";
+    public static string NoRoomMessage => Strings.NoRoom;
 
     /// <summary>Message when a category has no free place left.</summary>
-    public const string GridFullMessage = "This category is full. Remove or shrink something first.";
+    public static string GridFullMessage => Strings.GridFull;
 
     /// <summary>Name given to a category created with the "+" button, before the user renames it.</summary>
-    public const string NewCategoryName = "New category";
+    public static string NewCategoryName => Strings.NewCategoryName;
 
     /// <summary>Message when an image file or pasted picture cannot be decoded.</summary>
-    public const string ImageNotReadMessage = "That image could not be read.";
+    public static string ImageNotReadMessage => Strings.ImageNotRead;
 
     /// <summary>Message when some dropped or pasted things could not be turned into cards.</summary>
-    public const string SomeNotAddedMessage = "Some items could not be added. Use a full path or a web address.";
+    public static string SomeNotAddedMessage => Strings.SomeNotAdded;
 
     private readonly WidgetBoard _board;
     private readonly IIconStore _icons;
@@ -74,13 +75,13 @@ public sealed partial class BoardViewModel : ObservableObject
 
         board.Changed += (_, _) => Synchronize();
         board.SaveFailed += (_, e) => ShowStatus(
-            string.Create(CultureInfo.InvariantCulture, $"Changes could not be saved: {e.Exception.Message}"),
+            Strings.SaveFailed(e.Exception.Message),
             StatusSeverity.Error);
 
         if (board.CorruptBackupPath is { } backupPath)
         {
             ShowStatus(
-                string.Create(CultureInfo.InvariantCulture, $"Your saved items could not be read, so the widget started empty. A copy was kept at {backupPath}."),
+                Strings.StateUnreadable(backupPath),
                 StatusSeverity.Warning);
         }
     }
@@ -159,7 +160,7 @@ public sealed partial class BoardViewModel : ObservableObject
         if (outcome == GridOutcome.GridFull)
         {
             var name = Categories.FirstOrDefault(category => category.Id == categoryId)?.Name ?? categoryId;
-            ShowStatus(string.Create(CultureInfo.InvariantCulture, $"There is no room in {name}."), StatusSeverity.Warning);
+            ShowStatus(Strings.NoRoomIn(name), StatusSeverity.Warning);
             return false;
         }
 
@@ -453,11 +454,11 @@ public sealed partial class BoardViewModel : ObservableObject
                 break;
             case LaunchOutcome.TargetMissing:
                 ShowStatus(
-                    string.Create(CultureInfo.InvariantCulture, $"“{app.Name}” could not be found. It may have been moved or uninstalled."),
+                    Strings.AppNotFound(app.Name),
                     StatusSeverity.Warning);
                 break;
             case LaunchOutcome.Failed:
-                ShowStatus(string.Create(CultureInfo.InvariantCulture, $"“{app.Name}” could not be opened."), StatusSeverity.Error);
+                ShowStatus(Strings.AppNotOpened(app.Name), StatusSeverity.Error);
                 break;
             default:
                 throw new InvalidOperationException("Unknown launch outcome.");

@@ -319,12 +319,14 @@ public sealed class WindowLayoutTests : IDisposable
         var narrow = window.Width / scale - 24 < 320;
         var inset = (int)Math.Floor((narrow ? 22 : 34) * scale);
         var theme = Wait.ForElement(() => dialog.FindFirstDescendant(c => c.ByAutomationId("ThemeSystem"))).BoundingRectangle;
-        var close = Wait.ForElement(() => dialog.FindFirstDescendant(c => c.ByName("Close").And(c.ByControlType(FlaUI.Core.Definitions.ControlType.Button)))).BoundingRectangle;
-        Assert.True(theme.Left - window.Left >= inset, $"The dialog content {theme} should start at least {inset} px inside the window {window}.");
-        Assert.True(window.Right - close.Right >= inset, $"The dialog buttons {close} should end at least {inset} px inside the window {window}.");
-
         var about = Wait.ForElement(() => dialog.FindFirstDescendant(c => c.ByAutomationId("AboutCard"))).BoundingRectangle;
-        Assert.True(about.Right <= close.Right + 1, $"The about text {about} should wrap inside the dialog (buttons end at {close.Right}).");
+        Assert.True(theme.Left - window.Left >= inset, $"The dialog content {theme} should start at least {inset} px inside the window {window}.");
+        Assert.True(window.Right - about.Right >= inset, $"The dialog content {about} should end at least {inset} px inside the window {window}.");
+
+        // The dialog's own edge keeps the 12 px gap to the window (its UI Automation element covers the whole window).
+        var cross = Wait.ForElement(() => dialog.FindFirstDescendant(c => c.ByAutomationId("SettingsCloseButton"))).BoundingRectangle;
+        var right = DialogBox.RightEdgeOf(new Point(cross.Left + 2, cross.Bottom + 2));
+        Assert.True(window.Right - right >= Math.Floor(11 * scale), $"The dialog edge {right} should stay 12 px inside the window {window}.");
         FlaUI.Core.Capturing.Capture.Rectangle(window).ToFile(Artifacts.PathOf($"settings-{columns}-columns"));
     }
 
@@ -339,20 +341,20 @@ public sealed class WindowLayoutTests : IDisposable
         var dialog = Wait.ForElement(() => app.FindInPopups("SettingsDialog"));
         GridDriver.WaitForUi();
         var window = Win32.ClientBounds(app.WindowHandle);
-        var close = Wait.ForElement(() => dialog.FindFirstDescendant(c => c.ByName("Close").And(c.ByControlType(FlaUI.Core.Definitions.ControlType.Button)))).BoundingRectangle;
         var title = Wait.ForElement(() => dialog.FindFirstDescendant(c => c.ByName("Settings").And(c.ByControlType(FlaUI.Core.Definitions.ControlType.Text)))).BoundingRectangle;
-
-        // A 12 px gap to the window plus the dialog's 24 px padding.
-        var inset = (int)Math.Floor(34 * scale);
-        Assert.True(title.Top - window.Top >= inset, $"The dialog title {title} should start at least {inset} px below the window top {window}.");
-        Assert.True(window.Bottom - close.Bottom >= inset, $"The dialog buttons {close} should end at least {inset} px above the window bottom {window}.");
-
-        // At the default size everything fits without scrolling: the whole About card is above the buttons.
         var card = Wait.ForElement(() => dialog.FindFirstDescendant(c => c.ByAutomationId("AboutCard"))).BoundingRectangle;
+
+        // A 12 px gap to the window plus the dialog's padding: 8 px above the header, 24 px below the settings.
+        var above = (int)Math.Floor(20 * scale);
+        var below = (int)Math.Floor(34 * scale);
+        Assert.True(title.Top - window.Top >= above, $"The dialog title {title} should start at least {above} px below the window top {window}.");
+        Assert.True(window.Bottom - card.Bottom >= below, $"The About card {card} should end at least {below} px above the window bottom {window}.");
+
+        // At the default size everything fits without scrolling.
         var scroller = Wait.ForElement(() => dialog.FindFirstDescendant(c => c.ByAutomationId("SettingsScroller")));
         Assert.False(scroller.Patterns.Scroll.Pattern.VerticallyScrollable.Value,
             "At the default size the settings should fit without scrolling.");
-        Assert.True(card.Height > 0 && card.Bottom <= close.Top, $"The About card {card} should be above the buttons {close}.");
+        Assert.True(card.Height > 0, $"The About card {card} should be shown.");
         FlaUI.Core.Capturing.Capture.Rectangle(window).ToFile(Artifacts.PathOf("settings-default-size"));
     }
 

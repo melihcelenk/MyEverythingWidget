@@ -11,6 +11,7 @@ using Microsoft.UI.Xaml.Media;
 using MyEverythingWidget.Core.Grid;
 using MyEverythingWidget.Presentation;
 using Windows.Foundation;
+using MyEverythingWidget.Presentation.Localization;
 
 namespace MyEverythingWidget.App.Views;
 
@@ -158,36 +159,36 @@ public sealed partial class WidgetGridView : UserControl
 
     private MenuFlyout CreateCardMenu(GridItemViewModel item)
     {
-        var moveTo = new MenuFlyoutSubItem { Text = "Move to", Icon = new FontIcon { Glyph = "\uE8DE" } };
+        var moveTo = new MenuFlyoutSubItem { Text = Strings.MoveTo, Icon = new FontIcon { Glyph = "\uE8DE" } };
         AutomationProperties.SetAutomationId(moveTo, "MoveToMenuItem");
 
-        var delete = new MenuFlyoutItem { Text = "Delete", Icon = new FontIcon { Glyph = "\uE74D" } };
+        var delete = new MenuFlyoutItem { Text = Strings.Delete, Icon = new FontIcon { Glyph = "\uE74D" } };
         AutomationProperties.SetAutomationId(delete, "DeleteItemMenuItem");
         delete.Click += (_, _) => _board?.DeleteCommand.Execute(item.Id);
 
         var menu = new MenuFlyout();
         if (item.Kind == ItemKind.Note)
         {
-            var edit = new MenuFlyoutItem { Text = "Edit", Icon = new FontIcon { Glyph = "\uE70F" } };
+            var edit = new MenuFlyoutItem { Text = Strings.Edit, Icon = new FontIcon { Glyph = "\uE70F" } };
             AutomationProperties.SetAutomationId(edit, "EditNoteMenuItem");
             edit.Click += (_, _) => _ = EditAsync(item);
             menu.Items.Add(edit);
         }
         else if (item.Kind == ItemKind.App)
         {
-            var rename = new MenuFlyoutItem { Text = "Rename", Icon = new FontIcon { Glyph = "\uE8AC" } };
+            var rename = new MenuFlyoutItem { Text = Strings.Rename, Icon = new FontIcon { Glyph = "\uE8AC" } };
             AutomationProperties.SetAutomationId(rename, "RenameItemMenuItem");
             rename.Click += (_, _) => _ = EditAsync(item);
             menu.Items.Add(rename);
 
-            var changeIcon = new MenuFlyoutItem { Text = "Change icon…", Icon = new FontIcon { Glyph = "" } };
+            var changeIcon = new MenuFlyoutItem { Text = Strings.ChangeIconMenu, Icon = new FontIcon { Glyph = "" } };
             AutomationProperties.SetAutomationId(changeIcon, "ChangeIconMenuItem");
             changeIcon.Click += (_, _) => _ = ChangeIconAsync(item);
             menu.Items.Add(changeIcon);
         }
         else if (item.Kind == ItemKind.Image)
         {
-            var copy = new MenuFlyoutItem { Text = "Copy image", Icon = new FontIcon { Glyph = "" } };
+            var copy = new MenuFlyoutItem { Text = Strings.CopyImage, Icon = new FontIcon { Glyph = "" } };
             AutomationProperties.SetAutomationId(copy, "CopyImageMenuItem");
             copy.Click += async (_, _) =>
             {
@@ -198,7 +199,7 @@ public sealed partial class WidgetGridView : UserControl
             };
             menu.Items.Add(copy);
 
-            var edit = new MenuFlyoutItem { Text = "Edit in Paint", Icon = new FontIcon { Glyph = "" } };
+            var edit = new MenuFlyoutItem { Text = Strings.EditInPaint, Icon = new FontIcon { Glyph = "" } };
             AutomationProperties.SetAutomationId(edit, "EditImageMenuItem");
             edit.Click += (_, _) =>
             {
@@ -275,13 +276,13 @@ public sealed partial class WidgetGridView : UserControl
 
         if (item.Kind == ItemKind.Note)
         {
-            if (await TextEditorDialog.ShowAsync(card.XamlRoot, "Edit note", item.Text ?? "", multiline: true) is { } text)
+            if (await TextEditorDialog.ShowAsync(card.XamlRoot, Strings.EditNote, item.Text ?? "", multiline: true) is { } text)
             {
                 _board.EditNote(item.Id, text);
             }
         }
         else if (item.Kind == ItemKind.App
-            && await TextEditorDialog.ShowAsync(card.XamlRoot, "Rename", item.Title, multiline: false) is { } name)
+            && await TextEditorDialog.ShowAsync(card.XamlRoot, Strings.Rename, item.Title, multiline: false) is { } name)
         {
             _board.RenameApp(item.Id, name);
         }
@@ -484,7 +485,7 @@ public sealed partial class WidgetGridView : UserControl
         DropPreview.Height = rect.Height - (2 * GridMetrics.CardInset);
         DropPreviewBox.Background = ThemeBrush(preview.CanDrop ? "SystemFillColorAttentionBackgroundBrush" : "SystemFillColorCriticalBackgroundBrush");
         DropPreviewBox.BorderBrush = ThemeBrush(preview.CanDrop ? "AccentFillColorDefaultBrush" : "SystemFillColorCriticalBrush");
-        AutomationProperties.SetHelpText(DropPreview, preview.CanDrop ? "allowed" : "not allowed");
+        AutomationProperties.SetHelpText(DropPreview, preview.CanDrop ? Strings.DropAllowed : Strings.DropNotAllowed);
         DropPreview.Visibility = Visibility.Visible;
     }
 

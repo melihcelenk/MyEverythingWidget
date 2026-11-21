@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Add" xml:space="preserve">
+    <value>Tambahkan</value>
+  </data>
+  <data name="AddApp" xml:space="preserve">
+    <value>Tambahkan aplikasi</value>
+  </data>
+  <data name="AddAppMenu" xml:space="preserve">
+    <value>Tambahkan aplikasi…</value>
+  </data>
+  <data name="AddCategory" xml:space="preserve">
+    <value>Tambahkan kategori</value>
+  </data>
+  <data name="AddImageMenu" xml:space="preserve">
+    <value>Tambahkan gambar…</value>
+  </data>
+  <data name="AddMenuApp" xml:space="preserve">
+    <value>Aplikasi…</value>
+  </data>
+  <data name="AddMenuImage" xml:space="preserve">
+    <value>Gambar…</value>
+  </data>
+  <data name="AddMenuNote" xml:space="preserve">
+    <value>Catatan</value>
+  </data>
+  <data name="AddNote" xml:space="preserve">
+    <value>Tambahkan catatan</value>
+  </data>
+  <data name="AddToWidget" xml:space="preserve">
+    <value>Tambahkan ke widget</value>
+  </data>
+  <data name="AlwaysOnTop" xml:space="preserve">
+    <value>Selalu di atas</value>
+  </data>
+  <data name="AppNotFound" xml:space="preserve">
+    <value>“{0}” tidak dapat ditemukan. Mungkin telah dipindahkan atau dihapus instalasinya.</value>
+  </data>
+  <data name="AppNotOpened" xml:space="preserve">
+    <value>“{0}” tidak dapat dibuka.</value>
+  </data>
+  <data name="Browse" xml:space="preserve">
+    <value>Telusuri…</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Batal</value>
+  </data>
+  <data name="Categories" xml:space="preserve">
+    <value>Kategori</value>
+  </data>
+  <data name="CategoryName" xml:space="preserve">
+    <value>Nama kategori</value>
+  </data>
+  <data name="ChangeIcon" xml:space="preserve">
+    <value>Ubah ikon</value>
+  </data>
+  <data name="ChangeIconMenu" xml:space="preserve">
+    <value>Ubah ikon…</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Tutup</value>
+  </data>
+  <data name="CompactMode" xml:space="preserve">
+    <value>Mode ringkas</value>
+  </data>
+  <data name="CompactModeTip" xml:space="preserve">
+    <value>Perkecil menjadi ikon</value>
+  </data>
+  <data name="Copied" xml:space="preserve">
+    <value>Disalin</value>
+  </data>
+  <data name="Copy" xml:space="preserve">
+    <value>Salin</value>
+  </data>
+  <data name="CopyEmail" xml:space="preserve">
+    <value>Salin {0}</value>
+  </data>
+  <data name="CopyImage" xml:space="preserve">
+    <value>Salin gambar</value>
+  </data>
+  <data name="CopyNote" xml:space="preserve">
+    <value>Salin catatan</value>
+  </data>
+  <data name="DefaultCategoryName" xml:space="preserve">
+    <value>Umum</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Hapus</value>
+  </data>
+  <data name="DeleteCategoryMany" xml:space="preserve">
+    <value>“{0}” dan {1} itemnya akan dihapus.</value>
+  </data>
+  <data name="DeleteCategoryOne" xml:space="preserve">
+    <value>“{0}” dan itemnya akan dihapus.</value>
+  </data>
+  <data name="DeleteCategoryTitle" xml:space="preserve">
+    <value>Hapus kategori?</value>
+  </data>
+  <data name="DropAllowed" xml:space="preserve">
+    <value>diizinkan</value>
+  </data>
+  <data name="DropHint" xml:space="preserve">
+    <value>Letakkan atau tempel (Ctrl+V) file, tautan, teks, atau gambar</value>
+  </data>
+  <data name="DropImageHere" xml:space="preserve">
+    <value>Letakkan gambar di sini
+atau tempel dengan Ctrl+V</value>
+  </data>
+  <data name="DropNotAllowed" xml:space="preserve">
+    <value>tidak diizinkan</value>
+  </data>
+  <data name="DropTarget" xml:space="preserve">
+    <value>Target peletakan</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="EditInPaint" xml:space="preserve">
+    <value>Edit dengan Paint</value>
+  </data>
+  <data name="EditNote" xml:space="preserve">
+    <value>Edit catatan</value>
+  </data>
+  <data name="GridFull" xml:space="preserve">
+    <value>Kategori ini penuh. Hapus atau perkecil sesuatu terlebih dahulu.</value>
+  </data>
+  <data name="ImageDropArea" xml:space="preserve">
+    <value>Area peletakan gambar</value>
+  </data>
+  <data name="ImageNotFound" xml:space="preserve">
+    <value>Gambar tidak ditemukan</value>
+  </data>
+  <data name="ImageNotRead" xml:space="preserve">
+    <value>Gambar tersebut tidak dapat dibaca.</value>
+  </data>
+  <data name="ImportFailed" xml:space="preserve">
+    <value>Item dari versi sebelumnya tidak dapat dibaca, sehingga tidak diimpor.</value>
+  </data>
+  <data name="Imported" xml:space="preserve">
+    <value>{0} item diimpor dari versi sebelumnya My Everything Widget.</value>
+  </data>
+  <data name="ImportedMissingImage" xml:space="preserve">
+    <value>{0} item diimpor dari versi sebelumnya My Everything Widget. {1} gambar tidak dapat ditemukan.</value>
+  </data>
+  <data name="ImportedMissingImages" xml:space="preserve">
+    <value>{0} item diimpor dari versi sebelumnya My Everything Widget. {1} gambar tidak dapat ditemukan.</value>
+  </data>
+  <data name="InstalledApps" xml:space="preserve">
+    <value>Aplikasi terinstal</value>
+  </data>
+  <data name="InvalidTarget" xml:space="preserve">
+    <value>Masukkan jalur lengkap (C:\...) atau alamat web (https://...).</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Bahasa</value>
+  </data>
+  <data name="LanguageSystem" xml:space="preserve">
+    <value>Bahasa sistem</value>
+  </data>
+  <data name="MoveTo" xml:space="preserve">
+    <value>Pindahkan ke</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Nama</value>
+  </data>
+  <data name="NewCategoryName" xml:space="preserve">
+    <value>Kategori baru</value>
+  </data>
+  <data name="NoRoom" xml:space="preserve">
+    <value>Tidak ada ruang untuk memindahkan item lain ke sana.</value>
+  </data>
+  <data name="NoRoomIn" xml:space="preserve">
+    <value>Tidak ada ruang di {0}.</value>
+  </data>
+  <data name="NotAnImage" xml:space="preserve">
+    <value>Itu bukan gambar.</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>Buka</value>
+  </data>
+  <data name="OpenWidget" xml:space="preserve">
+    <value>Buka My Everything Widget</value>
+  </data>
+  <data name="PaintNotAvailable" xml:space="preserve">
+    <value>Paint tidak dapat dibuka.</value>
+  </data>
+  <data name="PathOrAddress" xml:space="preserve">
+    <value>Jalur atau alamat web</value>
+  </data>
+  <data name="PathOrAddressLabel" xml:space="preserve">
+    <value>Atau masukkan jalur atau alamat web</value>
+  </data>
+  <data name="PathPlaceholder" xml:space="preserve">
+    <value>C:\... atau https://...</value>
+  </data>
+  <data name="Rate" xml:space="preserve">
+    <value>Beri nilai</value>
+  </data>
+  <data name="Rename" xml:space="preserve">
+    <value>Ganti nama</value>
+  </data>
+  <data name="ResetToOriginal" xml:space="preserve">
+    <value>Kembalikan ke asli</value>
+  </data>
+  <data name="Resize" xml:space="preserve">
+    <value>Ubah ukuran</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Simpan</value>
+  </data>
+  <data name="SaveFailed" xml:space="preserve">
+    <value>Perubahan tidak dapat disimpan: {0}</value>
+  </data>
+  <data name="SearchInstalledApps" xml:space="preserve">
+    <value>Cari aplikasi terinstal</value>
+  </data>
+  <data name="SelectIcon" xml:space="preserve">
+    <value>Pilih ikon</value>
+  </data>
+  <data name="SelectImage" xml:space="preserve">
+    <value>Pilih gambar</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Pengaturan</value>
+  </data>
+  <data name="SomeNotAdded" xml:space="preserve">
+    <value>Beberapa item tidak dapat ditambahkan. Gunakan jalur lengkap atau alamat web.</value>
+  </data>
+  <data name="StateUnreadable" xml:space="preserve">
+    <value>Item tersimpan Anda tidak dapat dibaca, sehingga widget dimulai dalam keadaan kosong. Salinannya disimpan di {0}.</value>
+  </data>
+  <data name="Theme" xml:space="preserve">
+    <value>Tema</value>
+  </data>
+  <data name="ThemeDark" xml:space="preserve">
+    <value>Gelap</value>
+  </data>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>Terang</value>
+  </data>
+  <data name="ThemeSystem" xml:space="preserve">
+    <value>Sistem</value>
+  </data>
+  <data name="ThemeSystemTip" xml:space="preserve">
+    <value>Ikuti pengaturan Windows</value>
+  </data>
+  <data name="UseAsIcon" xml:space="preserve">
+    <value>Gunakan sebagai ikon</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Versi {0}</value>
+  </data>
+  <data name="Website" xml:space="preserve">
+    <value>Situs web</value>
+  </data>
+</root>

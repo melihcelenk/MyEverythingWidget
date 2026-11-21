@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Add" xml:space="preserve">
+    <value>추가</value>
+  </data>
+  <data name="AddApp" xml:space="preserve">
+    <value>앱 추가</value>
+  </data>
+  <data name="AddAppMenu" xml:space="preserve">
+    <value>앱 추가…</value>
+  </data>
+  <data name="AddCategory" xml:space="preserve">
+    <value>범주 추가</value>
+  </data>
+  <data name="AddImageMenu" xml:space="preserve">
+    <value>이미지 추가…</value>
+  </data>
+  <data name="AddMenuApp" xml:space="preserve">
+    <value>앱…</value>
+  </data>
+  <data name="AddMenuImage" xml:space="preserve">
+    <value>이미지…</value>
+  </data>
+  <data name="AddMenuNote" xml:space="preserve">
+    <value>메모</value>
+  </data>
+  <data name="AddNote" xml:space="preserve">
+    <value>메모 추가</value>
+  </data>
+  <data name="AddToWidget" xml:space="preserve">
+    <value>위젯에 추가</value>
+  </data>
+  <data name="AlwaysOnTop" xml:space="preserve">
+    <value>항상 위에 표시</value>
+  </data>
+  <data name="AppNotFound" xml:space="preserve">
+    <value>'{0}'을(를) 찾을 수 없습니다. 이동되었거나 제거되었을 수 있습니다.</value>
+  </data>
+  <data name="AppNotOpened" xml:space="preserve">
+    <value>'{0}'을(를) 열 수 없습니다.</value>
+  </data>
+  <data name="Browse" xml:space="preserve">
+    <value>찾아보기…</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>취소</value>
+  </data>
+  <data name="Categories" xml:space="preserve">
+    <value>범주</value>
+  </data>
+  <data name="CategoryName" xml:space="preserve">
+    <value>범주 이름</value>
+  </data>
+  <data name="ChangeIcon" xml:space="preserve">
+    <value>아이콘 변경</value>
+  </data>
+  <data name="ChangeIconMenu" xml:space="preserve">
+    <value>아이콘 변경…</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>닫기</value>
+  </data>
+  <data name="CompactMode" xml:space="preserve">
+    <value>컴팩트 모드</value>
+  </data>
+  <data name="CompactModeTip" xml:space="preserve">
+    <value>아이콘으로 축소</value>
+  </data>
+  <data name="Copied" xml:space="preserve">
+    <value>복사됨</value>
+  </data>
+  <data name="Copy" xml:space="preserve">
+    <value>복사</value>
+  </data>
+  <data name="CopyEmail" xml:space="preserve">
+    <value>{0} 복사</value>
+  </data>
+  <data name="CopyImage" xml:space="preserve">
+    <value>이미지 복사</value>
+  </data>
+  <data name="CopyNote" xml:space="preserve">
+    <value>메모 복사</value>
+  </data>
+  <data name="DefaultCategoryName" xml:space="preserve">
+    <value>일반</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>삭제</value>
+  </data>
+  <data name="DeleteCategoryMany" xml:space="preserve">
+    <value>'{0}' 및 포함된 항목 {1}개가 삭제됩니다.</value>
+  </data>
+  <data name="DeleteCategoryOne" xml:space="preserve">
+    <value>'{0}' 및 포함된 항목이 삭제됩니다.</value>
+  </data>
+  <data name="DeleteCategoryTitle" xml:space="preserve">
+    <value>범주를 삭제할까요?</value>
+  </data>
+  <data name="DropAllowed" xml:space="preserve">
+    <value>허용됨</value>
+  </data>
+  <data name="DropHint" xml:space="preserve">
+    <value>파일, 링크, 텍스트 또는 이미지를 끌어 놓거나 붙여 넣으세요(Ctrl+V)</value>
+  </data>
+  <data name="DropImageHere" xml:space="preserve">
+    <value>여기에 이미지를 끌어 놓거나
+Ctrl+V로 붙여 넣으세요</value>
+  </data>
+  <data name="DropNotAllowed" xml:space="preserve">
+    <value>허용되지 않음</value>
+  </data>
+  <data name="DropTarget" xml:space="preserve">
+    <value>놓기 대상</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>편집</value>
+  </data>
+  <data name="EditInPaint" xml:space="preserve">
+    <value>그림판에서 편집</value>
+  </data>
+  <data name="EditNote" xml:space="preserve">
+    <value>메모 편집</value>
+  </data>
+  <data name="GridFull" xml:space="preserve">
+    <value>이 범주가 가득 찼습니다. 먼저 항목을 제거하거나 크기를 줄이세요.</value>
+  </data>
+  <data name="ImageDropArea" xml:space="preserve">
+    <value>이미지 놓기 영역</value>
+  </data>
+  <data name="ImageNotFound" xml:space="preserve">
+    <value>이미지를 찾을 수 없음</value>
+  </data>
+  <data name="ImageNotRead" xml:space="preserve">
+    <value>이미지를 읽을 수 없습니다.</value>
+  </data>
+  <data name="ImportFailed" xml:space="preserve">
+    <value>이전 버전의 항목을 읽을 수 없어 가져오지 못했습니다.</value>
+  </data>
+  <data name="Imported" xml:space="preserve">
+    <value>My Everything Widget 이전 버전에서 항목 {0}개를 가져왔습니다.</value>
+  </data>
+  <data name="ImportedMissingImage" xml:space="preserve">
+    <value>My Everything Widget 이전 버전에서 항목 {0}개를 가져왔습니다. 이미지 {1}개를 찾을 수 없습니다.</value>
+  </data>
+  <data name="ImportedMissingImages" xml:space="preserve">
+    <value>My Everything Widget 이전 버전에서 항목 {0}개를 가져왔습니다. 이미지 {1}개를 찾을 수 없습니다.</value>
+  </data>
+  <data name="InstalledApps" xml:space="preserve">
+    <value>설치된 앱</value>
+  </data>
+  <data name="InvalidTarget" xml:space="preserve">
+    <value>전체 경로(C:\...) 또는 웹 주소(https://...)를 입력하세요.</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>언어</value>
+  </data>
+  <data name="LanguageSystem" xml:space="preserve">
+    <value>시스템 언어</value>
+  </data>
+  <data name="MoveTo" xml:space="preserve">
+    <value>이동</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>이름</value>
+  </data>
+  <data name="NewCategoryName" xml:space="preserve">
+    <value>새 범주</value>
+  </data>
+  <data name="NoRoom" xml:space="preserve">
+    <value>다른 항목을 그곳으로 이동할 공간이 없습니다.</value>
+  </data>
+  <data name="NoRoomIn" xml:space="preserve">
+    <value>{0}에 공간이 없습니다.</value>
+  </data>
+  <data name="NotAnImage" xml:space="preserve">
+    <value>이미지가 아닙니다.</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>열기</value>
+  </data>
+  <data name="OpenWidget" xml:space="preserve">
+    <value>My Everything Widget 열기</value>
+  </data>
+  <data name="PaintNotAvailable" xml:space="preserve">
+    <value>그림판을 열 수 없습니다.</value>
+  </data>
+  <data name="PathOrAddress" xml:space="preserve">
+    <value>경로 또는 웹 주소</value>
+  </data>
+  <data name="PathOrAddressLabel" xml:space="preserve">
+    <value>또는 경로나 웹 주소 입력</value>
+  </data>
+  <data name="PathPlaceholder" xml:space="preserve">
+    <value>C:\... 또는 https://...</value>
+  </data>
+  <data name="Rate" xml:space="preserve">
+    <value>평가</value>
+  </data>
+  <data name="Rename" xml:space="preserve">
+    <value>이름 바꾸기</value>
+  </data>
+  <data name="ResetToOriginal" xml:space="preserve">
+    <value>원래대로 복원</value>
+  </data>
+  <data name="Resize" xml:space="preserve">
+    <value>크기 조정</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>저장</value>
+  </data>
+  <data name="SaveFailed" xml:space="preserve">
+    <value>변경 내용을 저장할 수 없습니다: {0}</value>
+  </data>
+  <data name="SearchInstalledApps" xml:space="preserve">
+    <value>설치된 앱 검색</value>
+  </data>
+  <data name="SelectIcon" xml:space="preserve">
+    <value>아이콘 선택</value>
+  </data>
+  <data name="SelectImage" xml:space="preserve">
+    <value>이미지 선택</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>설정</value>
+  </data>
+  <data name="SomeNotAdded" xml:space="preserve">
+    <value>일부 항목을 추가할 수 없습니다. 전체 경로나 웹 주소를 사용하세요.</value>
+  </data>
+  <data name="StateUnreadable" xml:space="preserve">
+    <value>저장된 항목을 읽을 수 없어 위젯이 빈 상태로 시작되었습니다. 복사본이 {0}에 보관되었습니다.</value>
+  </data>
+  <data name="Theme" xml:space="preserve">
+    <value>테마</value>
+  </data>
+  <data name="ThemeDark" xml:space="preserve">
+    <value>어둡게</value>
+  </data>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>밝게</value>
+  </data>
+  <data name="ThemeSystem" xml:space="preserve">
+    <value>시스템</value>
+  </data>
+  <data name="ThemeSystemTip" xml:space="preserve">
+    <value>Windows 설정 따르기</value>
+  </data>
+  <data name="UseAsIcon" xml:space="preserve">
+    <value>아이콘으로 사용</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>버전 {0}</value>
+  </data>
+  <data name="Website" xml:space="preserve">
+    <value>웹 사이트</value>
+  </data>
+</root>

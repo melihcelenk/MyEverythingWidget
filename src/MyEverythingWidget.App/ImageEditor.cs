@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Diagnostics;
+using MyEverythingWidget.Presentation.Localization;
 
 namespace MyEverythingWidget.App;
 
@@ -10,7 +11,7 @@ namespace MyEverythingWidget.App;
 internal static class ImageEditor
 {
     /// <summary>Message shown when Paint cannot be started.</summary>
-    public const string PaintNotAvailableMessage = "Paint could not be opened.";
+    public static string PaintNotAvailableMessage => Strings.PaintNotAvailable;
 
     private const string PaintExecutable = "mspaint.exe";
 

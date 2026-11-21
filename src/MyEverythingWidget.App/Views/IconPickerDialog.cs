@@ -8,6 +8,7 @@ using Windows.ApplicationModel.DataTransfer;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
 using Windows.System;
+using MyEverythingWidget.Presentation.Localization;
 
 namespace MyEverythingWidget.App.Views;
 
@@ -36,7 +37,6 @@ internal sealed class IconPickerDialog
 {
     private const double EmojiCellSize = 40;
     private const int EmojisPerRow = 8;
-    private const string NotAnImageMessage = "That is not an image.";
 
     private static readonly string[] ImageExtensions = [".png", ".jpg", ".jpeg", ".gif", ".bmp", ".ico", ".webp", ".tif", ".tiff"];
 
@@ -55,12 +55,12 @@ internal sealed class IconPickerDialog
         _dialog = new ContentDialog
         {
             XamlRoot = root,
-            SecondaryButtonText = "Reset to original",
-            CloseButtonText = "Cancel",
+            SecondaryButtonText = Strings.ResetToOriginal,
+            CloseButtonText = Strings.Cancel,
             DefaultButton = ContentDialogButton.Close,
         };
         AutomationProperties.SetAutomationId(_dialog, "IconPickerDialog");
-        AutomationProperties.SetName(_dialog, "Change icon");
+        AutomationProperties.SetName(_dialog, Strings.ChangeIcon);
 
         _imageMessage = new TextBlock
         {
@@ -126,10 +126,10 @@ internal sealed class IconPickerDialog
 
     private SelectorBar CreateTabs()
     {
-        var iconTab = new SelectorBarItem { Text = "Select icon", IsSelected = true };
+        var iconTab = new SelectorBarItem { Text = Strings.SelectIcon, IsSelected = true };
         _iconTab = iconTab;
         AutomationProperties.SetAutomationId(iconTab, "SelectIconTab");
-        var imageTab = new SelectorBarItem { Text = "Select image" };
+        var imageTab = new SelectorBarItem { Text = Strings.SelectImage };
         AutomationProperties.SetAutomationId(imageTab, "SelectImageTab");
 
         var tabs = new SelectorBar { Items = { iconTab, imageTab } };
@@ -163,7 +163,7 @@ internal sealed class IconPickerDialog
     /// <summary>A dashed drop area with the Browse button; Ctrl+V anywhere in the dialog pastes too.</summary>
     private Border CreateImageArea()
     {
-        var browse = new Button { Content = "Browse…", HorizontalAlignment = HorizontalAlignment.Center };
+        var browse = new Button { Content = Strings.Browse, HorizontalAlignment = HorizontalAlignment.Center };
         AutomationProperties.SetAutomationId(browse, "BrowseImageButton");
         browse.Click += (_, _) => Choose(new IconChoice.Browse());
 
@@ -180,7 +180,7 @@ internal sealed class IconPickerDialog
                     new FontIcon { Glyph = "", FontSize = 28, Foreground = (Brush)Application.Current.Resources["TextFillColorSecondaryBrush"] },
                     new TextBlock
                     {
-                        Text = "Drop an image here\nor paste it with Ctrl+V",
+                        Text = Strings.DropImageHere,
                         TextAlignment = TextAlignment.Center,
                         HorizontalAlignment = HorizontalAlignment.Center,
                         Foreground = (Brush)Application.Current.Resources["TextFillColorSecondaryBrush"],
@@ -191,13 +191,13 @@ internal sealed class IconPickerDialog
             },
         };
         AutomationProperties.SetAutomationId(area, "ImageDropArea");
-        AutomationProperties.SetName(area, "Image drop area");
+        AutomationProperties.SetName(area, Strings.ImageDropArea);
         area.DragOver += (_, e) =>
         {
             if (e.DataView.Contains(StandardDataFormats.StorageItems) || e.DataView.Contains(StandardDataFormats.Bitmap))
             {
                 e.AcceptedOperation = DataPackageOperation.Copy;
-                e.DragUIOverride.Caption = "Use as icon";
+                e.DragUIOverride.Caption = Strings.UseAsIcon;
             }
         };
         area.Drop += async (_, e) =>
@@ -243,7 +243,7 @@ internal sealed class IconPickerDialog
         }
         else
         {
-            _imageMessage.Text = NotAnImageMessage;
+            _imageMessage.Text = Strings.NotAnImage;
         }
     }
 

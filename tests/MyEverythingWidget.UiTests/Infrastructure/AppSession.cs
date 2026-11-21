@@ -83,6 +83,32 @@ internal sealed class AppSession : IDisposable
         return new AppSession(application, automation, window);
     }
 
+    /// <summary>
+    /// Attaches to the process that replaced the one with <paramref name="previousProcessId"/> after the app restarted
+    /// itself, once its window is ready.
+    /// </summary>
+    public static AppSession AttachToRestarted(int previousProcessId)
+    {
+        SandboxGuard.SkipUnlessAllowed();
+        Process? next = null;
+        var started = Wait.Until(
+            () => (next = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(AppPaths.Executable()))
+                .FirstOrDefault(process => process.Id != previousProcessId)) is not null,
+            StartTimeout);
+        if (!started)
+        {
+            throw new TimeoutException("The app did not start again.");
+        }
+
+        var application = Application.Attach(next!);
+        var automation = new UIA3Automation();
+        var window = application.GetMainWindow(automation, StartTimeout)
+            ?? throw new TimeoutException("The restarted app did not show its main window.");
+        var session = new AppSession(application, automation, window);
+        session.WaitUntilReady();
+        return session;
+    }
+
     /// <summary>Starts another process of the app without attaching to it.</summary>
     public static Process StartSecondProcess(AppDataFolder data)
     {
@@ -151,6 +177,9 @@ internal sealed class AppSession : IDisposable
     {
         var startInfo = new ProcessStartInfo(AppPaths.Executable()) { UseShellExecute = false };
         startInfo.Environment["MEW_DATA_DIR"] = data.Path;
+
+        // The sandbox has the host's display language; the tests read the English texts.
+        startInfo.Environment["MEW_SYSTEM_LANGUAGE"] = "en-US";
         return startInfo;
     }
 }

@@ -17,6 +17,9 @@ internal static class DialogSizing
 
     private const double DefaultMinWidth = 320;
 
+    /// <summary>WinUI's own padding inside a dialog.</summary>
+    private const double DefaultPadding = 24;
+
     /// <summary>
     /// Limits <paramref name="dialog"/> to the size of <paramref name="root"/> minus a gap on every side; content that
     /// does not fit then scrolls inside the dialog.
@@ -28,7 +31,8 @@ internal static class DialogSizing
     /// content between WinUI's 320 px minimum and the window. A fixed width bounds the dialog on both sides, so the
     /// content cannot be laid out wider than the visible dialog.
     /// </param>
-    public static void FitToWindow(ContentDialog dialog, XamlRoot root, double? width = null)
+    /// <returns>The padding the dialog then has inside its edges.</returns>
+    public static double FitToWindow(ContentDialog dialog, XamlRoot root, double? width = null)
     {
         ArgumentNullException.ThrowIfNull(dialog);
         ArgumentNullException.ThrowIfNull(root);
@@ -41,10 +45,10 @@ internal static class DialogSizing
         if (available < usual)
         {
             dialog.Resources["ContentDialogPadding"] = new Thickness(NarrowPadding);
+            return NarrowPadding;
         }
-        else
-        {
-            dialog.Resources.Remove("ContentDialogPadding");
-        }
+
+        dialog.Resources.Remove("ContentDialogPadding");
+        return DefaultPadding;
     }
 }

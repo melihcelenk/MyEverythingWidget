@@ -45,6 +45,25 @@ public sealed partial class MainViewModel : ObservableObject
         }
     }
 
+    /// <summary>Gets the language code the user chose; <see langword="null"/> follows the Windows display language.</summary>
+    public string? Language => _settings.Language;
+
+    /// <summary>
+    /// Saves <paramref name="language"/> (<see langword="null"/> for the Windows language); returns whether it changed.
+    /// The new language is shown after the app restarts.
+    /// </summary>
+    public bool SetLanguage(string? language)
+    {
+        if (string.Equals(language, _settings.Language, StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        Update(_settings with { Language = language });
+        OnPropertyChanged(nameof(Language));
+        return true;
+    }
+
     /// <summary>Gets the app version, for the About section.</summary>
     public string Version { get; } = typeof(MainViewModel).Assembly.GetName().Version?.ToString(3) ?? "0.0.0";
 

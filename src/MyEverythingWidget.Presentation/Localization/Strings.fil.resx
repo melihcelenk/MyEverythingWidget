@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Add" xml:space="preserve">
+    <value>Idagdag</value>
+  </data>
+  <data name="AddApp" xml:space="preserve">
+    <value>Magdagdag ng app</value>
+  </data>
+  <data name="AddAppMenu" xml:space="preserve">
+    <value>Magdagdag ng app…</value>
+  </data>
+  <data name="AddCategory" xml:space="preserve">
+    <value>Magdagdag ng kategorya</value>
+  </data>
+  <data name="AddImageMenu" xml:space="preserve">
+    <value>Magdagdag ng larawan…</value>
+  </data>
+  <data name="AddMenuApp" xml:space="preserve">
+    <value>App…</value>
+  </data>
+  <data name="AddMenuImage" xml:space="preserve">
+    <value>Larawan…</value>
+  </data>
+  <data name="AddMenuNote" xml:space="preserve">
+    <value>Tala</value>
+  </data>
+  <data name="AddNote" xml:space="preserve">
+    <value>Magdagdag ng tala</value>
+  </data>
+  <data name="AddToWidget" xml:space="preserve">
+    <value>Idagdag sa widget</value>
+  </data>
+  <data name="AlwaysOnTop" xml:space="preserve">
+    <value>Laging nasa itaas</value>
+  </data>
+  <data name="AppNotFound" xml:space="preserve">
+    <value>Hindi mahanap ang “{0}”. Maaaring inilipat ito o na-uninstall.</value>
+  </data>
+  <data name="AppNotOpened" xml:space="preserve">
+    <value>Hindi mabuksan ang “{0}”.</value>
+  </data>
+  <data name="Browse" xml:space="preserve">
+    <value>Mag-browse…</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Kanselahin</value>
+  </data>
+  <data name="Categories" xml:space="preserve">
+    <value>Mga kategorya</value>
+  </data>
+  <data name="CategoryName" xml:space="preserve">
+    <value>Pangalan ng kategorya</value>
+  </data>
+  <data name="ChangeIcon" xml:space="preserve">
+    <value>Palitan ang icon</value>
+  </data>
+  <data name="ChangeIconMenu" xml:space="preserve">
+    <value>Palitan ang icon…</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Isara</value>
+  </data>
+  <data name="CompactMode" xml:space="preserve">
+    <value>Compact mode</value>
+  </data>
+  <data name="CompactModeTip" xml:space="preserve">
+    <value>Paliitin bilang icon</value>
+  </data>
+  <data name="Copied" xml:space="preserve">
+    <value>Nakopya</value>
+  </data>
+  <data name="Copy" xml:space="preserve">
+    <value>Kopyahin</value>
+  </data>
+  <data name="CopyEmail" xml:space="preserve">
+    <value>Kopyahin ang {0}</value>
+  </data>
+  <data name="CopyImage" xml:space="preserve">
+    <value>Kopyahin ang larawan</value>
+  </data>
+  <data name="CopyNote" xml:space="preserve">
+    <value>Kopyahin ang tala</value>
+  </data>
+  <data name="DefaultCategoryName" xml:space="preserve">
+    <value>Pangkalahatan</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>I-delete</value>
+  </data>
+  <data name="DeleteCategoryMany" xml:space="preserve">
+    <value>Ide-delete ang “{0}” at ang {1} item nito.</value>
+  </data>
+  <data name="DeleteCategoryOne" xml:space="preserve">
+    <value>Ide-delete ang “{0}” at ang item nito.</value>
+  </data>
+  <data name="DeleteCategoryTitle" xml:space="preserve">
+    <value>I-delete ang kategorya?</value>
+  </data>
+  <data name="DropAllowed" xml:space="preserve">
+    <value>pinapayagan</value>
+  </data>
+  <data name="DropHint" xml:space="preserve">
+    <value>I-drop o i-paste (Ctrl+V) ang mga file, link, text, o larawan</value>
+  </data>
+  <data name="DropImageHere" xml:space="preserve">
+    <value>Mag-drop ng larawan dito
+o i-paste ito gamit ang Ctrl+V</value>
+  </data>
+  <data name="DropNotAllowed" xml:space="preserve">
+    <value>hindi pinapayagan</value>
+  </data>
+  <data name="DropTarget" xml:space="preserve">
+    <value>Target ng pag-drop</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>I-edit</value>
+  </data>
+  <data name="EditInPaint" xml:space="preserve">
+    <value>I-edit sa Paint</value>
+  </data>
+  <data name="EditNote" xml:space="preserve">
+    <value>I-edit ang tala</value>
+  </data>
+  <data name="GridFull" xml:space="preserve">
+    <value>Puno na ang kategoryang ito. Mag-alis o magpaliit muna ng isang item.</value>
+  </data>
+  <data name="ImageDropArea" xml:space="preserve">
+    <value>Lugar para mag-drop ng larawan</value>
+  </data>
+  <data name="ImageNotFound" xml:space="preserve">
+    <value>Hindi mahanap ang larawan</value>
+  </data>
+  <data name="ImageNotRead" xml:space="preserve">
+    <value>Hindi mabasa ang larawang iyon.</value>
+  </data>
+  <data name="ImportFailed" xml:space="preserve">
+    <value>Hindi mabasa ang mga item mula sa nakaraang bersyon, kaya hindi na-import ang mga ito.</value>
+  </data>
+  <data name="Imported" xml:space="preserve">
+    <value>Mga item na na-import mula sa nakaraang bersyon ng My Everything Widget: {0}.</value>
+  </data>
+  <data name="ImportedMissingImage" xml:space="preserve">
+    <value>Mga item na na-import mula sa nakaraang bersyon ng My Everything Widget: {0}. {1} larawan ang hindi mahanap.</value>
+  </data>
+  <data name="ImportedMissingImages" xml:space="preserve">
+    <value>Mga item na na-import mula sa nakaraang bersyon ng My Everything Widget: {0}. Mga larawang hindi mahanap: {1}.</value>
+  </data>
+  <data name="InstalledApps" xml:space="preserve">
+    <value>Mga naka-install na app</value>
+  </data>
+  <data name="InvalidTarget" xml:space="preserve">
+    <value>Maglagay ng buong path (C:\...) o web address (https://...).</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Wika</value>
+  </data>
+  <data name="LanguageSystem" xml:space="preserve">
+    <value>Wika ng system</value>
+  </data>
+  <data name="MoveTo" xml:space="preserve">
+    <value>Ilipat sa</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Pangalan</value>
+  </data>
+  <data name="NewCategoryName" xml:space="preserve">
+    <value>Bagong kategorya</value>
+  </data>
+  <data name="NoRoom" xml:space="preserve">
+    <value>Walang espasyo para ilipat doon ang iba pang item.</value>
+  </data>
+  <data name="NoRoomIn" xml:space="preserve">
+    <value>Walang espasyo sa {0}.</value>
+  </data>
+  <data name="NotAnImage" xml:space="preserve">
+    <value>Hindi iyan larawan.</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>Buksan</value>
+  </data>
+  <data name="OpenWidget" xml:space="preserve">
+    <value>Buksan ang My Everything Widget</value>
+  </data>
+  <data name="PaintNotAvailable" xml:space="preserve">
+    <value>Hindi mabuksan ang Paint.</value>
+  </data>
+  <data name="PathOrAddress" xml:space="preserve">
+    <value>Path o web address</value>
+  </data>
+  <data name="PathOrAddressLabel" xml:space="preserve">
+    <value>O maglagay ng path o web address</value>
+  </data>
+  <data name="PathPlaceholder" xml:space="preserve">
+    <value>C:\... o https://...</value>
+  </data>
+  <data name="Rate" xml:space="preserve">
+    <value>I-rate</value>
+  </data>
+  <data name="Rename" xml:space="preserve">
+    <value>Palitan ang pangalan</value>
+  </data>
+  <data name="ResetToOriginal" xml:space="preserve">
+    <value>Ibalik sa orihinal</value>
+  </data>
+  <data name="Resize" xml:space="preserve">
+    <value>Baguhin ang laki</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>I-save</value>
+  </data>
+  <data name="SaveFailed" xml:space="preserve">
+    <value>Hindi ma-save ang mga pagbabago: {0}</value>
+  </data>
+  <data name="SearchInstalledApps" xml:space="preserve">
+    <value>Maghanap ng mga naka-install na app</value>
+  </data>
+  <data name="SelectIcon" xml:space="preserve">
+    <value>Pumili ng icon</value>
+  </data>
+  <data name="SelectImage" xml:space="preserve">
+    <value>Pumili ng larawan</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Mga Setting</value>
+  </data>
+  <data name="SomeNotAdded" xml:space="preserve">
+    <value>Hindi maidagdag ang ilang item. Gumamit ng buong path o web address.</value>
+  </data>
+  <data name="StateUnreadable" xml:space="preserve">
+    <value>Hindi mabasa ang iyong mga naka-save na item, kaya nagsimulang walang laman ang widget. May kopyang itinago sa {0}.</value>
+  </data>
+  <data name="Theme" xml:space="preserve">
+    <value>Tema</value>
+  </data>
+  <data name="ThemeDark" xml:space="preserve">
+    <value>Madilim</value>
+  </data>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>Maliwanag</value>
+  </data>
+  <data name="ThemeSystem" xml:space="preserve">
+    <value>System</value>
+  </data>
+  <data name="ThemeSystemTip" xml:space="preserve">
+    <value>Sundin ang setting ng Windows</value>
+  </data>
+  <data name="UseAsIcon" xml:space="preserve">
+    <value>Gamitin bilang icon</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Bersyon {0}</value>
+  </data>
+  <data name="Website" xml:space="preserve">
+    <value>Website</value>
+  </data>
+</root>

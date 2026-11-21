@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using MyEverythingWidget.Core.Geometry;
 using Windows.Graphics;
 using Windows.System;
+using MyEverythingWidget.Presentation.Localization;
 
 namespace MyEverythingWidget.App.Views;
 
@@ -47,7 +48,7 @@ internal sealed partial class ImageViewerWindow : Window
             Background = (Brush)Application.Current.Resources["SolidBackgroundFillColorQuarternaryBrush"],
         };
         AutomationProperties.SetAutomationId(close, "ViewerCloseButton");
-        AutomationProperties.SetName(close, "Close");
+        AutomationProperties.SetName(close, Strings.Close);
         close.Click += (_, _) => Close();
 
         _imageFile = imageFile;
@@ -88,11 +89,11 @@ internal sealed partial class ImageViewerWindow : Window
     /// <summary>Right-click menu: copy the image or open it in Paint.</summary>
     private MenuFlyout CreateMenu()
     {
-        var copy = new MenuFlyoutItem { Text = "Copy", Icon = new FontIcon { Glyph = "" } };
+        var copy = new MenuFlyoutItem { Text = Strings.Copy, Icon = new FontIcon { Glyph = "" } };
         AutomationProperties.SetAutomationId(copy, "ViewerCopyMenuItem");
         copy.Click += async (_, _) => await CopyAsync();
 
-        var edit = new MenuFlyoutItem { Text = "Edit in Paint", Icon = new FontIcon { Glyph = "" } };
+        var edit = new MenuFlyoutItem { Text = Strings.EditInPaint, Icon = new FontIcon { Glyph = "" } };
         AutomationProperties.SetAutomationId(edit, "ViewerEditMenuItem");
         edit.Click += (_, _) =>
         {
@@ -108,7 +109,7 @@ internal sealed partial class ImageViewerWindow : Window
     private async Task CopyAsync()
     {
         await ClipboardWriter.CopyImageAsync(_imageFile);
-        ShowNotice("Copied");
+        ShowNotice(Strings.Copied);
     }
 
     /// <summary>A short message at the bottom of the viewer, such as "Copied".</summary>
