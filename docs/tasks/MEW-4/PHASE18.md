@@ -56,6 +56,8 @@ boşluk daraldı. Sabitleme düğmesi sola, küçültme düğmesi kapatmanın ya
 | 18.7 | Küçük simge, tam ekran bir video, oyun ya da sunum açıkken gizlenir; masaüstüne dönünce geri gelir. | 🟢 Tamamlandı |
 | 18.8 | Store gönderimi otomatikleşir: paketler ve gönderim tek komutla. | 🟢 Kapatıldı (GitHub projesine taşındı) |
 | 18.9 | 1.0.2 sürümünün kapsamı belirlenir; Windows açılınca başlatma değerlendirilir. | 🟢 Tamamlandı |
+| 18.10 | About kartındaki sürüm, Store paketinin sürümünü gösterir. | 🟢 Tamamlandı |
+| 18.11 | İş bitince uygulama her seferinde, istenmeden yeniden derlenip açılır. | 🟢 Tamamlandı |
 
 ## Nasıl kontrol edilir
 
@@ -284,6 +286,33 @@ boşluk daraldı. Sabitleme düğmesi sola, küçültme düğmesi kapatmanın ya
   - **Gönderim (T152):** Kullanıcı 1.1.0'ı gönderdi; Partner Center "Update in certification" gösteriyor.
 - **Dosyalar:** `src/MyEverythingWidget.App/StoreIdentity.json` (1.1.0.0), `docs/general/STORE_SUBMISSION.md`
 - **Testler:** Paketler MakeAppx ile açılıp doğrulandı. Manifestte 15 dil ve sürüm 1.1.0.0, pakette 14 çeviri var.
+- **Durum:** 🟢 Tamamlandı.
+
+### 18.10 — About kartındaki sürüm, Store paketinin sürümünü gösterir.
+
+- **Gereksinim (T156):** About kartındaki sürüm numarası uygulamanın gerçek sürümünü gösterir.
+- **Mevcut durum:** About kartı 1.1.0 paketinde de "1.0.0" yazıyor.
+- **Problem:** Sürüm, hiç ayarlanmamış program sürümünden (`Assembly.GetName().Version`) okunuyor. Store sürümü ise
+  `StoreIdentity.json`'dan pakete yazılıyor; iki kaynak birbirinden habersiz.
+- **Çözüm (S23 → B):**
+  - Bütün programların sürümü `StoreIdentity.json`'daki Store sürümünden okunuyor. Tek kaynak o dosya; About ve Store
+    paketi aynı numarayı taşıyor.
+  - Gönderilen 1.1.0 olduğu gibi kaldı; düzeltme bir sonraki güncellemeyle çıkacak.
+- **Dosyalar:** `Directory.Build.props`
+- **Testler:** `Presentation.Tests/AppVersionTests.AboutVersion_IsTheStorePackageVersion`. Önce kırmızıydı (1.0.0),
+  sonra yeşil.
+- **Durum:** 🟢 Tamamlandı.
+
+### 18.11 — İş bitince uygulama her seferinde, istenmeden yeniden derlenip açılır.
+
+- **Gereksinim (T158):** Uygulamayı değiştiren her iş bittiğinde uygulama yeniden derlenip açılır; kullanıcının bunu
+  her seferinde istemesi gerekmez.
+- **Mevcut durum:** 18.10'dan sonra uygulama yeniden açılmamıştı.
+- **Problem:** Değişikliği görmek için kullanıcı yeniden başlatmayı ayrıca istemek zorunda kalıyordu.
+- **Çözüm:** Uygulama `scripts/run.ps1` ile yeniden açıldı. Kural, Claude'un bu proje için kalıcı notlarına eklendi:
+  uygulamayı değiştiren her işin son adımı yeniden açmak.
+- **Dosyalar:** -
+- **Testler:** -
 - **Durum:** 🟢 Tamamlandı.
 
 ## Referanslar

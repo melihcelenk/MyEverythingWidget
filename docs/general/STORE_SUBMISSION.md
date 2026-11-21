@@ -18,6 +18,8 @@ identity into the manifest for that build only and restores it afterwards.
 
 The Store version is `version` in `StoreIdentity.json` (`1.0.0.0` for the first release, `1.0.1.0` for the
 "Change icon" fix, `1.1.0.0` for the languages and the new Settings window). The Store requires the last number to be `0`; increase the first three for every submission.
+This is the only place to change the version: `Directory.Build.props` gives every assembly the same version, so the
+About card shows it too, and `AppVersionTests` fails when the two drift apart.
 
 ## 3. Build
 
