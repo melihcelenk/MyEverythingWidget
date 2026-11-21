@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Add" xml:space="preserve">
+    <value>जोड़ें</value>
+  </data>
+  <data name="AddApp" xml:space="preserve">
+    <value>ऐप जोड़ें</value>
+  </data>
+  <data name="AddAppMenu" xml:space="preserve">
+    <value>ऐप जोड़ें…</value>
+  </data>
+  <data name="AddCategory" xml:space="preserve">
+    <value>श्रेणी जोड़ें</value>
+  </data>
+  <data name="AddImageMenu" xml:space="preserve">
+    <value>छवि जोड़ें…</value>
+  </data>
+  <data name="AddMenuApp" xml:space="preserve">
+    <value>ऐप…</value>
+  </data>
+  <data name="AddMenuImage" xml:space="preserve">
+    <value>छवि…</value>
+  </data>
+  <data name="AddMenuNote" xml:space="preserve">
+    <value>नोट</value>
+  </data>
+  <data name="AddNote" xml:space="preserve">
+    <value>नोट जोड़ें</value>
+  </data>
+  <data name="AddToWidget" xml:space="preserve">
+    <value>विजेट में जोड़ें</value>
+  </data>
+  <data name="AlwaysOnTop" xml:space="preserve">
+    <value>हमेशा शीर्ष पर</value>
+  </data>
+  <data name="AppNotFound" xml:space="preserve">
+    <value>“{0}” नहीं मिला। हो सकता है कि इसे स्थानांतरित या अनइंस्टॉल कर दिया गया हो।</value>
+  </data>
+  <data name="AppNotOpened" xml:space="preserve">
+    <value>“{0}” को खोला नहीं जा सका।</value>
+  </data>
+  <data name="Browse" xml:space="preserve">
+    <value>ब्राउज़ करें…</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>रद्द करें</value>
+  </data>
+  <data name="Categories" xml:space="preserve">
+    <value>श्रेणियाँ</value>
+  </data>
+  <data name="CategoryName" xml:space="preserve">
+    <value>श्रेणी का नाम</value>
+  </data>
+  <data name="ChangeIcon" xml:space="preserve">
+    <value>आइकन बदलें</value>
+  </data>
+  <data name="ChangeIconMenu" xml:space="preserve">
+    <value>आइकन बदलें…</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>बंद करें</value>
+  </data>
+  <data name="CompactMode" xml:space="preserve">
+    <value>कॉम्पैक्ट मोड</value>
+  </data>
+  <data name="CompactModeTip" xml:space="preserve">
+    <value>आइकन में छोटा करें</value>
+  </data>
+  <data name="Copied" xml:space="preserve">
+    <value>कॉपी किया गया</value>
+  </data>
+  <data name="Copy" xml:space="preserve">
+    <value>कॉपी करें</value>
+  </data>
+  <data name="CopyEmail" xml:space="preserve">
+    <value>{0} कॉपी करें</value>
+  </data>
+  <data name="CopyImage" xml:space="preserve">
+    <value>छवि कॉपी करें</value>
+  </data>
+  <data name="CopyNote" xml:space="preserve">
+    <value>नोट कॉपी करें</value>
+  </data>
+  <data name="DefaultCategoryName" xml:space="preserve">
+    <value>सामान्य</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>हटाएँ</value>
+  </data>
+  <data name="DeleteCategoryMany" xml:space="preserve">
+    <value>“{0}” और इसके आइटम ({1}) हटा दिए जाएँगे।</value>
+  </data>
+  <data name="DeleteCategoryOne" xml:space="preserve">
+    <value>“{0}” और इसका आइटम हटा दिया जाएगा।</value>
+  </data>
+  <data name="DeleteCategoryTitle" xml:space="preserve">
+    <value>श्रेणी हटाएँ?</value>
+  </data>
+  <data name="DropAllowed" xml:space="preserve">
+    <value>अनुमति है</value>
+  </data>
+  <data name="DropHint" xml:space="preserve">
+    <value>फ़ाइलें, लिंक, टेक्स्ट या छवियाँ ड्रॉप या पेस्ट (Ctrl+V) करें</value>
+  </data>
+  <data name="DropImageHere" xml:space="preserve">
+    <value>छवि यहाँ ड्रॉप करें
+या Ctrl+V से पेस्ट करें</value>
+  </data>
+  <data name="DropNotAllowed" xml:space="preserve">
+    <value>अनुमति नहीं है</value>
+  </data>
+  <data name="DropTarget" xml:space="preserve">
+    <value>ड्रॉप लक्ष्य</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>संपादित करें</value>
+  </data>
+  <data name="EditInPaint" xml:space="preserve">
+    <value>पेंट में संपादित करें</value>
+  </data>
+  <data name="EditNote" xml:space="preserve">
+    <value>नोट संपादित करें</value>
+  </data>
+  <data name="GridFull" xml:space="preserve">
+    <value>यह श्रेणी भर गई है। पहले कुछ हटाएँ या छोटा करें।</value>
+  </data>
+  <data name="ImageDropArea" xml:space="preserve">
+    <value>छवि ड्रॉप क्षेत्र</value>
+  </data>
+  <data name="ImageNotFound" xml:space="preserve">
+    <value>छवि नहीं मिली</value>
+  </data>
+  <data name="ImageNotRead" xml:space="preserve">
+    <value>वह छवि पढ़ी नहीं जा सकी।</value>
+  </data>
+  <data name="ImportFailed" xml:space="preserve">
+    <value>पिछले संस्करण के आइटम पढ़े नहीं जा सके, इसलिए उन्हें आयात नहीं किया गया।</value>
+  </data>
+  <data name="Imported" xml:space="preserve">
+    <value>My Everything Widget के पिछले संस्करण से आयात किए गए आइटम: {0}।</value>
+  </data>
+  <data name="ImportedMissingImage" xml:space="preserve">
+    <value>My Everything Widget के पिछले संस्करण से आयात किए गए आइटम: {0}। {1} छवि नहीं मिली।</value>
+  </data>
+  <data name="ImportedMissingImages" xml:space="preserve">
+    <value>My Everything Widget के पिछले संस्करण से आयात किए गए आइटम: {0}। जो छवियाँ नहीं मिलीं: {1}।</value>
+  </data>
+  <data name="InstalledApps" xml:space="preserve">
+    <value>इंस्टॉल किए गए ऐप्स</value>
+  </data>
+  <data name="InvalidTarget" xml:space="preserve">
+    <value>पूरा पथ (C:\...) या वेब पता (https://...) दर्ज करें।</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>भाषा</value>
+  </data>
+  <data name="LanguageSystem" xml:space="preserve">
+    <value>सिस्टम भाषा</value>
+  </data>
+  <data name="MoveTo" xml:space="preserve">
+    <value>इसमें ले जाएँ</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>नाम</value>
+  </data>
+  <data name="NewCategoryName" xml:space="preserve">
+    <value>नई श्रेणी</value>
+  </data>
+  <data name="NoRoom" xml:space="preserve">
+    <value>अन्य आइटम को वहाँ ले जाने के लिए जगह नहीं है।</value>
+  </data>
+  <data name="NoRoomIn" xml:space="preserve">
+    <value>{0} में जगह नहीं है।</value>
+  </data>
+  <data name="NotAnImage" xml:space="preserve">
+    <value>यह छवि नहीं है।</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>खोलें</value>
+  </data>
+  <data name="OpenWidget" xml:space="preserve">
+    <value>My Everything Widget खोलें</value>
+  </data>
+  <data name="PaintNotAvailable" xml:space="preserve">
+    <value>पेंट खोला नहीं जा सका।</value>
+  </data>
+  <data name="PathOrAddress" xml:space="preserve">
+    <value>पथ या वेब पता</value>
+  </data>
+  <data name="PathOrAddressLabel" xml:space="preserve">
+    <value>या कोई पथ या वेब पता दर्ज करें</value>
+  </data>
+  <data name="PathPlaceholder" xml:space="preserve">
+    <value>C:\... या https://...</value>
+  </data>
+  <data name="Rate" xml:space="preserve">
+    <value>रेट करें</value>
+  </data>
+  <data name="Rename" xml:space="preserve">
+    <value>नाम बदलें</value>
+  </data>
+  <data name="ResetToOriginal" xml:space="preserve">
+    <value>मूल पर रीसेट करें</value>
+  </data>
+  <data name="Resize" xml:space="preserve">
+    <value>आकार बदलें</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>सहेजें</value>
+  </data>
+  <data name="SaveFailed" xml:space="preserve">
+    <value>परिवर्तन सहेजे नहीं जा सके: {0}</value>
+  </data>
+  <data name="SearchInstalledApps" xml:space="preserve">
+    <value>इंस्टॉल किए गए ऐप्स खोजें</value>
+  </data>
+  <data name="SelectIcon" xml:space="preserve">
+    <value>आइकन चुनें</value>
+  </data>
+  <data name="SelectImage" xml:space="preserve">
+    <value>छवि चुनें</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>सेटिंग्स</value>
+  </data>
+  <data name="SomeNotAdded" xml:space="preserve">
+    <value>कुछ आइटम जोड़े नहीं जा सके। पूरे पथ या वेब पते का उपयोग करें।</value>
+  </data>
+  <data name="StateUnreadable" xml:space="preserve">
+    <value>आपके सहेजे गए आइटम पढ़े नहीं जा सके, इसलिए विजेट खाली शुरू हुआ। एक प्रतिलिपि {0} पर रखी गई है।</value>
+  </data>
+  <data name="Theme" xml:space="preserve">
+    <value>थीम</value>
+  </data>
+  <data name="ThemeDark" xml:space="preserve">
+    <value>गहरा</value>
+  </data>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>हल्का</value>
+  </data>
+  <data name="ThemeSystem" xml:space="preserve">
+    <value>सिस्टम</value>
+  </data>
+  <data name="ThemeSystemTip" xml:space="preserve">
+    <value>Windows सेटिंग का पालन करें</value>
+  </data>
+  <data name="UseAsIcon" xml:space="preserve">
+    <value>आइकन के रूप में उपयोग करें</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>संस्करण {0}</value>
+  </data>
+  <data name="Website" xml:space="preserve">
+    <value>वेबसाइट</value>
+  </data>
+</root>

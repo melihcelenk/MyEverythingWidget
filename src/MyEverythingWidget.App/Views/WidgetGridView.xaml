@@ -3,6 +3,7 @@
     x:Class="MyEverythingWidget.App.Views.WidgetGridView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:l="using:MyEverythingWidget.App.Localization"
     xmlns:views="using:MyEverythingWidget.App.Views"
     AutomationProperties.AutomationId="WidgetGrid"
     IsTabStop="True"
@@ -12,7 +13,7 @@
         <!-- Cells the dragged or resized item would cover; accent when allowed, red when not. -->
         <views:AutomationHost x:Name="DropPreview"
                               AutomationProperties.AutomationId="DropPreview"
-                              AutomationProperties.Name="Drop target"
+                              AutomationProperties.Name="{l:Str Key=DropTarget}"
                               Visibility="Collapsed"
                               Canvas.ZIndex="0">
             <Border x:Name="DropPreviewBox"

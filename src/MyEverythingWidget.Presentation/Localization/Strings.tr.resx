@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Add" xml:space="preserve">
+    <value>Ekle</value>
+  </data>
+  <data name="AddApp" xml:space="preserve">
+    <value>Uygulama ekle</value>
+  </data>
+  <data name="AddAppMenu" xml:space="preserve">
+    <value>Uygulama ekle…</value>
+  </data>
+  <data name="AddCategory" xml:space="preserve">
+    <value>Kategori ekle</value>
+  </data>
+  <data name="AddImageMenu" xml:space="preserve">
+    <value>Resim ekle…</value>
+  </data>
+  <data name="AddMenuApp" xml:space="preserve">
+    <value>Uygulama…</value>
+  </data>
+  <data name="AddMenuImage" xml:space="preserve">
+    <value>Resim…</value>
+  </data>
+  <data name="AddMenuNote" xml:space="preserve">
+    <value>Not</value>
+  </data>
+  <data name="AddNote" xml:space="preserve">
+    <value>Not ekle</value>
+  </data>
+  <data name="AddToWidget" xml:space="preserve">
+    <value>Pencere öğesine ekle</value>
+  </data>
+  <data name="AlwaysOnTop" xml:space="preserve">
+    <value>Her zaman üstte</value>
+  </data>
+  <data name="AppNotFound" xml:space="preserve">
+    <value>“{0}” bulunamadı. Taşınmış veya kaldırılmış olabilir.</value>
+  </data>
+  <data name="AppNotOpened" xml:space="preserve">
+    <value>“{0}” açılamadı.</value>
+  </data>
+  <data name="Browse" xml:space="preserve">
+    <value>Gözat…</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>İptal</value>
+  </data>
+  <data name="Categories" xml:space="preserve">
+    <value>Kategoriler</value>
+  </data>
+  <data name="CategoryName" xml:space="preserve">
+    <value>Kategori adı</value>
+  </data>
+  <data name="ChangeIcon" xml:space="preserve">
+    <value>Simgeyi değiştir</value>
+  </data>
+  <data name="ChangeIconMenu" xml:space="preserve">
+    <value>Simgeyi değiştir…</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Kapat</value>
+  </data>
+  <data name="CompactMode" xml:space="preserve">
+    <value>Kompakt mod</value>
+  </data>
+  <data name="CompactModeTip" xml:space="preserve">
+    <value>Simgeye küçült</value>
+  </data>
+  <data name="Copied" xml:space="preserve">
+    <value>Kopyalandı</value>
+  </data>
+  <data name="Copy" xml:space="preserve">
+    <value>Kopyala</value>
+  </data>
+  <data name="CopyEmail" xml:space="preserve">
+    <value>{0} adresini kopyala</value>
+  </data>
+  <data name="CopyImage" xml:space="preserve">
+    <value>Resmi kopyala</value>
+  </data>
+  <data name="CopyNote" xml:space="preserve">
+    <value>Notu kopyala</value>
+  </data>
+  <data name="DefaultCategoryName" xml:space="preserve">
+    <value>Genel</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Sil</value>
+  </data>
+  <data name="DeleteCategoryMany" xml:space="preserve">
+    <value>“{0}” ve içindeki {1} öğe silinecek.</value>
+  </data>
+  <data name="DeleteCategoryOne" xml:space="preserve">
+    <value>“{0}” ve içindeki öğe silinecek.</value>
+  </data>
+  <data name="DeleteCategoryTitle" xml:space="preserve">
+    <value>Kategori silinsin mi?</value>
+  </data>
+  <data name="DropAllowed" xml:space="preserve">
+    <value>izin veriliyor</value>
+  </data>
+  <data name="DropHint" xml:space="preserve">
+    <value>Dosya, bağlantı, metin veya resim bırakın ya da yapıştırın (Ctrl+V)</value>
+  </data>
+  <data name="DropImageHere" xml:space="preserve">
+    <value>Resmi buraya bırakın
+veya Ctrl+V ile yapıştırın</value>
+  </data>
+  <data name="DropNotAllowed" xml:space="preserve">
+    <value>izin verilmiyor</value>
+  </data>
+  <data name="DropTarget" xml:space="preserve">
+    <value>Bırakma hedefi</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Düzenle</value>
+  </data>
+  <data name="EditInPaint" xml:space="preserve">
+    <value>Paint ile düzenle</value>
+  </data>
+  <data name="EditNote" xml:space="preserve">
+    <value>Notu düzenle</value>
+  </data>
+  <data name="GridFull" xml:space="preserve">
+    <value>Bu kategori dolu. Önce bir öğeyi kaldırın veya küçültün.</value>
+  </data>
+  <data name="ImageDropArea" xml:space="preserve">
+    <value>Resim bırakma alanı</value>
+  </data>
+  <data name="ImageNotFound" xml:space="preserve">
+    <value>Resim bulunamadı</value>
+  </data>
+  <data name="ImageNotRead" xml:space="preserve">
+    <value>Bu resim okunamadı.</value>
+  </data>
+  <data name="ImportFailed" xml:space="preserve">
+    <value>Önceki sürümün öğeleri okunamadığı için içeri aktarılmadı.</value>
+  </data>
+  <data name="Imported" xml:space="preserve">
+    <value>My Everything Widget'ın önceki sürümünden {0} öğe içeri aktarıldı.</value>
+  </data>
+  <data name="ImportedMissingImage" xml:space="preserve">
+    <value>My Everything Widget'ın önceki sürümünden {0} öğe içeri aktarıldı. {1} resim bulunamadı.</value>
+  </data>
+  <data name="ImportedMissingImages" xml:space="preserve">
+    <value>My Everything Widget'ın önceki sürümünden {0} öğe içeri aktarıldı. {1} resim bulunamadı.</value>
+  </data>
+  <data name="InstalledApps" xml:space="preserve">
+    <value>Yüklü uygulamalar</value>
+  </data>
+  <data name="InvalidTarget" xml:space="preserve">
+    <value>Tam bir yol (C:\...) veya web adresi (https://...) girin.</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Dil</value>
+  </data>
+  <data name="LanguageSystem" xml:space="preserve">
+    <value>Sistem dili</value>
+  </data>
+  <data name="MoveTo" xml:space="preserve">
+    <value>Taşı</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Ad</value>
+  </data>
+  <data name="NewCategoryName" xml:space="preserve">
+    <value>Yeni kategori</value>
+  </data>
+  <data name="NoRoom" xml:space="preserve">
+    <value>Diğer öğeleri oraya taşımak için yer yok.</value>
+  </data>
+  <data name="NoRoomIn" xml:space="preserve">
+    <value>“{0}” içinde yer yok.</value>
+  </data>
+  <data name="NotAnImage" xml:space="preserve">
+    <value>Bu bir resim değil.</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>Aç</value>
+  </data>
+  <data name="OpenWidget" xml:space="preserve">
+    <value>My Everything Widget'ı aç</value>
+  </data>
+  <data name="PaintNotAvailable" xml:space="preserve">
+    <value>Paint açılamadı.</value>
+  </data>
+  <data name="PathOrAddress" xml:space="preserve">
+    <value>Yol veya web adresi</value>
+  </data>
+  <data name="PathOrAddressLabel" xml:space="preserve">
+    <value>Ya da bir yol veya web adresi girin</value>
+  </data>
+  <data name="PathPlaceholder" xml:space="preserve">
+    <value>C:\... veya https://...</value>
+  </data>
+  <data name="Rate" xml:space="preserve">
+    <value>Puan ver</value>
+  </data>
+  <data name="Rename" xml:space="preserve">
+    <value>Yeniden adlandır</value>
+  </data>
+  <data name="ResetToOriginal" xml:space="preserve">
+    <value>Orijinaline sıfırla</value>
+  </data>
+  <data name="Resize" xml:space="preserve">
+    <value>Yeniden boyutlandır</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Kaydet</value>
+  </data>
+  <data name="SaveFailed" xml:space="preserve">
+    <value>Değişiklikler kaydedilemedi: {0}</value>
+  </data>
+  <data name="SearchInstalledApps" xml:space="preserve">
+    <value>Yüklü uygulamalarda ara</value>
+  </data>
+  <data name="SelectIcon" xml:space="preserve">
+    <value>Simge seç</value>
+  </data>
+  <data name="SelectImage" xml:space="preserve">
+    <value>Resim seç</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Ayarlar</value>
+  </data>
+  <data name="SomeNotAdded" xml:space="preserve">
+    <value>Bazı öğeler eklenemedi. Tam yol veya web adresi kullanın.</value>
+  </data>
+  <data name="StateUnreadable" xml:space="preserve">
+    <value>Kaydedilen öğeleriniz okunamadığı için pencere öğesi boş başlatıldı. Bir kopyası şurada saklandı: {0}.</value>
+  </data>
+  <data name="Theme" xml:space="preserve">
+    <value>Tema</value>
+  </data>
+  <data name="ThemeDark" xml:space="preserve">
+    <value>Koyu</value>
+  </data>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>Açık</value>
+  </data>
+  <data name="ThemeSystem" xml:space="preserve">
+    <value>Sistem</value>
+  </data>
+  <data name="ThemeSystemTip" xml:space="preserve">
+    <value>Windows ayarını kullan</value>
+  </data>
+  <data name="UseAsIcon" xml:space="preserve">
+    <value>Simge olarak kullan</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Sürüm {0}</value>
+  </data>
+  <data name="Website" xml:space="preserve">
+    <value>Web sitesi</value>
+  </data>
+</root>

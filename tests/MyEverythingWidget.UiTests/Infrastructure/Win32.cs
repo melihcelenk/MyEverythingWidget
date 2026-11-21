@@ -32,6 +32,8 @@ internal static partial class Win32
 
     public static nint ForegroundWindow() => GetForegroundWindow();
 
+    public static bool IsVisible(nint window) => IsWindowVisible(window);
+
     /// <summary>Screen position of the window's client area top-left corner (what the user sees as the window corner).</summary>
     public static System.Drawing.Point ClientOrigin(nint window)
     {
@@ -113,6 +115,10 @@ internal static partial class Win32
 
     [LibraryImport("user32.dll")]
     private static partial nint LoadCursorW(nint instance, nint name);
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool IsWindowVisible(nint window);
 
     [LibraryImport("user32.dll")]
     private static partial long GetWindowLongPtrW(nint window, int index);

@@ -123,8 +123,9 @@ public sealed class ImageCopyTests : IDisposable
         Assert.NotNull(viewer.FindFirstDescendant(c => c.ByAutomationId("ViewerEditMenuItem")) ?? app.FindInPopups("ViewerEditMenuItem"));
         copy.AsMenuItem().Invoke();
 
-        Assert.True(Wait.Until(SandboxClipboard.HasPicture), "The clipboard should hold the picture.");
+        // The notice shows for 1.5 s; the clipboard check starts PowerShell, which can take longer in the sandbox.
         Assert.NotNull(Wait.ForElement(() => viewer.FindFirstDescendant(c => c.ByAutomationId("ViewerCopiedNotice"))));
+        Assert.True(Wait.Until(SandboxClipboard.HasPicture), "The clipboard should hold the picture.");
         Assert.NotNull(app.FindWindow("photo.png"));
     }
 

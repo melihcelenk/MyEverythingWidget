@@ -34,6 +34,24 @@ src\MyEverythingWidget.App\bin\x64\Debug\net10.0-windows10.0.26100.0\win-x64\MyE
 - Data goes to `%LOCALAPPDATA%\MyEverythingWidget.WinUI`. Set `MEW_DATA_DIR` to use another folder.
 - Unhandled exceptions are written to `logs\crash.log` in the data folder.
 
+## Localization
+
+The app is in English and 14 other languages; it starts in the Windows display language, or English when that
+language is not one of them, and Settings can choose another one (the app then restarts).
+
+- **Texts:** every text the user sees lives in `src/MyEverythingWidget.Presentation/Localization/Strings.resx` (English,
+  with a comment for translators) and in `Strings.<language>.resx`.
+- **Using a text:** code reads it from `Strings` (`Strings.AddNote`, `Strings.AppNotFound(name)`); XAML uses
+  `{l:Str Key=AddNote}` with `xmlns:l="using:MyEverythingWidget.App.Localization"`.
+- **Adding a text:** add the key to `Strings.resx` and to every `Strings.<language>.resx`, then a property (or a
+  method for texts with `{0}`) to `Strings.cs`.
+- **The guard:** `LocalizationCoverageTests` fails `dotnet test` when a language misses a key or a placeholder, when
+  `Strings.cs` and the resources differ, or when XAML or code shows a hard-coded text.
+- **Adding a language:** add it to `AppLanguages.Supported`, add `Strings.<code>.resx`, and add it to
+  `Package.appxmanifest` → `Resources`.
+- **UI tests:** the sandbox has the host's display language, so `AppSession` sets `MEW_SYSTEM_LANGUAGE=en-US`, which
+  stands in for the Windows display language.
+
 ## Tests
 
 ### Unit tests

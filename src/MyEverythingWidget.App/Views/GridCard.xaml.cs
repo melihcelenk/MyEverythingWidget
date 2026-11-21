@@ -7,6 +7,7 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using MyEverythingWidget.Core.Grid;
 using MyEverythingWidget.Presentation;
 using Windows.ApplicationModel.DataTransfer;
+using MyEverythingWidget.Presentation.Localization;
 
 namespace MyEverythingWidget.App.Views;
 
@@ -88,7 +89,7 @@ public sealed partial class GridCard : UserControl
         _isShowingCopied = true;
         CopyIcon.Glyph = CopiedGlyph;
         CopyButton.Opacity = 1;
-        SetCopyButtonName("Copied");
+        SetCopyButtonName(Strings.Copied);
 
         var timer = DispatcherQueue.CreateTimer();
         timer.Interval = CopiedFeedback;
@@ -106,9 +107,9 @@ public sealed partial class GridCard : UserControl
     /// <summary>Sets the copy button's name and tooltip; <see langword="null"/> restores the one for the card's kind.</summary>
     private void SetCopyButtonName(string? name)
     {
-        var text = name ?? (Item.Kind == ItemKind.Image ? "Copy image" : "Copy note");
+        var text = name ?? (Item.Kind == ItemKind.Image ? Strings.CopyImage : Strings.CopyNote);
         AutomationProperties.SetName(CopyButton, text);
-        ToolTipService.SetToolTip(CopyButton, name ?? "Copy");
+        ToolTipService.SetToolTip(CopyButton, name ?? Strings.Copy);
     }
 
     /// <summary>Reloads the image when its file was changed outside the widget (for example saved from Paint).</summary>

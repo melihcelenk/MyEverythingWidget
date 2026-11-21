@@ -48,6 +48,7 @@
   - Faz 15 — Resim kopyalama ve resim alma
   - Faz 16 — Kopyalama geri bildirimi, görüntüleyici menüsü ve Paint'te düzenleme
   - Faz 17 — Ayarlar penceresinin kenar boşluğu ve yayın hazırlığı
+  - Faz 18 — Diller, kompakt Ayarlar penceresi ve başlık düğmeleri
 - Kaynaklar
 
 ---
@@ -95,6 +96,7 @@
 | 15 | Resim kopyalama ve resim alma | 🟢 Tamamlandı | 100% | `PHASE15.md` |
 | 16 | Kopyalama geri bildirimi, görüntüleyici menüsü ve Paint'te düzenleme | 🟢 Tamamlandı | 100% | `PHASE16.md` |
 | 17 | Ayarlar penceresinin kenar boşluğu ve yayın hazırlığı | 🟡 Devam ediyor | 85% | `PHASE17.md` |
+| 18 | Diller, kompakt Ayarlar penceresi ve başlık düğmeleri | 🟡 Devam ediyor | 95% | `PHASE18.md` |
 
 <!-- Durum ikonları: 🟢 Tamamlandı (faz bitti, tüm testleri geçti) | 🟡 Kısmi (neyin beklediği faz notunda) | ⏳ Bekliyor (başlamadı) | 🔴 Bloke (bir karar ya da dış bağımlılık bekleniyor) -->
 
@@ -643,6 +645,15 @@ yenileniyor. Düzenleme Paint'te yapıldığı için widget'ın belleği büyüm
 Ayarlar penceresi ve diğer iletişim kutuları artık widget'ın iki yanından boşluk bırakıyor; dar widget'ta içerik
 kırpılmıyor. README ve Store için beş kullanım senaryosunun ekran görüntüleri Sandbox'ta tek komutla çekiliyor.
 Kalan iş `master`'a birleştirme ve Store gönderimi.
+
+### 🟡 Faz 18 — Diller, kompakt Ayarlar penceresi ve başlık düğmeleri
+
+**Durum:** 🟡 Devam ediyor · **Tamamlanma:** 95% · **Ayrıntı:** [`PHASE18.md`](PHASE18.md)
+
+Uygulama 15 dilde. Varsayılan dil Windows'un dili, o listede yoksa İngilizce; Ayarlar'dan başka dil seçilebiliyor.
+Çevrilmemiş ya da sabit yazılmış bir metin birim testlerini kırmızı yapıyor. Ayarlar penceresi kompakt bir başlık ve
+sağ üstte ✕ ile açılıyor, dışarı tıklayınca kapanıyor. Küçük simgenin çerçevesi daraldı; sabitleme ve küçültme
+düğmelerinin yeri değişti.
 
 ---
 

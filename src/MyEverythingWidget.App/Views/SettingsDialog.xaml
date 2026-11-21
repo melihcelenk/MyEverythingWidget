@@ -3,14 +3,38 @@
     x:Class="MyEverythingWidget.App.Views.SettingsDialog"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:l="using:MyEverythingWidget.App.Localization"
     xmlns:views="using:MyEverythingWidget.App.Views"
     AutomationProperties.AutomationId="SettingsDialog"
-    Title="Settings"
-    CloseButtonText="Close"
-    DefaultButton="Close">
+    AutomationProperties.Name="{l:Str Key=Settings}">
 
-    <!-- The dialog does not scroll its content itself; in a small widget the About section is below the fold. -->
+    <!-- A one-line header with a close cross instead of the dialog's title and Close button, so the settings start
+         near the top. The dialog does not scroll its content itself; in a small widget the About section is below the
+         fold. -->
+    <Grid RowSpacing="6">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid x:Name="Header" ColumnSpacing="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock VerticalAlignment="Center" FontSize="16" FontWeight="SemiBold" Text="{l:Str Key=Settings}" />
+            <Button x:Name="CloseCross"
+                    Grid.Column="1"
+                    AutomationProperties.AutomationId="SettingsCloseButton"
+                    AutomationProperties.Name="{l:Str Key=Close}"
+                    ToolTipService.ToolTip="{l:Str Key=Close}"
+                    Style="{StaticResource TitleBarButtonStyle}"
+                    Click="OnCloseClicked">
+                <FontIcon FontSize="12" Glyph="&#xE8BB;" />
+            </Button>
+        </Grid>
     <ScrollViewer x:Name="ContentScroller"
+                  Grid.Row="1"
+                  Margin="0,0,20,0"
                   AutomationProperties.AutomationId="SettingsScroller"
                   HorizontalScrollBarVisibility="Disabled"
                   VerticalScrollBarVisibility="Auto">
@@ -19,7 +43,7 @@
             <!-- One choice of a segmented control: one word, the chosen one filled with the accent colour. -->
             <Style x:Key="SegmentStyle" TargetType="RadioButton">
                 <Setter Property="MinWidth" Value="0" />
-                <Setter Property="Padding" Value="14,5" />
+                <Setter Property="Padding" Value="10,5" />
                 <Setter Property="Foreground" Value="{ThemeResource TextFillColorPrimaryBrush}" />
                 <Setter Property="Template">
                     <Setter.Value>
@@ -68,17 +92,68 @@
             </Style>
         </StackPanel.Resources>
 
+        <Grid ColumnSpacing="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock VerticalAlignment="Center" Style="{StaticResource BodyStrongTextBlockStyle}" Text="{l:Str Key=Language}" />
+            <!-- Looks like a combo box, but its list opens downwards and ends at the bottom of the About card; WinUI's
+                 ComboBox puts the chosen row over the box, so with the first row chosen its list grew upwards. -->
+            <Button x:Name="LanguageChoice"
+                    Grid.Column="1"
+                    MinWidth="0"
+                    Padding="11,5,8,6"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Stretch"
+                    AutomationProperties.AutomationId="LanguageChoice"
+                    AutomationProperties.Name="{l:Str Key=Language}">
+                <Grid ColumnSpacing="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock x:Name="LanguageText" AutomationProperties.AutomationId="LanguageText" TextTrimming="CharacterEllipsis" />
+                    <FontIcon Grid.Column="1" FontSize="12" Glyph="&#xE70D;" />
+                </Grid>
+                <Button.Flyout>
+                    <Flyout x:Name="LanguageFlyout" Placement="BottomEdgeAlignedLeft" Opening="OnLanguageListOpening" Opened="OnLanguageListOpened">
+                        <Flyout.FlyoutPresenterStyle>
+                            <Style TargetType="FlyoutPresenter" BasedOn="{StaticResource DefaultFlyoutPresenterStyle}">
+                                <Setter Property="Padding" Value="0,2" />
+                                <Setter Property="MinWidth" Value="0" />
+                                <Setter Property="MinHeight" Value="0" />
+                                <Setter Property="MaxHeight" Value="100000" />
+                                <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled" />
+                            </Style>
+                        </Flyout.FlyoutPresenterStyle>
+                        <ListView x:Name="LanguageList"
+                                  AutomationProperties.AutomationId="LanguageList"
+                                  AutomationProperties.Name="{l:Str Key=Language}"
+                                  SelectionMode="Single"
+                                  SelectionChanged="OnLanguagePicked">
+                            <ListView.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel />
+                                </ItemsPanelTemplate>
+                            </ListView.ItemsPanel>
+                        </ListView>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
+        </Grid>
+
         <StackPanel Spacing="4">
-            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Theme" />
+            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{l:Str Key=Theme}" />
             <views:AutomationHost HorizontalAlignment="Left" AutomationProperties.AutomationId="ThemeChoices">
             <Border
                     BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
                     BorderThickness="1"
                     CornerRadius="{ThemeResource ControlCornerRadius}">
                 <StackPanel Orientation="Horizontal">
-                    <RadioButton x:Name="ThemeSystem" GroupName="Theme" Style="{StaticResource SegmentStyle}" AutomationProperties.AutomationId="ThemeSystem" Content="System" ToolTipService.ToolTip="Follow the Windows setting" Checked="OnThemeChecked" />
-                    <RadioButton x:Name="ThemeLight" GroupName="Theme" Style="{StaticResource SegmentStyle}" AutomationProperties.AutomationId="ThemeLight" Content="Light" Checked="OnThemeChecked" />
-                    <RadioButton x:Name="ThemeDark" GroupName="Theme" Style="{StaticResource SegmentStyle}" AutomationProperties.AutomationId="ThemeDark" Content="Dark" Checked="OnThemeChecked" />
+                    <RadioButton x:Name="ThemeSystem" GroupName="Theme" Style="{StaticResource SegmentStyle}" AutomationProperties.AutomationId="ThemeSystem" Content="{l:Str Key=ThemeSystem}" ToolTipService.ToolTip="{l:Str Key=ThemeSystemTip}" Checked="OnThemeChecked" />
+                    <RadioButton x:Name="ThemeLight" GroupName="Theme" Style="{StaticResource SegmentStyle}" AutomationProperties.AutomationId="ThemeLight" Content="{l:Str Key=ThemeLight}" Checked="OnThemeChecked" />
+                    <RadioButton x:Name="ThemeDark" GroupName="Theme" Style="{StaticResource SegmentStyle}" AutomationProperties.AutomationId="ThemeDark" Content="{l:Str Key=ThemeDark}" Checked="OnThemeChecked" />
                 </StackPanel>
             </Border>
             </views:AutomationHost>
@@ -89,11 +164,11 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <TextBlock VerticalAlignment="Center" Style="{StaticResource BodyStrongTextBlockStyle}" Text="Always on top" />
+            <TextBlock VerticalAlignment="Center" Style="{StaticResource BodyStrongTextBlockStyle}" Text="{l:Str Key=AlwaysOnTop}" />
             <ToggleSwitch x:Name="AlwaysOnTopSwitch"
                           Grid.Column="1"
                           AutomationProperties.AutomationId="AlwaysOnTopSwitch"
-                          AutomationProperties.Name="Always on top"
+                          AutomationProperties.Name="{l:Str Key=AlwaysOnTop}"
                           OnContent=""
                           OffContent=""
                           Toggled="OnAlwaysOnTopToggled" />
@@ -135,13 +210,13 @@
                 <HyperlinkButton x:Name="WebsiteLink" AutomationProperties.AutomationId="AboutWebsiteLink" Padding="0" FontSize="11" Foreground="{ThemeResource AboutCardLinkBrush}">
                     <StackPanel Orientation="Horizontal" Spacing="6">
                         <TextBlock Text="&#x1F310;" />
-                        <TextBlock Text="Website" />
+                        <TextBlock Text="{l:Str Key=Website}" />
                     </StackPanel>
                 </HyperlinkButton>
                 <HyperlinkButton x:Name="RateLink" AutomationProperties.AutomationId="AboutRateLink" Padding="0" FontSize="11" Foreground="{ThemeResource AboutCardLinkBrush}">
                     <StackPanel Orientation="Horizontal" Spacing="6">
                         <TextBlock Text="&#x2B50;" />
-                        <TextBlock Text="Rate" />
+                        <TextBlock Text="{l:Str Key=Rate}" />
                     </StackPanel>
                 </HyperlinkButton>
             </StackPanel>
@@ -149,4 +224,5 @@
         </views:AutomationHost>
     </StackPanel>
     </ScrollViewer>
+    </Grid>
 </ContentDialog>

@@ -2,11 +2,12 @@
 <UserControl
     x:Class="MyEverythingWidget.App.Views.CategoryTabsView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:l="using:MyEverythingWidget.App.Localization">
 
     <TabView x:Name="Tabs"
              AutomationProperties.AutomationId="CategoryTabs"
-             AutomationProperties.Name="Categories"
+             AutomationProperties.Name="{l:Str Key=Categories}"
              VerticalAlignment="Bottom"
              IsAddTabButtonVisible="False"
              CanReorderTabs="True"
@@ -44,8 +45,8 @@
                 </Grid.ColumnDefinitions>
                 <Button x:Name="AddCategoryButton"
                         AutomationProperties.AutomationId="AddCategoryButton"
-                        AutomationProperties.Name="Add category"
-                        ToolTipService.ToolTip="Add category"
+                        AutomationProperties.Name="{l:Str Key=AddCategory}"
+                        ToolTipService.ToolTip="{l:Str Key=AddCategory}"
                         Style="{StaticResource TitleBarButtonStyle}"
                         Margin="2,0,0,0"
                         VerticalAlignment="Center"
