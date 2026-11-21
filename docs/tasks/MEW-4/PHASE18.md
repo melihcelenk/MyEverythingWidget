@@ -54,6 +54,8 @@ boşluk daraldı. Sabitleme düğmesi sola, küçültme düğmesi kapatmanın ya
 | 18.5 | Kullanıcı yeni sürümü kendi bilgisayarında dener. | ⏳ Bekliyor (kullanıcı) |
 | 18.6 | Ayarlar'daki dil listesi aşağı doğru, yeşil kartın alt kenarına kadar açılır. | 🟢 Tamamlandı |
 | 18.7 | Küçük simge, tam ekran bir video, oyun ya da sunum açıkken gizlenir; masaüstüne dönünce geri gelir. | 🟢 Tamamlandı |
+| 18.8 | Store gönderimi otomatikleşir: paketler ve gönderim tek komutla. | ➡️ Faz 19'a taşındı (`PHASE19.md`) |
+| 18.9 | 1.0.2 sürümünün kapsamı belirlenir; Windows açılınca başlatma değerlendirilir. | 🟢 Tamamlandı |
 
 ## Nasıl kontrol edilir
 
@@ -250,6 +252,38 @@ boşluk daraldı. Sabitleme düğmesi sola, küçültme düğmesi kapatmanın ya
   - `UiTests/LanguageAndSettingsTests.CompactIcon_HidesWhileAWindowIsFullScreen_AndComesBackAfterwards`: Sandbox'ta
     kenarlıksız, ekranı kaplayan bir pencere açılınca simge gizleniyor. Pencere kapanınca simge yeniden en üstte
     görünüyor.
+- **Durum:** 🟢 Tamamlandı.
+
+### 18.8 — Store gönderimi otomatikleşir: paketler ve gönderim tek komutla.
+
+- **Gereksinim (T135):** Store'a gönderim otomatikleştirilir; kullanıcının yapması gereken tek seferlik adımlar
+  adım adım verilir.
+- **Mevcut durum:** Paketler komutla oluşturuluyor. Yükleme ve gönderim Partner Center'da elle yapılıyor.
+- **Problem:** Her güncellemede paketleri yüklemek, "What's new" metnini girmek ve gönderimi başlatmak elle yapılıyor.
+- **Çözüm:**
+  - Partner Center'a "Manager" rolüyle bir Microsoft Entra uygulaması eklenir.
+  - Kimlik bilgileri yalnız kullanıcının bilgisayarında, `msstore` aracının kendi deposunda tutulur; repoya ve
+    sohbete girmez.
+  - Ardından `msstore publish` ile paketler yüklenip gönderim başlatılır.
+  - Adımlar: `docs/general/STORE_SUBMISSION.md` → Automated submission.
+- **Dosyalar:** `docs/general/STORE_SUBMISSION.md`
+- **Testler:** Kurulumdan sonra ilk otomatik gönderimle denenecek.
+- **Durum:** ➡️ Faz 19'a taşındı (T140); kullanıcının adımları `PHASE19.md`'de.
+
+### 18.9 — 1.0.2 sürümünün kapsamı belirlenir; Windows açılınca başlatma değerlendirilir.
+
+- **Gereksinim (T137):** Canlıya alınmamış değişiklikler listelenir; Windows açılınca başlatmanın sürüme eklenip
+  eklenmeyeceği değerlendirilir.
+- **Mevcut durum:** Faz 18'in bütün değişiklikleri PR #7'de; Store'da yok.
+- **Problem:** Uygulama Windows açılınca kendiliğinden başlamıyor.
+- **Çözüm:**
+  - **Kapsam (S21 → C):** Windows açılınca başlatma 1.2.0'a kaldı (GitHub projesinde taslak).
+  - **Sürüm (T138):** Yeni özellikler içerdiği için 1.1.0.
+  - **Store sayfası (S22 → A):** Paket 15 dili bildirdiği için Partner Center her dile bir Store sayfası istedi.
+    14 dilin metinleri çevrildi ve CSV ile içe aktarıldı.
+  - **Gönderim (T152):** Kullanıcı 1.1.0'ı gönderdi; Partner Center "Update in certification" gösteriyor.
+- **Dosyalar:** `src/MyEverythingWidget.App/StoreIdentity.json` (1.1.0.0), `docs/general/STORE_SUBMISSION.md`
+- **Testler:** Paketler MakeAppx ile açılıp doğrulandı. Manifestte 15 dil ve sürüm 1.1.0.0, pakette 14 çeviri var.
 - **Durum:** 🟢 Tamamlandı.
 
 ## Referanslar

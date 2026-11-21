@@ -1,9 +1,10 @@
 ---
 id: S14
-status: answered
+status: resolved
 decider: user
 priority: major
 asked: 2026-11-18
+resolved: 2026-11-21
 ---
 # S14 — GitHub ayarları: aşağıdaki metin ve ayarlarla uygulayayım mı?
 

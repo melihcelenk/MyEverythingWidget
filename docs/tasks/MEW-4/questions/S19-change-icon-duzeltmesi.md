@@ -1,9 +1,10 @@
 ---
 id: S19
-status: answered
+status: resolved
 decider: user
 priority: critical
 asked: 2026-11-20
+resolved: 2026-11-21
 ---
 # S19 — "Change icon" donmasının düzeltmesi ve 1.0.1 güncellemesi
 

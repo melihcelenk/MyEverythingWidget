@@ -49,6 +49,7 @@
   - Faz 16 — Kopyalama geri bildirimi, görüntüleyici menüsü ve Paint'te düzenleme
   - Faz 17 — Ayarlar penceresinin kenar boşluğu ve yayın hazırlığı
   - Faz 18 — Diller, kompakt Ayarlar penceresi ve başlık düğmeleri
+  - Faz 19 — Store gönderiminin otomatikleştirilmesi
 - Kaynaklar
 
 ---
@@ -97,6 +98,7 @@
 | 16 | Kopyalama geri bildirimi, görüntüleyici menüsü ve Paint'te düzenleme | 🟢 Tamamlandı | 100% | `PHASE16.md` |
 | 17 | Ayarlar penceresinin kenar boşluğu ve yayın hazırlığı | 🟡 Devam ediyor | 85% | `PHASE17.md` |
 | 18 | Diller, kompakt Ayarlar penceresi ve başlık düğmeleri | 🟡 Devam ediyor | 95% | `PHASE18.md` |
+| 19 | Store gönderiminin otomatikleştirilmesi | ⏸️ Ertelendi | 0% | `PHASE19.md` |
 
 <!-- Durum ikonları: 🟢 Tamamlandı (faz bitti, tüm testleri geçti) | 🟡 Kısmi (neyin beklediği faz notunda) | ⏳ Bekliyor (başlamadı) | 🔴 Bloke (bir karar ya da dış bağımlılık bekleniyor) -->
 
@@ -654,6 +656,13 @@ Uygulama 15 dilde. Varsayılan dil Windows'un dili, o listede yoksa İngilizce; 
 Çevrilmemiş ya da sabit yazılmış bir metin birim testlerini kırmızı yapıyor. Ayarlar penceresi kompakt bir başlık ve
 sağ üstte ✕ ile açılıyor, dışarı tıklayınca kapanıyor. Küçük simgenin çerçevesi daraldı; sabitleme ve küçültme
 düğmelerinin yeri değişti.
+
+### ⏸️ Faz 19 — Store gönderiminin otomatikleştirilmesi
+
+**Durum:** ⏸️ Ertelendi · **Tamamlanma:** 0% · **Ayrıntı:** [`PHASE19.md`](PHASE19.md)
+
+Güncellemeleri Store'a tek komutla göndermek için kullanıcının bir kez yapacağı adımlar. Adımlar, kişisel hesabın Entra
+kiracısıyla karışmasını önleyecek biçimde yazıldı. Kurulum kullanıcının kararıyla şimdilik ertelendi.
 
 ---
 

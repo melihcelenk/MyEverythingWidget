@@ -1,9 +1,10 @@
 ---
 id: S20
-status: answered
+status: resolved
 decider: user
 priority: major
 asked: 2026-11-21
+resolved: 2026-11-21
 ---
 # S20 — Dil listesi aşağı doğru, yeşil kartın altına kadar açılsın: nasıl yapalım?
 
