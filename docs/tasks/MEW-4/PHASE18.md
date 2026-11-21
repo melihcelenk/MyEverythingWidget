@@ -1,6 +1,6 @@
 # Faz 18 — Diller, kompakt Ayarlar penceresi ve başlık düğmeleri
 
-> **Durum:** 🟡 Devam ediyor · **Tamamlanma:** 95% · **Efor:** tahmin yazılmadı · **Task:** MEW-4
+> **Durum:** 🟢 Tamamlandı · **Tamamlanma:** 100% · **Efor:** tahmin yazılmadı · **Task:** MEW-4
 
 Uygulama İngilizce dahil 15 dilde. Açılışta Windows'un görüntü dili kullanılıyor; bu dil listede yoksa uygulama
 İngilizce açılıyor. Ayarlar'dan başka bir dil seçilebiliyor. Ayarlar penceresi kompakt bir başlık ve sağ üstte bir
@@ -51,10 +51,10 @@ boşluk daraldı. Sabitleme düğmesi sola, küçültme düğmesi kapatmanın ya
 | 18.2 | Ayarlar'a dil seçimi gelir; varsayılan sistem dili, listede yoksa İngilizce. | 🟢 Tamamlandı |
 | 18.3 | Ayarlar penceresi kompaktlaşır: küçük başlık, sağ üstte ✕, dışarı tıklayınca kapanma. | 🟢 Tamamlandı |
 | 18.4 | Küçük simgenin çerçevesi daralır; sabitleme ve küçültme düğmelerinin yeri değişir. | 🟢 Tamamlandı |
-| 18.5 | Kullanıcı yeni sürümü kendi bilgisayarında dener. | ⏳ Bekliyor (kullanıcı) |
+| 18.5 | Kullanıcı yeni sürümü kendi bilgisayarında dener. | 🟢 Tamamlandı |
 | 18.6 | Ayarlar'daki dil listesi aşağı doğru, yeşil kartın alt kenarına kadar açılır. | 🟢 Tamamlandı |
 | 18.7 | Küçük simge, tam ekran bir video, oyun ya da sunum açıkken gizlenir; masaüstüne dönünce geri gelir. | 🟢 Tamamlandı |
-| 18.8 | Store gönderimi otomatikleşir: paketler ve gönderim tek komutla. | ➡️ Faz 19'a taşındı (`PHASE19.md`) |
+| 18.8 | Store gönderimi otomatikleşir: paketler ve gönderim tek komutla. | 🟢 Kapatıldı (GitHub projesine taşındı) |
 | 18.9 | 1.0.2 sürümünün kapsamı belirlenir; Windows açılınca başlatma değerlendirilir. | 🟢 Tamamlandı |
 
 ## Nasıl kontrol edilir
@@ -209,7 +209,7 @@ boşluk daraldı. Sabitleme düğmesi sola, küçültme düğmesi kapatmanın ya
 - **Çözüm:** Kullanıcının geri bildirimleri bu alt faza işlenir.
 - **Dosyalar:** -
 - **Testler:** -
-- **Durum:** ⏳ Bekliyor (kullanıcı).
+- **Durum:** 🟢 Tamamlandı. Kullanıcı denedi; geri bildirimleri 18.6 (dil listesi) ve 18.7 (tam ekran) olarak uygulandı.
 
 ### 18.6 — Ayarlar'daki dil listesi aşağı doğru, yeşil kartın alt kenarına kadar açılır.
 
@@ -268,7 +268,7 @@ boşluk daraldı. Sabitleme düğmesi sola, küçültme düğmesi kapatmanın ya
   - Adımlar: `docs/general/STORE_SUBMISSION.md` → Automated submission.
 - **Dosyalar:** `docs/general/STORE_SUBMISSION.md`
 - **Testler:** Kurulumdan sonra ilk otomatik gönderimle denenecek.
-- **Durum:** ➡️ Faz 19'a taşındı (T140); kullanıcının adımları `PHASE19.md`'de.
+- **Durum:** 🟢 Kapatıldı. Kurulum şimdilik yapılmıyor; iş GitHub projesinde bir görev olarak duruyor (T154).
 
 ### 18.9 — 1.0.2 sürümünün kapsamı belirlenir; Windows açılınca başlatma değerlendirilir.
 
