@@ -1,6 +1,6 @@
 # Faz 17 — Ayarlar penceresinin kenar boşluğu ve yayın hazırlığı
 
-> **Durum:** 🟡 Devam ediyor · **Tamamlanma:** 85% · **Efor:** tahmin yazılmadı · **Task:** MEW-4
+> **Durum:** 🟢 Tamamlandı · **Tamamlanma:** 100% · **Efor:** tahmin yazılmadı · **Task:** MEW-4
 
 Ayarlar penceresi artık widget'ın iki yanından boşluk bırakıyor; aynı düzen bütün iletişim kutularına uygulandı. Widget
 2 sütuna kadar küçültülse de içerik kırpılmıyor. README ve Store için beş kullanım senaryosunu anlatan ekran
@@ -41,10 +41,10 @@ Store gönderimi.
 | 17.8 | Repo halka açılmaya hazırlanır: görev dokümanlarının dili ve eksik standart dosyalar. | 🟢 Tamamlandı |
 | 17.9 | Compact ikon görev çubuğundan simge durumuna alınıp geri açılınca boyutunu korur. | 🟢 Tamamlandı |
 | 17.10 | Ayarlar penceresi: TaskTimerWidget tarzı About, tek satırlık tema seçimi, pencereye sığan düzen. | 🟢 Tamamlandı |
-| 17.11 | Uygulamanın adı gözden geçirilir. | ⏳ Bekliyor (S15) |
+| 17.11 | Uygulamanın adı gözden geçirilir. | 🟢 Tamamlandı |
 | 17.12 | About tasarımı TaskTimerWidget'takiyle aynı yapılır. | 🟢 Tamamlandı |
-| 17.13 | Yayın için LinkedIn paylaşımı (İngilizce ve Türkçe) hazırlanır. | 🟡 Kısmi (metin hazır, görsel kararı kullanıcıda) |
-| 17.14 | Store sürümünde "Change icon" ikinci kez açılınca uygulama donuyor. | 🟡 Kısmi (düzeltildi; 1.0.1 gönderimi kullanıcıda) |
+| 17.13 | Yayın için LinkedIn paylaşımı (İngilizce ve Türkçe) hazırlanır. | 🟢 Tamamlandı |
+| 17.14 | Store sürümünde "Change icon" ikinci kez açılınca uygulama donuyor. | 🟢 Tamamlandı |
 
 ## Nasıl kontrol edilir
 
@@ -114,7 +114,7 @@ Store gönderimi.
 
 - **Mevcut durum:** PR #1 açık.
 - **Çözüm:** Kullanıcı inceleyip birleştirir.
-- **Durum:** ⏳ Bekliyor (kullanıcı).
+- **Durum:** 🟢 Tamamlandı (PR #1 birleştirildi).
 
 ### 17.4 — Store gönderimi için ekran görüntüleri ve paket hazırlanır.
 
@@ -302,7 +302,7 @@ Store gönderimi.
 - **Gereksinim (T40):** Adın hukuki açıdan uygun olup olmadığı değerlendirilmeli; daha çarpıcı bir ad önerilmeli.
 - **Çözüm:** Hızlı tarama sonucu ve aday adlar S15'te sunuldu (öneri: "Pocket Desk"). Kesin kontrol Partner Center
   ad rezervasyonu ve marka veritabanları ile yapılmalı.
-- **Durum:** ⏳ Bekliyor (S15).
+- **Durum:** 🟢 Tamamlandı. "My Everything Widget" adı Partner Center'da ayrıldı ve uygulama bu adla yayında; S15 kapandı.
 
 ### 17.12 — About tasarımı TaskTimerWidget'takiyle aynı yapılır.
 
@@ -372,7 +372,7 @@ Store gönderimi.
 - **Görsel (T109):** `tmp/linkedin/linkedin-post.png` (1200x1200), `store-1` ile aynı gerçek çekimden üretildi. Uygulama,
   fotoğraf ve web sitesi etiketleri var; notun Copy düğmesi işaretli ve yanında "Notes: one click copies the whole
   note" açıklaması duruyor. Repoya eklenmedi.
-- **Durum:** 🟡 Kısmi.
+- **Durum:** 🟢 Tamamlandı. Metin ve görsel (`tmp/linkedin/linkedin-post.png`) hazır; paylaşım kullanıcıda.
 
 ### 17.14 — Store sürümünde "Change icon" ikinci kez açılınca uygulama donuyor.
 
@@ -396,7 +396,7 @@ Store gönderimi.
   - `tests/MyEverythingWidget.UiTests/AppItemTests.cs` → `IconDialog_OpensAgain_AfterItWasUsedOnce` (6 senaryo). Düzeltmeden
     önce 4/6, sonra 6/6.
   - Birim testleri 309/309. Tam UI takımı 103/104; geçmeyen test Sandbox fare girişi hatasıydı ve tek başına geçti.
-- **Durum:** 🟡 Kısmi (1.0.1 paketleri hazır; Store'a gönderim kullanıcıda).
+- **Durum:** 🟢 Tamamlandı. 1.0.1 Store'a gönderildi; düzeltme 1.1.0'da da var.
 
 ### Referanslar
 

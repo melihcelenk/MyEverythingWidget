@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using MyEverythingWidget.Core.Apps;
+using MyEverythingWidget.Presentation.Localization;
 
 namespace MyEverythingWidget.Presentation;
 
@@ -10,7 +11,7 @@ namespace MyEverythingWidget.Presentation;
 public sealed partial class AddAppViewModel : ObservableObject
 {
     /// <summary>Shown when the typed text is neither a full path nor a web address.</summary>
-    public const string InvalidTargetMessage = "Enter a full path (C:\\...) or a web address (https://...).";
+    public static string InvalidTargetMessage => Strings.InvalidTarget;
 
     private readonly BoardViewModel _board;
     private readonly IInstalledAppsSource _installedApps;

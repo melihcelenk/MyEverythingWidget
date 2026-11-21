@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Add" xml:space="preserve">
+    <value>Lägg till</value>
+  </data>
+  <data name="AddApp" xml:space="preserve">
+    <value>Lägg till app</value>
+  </data>
+  <data name="AddAppMenu" xml:space="preserve">
+    <value>Lägg till app…</value>
+  </data>
+  <data name="AddCategory" xml:space="preserve">
+    <value>Lägg till kategori</value>
+  </data>
+  <data name="AddImageMenu" xml:space="preserve">
+    <value>Lägg till bild…</value>
+  </data>
+  <data name="AddMenuApp" xml:space="preserve">
+    <value>App…</value>
+  </data>
+  <data name="AddMenuImage" xml:space="preserve">
+    <value>Bild…</value>
+  </data>
+  <data name="AddMenuNote" xml:space="preserve">
+    <value>Anteckning</value>
+  </data>
+  <data name="AddNote" xml:space="preserve">
+    <value>Lägg till anteckning</value>
+  </data>
+  <data name="AddToWidget" xml:space="preserve">
+    <value>Lägg till i widgeten</value>
+  </data>
+  <data name="AlwaysOnTop" xml:space="preserve">
+    <value>Alltid överst</value>
+  </data>
+  <data name="AppNotFound" xml:space="preserve">
+    <value>”{0}” hittades inte. Den kan ha flyttats eller avinstallerats.</value>
+  </data>
+  <data name="AppNotOpened" xml:space="preserve">
+    <value>”{0}” kunde inte öppnas.</value>
+  </data>
+  <data name="Browse" xml:space="preserve">
+    <value>Bläddra…</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Avbryt</value>
+  </data>
+  <data name="Categories" xml:space="preserve">
+    <value>Kategorier</value>
+  </data>
+  <data name="CategoryName" xml:space="preserve">
+    <value>Kategorinamn</value>
+  </data>
+  <data name="ChangeIcon" xml:space="preserve">
+    <value>Ändra ikon</value>
+  </data>
+  <data name="ChangeIconMenu" xml:space="preserve">
+    <value>Ändra ikon…</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Stäng</value>
+  </data>
+  <data name="CompactMode" xml:space="preserve">
+    <value>Kompakt läge</value>
+  </data>
+  <data name="CompactModeTip" xml:space="preserve">
+    <value>Krymp till en ikon</value>
+  </data>
+  <data name="Copied" xml:space="preserve">
+    <value>Kopierat</value>
+  </data>
+  <data name="Copy" xml:space="preserve">
+    <value>Kopiera</value>
+  </data>
+  <data name="CopyEmail" xml:space="preserve">
+    <value>Kopiera {0}</value>
+  </data>
+  <data name="CopyImage" xml:space="preserve">
+    <value>Kopiera bild</value>
+  </data>
+  <data name="CopyNote" xml:space="preserve">
+    <value>Kopiera anteckning</value>
+  </data>
+  <data name="DefaultCategoryName" xml:space="preserve">
+    <value>Allmänt</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Ta bort</value>
+  </data>
+  <data name="DeleteCategoryMany" xml:space="preserve">
+    <value>”{0}” och dess {1} objekt tas bort.</value>
+  </data>
+  <data name="DeleteCategoryOne" xml:space="preserve">
+    <value>”{0}” och dess objekt tas bort.</value>
+  </data>
+  <data name="DeleteCategoryTitle" xml:space="preserve">
+    <value>Ta bort kategori?</value>
+  </data>
+  <data name="DropAllowed" xml:space="preserve">
+    <value>tillåtet</value>
+  </data>
+  <data name="DropHint" xml:space="preserve">
+    <value>Släpp eller klistra in (Ctrl+V) filer, länkar, text eller bilder</value>
+  </data>
+  <data name="DropImageHere" xml:space="preserve">
+    <value>Släpp en bild här
+eller klistra in den med Ctrl+V</value>
+  </data>
+  <data name="DropNotAllowed" xml:space="preserve">
+    <value>inte tillåtet</value>
+  </data>
+  <data name="DropTarget" xml:space="preserve">
+    <value>Släppmål</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Redigera</value>
+  </data>
+  <data name="EditInPaint" xml:space="preserve">
+    <value>Redigera i Paint</value>
+  </data>
+  <data name="EditNote" xml:space="preserve">
+    <value>Redigera anteckning</value>
+  </data>
+  <data name="GridFull" xml:space="preserve">
+    <value>Den här kategorin är full. Ta bort eller förminska något först.</value>
+  </data>
+  <data name="ImageDropArea" xml:space="preserve">
+    <value>Släppområde för bild</value>
+  </data>
+  <data name="ImageNotFound" xml:space="preserve">
+    <value>Bilden hittades inte</value>
+  </data>
+  <data name="ImageNotRead" xml:space="preserve">
+    <value>Det gick inte att läsa bilden.</value>
+  </data>
+  <data name="ImportFailed" xml:space="preserve">
+    <value>Objekten från den tidigare versionen kunde inte läsas, så de importerades inte.</value>
+  </data>
+  <data name="Imported" xml:space="preserve">
+    <value>{0} objekt importerades från den tidigare versionen av My Everything Widget.</value>
+  </data>
+  <data name="ImportedMissingImage" xml:space="preserve">
+    <value>{0} objekt importerades från den tidigare versionen av My Everything Widget. {1} bild hittades inte.</value>
+  </data>
+  <data name="ImportedMissingImages" xml:space="preserve">
+    <value>{0} objekt importerades från den tidigare versionen av My Everything Widget. Bilder som inte hittades: {1}.</value>
+  </data>
+  <data name="InstalledApps" xml:space="preserve">
+    <value>Installerade appar</value>
+  </data>
+  <data name="InvalidTarget" xml:space="preserve">
+    <value>Ange en fullständig sökväg (C:\...) eller en webbadress (https://...).</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Språk</value>
+  </data>
+  <data name="LanguageSystem" xml:space="preserve">
+    <value>Systemspråk</value>
+  </data>
+  <data name="MoveTo" xml:space="preserve">
+    <value>Flytta till</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Namn</value>
+  </data>
+  <data name="NewCategoryName" xml:space="preserve">
+    <value>Ny kategori</value>
+  </data>
+  <data name="NoRoom" xml:space="preserve">
+    <value>Det finns inte plats att flytta de andra objekten dit.</value>
+  </data>
+  <data name="NoRoomIn" xml:space="preserve">
+    <value>Det finns inte plats i {0}.</value>
+  </data>
+  <data name="NotAnImage" xml:space="preserve">
+    <value>Det är ingen bild.</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>Öppna</value>
+  </data>
+  <data name="OpenWidget" xml:space="preserve">
+    <value>Öppna My Everything Widget</value>
+  </data>
+  <data name="PaintNotAvailable" xml:space="preserve">
+    <value>Paint kunde inte öppnas.</value>
+  </data>
+  <data name="PathOrAddress" xml:space="preserve">
+    <value>Sökväg eller webbadress</value>
+  </data>
+  <data name="PathOrAddressLabel" xml:space="preserve">
+    <value>Eller ange en sökväg eller webbadress</value>
+  </data>
+  <data name="PathPlaceholder" xml:space="preserve">
+    <value>C:\... eller https://...</value>
+  </data>
+  <data name="Rate" xml:space="preserve">
+    <value>Betygsätt</value>
+  </data>
+  <data name="Rename" xml:space="preserve">
+    <value>Byt namn</value>
+  </data>
+  <data name="ResetToOriginal" xml:space="preserve">
+    <value>Återställ original</value>
+  </data>
+  <data name="Resize" xml:space="preserve">
+    <value>Ändra storlek</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Spara</value>
+  </data>
+  <data name="SaveFailed" xml:space="preserve">
+    <value>Ändringarna kunde inte sparas: {0}</value>
+  </data>
+  <data name="SearchInstalledApps" xml:space="preserve">
+    <value>Sök bland installerade appar</value>
+  </data>
+  <data name="SelectIcon" xml:space="preserve">
+    <value>Välj ikon</value>
+  </data>
+  <data name="SelectImage" xml:space="preserve">
+    <value>Välj bild</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Inställningar</value>
+  </data>
+  <data name="SomeNotAdded" xml:space="preserve">
+    <value>Vissa objekt kunde inte läggas till. Använd en fullständig sökväg eller en webbadress.</value>
+  </data>
+  <data name="StateUnreadable" xml:space="preserve">
+    <value>Dina sparade objekt kunde inte läsas, så widgeten startade tom. En kopia sparades i {0}.</value>
+  </data>
+  <data name="Theme" xml:space="preserve">
+    <value>Tema</value>
+  </data>
+  <data name="ThemeDark" xml:space="preserve">
+    <value>Mörkt</value>
+  </data>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>Ljust</value>
+  </data>
+  <data name="ThemeSystem" xml:space="preserve">
+    <value>System</value>
+  </data>
+  <data name="ThemeSystemTip" xml:space="preserve">
+    <value>Följ Windows-inställningen</value>
+  </data>
+  <data name="UseAsIcon" xml:space="preserve">
+    <value>Använd som ikon</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Version {0}</value>
+  </data>
+  <data name="Website" xml:space="preserve">
+    <value>Webbplats</value>
+  </data>
+</root>

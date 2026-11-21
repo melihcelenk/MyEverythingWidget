@@ -117,7 +117,7 @@ public sealed record WidgetState(int SchemaVersion, IReadOnlyList<Category> Cate
     /// <summary>Gets the category whose tab was open last; <see langword="null"/> means the first one.</summary>
     public string? SelectedCategoryId { get; init; }
 
-    /// <summary>Returns the first-run state: one empty category.</summary>
-    public static WidgetState CreateDefault(string categoryId) =>
-        new(CurrentSchemaVersion, [new Category(categoryId, DefaultCategoryName)], []);
+    /// <summary>Returns the first-run state: one empty category named <paramref name="categoryName"/>.</summary>
+    public static WidgetState CreateDefault(string categoryId, string categoryName = DefaultCategoryName) =>
+        new(CurrentSchemaVersion, [new Category(categoryId, categoryName)], []);
 }

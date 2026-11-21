@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Add" xml:space="preserve">
+    <value>Add</value>
+    <comment>Button that adds an item (bottom bar, Add app dialog)</comment>
+  </data>
+  <data name="AddApp" xml:space="preserve">
+    <value>Add app</value>
+    <comment>Title of the dialog that adds an app or web link card</comment>
+  </data>
+  <data name="AddAppMenu" xml:space="preserve">
+    <value>Add app…</value>
+    <comment>Right-click menu item on the empty grid; opens the Add app dialog</comment>
+  </data>
+  <data name="AddCategory" xml:space="preserve">
+    <value>Add category</value>
+    <comment>Tooltip of the + button next to the tabs</comment>
+  </data>
+  <data name="AddImageMenu" xml:space="preserve">
+    <value>Add image…</value>
+    <comment>Right-click menu item on the empty grid; opens a file picker</comment>
+  </data>
+  <data name="AddMenuApp" xml:space="preserve">
+    <value>App…</value>
+    <comment>Item of the Add button's menu</comment>
+  </data>
+  <data name="AddMenuImage" xml:space="preserve">
+    <value>Image…</value>
+    <comment>Item of the Add button's menu</comment>
+  </data>
+  <data name="AddMenuNote" xml:space="preserve">
+    <value>Note</value>
+    <comment>Item of the Add button's menu</comment>
+  </data>
+  <data name="AddNote" xml:space="preserve">
+    <value>Add note</value>
+    <comment>Menu item and dialog title for writing a new note</comment>
+  </data>
+  <data name="AddToWidget" xml:space="preserve">
+    <value>Add to widget</value>
+    <comment>Caption shown while dragging files or links over the widget</comment>
+  </data>
+  <data name="AlwaysOnTop" xml:space="preserve">
+    <value>Always on top</value>
+    <comment>Pin button and Settings switch: keep the widget above other windows</comment>
+  </data>
+  <data name="AppNotFound" xml:space="preserve">
+    <value>“{0}” could not be found. It may have been moved or uninstalled.</value>
+    <comment>Status message; {0} = card name</comment>
+  </data>
+  <data name="AppNotOpened" xml:space="preserve">
+    <value>“{0}” could not be opened.</value>
+    <comment>Status message; {0} = card name</comment>
+  </data>
+  <data name="Browse" xml:space="preserve">
+    <value>Browse…</value>
+    <comment>Button that opens a file picker</comment>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+    <comment>Dialog button</comment>
+  </data>
+  <data name="Categories" xml:space="preserve">
+    <value>Categories</value>
+    <comment>Accessible name of the tab strip</comment>
+  </data>
+  <data name="CategoryName" xml:space="preserve">
+    <value>Category name</value>
+    <comment>Accessible name of the text box used to rename a tab</comment>
+  </data>
+  <data name="ChangeIcon" xml:space="preserve">
+    <value>Change icon</value>
+    <comment>Title/accessible name of the dialog that changes a card's icon</comment>
+  </data>
+  <data name="ChangeIconMenu" xml:space="preserve">
+    <value>Change icon…</value>
+    <comment>Card right-click menu item; opens the icon dialog</comment>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+    <comment>Close button (window, dialog, image viewer)</comment>
+  </data>
+  <data name="CompactMode" xml:space="preserve">
+    <value>Compact mode</value>
+    <comment>Accessible name of the button that shrinks the widget to a small icon</comment>
+  </data>
+  <data name="CompactModeTip" xml:space="preserve">
+    <value>Shrink to an icon</value>
+    <comment>Tooltip of the compact mode button</comment>
+  </data>
+  <data name="Copied" xml:space="preserve">
+    <value>Copied</value>
+    <comment>Short confirmation after copying to the clipboard</comment>
+  </data>
+  <data name="Copy" xml:space="preserve">
+    <value>Copy</value>
+    <comment>Copy button or menu item</comment>
+  </data>
+  <data name="CopyEmail" xml:space="preserve">
+    <value>Copy {0}</value>
+    <comment>Tooltip of the e-mail link in About; {0} = e-mail address</comment>
+  </data>
+  <data name="CopyImage" xml:space="preserve">
+    <value>Copy image</value>
+    <comment>Menu item / button that copies a picture</comment>
+  </data>
+  <data name="CopyNote" xml:space="preserve">
+    <value>Copy note</value>
+    <comment>Accessible name of the button that copies a note's text</comment>
+  </data>
+  <data name="DefaultCategoryName" xml:space="preserve">
+    <value>General</value>
+    <comment>Name of the first tab created on a fresh install</comment>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+    <comment>Menu item / dialog button</comment>
+  </data>
+  <data name="DeleteCategoryMany" xml:space="preserve">
+    <value>“{0}” and its {1} items will be deleted.</value>
+    <comment>Delete-tab confirmation; {0} = tab name, {1} = number of items (2 or more). Avoid plural agreement problems, e.g. 'items: {1}'</comment>
+  </data>
+  <data name="DeleteCategoryOne" xml:space="preserve">
+    <value>“{0}” and its item will be deleted.</value>
+    <comment>Delete-tab confirmation when the tab has exactly one item; {0} = tab name</comment>
+  </data>
+  <data name="DeleteCategoryTitle" xml:space="preserve">
+    <value>Delete category?</value>
+    <comment>Title of the delete-tab confirmation</comment>
+  </data>
+  <data name="DropAllowed" xml:space="preserve">
+    <value>allowed</value>
+    <comment>Accessible help text: the dragged card can be dropped here</comment>
+  </data>
+  <data name="DropHint" xml:space="preserve">
+    <value>Drop or paste (Ctrl+V) files, links, text or images</value>
+    <comment>Hint in the bottom bar; keep 'Ctrl+V'</comment>
+  </data>
+  <data name="DropImageHere" xml:space="preserve">
+    <value>Drop an image here
+or paste it with Ctrl+V</value>
+    <comment>Text in the icon dialog's image area; keep the line break and 'Ctrl+V'</comment>
+  </data>
+  <data name="DropNotAllowed" xml:space="preserve">
+    <value>not allowed</value>
+    <comment>Accessible help text: the dragged card cannot be dropped here</comment>
+  </data>
+  <data name="DropTarget" xml:space="preserve">
+    <value>Drop target</value>
+    <comment>Accessible name of the drop preview on the grid</comment>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
+    <comment>Card menu item: edit a note</comment>
+  </data>
+  <data name="EditInPaint" xml:space="preserve">
+    <value>Edit in Paint</value>
+    <comment>Menu item; 'Paint' is the Windows app name (use its localized Windows name)</comment>
+  </data>
+  <data name="EditNote" xml:space="preserve">
+    <value>Edit note</value>
+    <comment>Title of the note editing dialog</comment>
+  </data>
+  <data name="GridFull" xml:space="preserve">
+    <value>This category is full. Remove or shrink something first.</value>
+    <comment>Status message</comment>
+  </data>
+  <data name="ImageDropArea" xml:space="preserve">
+    <value>Image drop area</value>
+    <comment>Accessible name of the area where an image can be dropped</comment>
+  </data>
+  <data name="ImageNotFound" xml:space="preserve">
+    <value>Image not found</value>
+    <comment>Shown on an image card whose file is missing</comment>
+  </data>
+  <data name="ImageNotRead" xml:space="preserve">
+    <value>That image could not be read.</value>
+    <comment>Status message</comment>
+  </data>
+  <data name="ImportFailed" xml:space="preserve">
+    <value>Items of the previous version could not be read, so they were not imported.</value>
+    <comment>Status message after upgrading</comment>
+  </data>
+  <data name="Imported" xml:space="preserve">
+    <value>Imported {0} items from the previous version of My Everything Widget.</value>
+    <comment>Status message; {0} = number of items. Avoid plural agreement problems. Keep 'My Everything Widget' untranslated</comment>
+  </data>
+  <data name="ImportedMissingImage" xml:space="preserve">
+    <value>Imported {0} items from the previous version of My Everything Widget. {1} image could not be found.</value>
+    <comment>Like 'Imported'; {1} is always 1</comment>
+  </data>
+  <data name="ImportedMissingImages" xml:space="preserve">
+    <value>Imported {0} items from the previous version of My Everything Widget. {1} images could not be found.</value>
+    <comment>Like 'Imported'; {1} = number of missing images (2 or more). Avoid plural agreement problems</comment>
+  </data>
+  <data name="InstalledApps" xml:space="preserve">
+    <value>Installed apps</value>
+    <comment>Accessible name of the list of installed apps</comment>
+  </data>
+  <data name="InvalidTarget" xml:space="preserve">
+    <value>Enter a full path (C:\...) or a web address (https://...).</value>
+    <comment>Error under the path field; keep 'C:\...' and 'https://...'</comment>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Language</value>
+    <comment>Settings label for the language choice</comment>
+  </data>
+  <data name="LanguageSystem" xml:space="preserve">
+    <value>System language</value>
+    <comment>First item of the language list: follow the Windows display language</comment>
+  </data>
+  <data name="MoveTo" xml:space="preserve">
+    <value>Move to</value>
+    <comment>Card menu item with a sub-menu of tabs</comment>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+    <comment>Field label in the Add app dialog</comment>
+  </data>
+  <data name="NewCategoryName" xml:space="preserve">
+    <value>New category</value>
+    <comment>Name given to a newly added tab</comment>
+  </data>
+  <data name="NoRoom" xml:space="preserve">
+    <value>There is no room to move the other items there.</value>
+    <comment>Status message while dragging a card</comment>
+  </data>
+  <data name="NoRoomIn" xml:space="preserve">
+    <value>There is no room in {0}.</value>
+    <comment>Status message; {0} = tab name</comment>
+  </data>
+  <data name="NotAnImage" xml:space="preserve">
+    <value>That is not an image.</value>
+    <comment>Warning in the icon dialog</comment>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>Open</value>
+    <comment>Tooltip of the compact icon: opens the widget</comment>
+  </data>
+  <data name="OpenWidget" xml:space="preserve">
+    <value>Open My Everything Widget</value>
+    <comment>Accessible name of the compact icon; keep 'My Everything Widget' untranslated</comment>
+  </data>
+  <data name="PaintNotAvailable" xml:space="preserve">
+    <value>Paint could not be opened.</value>
+    <comment>Status message; 'Paint' is the Windows app name (use its localized Windows name)</comment>
+  </data>
+  <data name="PathOrAddress" xml:space="preserve">
+    <value>Path or web address</value>
+    <comment>Accessible name of the path field</comment>
+  </data>
+  <data name="PathOrAddressLabel" xml:space="preserve">
+    <value>Or enter a path or web address</value>
+    <comment>Label above the path field in the Add app dialog</comment>
+  </data>
+  <data name="PathPlaceholder" xml:space="preserve">
+    <value>C:\... or https://...</value>
+    <comment>Placeholder example; translate only the word 'or'</comment>
+  </data>
+  <data name="Rate" xml:space="preserve">
+    <value>Rate</value>
+    <comment>About link: rate the app in the Microsoft Store (short, one word if possible)</comment>
+  </data>
+  <data name="Rename" xml:space="preserve">
+    <value>Rename</value>
+    <comment>Menu item / dialog title</comment>
+  </data>
+  <data name="ResetToOriginal" xml:space="preserve">
+    <value>Reset to original</value>
+    <comment>Icon dialog button: go back to the app's own icon</comment>
+  </data>
+  <data name="Resize" xml:space="preserve">
+    <value>Resize</value>
+    <comment>Accessible name of a card's resize grip</comment>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+    <comment>Dialog button</comment>
+  </data>
+  <data name="SaveFailed" xml:space="preserve">
+    <value>Changes could not be saved: {0}</value>
+    <comment>Status message; {0} = error text</comment>
+  </data>
+  <data name="SearchInstalledApps" xml:space="preserve">
+    <value>Search installed apps</value>
+    <comment>Placeholder of the search box</comment>
+  </data>
+  <data name="SelectIcon" xml:space="preserve">
+    <value>Select icon</value>
+    <comment>Tab of the icon dialog (emoji list)</comment>
+  </data>
+  <data name="SelectImage" xml:space="preserve">
+    <value>Select image</value>
+    <comment>Tab of the icon dialog (image file)</comment>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Settings</value>
+    <comment>Settings button and Settings window title</comment>
+  </data>
+  <data name="SomeNotAdded" xml:space="preserve">
+    <value>Some items could not be added. Use a full path or a web address.</value>
+    <comment>Status message</comment>
+  </data>
+  <data name="StateUnreadable" xml:space="preserve">
+    <value>Your saved items could not be read, so the widget started empty. A copy was kept at {0}.</value>
+    <comment>Status message; {0} = file path</comment>
+  </data>
+  <data name="Theme" xml:space="preserve">
+    <value>Theme</value>
+    <comment>Settings label</comment>
+  </data>
+  <data name="ThemeDark" xml:space="preserve">
+    <value>Dark</value>
+    <comment>Theme choice; one short word (three choices share one narrow row)</comment>
+  </data>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>Light</value>
+    <comment>Theme choice; one short word (three choices share one narrow row)</comment>
+  </data>
+  <data name="ThemeSystem" xml:space="preserve">
+    <value>System</value>
+    <comment>Theme choice: follow Windows; one short word (three choices share one narrow row)</comment>
+  </data>
+  <data name="ThemeSystemTip" xml:space="preserve">
+    <value>Follow the Windows setting</value>
+    <comment>Tooltip of the System theme choice</comment>
+  </data>
+  <data name="UseAsIcon" xml:space="preserve">
+    <value>Use as icon</value>
+    <comment>Caption while dragging an image over the icon dialog</comment>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Version {0}</value>
+    <comment>About card; {0} = version number</comment>
+  </data>
+  <data name="Website" xml:space="preserve">
+    <value>Website</value>
+    <comment>About link to the project website</comment>
+  </data>
+</root>

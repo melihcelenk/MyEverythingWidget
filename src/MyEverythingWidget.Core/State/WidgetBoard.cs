@@ -26,8 +26,11 @@ public sealed partial class WidgetBoard
     private readonly Func<string> _newId;
     private readonly ILogger<WidgetBoard> _logger;
 
-    /// <summary>Loads the stored state, or creates and saves the first-run state.</summary>
-    public WidgetBoard(IWidgetStateStore store, Func<string> newId, GridSize gridSize, ILogger<WidgetBoard> logger)
+    /// <summary>
+    /// Loads the stored state, or creates and saves the first-run state, whose one category is named
+    /// <paramref name="defaultCategoryName"/> (<see cref="WidgetState.DefaultCategoryName"/> when not given).
+    /// </summary>
+    public WidgetBoard(IWidgetStateStore store, Func<string> newId, GridSize gridSize, ILogger<WidgetBoard> logger, string? defaultCategoryName = null)
     {
         ArgumentNullException.ThrowIfNull(store);
         ArgumentNullException.ThrowIfNull(newId);
@@ -45,7 +48,7 @@ public sealed partial class WidgetBoard
         }
         else
         {
-            State = WidgetState.CreateDefault(newId());
+            State = WidgetState.CreateDefault(newId(), defaultCategoryName ?? WidgetState.DefaultCategoryName);
             Save();
         }
 

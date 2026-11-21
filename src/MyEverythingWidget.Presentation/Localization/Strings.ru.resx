@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Add" xml:space="preserve">
+    <value>Добавить</value>
+  </data>
+  <data name="AddApp" xml:space="preserve">
+    <value>Добавить приложение</value>
+  </data>
+  <data name="AddAppMenu" xml:space="preserve">
+    <value>Добавить приложение…</value>
+  </data>
+  <data name="AddCategory" xml:space="preserve">
+    <value>Добавить категорию</value>
+  </data>
+  <data name="AddImageMenu" xml:space="preserve">
+    <value>Добавить изображение…</value>
+  </data>
+  <data name="AddMenuApp" xml:space="preserve">
+    <value>Приложение…</value>
+  </data>
+  <data name="AddMenuImage" xml:space="preserve">
+    <value>Изображение…</value>
+  </data>
+  <data name="AddMenuNote" xml:space="preserve">
+    <value>Заметка</value>
+  </data>
+  <data name="AddNote" xml:space="preserve">
+    <value>Добавить заметку</value>
+  </data>
+  <data name="AddToWidget" xml:space="preserve">
+    <value>Добавить в виджет</value>
+  </data>
+  <data name="AlwaysOnTop" xml:space="preserve">
+    <value>Поверх всех окон</value>
+  </data>
+  <data name="AppNotFound" xml:space="preserve">
+    <value>Не удалось найти «{0}». Возможно, объект был перемещен или удален.</value>
+  </data>
+  <data name="AppNotOpened" xml:space="preserve">
+    <value>Не удалось открыть «{0}».</value>
+  </data>
+  <data name="Browse" xml:space="preserve">
+    <value>Обзор…</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Отмена</value>
+  </data>
+  <data name="Categories" xml:space="preserve">
+    <value>Категории</value>
+  </data>
+  <data name="CategoryName" xml:space="preserve">
+    <value>Имя категории</value>
+  </data>
+  <data name="ChangeIcon" xml:space="preserve">
+    <value>Изменить значок</value>
+  </data>
+  <data name="ChangeIconMenu" xml:space="preserve">
+    <value>Изменить значок…</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Закрыть</value>
+  </data>
+  <data name="CompactMode" xml:space="preserve">
+    <value>Компактный режим</value>
+  </data>
+  <data name="CompactModeTip" xml:space="preserve">
+    <value>Свернуть в значок</value>
+  </data>
+  <data name="Copied" xml:space="preserve">
+    <value>Скопировано</value>
+  </data>
+  <data name="Copy" xml:space="preserve">
+    <value>Копировать</value>
+  </data>
+  <data name="CopyEmail" xml:space="preserve">
+    <value>Копировать {0}</value>
+  </data>
+  <data name="CopyImage" xml:space="preserve">
+    <value>Копировать изображение</value>
+  </data>
+  <data name="CopyNote" xml:space="preserve">
+    <value>Копировать заметку</value>
+  </data>
+  <data name="DefaultCategoryName" xml:space="preserve">
+    <value>Общее</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="DeleteCategoryMany" xml:space="preserve">
+    <value>Категория «{0}» и все ее элементы (количество: {1}) будут удалены.</value>
+  </data>
+  <data name="DeleteCategoryOne" xml:space="preserve">
+    <value>Категория «{0}» и ее элемент будут удалены.</value>
+  </data>
+  <data name="DeleteCategoryTitle" xml:space="preserve">
+    <value>Удалить категорию?</value>
+  </data>
+  <data name="DropAllowed" xml:space="preserve">
+    <value>допустимо</value>
+  </data>
+  <data name="DropHint" xml:space="preserve">
+    <value>Перетащите или вставьте (Ctrl+V) файлы, ссылки, текст или изображения</value>
+  </data>
+  <data name="DropImageHere" xml:space="preserve">
+    <value>Перетащите изображение сюда
+или вставьте его с помощью Ctrl+V</value>
+  </data>
+  <data name="DropNotAllowed" xml:space="preserve">
+    <value>недопустимо</value>
+  </data>
+  <data name="DropTarget" xml:space="preserve">
+    <value>Цель перетаскивания</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Изменить</value>
+  </data>
+  <data name="EditInPaint" xml:space="preserve">
+    <value>Изменить в Paint</value>
+  </data>
+  <data name="EditNote" xml:space="preserve">
+    <value>Изменить заметку</value>
+  </data>
+  <data name="GridFull" xml:space="preserve">
+    <value>Эта категория заполнена. Сначала удалите или уменьшите какой-либо элемент.</value>
+  </data>
+  <data name="ImageDropArea" xml:space="preserve">
+    <value>Область для перетаскивания изображения</value>
+  </data>
+  <data name="ImageNotFound" xml:space="preserve">
+    <value>Изображение не найдено</value>
+  </data>
+  <data name="ImageNotRead" xml:space="preserve">
+    <value>Не удалось прочитать изображение.</value>
+  </data>
+  <data name="ImportFailed" xml:space="preserve">
+    <value>Не удалось прочитать элементы предыдущей версии, поэтому они не были импортированы.</value>
+  </data>
+  <data name="Imported" xml:space="preserve">
+    <value>Импортировано элементов из предыдущей версии My Everything Widget: {0}.</value>
+  </data>
+  <data name="ImportedMissingImage" xml:space="preserve">
+    <value>Импортировано элементов из предыдущей версии My Everything Widget: {0}. Не найдено изображений: {1}.</value>
+  </data>
+  <data name="ImportedMissingImages" xml:space="preserve">
+    <value>Импортировано элементов из предыдущей версии My Everything Widget: {0}. Не найдено изображений: {1}.</value>
+  </data>
+  <data name="InstalledApps" xml:space="preserve">
+    <value>Установленные приложения</value>
+  </data>
+  <data name="InvalidTarget" xml:space="preserve">
+    <value>Введите полный путь (C:\...) или веб-адрес (https://...).</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Язык</value>
+  </data>
+  <data name="LanguageSystem" xml:space="preserve">
+    <value>Язык системы</value>
+  </data>
+  <data name="MoveTo" xml:space="preserve">
+    <value>Переместить в</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Имя</value>
+  </data>
+  <data name="NewCategoryName" xml:space="preserve">
+    <value>Новая категория</value>
+  </data>
+  <data name="NoRoom" xml:space="preserve">
+    <value>Недостаточно места, чтобы переместить туда другие элементы.</value>
+  </data>
+  <data name="NoRoomIn" xml:space="preserve">
+    <value>В категории {0} нет места.</value>
+  </data>
+  <data name="NotAnImage" xml:space="preserve">
+    <value>Это не изображение.</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>Открыть</value>
+  </data>
+  <data name="OpenWidget" xml:space="preserve">
+    <value>Открыть My Everything Widget</value>
+  </data>
+  <data name="PaintNotAvailable" xml:space="preserve">
+    <value>Не удалось открыть Paint.</value>
+  </data>
+  <data name="PathOrAddress" xml:space="preserve">
+    <value>Путь или веб-адрес</value>
+  </data>
+  <data name="PathOrAddressLabel" xml:space="preserve">
+    <value>Или введите путь или веб-адрес</value>
+  </data>
+  <data name="PathPlaceholder" xml:space="preserve">
+    <value>C:\... или https://...</value>
+  </data>
+  <data name="Rate" xml:space="preserve">
+    <value>Оценить</value>
+  </data>
+  <data name="Rename" xml:space="preserve">
+    <value>Переименовать</value>
+  </data>
+  <data name="ResetToOriginal" xml:space="preserve">
+    <value>Восстановить исходный</value>
+  </data>
+  <data name="Resize" xml:space="preserve">
+    <value>Изменить размер</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Сохранить</value>
+  </data>
+  <data name="SaveFailed" xml:space="preserve">
+    <value>Не удалось сохранить изменения: {0}</value>
+  </data>
+  <data name="SearchInstalledApps" xml:space="preserve">
+    <value>Поиск установленных приложений</value>
+  </data>
+  <data name="SelectIcon" xml:space="preserve">
+    <value>Выбрать значок</value>
+  </data>
+  <data name="SelectImage" xml:space="preserve">
+    <value>Выбрать изображение</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Параметры</value>
+  </data>
+  <data name="SomeNotAdded" xml:space="preserve">
+    <value>Не удалось добавить некоторые элементы. Используйте полный путь или веб-адрес.</value>
+  </data>
+  <data name="StateUnreadable" xml:space="preserve">
+    <value>Не удалось прочитать сохраненные элементы, поэтому виджет запущен пустым. Копия сохранена в {0}.</value>
+  </data>
+  <data name="Theme" xml:space="preserve">
+    <value>Тема</value>
+  </data>
+  <data name="ThemeDark" xml:space="preserve">
+    <value>Темная</value>
+  </data>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>Светлая</value>
+  </data>
+  <data name="ThemeSystem" xml:space="preserve">
+    <value>Системная</value>
+  </data>
+  <data name="ThemeSystemTip" xml:space="preserve">
+    <value>Как в параметрах Windows</value>
+  </data>
+  <data name="UseAsIcon" xml:space="preserve">
+    <value>Использовать как значок</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Версия {0}</value>
+  </data>
+  <data name="Website" xml:space="preserve">
+    <value>Веб-сайт</value>
+  </data>
+</root>

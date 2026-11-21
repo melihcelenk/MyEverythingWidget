@@ -48,6 +48,7 @@
   - Faz 15 — Resim kopyalama ve resim alma
   - Faz 16 — Kopyalama geri bildirimi, görüntüleyici menüsü ve Paint'te düzenleme
   - Faz 17 — Ayarlar penceresinin kenar boşluğu ve yayın hazırlığı
+  - Faz 18 — Diller, kompakt Ayarlar penceresi ve başlık düğmeleri
 - Kaynaklar
 
 ---
@@ -85,7 +86,7 @@
 | 5 | Uygulama ekleme ve otomatik ikon | 🟢 Tamamlandı | 100% | `PHASE5.md` |
 | 6 | Notlar, resimler ve Ctrl+V | 🟢 Tamamlandı | 100% | `PHASE6.md` |
 | 7 | Ayarlar ve eski veriyi içe aktarma | 🟢 Tamamlandı | 100% | `PHASE7.md` |
-| 8 | UI testleri, performans ve Store paketi | 🟡 Kısmi | 90% | `PHASE8.md` |
+| 8 | UI testleri, performans ve Store paketi | 🟢 Tamamlandı | 100% | `PHASE8.md` |
 | 9 | İlk kullanım geri bildirimi: tek satır başlık, hücre hücre boyut, kompakt mod, resim, emoji | 🟢 Tamamlandı | 100% | `PHASE9.md` |
 | 10 | Kompakt ikon davranışı, tek ikon penceresi, sağ tık menüsü, tutamaç | 🟢 Tamamlandı | 100% | `PHASE10.md` |
 | 11 | Boyutlandırma tutamacının oku ve kart renkleri | 🟢 Tamamlandı | 100% | `PHASE11.md` |
@@ -94,7 +95,8 @@
 | 14 | İkon penceresinin geç açılması | 🟢 Tamamlandı | 100% | `PHASE14.md` |
 | 15 | Resim kopyalama ve resim alma | 🟢 Tamamlandı | 100% | `PHASE15.md` |
 | 16 | Kopyalama geri bildirimi, görüntüleyici menüsü ve Paint'te düzenleme | 🟢 Tamamlandı | 100% | `PHASE16.md` |
-| 17 | Ayarlar penceresinin kenar boşluğu ve yayın hazırlığı | 🟡 Devam ediyor | 85% | `PHASE17.md` |
+| 17 | Ayarlar penceresinin kenar boşluğu ve yayın hazırlığı | 🟢 Tamamlandı | 100% | `PHASE17.md` |
+| 18 | Diller, kompakt Ayarlar penceresi ve başlık düğmeleri | 🟢 Tamamlandı | 100% | `PHASE18.md` |
 
 <!-- Durum ikonları: 🟢 Tamamlandı (faz bitti, tüm testleri geçti) | 🟡 Kısmi (neyin beklediği faz notunda) | ⏳ Bekliyor (başlamadı) | 🔴 Bloke (bir karar ya da dış bağımlılık bekleniyor) -->
 
@@ -557,9 +559,9 @@ top" ve About (sürüm, gizlilik notu, GitHub bağlantısı). Değişiklikler he
 sürümünü kullanmış biri WinUI sürümünü ilk açtığında eski kategorileri, uygulamaları, notları ve resimleri bir kez içe
 aktarılıyor; sonuç durum çubuğunda bildiriliyor.
 
-### 🟡 Faz 8 — UI testleri, performans ve Store paketi
+### 🟢 Faz 8 — UI testleri, performans ve Store paketi
 
-**Durum:** 🟡 Kısmi · **Tamamlanma:** 90% · **Ayrıntı:** [`PHASE8.md`](PHASE8.md)
+**Durum:** 🟢 Tamamlandı · **Tamamlanma:** 100% · **Ayrıntı:** [`PHASE8.md`](PHASE8.md)
 
 Bu fazda widget Store'a gönderilmeye hazırlandı. Bütün kabul kriterlerinin otomatik testleri geçiyor; başlama süresi
 ve bellek ölçüldü. x64 ve ARM64 için ikon setli MSIX paketleri, Store listeleme metni, gizlilik politikası ve gönderim
@@ -636,13 +638,22 @@ aynı şekilde gösteriyor. Büyük görüntüleme penceresinde sağ tık menüs
 kartlarının menüsüne de "Edit in Paint" eklendi. Paint'te kaydedilen resim, widget'a geri dönülünce kartta
 yenileniyor. Düzenleme Paint'te yapıldığı için widget'ın belleği büyümüyor.
 
-### 🟡 Faz 17 — Ayarlar penceresinin kenar boşluğu ve yayın hazırlığı
+### 🟢 Faz 17 — Ayarlar penceresinin kenar boşluğu ve yayın hazırlığı
 
-**Durum:** 🟡 Devam ediyor · **Tamamlanma:** 85% · **Ayrıntı:** [`PHASE17.md`](PHASE17.md)
+**Durum:** 🟢 Tamamlandı · **Tamamlanma:** 100% · **Ayrıntı:** [`PHASE17.md`](PHASE17.md)
 
 Ayarlar penceresi ve diğer iletişim kutuları artık widget'ın iki yanından boşluk bırakıyor; dar widget'ta içerik
 kırpılmıyor. README ve Store için beş kullanım senaryosunun ekran görüntüleri Sandbox'ta tek komutla çekiliyor.
 Kalan iş `master`'a birleştirme ve Store gönderimi.
+
+### 🟢 Faz 18 — Diller, kompakt Ayarlar penceresi ve başlık düğmeleri
+
+**Durum:** 🟢 Tamamlandı · **Tamamlanma:** 100% · **Ayrıntı:** [`PHASE18.md`](PHASE18.md)
+
+Uygulama 15 dilde. Varsayılan dil Windows'un dili, o listede yoksa İngilizce; Ayarlar'dan başka dil seçilebiliyor.
+Çevrilmemiş ya da sabit yazılmış bir metin birim testlerini kırmızı yapıyor. Ayarlar penceresi kompakt bir başlık ve
+sağ üstte ✕ ile açılıyor, dışarı tıklayınca kapanıyor. Küçük simgenin çerçevesi daraldı; sabitleme ve küçültme
+düğmelerinin yeri değişti.
 
 ---
 

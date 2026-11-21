@@ -3,6 +3,7 @@
     x:Class="MyEverythingWidget.App.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:l="using:MyEverythingWidget.App.Localization"
     xmlns:local="using:MyEverythingWidget.App"
     xmlns:views="using:MyEverythingWidget.App.Views">
 
@@ -14,17 +15,17 @@
         <Grid.Resources>
             <!-- Right-click on an empty part of the grid or its surface: the same choices as the Add button. -->
             <MenuFlyout x:Key="SurfaceAddMenu">
-                <MenuFlyoutItem AutomationProperties.AutomationId="GridAddAppMenuItem" Text="Add app…" Click="OnAddAppClicked">
+                <MenuFlyoutItem AutomationProperties.AutomationId="GridAddAppMenuItem" Text="{l:Str Key=AddAppMenu}" Click="OnAddAppClicked">
                     <MenuFlyoutItem.Icon>
                         <FontIcon Glyph="&#xECAA;" />
                     </MenuFlyoutItem.Icon>
                 </MenuFlyoutItem>
-                <MenuFlyoutItem AutomationProperties.AutomationId="GridAddNoteMenuItem" Text="Add note" Click="OnAddNoteClicked">
+                <MenuFlyoutItem AutomationProperties.AutomationId="GridAddNoteMenuItem" Text="{l:Str Key=AddNote}" Click="OnAddNoteClicked">
                     <MenuFlyoutItem.Icon>
                         <FontIcon Glyph="&#xE70B;" />
                     </MenuFlyoutItem.Icon>
                 </MenuFlyoutItem>
-                <MenuFlyoutItem AutomationProperties.AutomationId="GridAddImageMenuItem" Text="Add image…" Click="OnAddImageClicked">
+                <MenuFlyoutItem AutomationProperties.AutomationId="GridAddImageMenuItem" Text="{l:Str Key=AddImageMenu}" Click="OnAddImageClicked">
                     <MenuFlyoutItem.Icon>
                         <FontIcon Glyph="&#xEB9F;" />
                     </MenuFlyoutItem.Icon>
@@ -55,36 +56,36 @@
                     BorderThickness="0,1,0,0"
                     ContextFlyout="{StaticResource SurfaceAddMenu}" />
 
-            <!-- One-row title bar: compact button, tabs, drag area, pin and close. -->
+            <!-- One-row title bar: pin, tabs, drag area, compact and close. -->
             <views:CategoryTabsView x:Name="TabsView" Grid.Row="0" Margin="4,0,4,0">
                 <views:CategoryTabsView.LeadingContent>
-                    <Button x:Name="CompactButton"
-                            AutomationProperties.AutomationId="CompactButton"
-                            AutomationProperties.Name="Compact mode"
-                            ToolTipService.ToolTip="Shrink to an icon"
-                            Style="{StaticResource TitleBarButtonStyle}"
-                            Margin="0,0,2,0"
-                            Command="{x:Bind ViewModel.ToggleCompactCommand}">
-                        <FontIcon FontSize="12" Glyph="&#xE73F;" />
-                    </Button>
+                    <ToggleButton
+                        x:Name="PinButton"
+                        AutomationProperties.AutomationId="PinButton"
+                        AutomationProperties.Name="{l:Str Key=AlwaysOnTop}"
+                        ToolTipService.ToolTip="{l:Str Key=AlwaysOnTop}"
+                        Style="{StaticResource TitleBarToggleButtonStyle}"
+                        Margin="0,0,2,0"
+                        IsChecked="{x:Bind ViewModel.IsAlwaysOnTop, Mode=OneWay}"
+                        Command="{x:Bind ViewModel.ToggleAlwaysOnTopCommand}">
+                        <FontIcon FontSize="14" Glyph="&#xE718;" />
+                    </ToggleButton>
                 </views:CategoryTabsView.LeadingContent>
                 <views:CategoryTabsView.TrailingContent>
                     <StackPanel Orientation="Horizontal" Spacing="2">
-                        <ToggleButton
-                            x:Name="PinButton"
-                            AutomationProperties.AutomationId="PinButton"
-                            AutomationProperties.Name="Always on top"
-                            ToolTipService.ToolTip="Always on top"
-                            Style="{StaticResource TitleBarToggleButtonStyle}"
-                            IsChecked="{x:Bind ViewModel.IsAlwaysOnTop, Mode=OneWay}"
-                            Command="{x:Bind ViewModel.ToggleAlwaysOnTopCommand}">
-                            <FontIcon FontSize="14" Glyph="&#xE718;" />
-                        </ToggleButton>
+                        <Button x:Name="CompactButton"
+                                AutomationProperties.AutomationId="CompactButton"
+                                AutomationProperties.Name="{l:Str Key=CompactMode}"
+                                ToolTipService.ToolTip="{l:Str Key=CompactModeTip}"
+                                Style="{StaticResource TitleBarButtonStyle}"
+                                Command="{x:Bind ViewModel.ToggleCompactCommand}">
+                            <FontIcon FontSize="12" Glyph="&#xE73F;" />
+                        </Button>
                         <Button
                             x:Name="CloseButton"
                             AutomationProperties.AutomationId="CloseButton"
-                            AutomationProperties.Name="Close"
-                            ToolTipService.ToolTip="Close"
+                            AutomationProperties.Name="{l:Str Key=Close}"
+                            ToolTipService.ToolTip="{l:Str Key=Close}"
                             Style="{StaticResource TitleBarButtonStyle}"
                             Click="OnCloseClicked">
                             <FontIcon FontSize="12" Glyph="&#xE8BB;" />
@@ -113,16 +114,16 @@
                 </Grid.ColumnDefinitions>
                 <DropDownButton x:Name="AddItemButton"
                                 AutomationProperties.AutomationId="AddItemButton"
-                                AutomationProperties.Name="Add">
+                                AutomationProperties.Name="{l:Str Key=Add}">
                     <StackPanel Orientation="Horizontal" Spacing="6">
                         <FontIcon FontSize="14" Glyph="&#xE710;" />
-                        <TextBlock Text="Add" />
+                        <TextBlock Text="{l:Str Key=Add}" />
                     </StackPanel>
                     <DropDownButton.Flyout>
                         <MenuFlyout Placement="TopEdgeAlignedLeft">
                             <MenuFlyoutItem x:Name="AddAppMenuItem"
                                             AutomationProperties.AutomationId="AddAppMenuItem"
-                                            Text="App…"
+                                            Text="{l:Str Key=AddMenuApp}"
                                             Click="OnAddAppClicked">
                                 <MenuFlyoutItem.Icon>
                                     <FontIcon Glyph="&#xECAA;" />
@@ -130,7 +131,7 @@
                             </MenuFlyoutItem>
                             <MenuFlyoutItem x:Name="AddNoteMenuItem"
                                             AutomationProperties.AutomationId="AddNoteMenuItem"
-                                            Text="Note"
+                                            Text="{l:Str Key=AddMenuNote}"
                                             Click="OnAddNoteClicked">
                                 <MenuFlyoutItem.Icon>
                                     <FontIcon Glyph="&#xE70B;" />
@@ -138,7 +139,7 @@
                             </MenuFlyoutItem>
                             <MenuFlyoutItem x:Name="AddImageMenuItem"
                                             AutomationProperties.AutomationId="AddImageMenuItem"
-                                            Text="Image…"
+                                            Text="{l:Str Key=AddMenuImage}"
                                             Click="OnAddImageClicked">
                                 <MenuFlyoutItem.Icon>
                                     <FontIcon Glyph="&#xEB9F;" />
@@ -152,12 +153,12 @@
                            Foreground="{ThemeResource TextFillColorTertiaryBrush}"
                            Style="{StaticResource CaptionTextBlockStyle}"
                            TextTrimming="CharacterEllipsis"
-                           Text="Drop or paste (Ctrl+V) files, links, text or images" />
+                           Text="{l:Str Key=DropHint}" />
                 <Button Grid.Column="2"
                         x:Name="SettingsButton"
                         AutomationProperties.AutomationId="SettingsButton"
-                        AutomationProperties.Name="Settings"
-                        ToolTipService.ToolTip="Settings"
+                        AutomationProperties.Name="{l:Str Key=Settings}"
+                        ToolTipService.ToolTip="{l:Str Key=Settings}"
                         Style="{StaticResource TitleBarButtonStyle}"
                         Click="OnSettingsClicked">
                     <FontIcon FontSize="14" Glyph="&#xE713;" />
@@ -180,8 +181,8 @@
         <!-- Compact mode: the whole window is one icon. Click opens the widget; dragging moves the window. -->
         <Button x:Name="CompactIcon"
                 AutomationProperties.AutomationId="CompactIcon"
-                AutomationProperties.Name="Open My Everything Widget"
-                ToolTipService.ToolTip="Open"
+                AutomationProperties.Name="{l:Str Key=OpenWidget}"
+                ToolTipService.ToolTip="{l:Str Key=Open}"
                 Visibility="Collapsed"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
@@ -190,7 +191,7 @@
                 BorderThickness="0"
                 Background="{ThemeResource SubtleFillColorTransparentBrush}"
                 Click="OnCompactIconClicked">
-            <Image x:Name="CompactLogo" Width="48" Height="48" />
+            <Image x:Name="CompactLogo" AutomationProperties.AutomationId="CompactLogo" Width="48" Height="48" />
         </Button>
     </Grid>
 </Window>

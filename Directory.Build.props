@@ -10,4 +10,14 @@
     <Company>Melih Çelenk</Company>
     <Product>My Everything Widget</Product>
   </PropertyGroup>
+
+  <!-- One version for everything: the Store package's version in StoreIdentity.json is also every assembly's version,
+       which the About card shows. Raise it there only. -->
+  <PropertyGroup>
+    <StoreIdentityFile>$(MSBuildThisFileDirectory)src\MyEverythingWidget.App\StoreIdentity.json</StoreIdentityFile>
+    <StoreVersion>$([System.Text.RegularExpressions.Regex]::Match($([System.IO.File]::ReadAllText($(StoreIdentityFile))), '"version"\s*:\s*"([0-9.]+)"').Groups[1].Value)</StoreVersion>
+    <Version>$(StoreVersion)</Version>
+    <AssemblyVersion>$(StoreVersion)</AssemblyVersion>
+    <FileVersion>$(StoreVersion)</FileVersion>
+  </PropertyGroup>
 </Project>

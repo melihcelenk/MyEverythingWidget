@@ -1,6 +1,6 @@
 # Faz 8 — UI testleri, performans ve Store paketi
 
-> **Durum:** 🟡 Kısmi · **Tamamlanma:** 90% · **Efor:** tahmin yazılmadı · **Task:** MEW-4
+> **Durum:** 🟢 Tamamlandı · **Tamamlanma:** 100% · **Efor:** tahmin yazılmadı · **Task:** MEW-4
 
 Bu fazda widget Store'a gönderilmeye hazırlandı. Bütün kabul kriterlerinin otomatik testleri geçiyor; başlama süresi
 ve bellek ölçüldü. x64 ve ARM64 için ikon setli MSIX paketleri, Store listeleme metni, gizlilik politikası ve gönderim
@@ -30,7 +30,7 @@ kullanıcının kendi hesabıyla yapması.
 | 8.3 | x64 ve ARM64 için ikon setli, Store'a hazır MSIX paketi üretilir. | 🟢 Tamamlandı |
 | 8.4 | Store listeleme metni, gizlilik politikası ve gönderim adımları yazılır. | 🟢 Tamamlandı |
 | 8.5 | Kart menüsünde "Change icon…" ve "Reset icon" vardır. | 🟢 Tamamlandı (Faz 5'ten kalan) |
-| 8.6 | Uygulama Partner Center üzerinden Store'a gönderilir. | ⏳ Bekliyor (kullanıcının hesabıyla yapılır) |
+| 8.6 | Uygulama Partner Center üzerinden Store'a gönderilir. | 🟢 Tamamlandı |
 
 ## Nasıl kontrol edilir
 
@@ -145,7 +145,7 @@ kullanıcının kendi hesabıyla yapması.
   build'den alınır.
 - **Dosyalar:** `docs/general/STORE_SUBMISSION.md`
 - **Testler:** —
-- **Durum:** ⏳ Bekliyor (kullanıcının hesabıyla yapılır).
+- **Durum:** 🟢 Tamamlandı (2026-11-20). 1.0.0 Store'da yayında (`PHASE17.md` → 17.4); ardından 1.0.1 ve 1.1.0 gönderildi.
 
 ### Doğrulanmayan / dikkat edilmesi gereken
 
@@ -268,7 +268,7 @@ ReadyToRun (önceden derleme) denendi: tek ölçümde başlama 3,7 sn çıktı, 
 
 > Bu fazın `MAIN_TODO.md` → "Faz 8 — UI testleri, performans ve Store paketi" bölümünde duran özet ve hedef listesi, olduğu gibi buraya taşındı.
 
-**Durum:** 🟡 Kısmi (2026-10-30). Kod, testler (unit 236/236, UI 49/49), paketler ve dokümanlar hazır; Partner Center gönderimi kullanıcıda. Sonuç: `PHASE8.md` → 8.5 Sonuç.
+**Durum:** 🟢 Tamamlandı. Kod, testler (unit 236/236, UI 49/49), paketler ve dokümanlar 2026-10-30'da hazırdı; Store gönderimi 2026-11-19'da yapıldı. Sonuç: `PHASE8.md` → 8.5 Sonuç.
 
 **Özet:** Uçtan uca test turu, bellek/başlama süresi ölçümü, Store'a hazır paket ve listeleme dokümanları.
 

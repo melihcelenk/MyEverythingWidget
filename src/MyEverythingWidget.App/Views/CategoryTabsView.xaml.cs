@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml.Input;
 using MyEverythingWidget.Presentation;
 using Windows.Foundation.Collections;
 using Windows.System;
+using MyEverythingWidget.Presentation.Localization;
 
 namespace MyEverythingWidget.App.Views;
 
@@ -128,7 +129,7 @@ public sealed partial class CategoryTabsView : UserControl
 
     private MenuFlyout CreateTabMenu(CategoryViewModel category)
     {
-        var rename = new MenuFlyoutItem { Text = "Rename", Icon = new FontIcon { Glyph = "\uE8AC" } };
+        var rename = new MenuFlyoutItem { Text = Strings.Rename, Icon = new FontIcon { Glyph = "\uE8AC" } };
         AutomationProperties.SetAutomationId(rename, "RenameCategoryMenuItem");
         rename.Click += (_, _) =>
         {
@@ -138,7 +139,7 @@ public sealed partial class CategoryTabsView : UserControl
             }
         };
 
-        var delete = new MenuFlyoutItem { Text = "Delete", Icon = new FontIcon { Glyph = "\uE74D" } };
+        var delete = new MenuFlyoutItem { Text = Strings.Delete, Icon = new FontIcon { Glyph = "\uE74D" } };
         AutomationProperties.SetAutomationId(delete, "DeleteCategoryMenuItem");
         delete.Click += async (_, _) => await ConfirmAndDeleteAsync(category);
 
@@ -228,7 +229,7 @@ public sealed partial class CategoryTabsView : UserControl
             MaxLength = Core.State.WidgetBoard.MaxCategoryNameLength,
         };
         AutomationProperties.SetAutomationId(editor, "CategoryNameBox");
-        AutomationProperties.SetName(editor, "Category name");
+        AutomationProperties.SetName(editor, Strings.CategoryName);
 
         var flyout = new Flyout { Content = editor, Placement = FlyoutPlacementMode.Bottom };
         var cancelled = false;
@@ -273,12 +274,12 @@ public sealed partial class CategoryTabsView : UserControl
             var dialog = new ContentDialog
             {
                 XamlRoot = XamlRoot,
-                Title = "Delete category?",
+                Title = Strings.DeleteCategoryTitle,
                 Content = category.ItemCount == 1
-                    ? $"“{category.Name}” and its item will be deleted."
-                    : $"“{category.Name}” and its {category.ItemCount} items will be deleted.",
-                PrimaryButtonText = "Delete",
-                CloseButtonText = "Cancel",
+                    ? Strings.DeleteCategoryOne(category.Name)
+                    : Strings.DeleteCategoryMany(category.Name, category.ItemCount),
+                PrimaryButtonText = Strings.Delete,
+                CloseButtonText = Strings.Cancel,
                 DefaultButton = ContentDialogButton.Close,
             };
             AutomationProperties.SetAutomationId(dialog, "DeleteCategoryDialog");

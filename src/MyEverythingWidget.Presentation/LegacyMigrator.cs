@@ -4,6 +4,7 @@ using MyEverythingWidget.Core.Apps;
 using MyEverythingWidget.Core.Grid;
 using MyEverythingWidget.Core.Legacy;
 using MyEverythingWidget.Core.State;
+using MyEverythingWidget.Presentation.Localization;
 
 namespace MyEverythingWidget.Presentation;
 
@@ -33,10 +34,10 @@ public sealed record MigrationResult(MigrationOutcome Outcome, int ImportedItems
     public string? Message => Outcome switch
     {
         MigrationOutcome.Imported when MissingImages == 0 =>
-            string.Create(CultureInfo.InvariantCulture, $"Imported {ImportedItems} items from the previous version of My Everything Widget."),
-        MigrationOutcome.Imported =>
-            string.Create(CultureInfo.InvariantCulture, $"Imported {ImportedItems} items from the previous version of My Everything Widget. {MissingImages} {(MissingImages == 1 ? "image" : "images")} could not be found."),
-        MigrationOutcome.Failed => "Items of the previous version could not be read, so they were not imported.",
+            Strings.Imported(ImportedItems),
+        MigrationOutcome.Imported when MissingImages == 1 => Strings.ImportedMissingImage(ImportedItems, MissingImages),
+        MigrationOutcome.Imported => Strings.ImportedMissingImages(ImportedItems, MissingImages),
+        MigrationOutcome.Failed => Strings.ImportFailed,
         _ => null,
     };
 }

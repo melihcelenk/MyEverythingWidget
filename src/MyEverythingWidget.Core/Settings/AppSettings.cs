@@ -21,6 +21,12 @@ public sealed record AppSettings(bool IsAlwaysOnTop, PixelRect? WindowBounds)
 
     /// <summary>Gets a value indicating whether the widget is shrunk to its one-cell icon.</summary>
     public bool IsCompact { get; init; }
+
+    /// <summary>
+    /// Gets the language code the user chose, such as <c>tr</c>; <see langword="null"/> follows the Windows display
+    /// language.
+    /// </summary>
+    public string? Language { get; init; }
 }
 
 /// <summary>Colour theme of the widget.</summary>

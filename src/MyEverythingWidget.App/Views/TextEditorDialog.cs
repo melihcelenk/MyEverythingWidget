@@ -2,6 +2,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Windows.System;
+using MyEverythingWidget.Presentation.Localization;
 
 namespace MyEverythingWidget.App.Views;
 
@@ -32,8 +33,8 @@ internal static class TextEditorDialog
             XamlRoot = root,
             Title = title,
             Content = editor,
-            PrimaryButtonText = "Save",
-            CloseButtonText = "Cancel",
+            PrimaryButtonText = Strings.Save,
+            CloseButtonText = Strings.Cancel,
             DefaultButton = ContentDialogButton.Primary,
         };
         AutomationProperties.SetAutomationId(dialog, "TextEditorDialog");

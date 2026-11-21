@@ -15,6 +15,7 @@ using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage.Pickers;
 using Windows.Graphics;
 using WinRT.Interop;
+using MyEverythingWidget.Presentation.Localization;
 
 namespace MyEverythingWidget.App;
 
@@ -30,14 +31,17 @@ public sealed partial class MainWindow : Window
     /// </summary>
     private static readonly GridWindowSizing Sizing = new(GridMetrics.CellSize, ChromeWidth: 12, ChromeHeight: 96);
 
-    /// <summary>Compact mode shows one cell.</summary>
-    private const double CompactSizeInDips = GridMetrics.CellSize;
+    /// <summary>Compact mode shows the 48 px logo with an 8 px frame around it.</summary>
+    private const double CompactSizeInDips = 64;
 
     private readonly nint _windowHandle;
     private readonly OverlappedPresenter _presenter;
 
     private readonly IInstalledAppsSource _installedApps;
     private readonly CellSnappingResizer _resizer;
+
+    /// <summary>Hides the compact icon while a video, game or presentation fills its monitor.</summary>
+    private readonly FullScreenWatcher _fullScreenWatcher;
     private NativeMethods.NativePoint? _compactPressCursor;
     private PointInt32 _compactPressWindow;
     private bool _compactDragged;
@@ -77,6 +81,8 @@ public sealed partial class MainWindow : Window
             () => Board.MinimumGridSize,
             () => ViewModel.IsCompact ? CompactClientSize() : null,
             () => ViewModel.SaveGridSize(Board.GridSize));
+        _fullScreenWatcher = new FullScreenWatcher(_windowHandle, DispatcherQueue);
+        _fullScreenWatcher.CoveredChanged += OnFullScreenChanged;
 
         ConfigureTitleBar();
         ApplyBackdropFallback();
@@ -202,6 +208,14 @@ public sealed partial class MainWindow : Window
 
         _resizer.MoveClientTo(target.X, target.Y);
         ApplyAlwaysOnTop();
+        if (compact)
+        {
+            _fullScreenWatcher.Start();
+        }
+        else
+        {
+            _fullScreenWatcher.Stop();
+        }
 
         if (compact)
         {
@@ -209,6 +223,23 @@ public sealed partial class MainWindow : Window
             CompactLogo.Source ??= new Microsoft.UI.Xaml.Media.Imaging.BitmapImage(
                 new Uri(Path.Combine(AppContext.BaseDirectory, "Assets", "Square44x44Logo.targetsize-48.png")));
             CompactIcon.Focus(FocusState.Programmatic);
+        }
+    }
+
+    /// <summary>
+    /// The compact icon steps aside while a video, game or presentation fills its monitor, and comes back on top when
+    /// that window leaves full screen or the user switches away from it.
+    /// </summary>
+    private void OnFullScreenChanged(object? sender, bool covered)
+    {
+        if (covered)
+        {
+            AppWindow.Hide();
+        }
+        else if (!AppWindow.IsVisible)
+        {
+            AppWindow.Show(activateWindow: false);
+            ApplyAlwaysOnTop();
         }
     }
 
@@ -345,7 +376,8 @@ public sealed partial class MainWindow : Window
     private async void OnSettingsClicked(object sender, RoutedEventArgs e)
     {
         var dialog = new SettingsDialog(ViewModel) { XamlRoot = RootGrid.XamlRoot, RequestedTheme = RootGrid.ActualTheme };
-        DialogSizing.FitToWindow(dialog, RootGrid.XamlRoot, SettingsDialog.PreferredWidth);
+        dialog.FitTo(RootGrid.XamlRoot);
+        dialog.RestartRequested += (_, _) => RestartRequested?.Invoke(this, EventArgs.Empty);
         void FollowTheme(object? s, System.ComponentModel.PropertyChangedEventArgs args)
         {
             if (args.PropertyName == nameof(MainViewModel.Theme))
@@ -375,7 +407,7 @@ public sealed partial class MainWindow : Window
 
     private async void OnAddNoteClicked(object sender, RoutedEventArgs e)
     {
-        if (await TextEditorDialog.ShowAsync(RootGrid.XamlRoot, "Add note", "", multiline: true) is { } text)
+        if (await TextEditorDialog.ShowAsync(RootGrid.XamlRoot, Strings.AddNote, "", multiline: true) is { } text)
         {
             Board.AddNote(text);
         }
@@ -418,7 +450,7 @@ public sealed partial class MainWindow : Window
             || data.Contains(StandardDataFormats.WebLink) || data.Contains(StandardDataFormats.Text))
         {
             e.AcceptedOperation = DataPackageOperation.Link;
-            e.DragUIOverride.Caption = "Add to widget";
+            e.DragUIOverride.Caption = Strings.AddToWidget;
         }
     }
 
@@ -450,14 +482,25 @@ public sealed partial class MainWindow : Window
         }
     }
 
-    private void OnClosed(object sender, WindowEventArgs args)
+    /// <summary>Raised when the app should restart, to show a newly chosen language.</summary>
+    public event EventHandler? RestartRequested;
+
+    /// <summary>Records where the window is, so the next start reopens it there.</summary>
+    public void SaveWindowBounds()
     {
-        ViewModel.PropertyChanged -= OnViewModelPropertyChanged;
-        _imageViewer?.Close();
-        _resizer.Detach();
         var position = AppWindow.Position;
         var size = AppWindow.Size;
         ViewModel.SaveWindowBounds(new PixelRect(position.X, position.Y, size.Width, size.Height));
+    }
+
+    private void OnClosed(object sender, WindowEventArgs args)
+    {
+        ViewModel.PropertyChanged -= OnViewModelPropertyChanged;
+        _fullScreenWatcher.CoveredChanged -= OnFullScreenChanged;
+        _fullScreenWatcher.Stop();
+        _imageViewer?.Close();
+        _resizer.Detach();
+        SaveWindowBounds();
     }
 
     private static PixelRect ToPixelRect(RectInt32 rect) => new(rect.X, rect.Y, rect.Width, rect.Height);

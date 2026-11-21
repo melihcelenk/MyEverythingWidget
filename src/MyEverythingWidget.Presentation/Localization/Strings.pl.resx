@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Add" xml:space="preserve">
+    <value>Dodaj</value>
+  </data>
+  <data name="AddApp" xml:space="preserve">
+    <value>Dodaj aplikację</value>
+  </data>
+  <data name="AddAppMenu" xml:space="preserve">
+    <value>Dodaj aplikację…</value>
+  </data>
+  <data name="AddCategory" xml:space="preserve">
+    <value>Dodaj kategorię</value>
+  </data>
+  <data name="AddImageMenu" xml:space="preserve">
+    <value>Dodaj obraz…</value>
+  </data>
+  <data name="AddMenuApp" xml:space="preserve">
+    <value>Aplikacja…</value>
+  </data>
+  <data name="AddMenuImage" xml:space="preserve">
+    <value>Obraz…</value>
+  </data>
+  <data name="AddMenuNote" xml:space="preserve">
+    <value>Notatka</value>
+  </data>
+  <data name="AddNote" xml:space="preserve">
+    <value>Dodaj notatkę</value>
+  </data>
+  <data name="AddToWidget" xml:space="preserve">
+    <value>Dodaj do widżetu</value>
+  </data>
+  <data name="AlwaysOnTop" xml:space="preserve">
+    <value>Zawsze na wierzchu</value>
+  </data>
+  <data name="AppNotFound" xml:space="preserve">
+    <value>Nie można znaleźć elementu „{0}”. Mógł zostać przeniesiony lub odinstalowany.</value>
+  </data>
+  <data name="AppNotOpened" xml:space="preserve">
+    <value>Nie można otworzyć elementu „{0}”.</value>
+  </data>
+  <data name="Browse" xml:space="preserve">
+    <value>Przeglądaj…</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Anuluj</value>
+  </data>
+  <data name="Categories" xml:space="preserve">
+    <value>Kategorie</value>
+  </data>
+  <data name="CategoryName" xml:space="preserve">
+    <value>Nazwa kategorii</value>
+  </data>
+  <data name="ChangeIcon" xml:space="preserve">
+    <value>Zmień ikonę</value>
+  </data>
+  <data name="ChangeIconMenu" xml:space="preserve">
+    <value>Zmień ikonę…</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Zamknij</value>
+  </data>
+  <data name="CompactMode" xml:space="preserve">
+    <value>Tryb kompaktowy</value>
+  </data>
+  <data name="CompactModeTip" xml:space="preserve">
+    <value>Zmniejsz do ikony</value>
+  </data>
+  <data name="Copied" xml:space="preserve">
+    <value>Skopiowano</value>
+  </data>
+  <data name="Copy" xml:space="preserve">
+    <value>Kopiuj</value>
+  </data>
+  <data name="CopyEmail" xml:space="preserve">
+    <value>Kopiuj {0}</value>
+  </data>
+  <data name="CopyImage" xml:space="preserve">
+    <value>Kopiuj obraz</value>
+  </data>
+  <data name="CopyNote" xml:space="preserve">
+    <value>Kopiuj notatkę</value>
+  </data>
+  <data name="DefaultCategoryName" xml:space="preserve">
+    <value>Ogólne</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Usuń</value>
+  </data>
+  <data name="DeleteCategoryMany" xml:space="preserve">
+    <value>Kategoria „{0}” zostanie usunięta wraz z zawartością (elementy: {1}).</value>
+  </data>
+  <data name="DeleteCategoryOne" xml:space="preserve">
+    <value>Kategoria „{0}” zostanie usunięta wraz z jej elementem.</value>
+  </data>
+  <data name="DeleteCategoryTitle" xml:space="preserve">
+    <value>Usunąć kategorię?</value>
+  </data>
+  <data name="DropAllowed" xml:space="preserve">
+    <value>dozwolone</value>
+  </data>
+  <data name="DropHint" xml:space="preserve">
+    <value>Upuść lub wklej (Ctrl+V) pliki, linki, tekst albo obrazy</value>
+  </data>
+  <data name="DropImageHere" xml:space="preserve">
+    <value>Upuść obraz tutaj
+lub wklej go za pomocą Ctrl+V</value>
+  </data>
+  <data name="DropNotAllowed" xml:space="preserve">
+    <value>niedozwolone</value>
+  </data>
+  <data name="DropTarget" xml:space="preserve">
+    <value>Miejsce upuszczenia</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edytuj</value>
+  </data>
+  <data name="EditInPaint" xml:space="preserve">
+    <value>Edytuj w programie Paint</value>
+  </data>
+  <data name="EditNote" xml:space="preserve">
+    <value>Edytuj notatkę</value>
+  </data>
+  <data name="GridFull" xml:space="preserve">
+    <value>Ta kategoria jest pełna. Najpierw usuń lub zmniejsz jakiś element.</value>
+  </data>
+  <data name="ImageDropArea" xml:space="preserve">
+    <value>Obszar upuszczania obrazu</value>
+  </data>
+  <data name="ImageNotFound" xml:space="preserve">
+    <value>Nie znaleziono obrazu</value>
+  </data>
+  <data name="ImageNotRead" xml:space="preserve">
+    <value>Nie można odczytać tego obrazu.</value>
+  </data>
+  <data name="ImportFailed" xml:space="preserve">
+    <value>Nie można odczytać elementów poprzedniej wersji, więc nie zostały zaimportowane.</value>
+  </data>
+  <data name="Imported" xml:space="preserve">
+    <value>Zaimportowano elementy z poprzedniej wersji My Everything Widget: {0}.</value>
+  </data>
+  <data name="ImportedMissingImage" xml:space="preserve">
+    <value>Zaimportowano elementy z poprzedniej wersji My Everything Widget: {0}. Nie znaleziono obrazów: {1}.</value>
+  </data>
+  <data name="ImportedMissingImages" xml:space="preserve">
+    <value>Zaimportowano elementy z poprzedniej wersji My Everything Widget: {0}. Nie znaleziono obrazów: {1}.</value>
+  </data>
+  <data name="InstalledApps" xml:space="preserve">
+    <value>Zainstalowane aplikacje</value>
+  </data>
+  <data name="InvalidTarget" xml:space="preserve">
+    <value>Wprowadź pełną ścieżkę (C:\...) lub adres internetowy (https://...).</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Język</value>
+  </data>
+  <data name="LanguageSystem" xml:space="preserve">
+    <value>Język systemu</value>
+  </data>
+  <data name="MoveTo" xml:space="preserve">
+    <value>Przenieś do</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Nazwa</value>
+  </data>
+  <data name="NewCategoryName" xml:space="preserve">
+    <value>Nowa kategoria</value>
+  </data>
+  <data name="NoRoom" xml:space="preserve">
+    <value>Brak miejsca, aby przenieść tam pozostałe elementy.</value>
+  </data>
+  <data name="NoRoomIn" xml:space="preserve">
+    <value>Brak miejsca w kategorii „{0}”.</value>
+  </data>
+  <data name="NotAnImage" xml:space="preserve">
+    <value>To nie jest obraz.</value>
+  </data>
+  <data name="Open" xml:space="preserve">
+    <value>Otwórz</value>
+  </data>
+  <data name="OpenWidget" xml:space="preserve">
+    <value>Otwórz My Everything Widget</value>
+  </data>
+  <data name="PaintNotAvailable" xml:space="preserve">
+    <value>Nie można otworzyć programu Paint.</value>
+  </data>
+  <data name="PathOrAddress" xml:space="preserve">
+    <value>Ścieżka lub adres internetowy</value>
+  </data>
+  <data name="PathOrAddressLabel" xml:space="preserve">
+    <value>Lub wprowadź ścieżkę albo adres internetowy</value>
+  </data>
+  <data name="PathPlaceholder" xml:space="preserve">
+    <value>C:\... lub https://...</value>
+  </data>
+  <data name="Rate" xml:space="preserve">
+    <value>Oceń</value>
+  </data>
+  <data name="Rename" xml:space="preserve">
+    <value>Zmień nazwę</value>
+  </data>
+  <data name="ResetToOriginal" xml:space="preserve">
+    <value>Przywróć oryginał</value>
+  </data>
+  <data name="Resize" xml:space="preserve">
+    <value>Zmień rozmiar</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Zapisz</value>
+  </data>
+  <data name="SaveFailed" xml:space="preserve">
+    <value>Nie można zapisać zmian: {0}</value>
+  </data>
+  <data name="SearchInstalledApps" xml:space="preserve">
+    <value>Wyszukaj zainstalowane aplikacje</value>
+  </data>
+  <data name="SelectIcon" xml:space="preserve">
+    <value>Wybierz ikonę</value>
+  </data>
+  <data name="SelectImage" xml:space="preserve">
+    <value>Wybierz obraz</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Ustawienia</value>
+  </data>
+  <data name="SomeNotAdded" xml:space="preserve">
+    <value>Nie można dodać niektórych elementów. Użyj pełnej ścieżki lub adresu internetowego.</value>
+  </data>
+  <data name="StateUnreadable" xml:space="preserve">
+    <value>Nie można odczytać zapisanych elementów, więc widżet został uruchomiony pusty. Kopię zachowano tutaj: {0}.</value>
+  </data>
+  <data name="Theme" xml:space="preserve">
+    <value>Motyw</value>
+  </data>
+  <data name="ThemeDark" xml:space="preserve">
+    <value>Ciemny</value>
+  </data>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>Jasny</value>
+  </data>
+  <data name="ThemeSystem" xml:space="preserve">
+    <value>Systemowy</value>
+  </data>
+  <data name="ThemeSystemTip" xml:space="preserve">
+    <value>Użyj ustawienia systemu Windows</value>
+  </data>
+  <data name="UseAsIcon" xml:space="preserve">
+    <value>Użyj jako ikony</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Wersja {0}</value>
+  </data>
+  <data name="Website" xml:space="preserve">
+    <value>Witryna</value>
+  </data>
+</root>
