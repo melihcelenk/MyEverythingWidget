@@ -349,4 +349,8 @@ or paste it with Ctrl+V</value>
     <value>Website</value>
     <comment>About link to the project website</comment>
   </data>
+  <data name="FamilyEmpty" xml:space="preserve">
+    <value>No other widgets of the family are installed.</value>
+    <comment>Shown next to the compact icon on right-click when no other widget of the widget family (apps such as Task Timer Widget that open around this icon) is installed</comment>
+  </data>
 </root>

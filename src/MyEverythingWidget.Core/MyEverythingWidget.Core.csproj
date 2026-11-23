@@ -8,4 +8,9 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
   </ItemGroup>
 
+  <!-- Widget family contract (MEW-5): git submodule, see external/WidgetFamily/README.md. -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\external\WidgetFamily\src\WidgetFamily\WidgetFamily.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -14,13 +14,19 @@
 .PARAMETER TimeoutMinutes
     How long to wait for the sandbox to report results.
 
+.PARAMETER MemberRepository
+    The widget family member (Task Timer Widget) repository whose package is installed next to the app for the
+    widget family tests (MEW-5); defaults to TaskTimerWidget next to this repository. When it is missing, those tests
+    are skipped.
+
 .EXAMPLE
     pwsh scripts/test-ui.ps1
 #>
 [CmdletBinding()]
 param(
     [string] $Filter = "",
-    [int] $TimeoutMinutes = 15
+    [int] $TimeoutMinutes = 15,
+    [string] $MemberRepository = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -31,6 +37,7 @@ $testsOut = Join-Path $work "tests"
 $results = Join-Path $work "results"
 $runner = Join-Path $work "runner"
 $msixOut = Join-Path $work "msix"
+$memberMsixOut = Join-Path $work "member-msix"
 $sandboxRoot = "C:\mew"
 
 function Invoke-Checked([string] $description, [scriptblock] $command) {
@@ -57,12 +64,29 @@ Invoke-Checked "Publish UI tests" {
 Write-Host "==> Build MSIX"
 & (Join-Path $PSScriptRoot "publish-msix.ps1") -Platform x64 -OutputDirectory $msixOut | Out-Null
 
-# Installs the unsigned package inside the sandbox and writes its Application User Model ID for the tests.
+if (-not $MemberRepository) { $MemberRepository = Join-Path (Split-Path -Parent $repoRoot) "TaskTimerWidget" }
+if (Test-Path (Join-Path $MemberRepository "src\TaskTimerWidget\TaskTimerWidget.csproj")) {
+    Write-Host "==> Build widget family member MSIX"
+    & (Join-Path $PSScriptRoot "build-member-msix.ps1") -MemberRepository $MemberRepository -OutputDirectory $memberMsixOut | Out-Null
+}
+else {
+    Write-Warning "Widget family member not found at $MemberRepository; the widget family tests will be skipped."
+}
+
+# Installs the unsigned packages inside the sandbox and writes their Application User Model IDs for the tests.
 @'
 $package = Get-ChildItem -Path "C:\mew\msix" -Recurse -Filter "*.msix" | Select-Object -First 1
 Add-AppxPackage -AllowUnsigned -Path $package.FullName
 $installed = Get-AppxPackage -Name "MyEverythingWidget"
 "$($installed.PackageFamilyName)!App" | Set-Content -Encoding ascii "C:\mew\results\aumid.txt"
+
+# The widget family member (MEW-5), when it was built.
+$member = Get-ChildItem -Path "C:\mew\member-msix" -Recurse -Filter "*.msix" -ErrorAction SilentlyContinue | Select-Object -First 1
+if ($member) {
+    Add-AppxPackage -AllowUnsigned -Path $member.FullName
+    $installedMember = Get-AppxPackage -Name "MelihCelenk.TaskTimerWidget"
+    "$($installedMember.PackageFamilyName)!App" | Set-Content -Encoding ascii "C:\mew\results\member-aumid.txt"
+}
 '@ | Set-Content -Encoding utf8 (Join-Path $runner "install-msix.ps1")
 
 $filterArgument = if ($Filter) { "-filter `"$Filter`"" } else { "" }
@@ -80,6 +104,7 @@ if not exist "$sandboxRoot\results\aumid.txt" (
   exit /b 2
 )
 set /p MEW_APP_AUMID=<"$sandboxRoot\results\aumid.txt"
+if exist "$sandboxRoot\results\member-aumid.txt" set /p MEW_MEMBER_AUMID=<"$sandboxRoot\results\member-aumid.txt"
 set TESTS="$sandboxRoot\tests\MyEverythingWidget.UiTests.exe" -noColor
 set ISOLATED=0
 rem Tests that use the system drag-and-drop loop run first, in their own process (PHASE7.md, 7.6.2).

@@ -265,4 +265,7 @@
   <data name="Website" xml:space="preserve">
     <value>Веб-сайт</value>
   </data>
+  <data name="FamilyEmpty" xml:space="preserve">
+    <value>Інших віджетів родини не встановлено.</value>
+  </data>
 </root>

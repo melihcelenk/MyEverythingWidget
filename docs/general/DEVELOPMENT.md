@@ -67,7 +67,15 @@ Runs `Core.Tests` and `Presentation.Tests` (xunit.v3 on Microsoft Testing Platfo
 ```
 pwsh scripts/test-ui.ps1
 pwsh scripts/test-ui.ps1 -Filter "/*/*/MainWindowTests/*"
+pwsh scripts/test-ui.ps1 -Filter "/*/*/WidgetFamilyTests/*" -MemberRepository ../TaskTimerWidget
 ```
+
+The widget family tests (`WidgetFamilyTests`, MEW-5) also need Task Timer Widget: the script builds its unsigned,
+self-contained MSIX with `scripts/build-member-msix.ps1` from `-MemberRepository` (default: `TaskTimerWidget` next
+to this repository) and installs it next to the app. Without that repository those tests are skipped.
+
+Clone with the submodule (`git clone --recurse-submodules …`, or `git submodule update --init` in an existing clone);
+the build needs `external/WidgetFamily`.
 
 What the script does:
 

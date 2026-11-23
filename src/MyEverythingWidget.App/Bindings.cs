@@ -15,6 +15,15 @@ public static class Bindings
     public static Microsoft.UI.Xaml.Visibility VisibleWhen(bool visible) =>
         visible ? Microsoft.UI.Xaml.Visibility.Visible : Microsoft.UI.Xaml.Visibility.Collapsed;
 
+    /// <summary>Returns <see cref="Microsoft.UI.Xaml.Visibility.Collapsed"/> when <paramref name="hidden"/> is true.</summary>
+    public static Microsoft.UI.Xaml.Visibility VisibleUnless(bool hidden) => VisibleWhen(!hidden);
+
+    /// <summary>Visible when a family member sits on that side of the compact icon.</summary>
+    public static Microsoft.UI.Xaml.Visibility VisibleWhenSlot(FamilySlot? slot) => VisibleWhen(slot is not null);
+
+    /// <summary>The name of the family member on a side of the compact icon, or nothing.</summary>
+    public static string SlotName(FamilySlot? slot) => slot?.Name ?? string.Empty;
+
     /// <summary>Maps a view-model severity to the InfoBar severity.</summary>
     public static InfoBarSeverity ToInfoBarSeverity(StatusSeverity severity) => severity switch
     {

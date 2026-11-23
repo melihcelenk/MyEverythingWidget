@@ -265,4 +265,7 @@
   <data name="Website" xml:space="preserve">
     <value>वेबसाइट</value>
   </data>
+  <data name="FamilyEmpty" xml:space="preserve">
+    <value>परिवार का कोई अन्य विजेट इंस्टॉल नहीं है।</value>
+  </data>
 </root>

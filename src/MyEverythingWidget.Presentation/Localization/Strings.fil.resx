@@ -265,4 +265,7 @@ o i-paste ito gamit ang Ctrl+V</value>
   <data name="Website" xml:space="preserve">
     <value>Website</value>
   </data>
+  <data name="FamilyEmpty" xml:space="preserve">
+    <value>Walang ibang widget ng pamilya ang naka-install.</value>
+  </data>
 </root>

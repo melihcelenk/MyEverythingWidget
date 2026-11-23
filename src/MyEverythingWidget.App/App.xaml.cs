@@ -6,9 +6,11 @@ using MyEverythingWidget.Core.Grid;
 using MyEverythingWidget.Core.Legacy;
 using MyEverythingWidget.Core.Settings;
 using MyEverythingWidget.Core.State;
+using MyEverythingWidget.Infrastructure.Family;
 using MyEverythingWidget.Infrastructure.Shell;
 using MyEverythingWidget.Presentation;
 using MyEverythingWidget.Presentation.Localization;
+using WidgetFamily;
 
 namespace MyEverythingWidget.App;
 
@@ -21,6 +23,9 @@ public sealed partial class App : Application, IDisposable
     private readonly HttpClient _httpClient = new();
     private MainWindow? _mainWindow;
     private DispatcherQueue? _dispatcherQueue;
+
+    /// <summary>The widget family hub (MEW-5): while it runs, family widgets leave the taskbar.</summary>
+    private HubServer? _familyHub;
 
     /// <summary>Creates the application object.</summary>
     public App()
@@ -75,9 +80,27 @@ public sealed partial class App : Application, IDisposable
             boardViewModel.ShowMigrationResult(migration);
         }
 
-        _mainWindow = new MainWindow(mainViewModel, boardViewModel, new ShellAppsSource());
+        var familyHub = StartFamilyHub();
+        var family = new FamilyMenuViewModel(
+            new AppExtensionFamilyCatalog(_loggerFactory.CreateLogger<AppExtensionFamilyCatalog>()),
+            new UriFamilyLauncher(_loggerFactory.CreateLogger<UriFamilyLauncher>()),
+            new FamilyHubAdapter(familyHub));
+
+        _mainWindow = new MainWindow(mainViewModel, boardViewModel, new ShellAppsSource(), family);
+        _mainWindow.Closed += (_, _) => _ = _familyHub?.DisposeAsync().AsTask();
         _mainWindow.RestartRequested += (_, _) => _dispatcherQueue?.TryEnqueue(DispatcherQueuePriority.Low, Restart);
         _mainWindow.Activate();
+    }
+
+    /// <summary>
+    /// Starts the widget family hub. Members in this Windows session connect to it; when this app closes or crashes,
+    /// they see the pipe close and come back to the taskbar.
+    /// </summary>
+    private HubServer StartFamilyHub()
+    {
+        _familyHub = new HubServer(FamilyContract.HubPipeNameForThisSession());
+        _familyHub.Start();
+        return _familyHub;
     }
 
     /// <summary>

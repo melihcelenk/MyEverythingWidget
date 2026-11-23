@@ -201,6 +201,9 @@ public static class Strings
     /// <summary>"Open"</summary>
     public static string Open => Get(nameof(Open));
 
+    /// <summary>Shown on right-click of the compact icon when no other family widget is installed.</summary>
+    public static string FamilyEmpty => Get(nameof(FamilyEmpty));
+
     /// <summary>"Open My Everything Widget"</summary>
     public static string OpenWidget => Get(nameof(OpenWidget));
 

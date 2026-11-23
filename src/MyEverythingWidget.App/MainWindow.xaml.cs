@@ -54,14 +54,16 @@ public sealed partial class MainWindow : Window
     private ImageViewerWindow? _imageViewer;
 
     /// <summary>Creates the window for <paramref name="viewModel"/> showing <paramref name="board"/>.</summary>
-    public MainWindow(MainViewModel viewModel, BoardViewModel board, IInstalledAppsSource installedApps)
+    public MainWindow(MainViewModel viewModel, BoardViewModel board, IInstalledAppsSource installedApps, FamilyMenuViewModel family)
     {
         ArgumentNullException.ThrowIfNull(viewModel);
         ArgumentNullException.ThrowIfNull(board);
         ArgumentNullException.ThrowIfNull(installedApps);
+        ArgumentNullException.ThrowIfNull(family);
 
         ViewModel = viewModel;
         Board = board;
+        Family = family;
         _installedApps = installedApps;
         InitializeComponent();
         GridView.Board = board;
@@ -235,11 +237,13 @@ public sealed partial class MainWindow : Window
         if (covered)
         {
             AppWindow.Hide();
+            HideFamilyMembers(hidden: true);
         }
         else if (!AppWindow.IsVisible)
         {
             AppWindow.Show(activateWindow: false);
             ApplyAlwaysOnTop();
+            HideFamilyMembers(hidden: false);
         }
     }
 
@@ -333,6 +337,10 @@ public sealed partial class MainWindow : Window
     {
         _compactPressCursor = null;
         CompactIcon.ReleasePointerCaptures();
+        if (_compactDragged)
+        {
+            MoveFamilyMembersAlong();
+        }
     }
 
     private void OnCloseClicked(object sender, RoutedEventArgs e) => Close();
