@@ -1,6 +1,6 @@
 # Faz 1 — Ortak sözleşme: uzantı adı, protokol adresleri, mesajlar
 
-> **Durum:** 🟡 Kısmi (1.6: MEW ve Task Timer commit'leri kullanıcıda) · **Tamamlanma:** 95% · **Efor:** tahmin yazılmadı · **Task:** MEW-5
+> **Durum:** 🟢 Tamamlandı · **Tamamlanma:** 100% · **Efor:** tahmin yazılmadı · **Task:** MEW-5
 
 Widget ailesinin ortak dili bu fazda belirlenir. Hub ile üyelerin birbirini nasıl bulduğu, birbirini nasıl açtığı ve
 çalışırken hangi mesajları gönderdiği yazılır. Bunlar iki uygulamanın da kullanacağı küçük bir kütüphanede kodlanır.
@@ -31,7 +31,7 @@ Faz bitince ekranda bir şey değişmez; sonraki iki faz bu sözleşmenin üstü
 | 1.3 | Hub rolü ve ortak kodun paylaşım yolu kararlaştırılır. | 🟢 Tamamlandı |
 | 1.4 | Uzantı bloğu, protokol adresleri ve mesajlar sözleşme dokümanına yazılır. | 🟢 Tamamlandı |
 | 1.5 | Ortak kütüphane yazılır ve birim testleriyle doğrulanır. | 🟢 Tamamlandı |
-| 1.6 | `WidgetFamily` reposu açılır ve iki uygulamaya submodule olarak eklenir. | 🟡 Kısmi (MEW ve Task Timer commit'leri kullanıcıda) |
+| 1.6 | `WidgetFamily` reposu açılır ve iki uygulamaya submodule olarak eklenir. | 🟢 Tamamlandı |
 
 ## Kararlar
 
@@ -48,8 +48,7 @@ Faz bitince ekranda bir şey değişmez; sonraki iki faz bu sözleşmenin üstü
 
 ## Kalan
 
-- **1.6:** `v0.1.0` etiketi push edildi (kullanıcı). MEW ve Task Timer'daki submodule/README değişiklikleri stage'de;
-  commit ve push kullanıcıda.
+- Yok. WidgetFamily CI'ı yeşil.
 
 ## Ayrıntılar
 
@@ -143,10 +142,11 @@ Faz bitince ekranda bir şey değişmez; sonraki iki faz bu sözleşmenin üstü
 
   5. `v0.1.0` etiketi `28af937`'ye atılıp push edildi (kullanıcı). Submodule'ler bu commit'te.
 
-  Kalan: MEW ve Task Timer branch'lerindeki commit ve push (kullanıcı).
+  6. MEW `39e5843` ve Task Timer `7ce1977` commit'leri `feature/MEW-5-widget-family` branch'lerine push edildi
+     (kullanıcı). WidgetFamily CI'ı yeşil.
 - **Dosyalar:** `C:\Kodlar\WidgetFamily\` (README, CHANGELOG, LICENSE, CI, props)
 - **Testler:** İki uygulama submodule ile temiz klondan derlenir; CI yeşil.
-- **Durum:** 🟡 Kısmi (MEW ve Task Timer commit'leri kullanıcıda).
+- **Durum:** 🟢 Tamamlandı.
 
 ### Doğrulanmayan / dikkat edilmesi gereken
 

@@ -67,8 +67,8 @@ GitHub'da anlaşılır olması için çok repolu projelerde yaygın düzen kulla
 
 | Faz | Başlık | Durum | Tamamlanma | Dosya |
 |-----|--------|-------|------------|-------|
-| 1 | Ortak sözleşme: uzantı adı, protokol adresleri, mesajlar | 🟡 Kısmi (MEW ve Task Timer commit'leri kullanıcıda) | 95% | `PHASE1.md` |
-| 2 | Task Timer: protokolle açılma, mesaj kanalı, hub varken görev çubuğundan çekilme | ⏳ Bekliyor | 0% | `PHASE2.md` |
+| 1 | Ortak sözleşme: uzantı adı, protokol adresleri, mesajlar | 🟢 Tamamlandı | 100% | `PHASE1.md` |
+| 2 | Task Timer: protokolle açılma, mesaj kanalı, hub varken görev çubuğundan çekilme | 🟡 Kısmi (2.4 Sandbox testi Faz 3'te) | 90% | `PHASE2.md` |
 | 3 | MEW: aile üyelerini bulma, sağ tıkta dört yön, açma ve kenara yerleştirme | ⏳ Bekliyor | 0% | `PHASE3.md` |
 | 4 | Birlikte hareket: hub sürüklenince üyeler kayar, tam ekranda birlikte gizlenir | ⏳ Bekliyor | 0% | `PHASE4.md` |
 
@@ -169,15 +169,15 @@ Seçilen: S05 → A. Karşılaştırma `WIDGET_FAMILY.md` → 4. bölüm.
 
 ## 🎯 Faz Özetleri
 
-### 🟡 Faz 1 — Ortak sözleşme
+### 🟢 Faz 1 — Ortak sözleşme
 
-**Durum:** 🟡 Kısmi (MEW ve Task Timer commit'leri kullanıcıda) · **Tamamlanma:** 95% · **Ayrıntı:** [PHASE1.md](PHASE1.md)
+**Durum:** 🟢 Tamamlandı · **Tamamlanma:** 100% · **Ayrıntı:** [PHASE1.md](PHASE1.md)
 Hub ile üyelerin birbirini nasıl bulduğu, açtığı ve hangi mesajları gönderdiği yazılır ve iki uygulamanın da
 kullanacağı küçük bir kütüphanede (`WidgetFamily` reposu) kodlanır. Kartların MEW-5'e taşınması (T1) ve doküman düzeni (T2) tamamlandı.
 
-### ⏳ Faz 2 — Task Timer tarafı
+### 🟡 Faz 2 — Task Timer tarafı
 
-**Durum:** ⏳ Bekliyor · **Tamamlanma:** 0% · **Ayrıntı:** [PHASE2.md](PHASE2.md)
+**Durum:** 🟡 Kısmi (2.4 Sandbox testi Faz 3'te) · **Tamamlanma:** 90% · **Ayrıntı:** [PHASE2.md](PHASE2.md)
 Task Timer aile üyesi olur: protokolle açılır, mesaj kanalını dinler, hub çalışırken görev çubuğundan çekilir.
 İş TaskTimerWidget reposunda, `feature/MEW-5-widget-family` branch'inde yapılır.
 
