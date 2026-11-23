@@ -13,14 +13,22 @@
 .PARAMETER OutputDirectory
     Where the package folder is written; defaults to tmp\member-msix.
 
+.PARAMETER LocalSigned
+    Builds a copy to try on this PC instead of the sandbox package: Windows here does not install an unsigned package
+    that the hub opens through a protocol. The copy is named MelihCelenk.TaskTimerWidget.Dev (so it installs next to
+    the Store app and never replaces it), carries the Store publisher and is signed with the local test certificate
+    that scripts/sign-local-test.ps1 creates and that must be trusted on this PC.
+
 .EXAMPLE
     pwsh scripts/build-member-msix.ps1
-    pwsh scripts/build-member-msix.ps1 -MemberRepository C:\Kodlar\TaskTimerWidget
+    pwsh scripts/build-member-msix.ps1 -MemberRepository ..\TaskTimerWidget
+    pwsh scripts/build-member-msix.ps1 -LocalSigned
 #>
 [CmdletBinding()]
 param(
     [string] $MemberRepository = "",
-    [string] $OutputDirectory = ""
+    [string] $OutputDirectory = "",
+    [switch] $LocalSigned
 )
 
 $ErrorActionPreference = "Stop"
@@ -41,7 +49,15 @@ $manifestPath = Join-Path (Split-Path -Parent $project) "Package.appxmanifest"
 $originalManifest = [System.IO.File]::ReadAllBytes($manifestPath)
 try {
     [xml] $manifest = [System.IO.File]::ReadAllText($manifestPath)
-    $manifest.Package.Identity.Publisher = $unsignedPublisher
+    if ($LocalSigned) {
+        $identity = Get-Content (Join-Path $repoRoot "src\MyEverythingWidget.App\StoreIdentity.json") -Raw | ConvertFrom-Json
+        $manifest.Package.Identity.Name = $manifest.Package.Identity.Name + ".Dev"
+        $manifest.Package.Identity.Publisher = $identity.publisher
+        $manifest.Package.Properties.DisplayName = $manifest.Package.Properties.DisplayName + " (dev)"
+    }
+    else {
+        $manifest.Package.Identity.Publisher = $unsignedPublisher
+    }
     $manifest.Save($manifestPath)
 
     dotnet publish $project `
@@ -62,5 +78,16 @@ finally {
 
 $package = Get-ChildItem -Path $OutputDirectory -Recurse -Filter "*.msix" | Select-Object -First 1
 if (-not $package) { throw "No .msix produced under $OutputDirectory" }
+if ($LocalSigned) {
+    $signTool = Get-ChildItem "${env:ProgramFiles(x86)}\Windows Kits\10\bin\*\x64\signtool.exe" -ErrorAction SilentlyContinue |
+        Sort-Object FullName | Select-Object -Last 1 -ExpandProperty FullName
+    if (-not $signTool) { throw "signtool.exe not found; install the Windows SDK." }
+    $certificate = Get-ChildItem Cert:\CurrentUser\My | Where-Object { $_.Subject -eq $identity.publisher -and $_.HasPrivateKey } |
+        Select-Object -First 1
+    if (-not $certificate) { throw "Local test certificate not found; run scripts/sign-local-test.ps1 first." }
+    & $signTool sign /fd SHA256 /sha1 $certificate.Thumbprint $package.FullName | Out-Null
+    if ($LASTEXITCODE -ne 0) { throw "signtool failed with exit code $LASTEXITCODE" }
+}
+
 Write-Host "==> Member package: $($package.FullName)"
 $package.FullName

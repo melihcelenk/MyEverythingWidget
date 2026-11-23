@@ -1,6 +1,6 @@
 # Faz 5 — Kurulu olmayan aile widget'ını indirmeye yönlendirme ve kurulu halin gösterimi
 
-> **Durum:** 🟡 Kısmi (5.2 kullanıcının indirme menüsünü görmesini bekliyor) · **Tamamlanma:** 80% · **Efor:** tahmin yazılmadı · **Task:** MEW-5
+> **Durum:** 🟢 Tamamlandı · **Tamamlanma:** 100% · **Efor:** tahmin yazılmadı · **Task:** MEW-5
 
 Kompakt simgeye sağ tıklanınca, kurulu olmayan aile widget'ları artık "Task Timer Widget uygulamasını indir" diye
 görünüyor; tıklanınca Microsoft Store'daki sayfası açılıyor. Kurulu olanlar önceki gibi adlarıyla görünüyor ve
@@ -31,7 +31,7 @@ açılıp gösterilir.
 | # | Ne yapılıyor | Durum |
 |---|--------------|-------|
 | 5.1 | Kurulu olmayan aile widget'ı menüde indirme düğmesi olarak görünür ve Store sayfasını açar. | 🟢 Tamamlandı |
-| 5.2 | Kurulu hal bu bilgisayarda hazırlanıp uygulama onunla açılarak gösterilir. | ⏳ Bekliyor (kullanıcının indirme menüsünü görmesi) |
+| 5.2 | Kurulu hal bu bilgisayarda hazırlanıp uygulama onunla açılarak gösterilir. | 🟢 Tamamlandı |
 | 5.3 | UI testleri Sandbox dışında kullanıcının panosuna yazmaz. | 🟢 Tamamlandı |
 | 5.4 | "Aileden başka widget yüklü değil" bilgisi kalır; altında indirmeye yönlendiren düğme olur. | 🟢 Tamamlandı |
 
@@ -42,7 +42,6 @@ açılıp gösterilir.
 
 ## Kalan
 
-- **5.2:** Kullanıcı indirme menüsünü gördükten sonra.
 
 ## Ayrıntılar
 
@@ -64,11 +63,16 @@ açılıp gösterilir.
 
 - **Mevcut durum:** Kurulu hal yalnız Sandbox'ta denendi.
 - **Problem:** Gereksinim (T12): kullanıcı kurulu hali kendi bilgisayarında görmek istiyor.
-- **Çözüm:** Geliştirme paketleri (imzasız MEW ve Task Timer) Store sürümlerinden farklı paket kimliğiyle kurulur;
-  Store sürümleri ve verileri etkilenmez. Paketli geliştirme MEW'i açılır.
-- **Dosyalar:** —
+- **Gereksinim (T18):** Kullanıcı indirme menüsünü gördü; kurulu hal de gösterilir.
+- **Çözüm:** İmzasız paket bu bilgisayarda kurulamadı ("an unsigned package cannot include Executable activations";
+  Sandbox buna izin veriyor). `scripts/build-member-msix.ps1 -LocalSigned` Task Timer'ı `MelihCelenk.TaskTimerWidget.Dev`
+  adıyla, Store yayıncısıyla derleyip 1.0.1 için oluşturulan, bu bilgisayarda güvenilir yerel test sertifikasıyla
+  imzalar. Store'daki `MelihCelenk.TaskTimerWidget` yerinde kalır; verisine dokunulmaz. Paketsiz geliştirme MEW'i de
+  uzantı kataloğunu okuduğu için yalnız Task Timer'ın kurulması yetti.
+  Kaldırmak için: `Get-AppxPackage MelihCelenk.TaskTimerWidget.Dev | Remove-AppxPackage`.
+- **Dosyalar:** `scripts/build-member-msix.ps1`
 - **Testler:** Kullanıcının gözü.
-- **Durum:** ⏳ Bekliyor.
+- **Durum:** 🟢 Tamamlandı.
 
 ### 5.3 — UI testleri Sandbox dışında kullanıcının panosuna yazmaz.
 
