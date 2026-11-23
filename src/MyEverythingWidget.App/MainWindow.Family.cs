@@ -99,6 +99,16 @@ public sealed partial class MainWindow
         (FamilyEmptyCard, FamilyEdge.Right),
     ];
 
+    /// <summary>A download button: opens the family widget's Store page (T16).</summary>
+    private async void OnFamilyDownloadClicked(object sender, RoutedEventArgs e)
+    {
+        FamilyPopup.IsOpen = false;
+        if (sender is FrameworkElement { Tag: string memberId })
+        {
+            await Family.DownloadAsync(memberId);
+        }
+    }
+
     /// <summary>The icon was dragged: the members opened from it move along (MEW-5 Faz 4).</summary>
     private async void MoveFamilyMembersAlong() => await Family.FollowAsync(IconBounds());
 

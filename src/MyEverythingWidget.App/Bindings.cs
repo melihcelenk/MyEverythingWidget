@@ -23,12 +23,17 @@ public static class Bindings
     public static Microsoft.UI.Xaml.Visibility VisibleWhenSlot(FamilySlot? slot) => VisibleWhen(slot is not null);
 
     /// <summary>The name of the family member on a side of the compact icon, or nothing.</summary>
-    public static string SlotName(FamilySlot? slot) => slot switch
-    {
-        null => string.Empty,
-        { IsInstalled: true } => slot.Name,
-        _ => Strings.FamilyGet(slot.Name),
-    };
+    public static string SlotName(FamilySlot? slot) => slot?.Name ?? string.Empty;
+
+    /// <summary>The text of the button that downloads the family widget <paramref name="name"/>.</summary>
+    public static string DownloadText(string name) => Strings.FamilyGet(name);
+
+    /// <summary>The automation id of the button that downloads the family widget <paramref name="memberId"/>.</summary>
+    public static string DownloadId(string memberId) => "FamilyGet_" + memberId;
+
+    /// <summary>Visible when the notice shows or there is anything to download.</summary>
+    public static Microsoft.UI.Xaml.Visibility VisibleWhenAny(bool showsNotice, IReadOnlyList<FamilyOffer> downloads) =>
+        VisibleWhen(showsNotice || downloads is { Count: > 0 });
 
     /// <summary>Maps a view-model severity to the InfoBar severity.</summary>
     public static InfoBarSeverity ToInfoBarSeverity(StatusSeverity severity) => severity switch

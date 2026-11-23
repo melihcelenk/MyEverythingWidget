@@ -33,6 +33,7 @@ açılıp gösterilir.
 | 5.1 | Kurulu olmayan aile widget'ı menüde indirme düğmesi olarak görünür ve Store sayfasını açar. | 🟢 Tamamlandı |
 | 5.2 | Kurulu hal bu bilgisayarda hazırlanıp uygulama onunla açılarak gösterilir. | ⏳ Bekliyor (kullanıcının indirme menüsünü görmesi) |
 | 5.3 | UI testleri Sandbox dışında kullanıcının panosuna yazmaz. | 🟢 Tamamlandı |
+| 5.4 | "Aileden başka widget yüklü değil" bilgisi kalır; altında indirmeye yönlendiren düğme olur. | 🟢 Tamamlandı |
 
 ## Nasıl kontrol edilir
 
@@ -77,6 +78,21 @@ açılıp gösterilir.
 - **Çözüm:** `SandboxClipboard` panoya her erişimden önce Sandbox denetimini yapıyor; Sandbox dışında test atlanıyor.
 - **Dosyalar:** `tests/MyEverythingWidget.UiTests/Infrastructure/SandboxClipboard.cs`
 - **Testler:** Bu bilgisayarda `dotnet test`: 546 test, 0 hata (UI testleri atlandı).
+- **Durum:** 🟢 Tamamlandı.
+
+### 5.4 — "Aileden başka widget yüklü değil" bilgisi kalır; altında indirmeye yönlendiren düğme olur.
+
+- **Mevcut durum:** 5.1'de kurulu olmayan widget, bilgi metninin yerine kenarda "indir" düğmesi olarak çıkıyordu;
+  bilgi metni kaybolmuştu.
+- **Problem:** Gereksinim (T16): Bilgi metni kaldırılmaz; metin yine gösterilir ve indirmeye yönlendiren bir düğme
+  eklenir.
+- **Çözüm:** Kenarlarda yalnız kurulu widget'lar durur. Simgenin sağındaki bilgi kartı "Aileden başka widget yüklü
+  değil." metnini korur; altında kurulu olmayan her yayımlanmış widget için "{ad} uygulamasını indir" düğmesi
+  (`FamilyGet_<id>`) vardır, Store sayfasını açar. Bazı widget'lar kuruluysa metin gizlenir, eksikler için düğme kalır.
+- **Dosyalar:** `src/MyEverythingWidget.Presentation/FamilyMenuViewModel.cs` (`Downloads`, `ShowsNotice`,
+  `DownloadAsync`), `src/MyEverythingWidget.App/MainWindow.xaml`, `MainWindow.Family.cs`, `Bindings.cs`
+- **Testler:** `FamilyMenuViewModelTests` (5 yeni/güncellenmiş); Sandbox: `FamilyWidgetThatIsNotInstalled_IsOfferedForDownload`
+  (metin ve düğme birlikte) — `WidgetFamilyTests` 4/4 ve `PackagedAppTests` yeşil; görüntü `screens/family-menu-download.png`.
 - **Durum:** 🟢 Tamamlandı.
 
 ### Doğrulanmayan / dikkat edilmesi gereken

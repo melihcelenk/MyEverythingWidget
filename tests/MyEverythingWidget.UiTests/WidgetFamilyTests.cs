@@ -271,11 +271,13 @@ public sealed class WidgetFamilyTests
         MoveIconTo(hub, workArea.Left + (workArea.Width / 2));
 
         RealMouse.RightClick(icon.BoundingRectangle.Center());
-        var slot = Wait.ForElement(() => hub.FindInPopups("FamilySlot_Right"));
+        var download = Wait.ForElement(() => hub.FindInPopups("FamilyGet_tasktimer"));
         GridDriver.WaitForUi();
         Artifacts.CaptureScreen("family-menu-download");
 
-        Assert.Equal("Get " + MemberName, slot.Name);
-        Assert.Null(hub.FindInPopups("FamilyEmpty") is { IsOffscreen: false } empty ? empty : null);
+        // T16: the notice stays, with a button that leads to the download.
+        Assert.Equal("Get " + MemberName, download.Name);
+        Assert.NotNull(hub.FindInPopups("FamilyEmpty"));
+        Assert.Null(hub.FindInPopups("FamilySlot_Right") is { IsOffscreen: false } slot ? slot : null);
     }
 }

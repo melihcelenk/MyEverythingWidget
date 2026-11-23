@@ -5,6 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:l="using:MyEverythingWidget.App.Localization"
     xmlns:local="using:MyEverythingWidget.App"
+    xmlns:presentation="using:MyEverythingWidget.Presentation"
     xmlns:views="using:MyEverythingWidget.App.Views">
 
     <Window.SystemBackdrop>
@@ -247,14 +248,32 @@
                         Content="{x:Bind local:Bindings.SlotName(Family.Left), Mode=OneWay}"
                         Visibility="{x:Bind local:Bindings.VisibleWhenSlot(Family.Left), Mode=OneWay}"
                         Click="OnFamilySlotClicked" />
+                <!-- The notice that no other family widget is installed, with a download button for each published one. -->
                 <Border x:Name="FamilyEmptyCard"
                         Style="{StaticResource FamilySlotBorderStyle}"
-                        MaxWidth="220"
-                        Visibility="{x:Bind local:Bindings.VisibleUnless(Family.HasMembers), Mode=OneWay}">
-                    <TextBlock x:Name="FamilyEmpty"
-                               AutomationProperties.AutomationId="FamilyEmpty"
-                               Text="{l:Str Key=FamilyEmpty}"
-                               TextWrapping="Wrap" />
+                        MaxWidth="240"
+                        Visibility="{x:Bind local:Bindings.VisibleWhenAny(Family.ShowsNotice, Family.Downloads), Mode=OneWay}">
+                    <StackPanel Spacing="8">
+                        <TextBlock x:Name="FamilyEmpty"
+                                   AutomationProperties.AutomationId="FamilyEmpty"
+                                   Text="{l:Str Key=FamilyEmpty}"
+                                   TextWrapping="Wrap"
+                                   Visibility="{x:Bind local:Bindings.VisibleWhen(Family.ShowsNotice), Mode=OneWay}" />
+                        <ItemsControl ItemsSource="{x:Bind Family.Downloads, Mode=OneWay}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="presentation:FamilyOffer">
+                                    <Button Style="{StaticResource AccentButtonStyle}"
+                                            HorizontalAlignment="Stretch"
+                                            Margin="0,0,0,4"
+                                            Tag="{x:Bind MemberId}"
+                                            AutomationProperties.AutomationId="{x:Bind local:Bindings.DownloadId(MemberId)}"
+                                            AutomationProperties.Name="{x:Bind local:Bindings.DownloadText(Name)}"
+                                            Content="{x:Bind local:Bindings.DownloadText(Name)}"
+                                            Click="OnFamilyDownloadClicked" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
                 </Border>
             </Canvas>
         </Popup>

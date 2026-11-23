@@ -178,42 +178,46 @@ public sealed class FamilyMenuViewModelTests
     }
 
     [Fact]
-    public async Task KnownMemberThatIsNotInstalled_IsOfferedForDownload()
+    public async Task KnownMemberThatIsNotInstalled_IsOfferedForDownload_NextToTheNotice()
     {
+        // T16: the notice stays; a button under it leads to the download.
         var menu = new FamilyMenuViewModel(_catalog, _launcher, _hub, [KnownTaskTimer]);
 
         await menu.RefreshAsync(TestContext.Current.CancellationToken);
 
-        Assert.True(menu.HasMembers);
-        Assert.Equal(new FamilySlot(Edge.Right, "tasktimer", "Task Timer Widget", IsInstalled: false), menu.Right);
+        Assert.False(menu.HasMembers);
+        Assert.Null(menu.Right);
+        Assert.Equal([new FamilyOffer("tasktimer", "Task Timer Widget")], menu.Downloads);
+        Assert.True(menu.ShowsNotice);
     }
 
     [Fact]
-    public async Task OpeningAMemberThatIsNotInstalled_OpensItsStorePage()
+    public async Task DownloadingAnOffer_OpensItsStorePage()
     {
         var menu = new FamilyMenuViewModel(_catalog, _launcher, _hub, [KnownTaskTimer]);
         await menu.RefreshAsync(TestContext.Current.CancellationToken);
 
-        Assert.True(await menu.OpenAsync(Edge.Right, Icon));
+        Assert.True(await menu.DownloadAsync("tasktimer"));
 
         Assert.Equal(["9NF0N9LN349G"], _launcher.StorePages);
         Assert.Empty(_launcher.Opened);
     }
 
     [Fact]
-    public async Task KnownMemberThatIsInstalled_IsShownOnce_AsInstalled()
+    public async Task KnownMemberThatIsInstalled_IsShownOnItsEdge_AndNotOffered()
     {
         _catalog.Members.Add(TaskTimer());
         var menu = new FamilyMenuViewModel(_catalog, _launcher, _hub, [KnownTaskTimer]);
 
         await menu.RefreshAsync(TestContext.Current.CancellationToken);
 
-        Assert.Equal(new FamilySlot(Edge.Right, "tasktimer", "Task Timer Widget", IsInstalled: true), menu.Right);
-        Assert.Null(menu.Bottom);
+        Assert.Equal("Task Timer Widget", menu.Right?.Name);
+        Assert.Empty(menu.Downloads);
+        Assert.False(menu.ShowsNotice);
     }
 
     [Fact]
-    public async Task InstalledMembers_KeepTheirEdges_BeforeMembersToDownload()
+    public async Task OnlyMembersThatAreNotInstalled_AreOffered()
     {
         var notes = new KnownFamilyMember(new FamilyMember("notes", "Notes Widget", "notes-widget", Edge.Right), "9ABC");
         _catalog.Members.Add(TaskTimer());
@@ -222,6 +226,18 @@ public sealed class FamilyMenuViewModelTests
         await menu.RefreshAsync(TestContext.Current.CancellationToken);
 
         Assert.Equal("tasktimer", menu.Right?.MemberId);
-        Assert.Equal(new FamilySlot(Edge.Bottom, "notes", "Notes Widget", IsInstalled: false), menu.Bottom);
+        Assert.Equal([new FamilyOffer("notes", "Notes Widget")], menu.Downloads);
+        Assert.Null(menu.Bottom);
+    }
+
+    [Fact]
+    public async Task DownloadingSomethingThatIsNotOffered_DoesNothing()
+    {
+        _catalog.Members.Add(TaskTimer());
+        var menu = new FamilyMenuViewModel(_catalog, _launcher, _hub, [KnownTaskTimer]);
+        await menu.RefreshAsync(TestContext.Current.CancellationToken);
+
+        Assert.False(await menu.DownloadAsync("tasktimer"));
+        Assert.Empty(_launcher.StorePages);
     }
 }
