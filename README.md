@@ -24,10 +24,26 @@ A small Windows widget that keeps your apps, websites, notes and pictures one cl
 - **Windows 11 look.** Light and dark theme (or follow Windows), Mica, always on top.
 - **Private.** Everything stays on your PC ([privacy policy](docs/general/PRIVACY_POLICY.md)).
 
+## Widget family
+
+My Everything Widget is the hub of a small family of widgets. While it runs, the other family widgets leave the
+taskbar; right-click its compact icon to open one of them on one of its sides.
+
+| Repository | Role |
+|------------|------|
+| [MyEverythingWidget](https://github.com/melihcelenk/MyEverythingWidget) (this one) | Hub |
+| [TaskTimerWidget](https://github.com/melihcelenk/TaskTimerWidget) | Member |
+| [WidgetFamily](https://github.com/melihcelenk/WidgetFamily) | Shared contract and library, included as the `external/WidgetFamily` submodule |
+
 ## Development
 
 Built with WinUI 3 and .NET 10. See the [Development Guide](docs/general/DEVELOPMENT.md) and
 [Architecture](docs/general/ARCHITECTURE.md).
+
+```
+git clone --recurse-submodules https://github.com/melihcelenk/MyEverythingWidget.git
+git submodule update --init    # in an existing clone
+```
 
 ```
 dotnet test                    # unit tests (Core, Presentation, Infrastructure)
