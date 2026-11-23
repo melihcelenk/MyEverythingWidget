@@ -268,4 +268,7 @@
   <data name="FamilyEmpty" xml:space="preserve">
     <value>Інших віджетів родини не встановлено.</value>
   </data>
+  <data name="FamilyGet" xml:space="preserve">
+    <value>Завантажити {0}</value>
+  </data>
 </root>

@@ -37,6 +37,9 @@ internal static class SandboxClipboard
 
     private static string Run(string script)
     {
+        // The clipboard is the developer's own outside the sandbox; a test that reaches here before launching the app
+        // is skipped instead of overwriting it.
+        SandboxGuard.SkipUnlessAllowed();
         var startInfo = new ProcessStartInfo("powershell.exe")
         {
             UseShellExecute = false,

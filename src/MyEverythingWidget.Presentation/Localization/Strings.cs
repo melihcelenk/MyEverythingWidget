@@ -201,6 +201,9 @@ public static class Strings
     /// <summary>"Open"</summary>
     public static string Open => Get(nameof(Open));
 
+    /// <summary>Offers a family widget that is not installed; {0} is its name.</summary>
+    public static string FamilyGet(string name) => Format(nameof(FamilyGet), name);
+
     /// <summary>Shown on right-click of the compact icon when no other family widget is installed.</summary>
     public static string FamilyEmpty => Get(nameof(FamilyEmpty));
 

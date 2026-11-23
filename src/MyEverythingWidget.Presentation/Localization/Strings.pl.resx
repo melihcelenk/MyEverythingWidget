@@ -268,4 +268,7 @@ lub wklej go za pomocą Ctrl+V</value>
   <data name="FamilyEmpty" xml:space="preserve">
     <value>Nie zainstalowano innych widżetów z rodziny.</value>
   </data>
+  <data name="FamilyGet" xml:space="preserve">
+    <value>Pobierz {0}</value>
+  </data>
 </root>

@@ -35,4 +35,9 @@ public interface IFamilyLauncher
     /// <param name="anchor">The hub's window bounds in physical pixels.</param>
     /// <returns>Whether Windows accepted the launch.</returns>
     Task<bool> OpenAsync(FamilyMember member, Edge edge, PixelRect anchor);
+
+    /// <summary>Opens the Microsoft Store page of a family widget that is not installed.</summary>
+    /// <param name="productId">The Store product id.</param>
+    /// <returns>Whether Windows accepted the launch.</returns>
+    Task<bool> OpenStorePageAsync(string productId);
 }

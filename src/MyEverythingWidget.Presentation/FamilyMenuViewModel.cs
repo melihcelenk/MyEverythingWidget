@@ -8,16 +8,25 @@ namespace MyEverythingWidget.Presentation;
 /// <param name="Edge">The side.</param>
 /// <param name="MemberId">The member's id.</param>
 /// <param name="Name">The member's display name.</param>
-public sealed record FamilySlot(Edge Edge, string MemberId, string Name);
+/// <param name="IsInstalled">False when the slot offers the member for download.</param>
+public sealed record FamilySlot(Edge Edge, string MemberId, string Name, bool IsInstalled);
 
 /// <summary>
 /// The compact icon's right-click menu (MEW-5): the installed widget family members on the icon's four sides.
 /// The list is read again every time the menu opens, so installed and removed members show up without a restart.
-/// Members opened from the menu follow the icon: they move with it and hide while it hides.
+/// Members opened from the menu follow the icon: they move with it and hide while it hides. Published family widgets
+/// that are not installed (<paramref name="known"/>) are offered for download on the edges left free.
 /// </summary>
-public sealed partial class FamilyMenuViewModel(IFamilyCatalog catalog, IFamilyLauncher launcher, IFamilyHub hub) : ObservableObject
+public sealed partial class FamilyMenuViewModel(
+    IFamilyCatalog catalog,
+    IFamilyLauncher launcher,
+    IFamilyHub hub,
+    IReadOnlyList<KnownFamilyMember> known) : ObservableObject
 {
     private IReadOnlyDictionary<Edge, FamilyMember> _members = new Dictionary<Edge, FamilyMember>();
+
+    /// <summary>Store product ids of the members on the menu that are not installed.</summary>
+    private Dictionary<string, string> _toDownload = new(StringComparer.Ordinal);
 
     /// <summary>The members opened from the menu, and the side they were opened on.</summary>
     private readonly Dictionary<string, Edge> _opened = new(StringComparer.Ordinal);
@@ -48,7 +57,12 @@ public sealed partial class FamilyMenuViewModel(IFamilyCatalog catalog, IFamilyL
     public async Task RefreshAsync(CancellationToken cancellationToken)
     {
         var installed = await catalog.GetMembersAsync(cancellationToken).ConfigureAwait(true);
-        _members = EdgeAssignment.Assign(installed);
+        var installedIds = installed.Select(member => member.Member.Id).ToHashSet(StringComparer.Ordinal);
+        var missing = known.Where(offer => !installedIds.Contains(offer.Member.Id)).ToList();
+        _toDownload = missing.ToDictionary(offer => offer.Member.Id, offer => offer.StoreProductId, StringComparer.Ordinal);
+
+        // Installed members choose first; members to download take the edges left.
+        _members = EdgeAssignment.Assign(installed.Concat(missing.Select(offer => new InstalledMember(offer.Member, DateTimeOffset.MaxValue))));
         Top = Slot(Edge.Top);
         Right = Slot(Edge.Right);
         Bottom = Slot(Edge.Bottom);
@@ -71,7 +85,17 @@ public sealed partial class FamilyMenuViewModel(IFamilyCatalog catalog, IFamilyL
     /// <returns>False when no member is on that side or Windows did not launch it.</returns>
     public async Task<bool> OpenAsync(Edge edge, PixelRect icon)
     {
-        if (!_members.TryGetValue(edge, out var member) || !await launcher.OpenAsync(member, edge, icon).ConfigureAwait(true))
+        if (!_members.TryGetValue(edge, out var member))
+        {
+            return false;
+        }
+
+        if (_toDownload.TryGetValue(member.Id, out var productId))
+        {
+            return await launcher.OpenStorePageAsync(productId).ConfigureAwait(true);
+        }
+
+        if (!await launcher.OpenAsync(member, edge, icon).ConfigureAwait(true))
         {
             return false;
         }
@@ -104,5 +128,7 @@ public sealed partial class FamilyMenuViewModel(IFamilyCatalog catalog, IFamilyL
     }
 
     private FamilySlot? Slot(Edge edge) =>
-        _members.TryGetValue(edge, out var member) ? new FamilySlot(edge, member.Id, member.DisplayName) : null;
+        _members.TryGetValue(edge, out var member)
+            ? new FamilySlot(edge, member.Id, member.DisplayName, !_toDownload.ContainsKey(member.Id))
+            : null;
 }

@@ -71,6 +71,7 @@ GitHub'da anlaşılır olması için çok repolu projelerde yaygın düzen kulla
 | 2 | Task Timer: protokolle açılma, mesaj kanalı, hub varken görev çubuğundan çekilme | 🟢 Tamamlandı | 100% | `PHASE2.md` |
 | 3 | MEW: aile üyelerini bulma, sağ tıkta dört yön, açma ve kenara yerleştirme | 🟢 Tamamlandı | 100% | `PHASE3.md` |
 | 4 | Birlikte hareket: hub sürüklenince üyeler kayar, tam ekranda birlikte gizlenir | 🟢 Tamamlandı | 100% | `PHASE4.md` |
+| 5 | Kurulu olmayan aile widget'ını indirmeye yönlendirme ve kurulu halin gösterimi | 🟡 Kısmi (5.2 bekliyor) | 80% | `PHASE5.md` |
 
 <!-- Durum ikonları: 🟢 Tamamlandı | 🟡 Kısmi | ⏳ Bekliyor | 🔴 Bloke (bir karar ya da dış bağımlılık bekleniyor) -->
 
@@ -191,3 +192,9 @@ yerleşir. Menü kodlanmadan önce görsel taslak gösterilir.
 
 **Durum:** 🟢 Tamamlandı · **Tamamlanma:** 100% · **Ayrıntı:** [PHASE4.md](PHASE4.md)
 Hub sürüklenince yanına yerleşmiş üyeler de kayar; tam ekranda birlikte gizlenir.
+
+### 🟡 Faz 5 — İndirmeye yönlendirme ve kurulu halin gösterimi
+
+**Durum:** 🟡 Kısmi (5.2 bekliyor) · **Tamamlanma:** 80% · **Ayrıntı:** [PHASE5.md](PHASE5.md)
+Kurulu olmayan aile widget'ları menüde "indir" düğmesiyle Store sayfasına yönlendiriyor; kurulu hal kullanıcının
+bilgisayarında hazırlanıp gösteriliyor.

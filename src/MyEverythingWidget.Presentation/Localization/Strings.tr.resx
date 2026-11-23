@@ -268,4 +268,7 @@ veya Ctrl+V ile yapıştırın</value>
   <data name="FamilyEmpty" xml:space="preserve">
     <value>Aileden başka widget yüklü değil.</value>
   </data>
+  <data name="FamilyGet" xml:space="preserve">
+    <value>{0} uygulamasını indir</value>
+  </data>
 </root>

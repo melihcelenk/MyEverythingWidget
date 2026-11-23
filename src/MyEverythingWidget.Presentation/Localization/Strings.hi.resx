@@ -268,4 +268,7 @@
   <data name="FamilyEmpty" xml:space="preserve">
     <value>परिवार का कोई अन्य विजेट इंस्टॉल नहीं है।</value>
   </data>
+  <data name="FamilyGet" xml:space="preserve">
+    <value>{0} डाउनलोड करें</value>
+  </data>
 </root>

@@ -268,4 +268,7 @@ o i-paste ito gamit ang Ctrl+V</value>
   <data name="FamilyEmpty" xml:space="preserve">
     <value>Walang ibang widget ng pamilya ang naka-install.</value>
   </data>
+  <data name="FamilyGet" xml:space="preserve">
+    <value>I-download ang {0}</value>
+  </data>
 </root>

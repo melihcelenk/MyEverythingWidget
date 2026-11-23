@@ -353,4 +353,8 @@ or paste it with Ctrl+V</value>
     <value>No other widgets of the family are installed.</value>
     <comment>Shown next to the compact icon on right-click when no other widget of the widget family (apps such as Task Timer Widget that open around this icon) is installed</comment>
   </data>
+  <data name="FamilyGet" xml:space="preserve">
+    <value>Get {0}</value>
+    <comment>Button next to the compact icon offering a family widget that is not installed; opens its Microsoft Store page. {0} = the widget's name, such as Task Timer Widget (keep it untranslated)</comment>
+  </data>
 </root>

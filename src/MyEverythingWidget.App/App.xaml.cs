@@ -2,6 +2,7 @@ using System.Globalization;
 using Microsoft.Extensions.Logging;
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
+using MyEverythingWidget.Core.Family;
 using MyEverythingWidget.Core.Grid;
 using MyEverythingWidget.Core.Legacy;
 using MyEverythingWidget.Core.Settings;
@@ -84,7 +85,8 @@ public sealed partial class App : Application, IDisposable
         var family = new FamilyMenuViewModel(
             new AppExtensionFamilyCatalog(_loggerFactory.CreateLogger<AppExtensionFamilyCatalog>()),
             new UriFamilyLauncher(_loggerFactory.CreateLogger<UriFamilyLauncher>()),
-            new FamilyHubAdapter(familyHub));
+            new FamilyHubAdapter(familyHub),
+            KnownFamilyMembers.All);
 
         _mainWindow = new MainWindow(mainViewModel, boardViewModel, new ShellAppsSource(), family);
         _mainWindow.Closed += (_, _) => _ = _familyHub?.DisposeAsync().AsTask();

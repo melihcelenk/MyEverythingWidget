@@ -19,6 +19,14 @@ public sealed class FamilyMenuViewModelTests
     {
         public List<(FamilyMember Member, Edge Edge, PixelRect Anchor)> Opened { get; } = [];
 
+        public List<string> StorePages { get; } = [];
+
+        public Task<bool> OpenStorePageAsync(string productId)
+        {
+            StorePages.Add(productId);
+            return Task.FromResult(true);
+        }
+
         public Task<bool> OpenAsync(FamilyMember member, Edge edge, PixelRect anchor)
         {
             Opened.Add((member, edge, anchor));
@@ -41,6 +49,9 @@ public sealed class FamilyMenuViewModelTests
     private readonly FakeLauncher _launcher = new();
     private readonly FakeHub _hub = new();
 
+    private static readonly KnownFamilyMember KnownTaskTimer =
+        new(new FamilyMember("tasktimer", "Task Timer Widget", "tasktimer-widget", Edge.Right), "9NF0N9LN349G");
+
     private static InstalledMember TaskTimer() =>
         new(new FamilyMember("tasktimer", "Task Timer Widget", "tasktimer-widget", Edge.Right), DateTimeOffset.UnixEpoch);
 
@@ -48,7 +59,7 @@ public sealed class FamilyMenuViewModelTests
     public async Task InstalledMember_AppearsOnItsEdge()
     {
         _catalog.Members.Add(TaskTimer());
-        var menu = new FamilyMenuViewModel(_catalog, _launcher, _hub);
+        var menu = new FamilyMenuViewModel(_catalog, _launcher, _hub, []);
 
         await menu.RefreshAsync(TestContext.Current.CancellationToken);
 
@@ -62,7 +73,7 @@ public sealed class FamilyMenuViewModelTests
     [Fact]
     public async Task NoMembers_ShowsNothing()
     {
-        var menu = new FamilyMenuViewModel(_catalog, _launcher, _hub);
+        var menu = new FamilyMenuViewModel(_catalog, _launcher, _hub, []);
 
         await menu.RefreshAsync(TestContext.Current.CancellationToken);
 
@@ -74,7 +85,7 @@ public sealed class FamilyMenuViewModelTests
     public async Task UninstalledMember_LeavesTheMenuOnTheNextRefresh()
     {
         _catalog.Members.Add(TaskTimer());
-        var menu = new FamilyMenuViewModel(_catalog, _launcher, _hub);
+        var menu = new FamilyMenuViewModel(_catalog, _launcher, _hub, []);
         await menu.RefreshAsync(TestContext.Current.CancellationToken);
 
         _catalog.Members.Clear();
@@ -88,7 +99,7 @@ public sealed class FamilyMenuViewModelTests
     public async Task OpeningAnEdge_LaunchesItsMemberNextToTheIcon()
     {
         _catalog.Members.Add(TaskTimer());
-        var menu = new FamilyMenuViewModel(_catalog, _launcher, _hub);
+        var menu = new FamilyMenuViewModel(_catalog, _launcher, _hub, []);
         await menu.RefreshAsync(TestContext.Current.CancellationToken);
 
         Assert.True(await menu.OpenAsync(Edge.Right, Icon));
@@ -102,7 +113,7 @@ public sealed class FamilyMenuViewModelTests
     [Fact]
     public async Task OpeningAnEmptyEdge_DoesNothing()
     {
-        var menu = new FamilyMenuViewModel(_catalog, _launcher, _hub);
+        var menu = new FamilyMenuViewModel(_catalog, _launcher, _hub, []);
         await menu.RefreshAsync(TestContext.Current.CancellationToken);
 
         Assert.False(await menu.OpenAsync(Edge.Top, Icon));
@@ -113,7 +124,7 @@ public sealed class FamilyMenuViewModelTests
     public async Task MovingTheIcon_MovesTheOpenedMemberWithIt()
     {
         _catalog.Members.Add(TaskTimer());
-        var menu = new FamilyMenuViewModel(_catalog, _launcher, _hub);
+        var menu = new FamilyMenuViewModel(_catalog, _launcher, _hub, []);
         await menu.RefreshAsync(TestContext.Current.CancellationToken);
         await menu.OpenAsync(Edge.Right, Icon);
         var moved = Icon with { Left = 100, Top = 200 };
@@ -129,7 +140,7 @@ public sealed class FamilyMenuViewModelTests
     public async Task MovingTheIcon_LeavesMembersThatWereNotOpenedFromIt()
     {
         _catalog.Members.Add(TaskTimer());
-        var menu = new FamilyMenuViewModel(_catalog, _launcher, _hub);
+        var menu = new FamilyMenuViewModel(_catalog, _launcher, _hub, []);
         await menu.RefreshAsync(TestContext.Current.CancellationToken);
 
         await menu.FollowAsync(Icon);
@@ -141,7 +152,7 @@ public sealed class FamilyMenuViewModelTests
     public async Task HidingAndShowingTheIcon_HidesAndShowsTheOpenedMembers()
     {
         _catalog.Members.Add(TaskTimer());
-        var menu = new FamilyMenuViewModel(_catalog, _launcher, _hub);
+        var menu = new FamilyMenuViewModel(_catalog, _launcher, _hub, []);
         await menu.RefreshAsync(TestContext.Current.CancellationToken);
         await menu.OpenAsync(Edge.Right, Icon);
 
@@ -155,7 +166,7 @@ public sealed class FamilyMenuViewModelTests
     public async Task UninstalledMember_IsNoLongerFollowed()
     {
         _catalog.Members.Add(TaskTimer());
-        var menu = new FamilyMenuViewModel(_catalog, _launcher, _hub);
+        var menu = new FamilyMenuViewModel(_catalog, _launcher, _hub, []);
         await menu.RefreshAsync(TestContext.Current.CancellationToken);
         await menu.OpenAsync(Edge.Right, Icon);
 
@@ -164,5 +175,53 @@ public sealed class FamilyMenuViewModelTests
         await menu.FollowAsync(Icon);
 
         Assert.Empty(_hub.Sent);
+    }
+
+    [Fact]
+    public async Task KnownMemberThatIsNotInstalled_IsOfferedForDownload()
+    {
+        var menu = new FamilyMenuViewModel(_catalog, _launcher, _hub, [KnownTaskTimer]);
+
+        await menu.RefreshAsync(TestContext.Current.CancellationToken);
+
+        Assert.True(menu.HasMembers);
+        Assert.Equal(new FamilySlot(Edge.Right, "tasktimer", "Task Timer Widget", IsInstalled: false), menu.Right);
+    }
+
+    [Fact]
+    public async Task OpeningAMemberThatIsNotInstalled_OpensItsStorePage()
+    {
+        var menu = new FamilyMenuViewModel(_catalog, _launcher, _hub, [KnownTaskTimer]);
+        await menu.RefreshAsync(TestContext.Current.CancellationToken);
+
+        Assert.True(await menu.OpenAsync(Edge.Right, Icon));
+
+        Assert.Equal(["9NF0N9LN349G"], _launcher.StorePages);
+        Assert.Empty(_launcher.Opened);
+    }
+
+    [Fact]
+    public async Task KnownMemberThatIsInstalled_IsShownOnce_AsInstalled()
+    {
+        _catalog.Members.Add(TaskTimer());
+        var menu = new FamilyMenuViewModel(_catalog, _launcher, _hub, [KnownTaskTimer]);
+
+        await menu.RefreshAsync(TestContext.Current.CancellationToken);
+
+        Assert.Equal(new FamilySlot(Edge.Right, "tasktimer", "Task Timer Widget", IsInstalled: true), menu.Right);
+        Assert.Null(menu.Bottom);
+    }
+
+    [Fact]
+    public async Task InstalledMembers_KeepTheirEdges_BeforeMembersToDownload()
+    {
+        var notes = new KnownFamilyMember(new FamilyMember("notes", "Notes Widget", "notes-widget", Edge.Right), "9ABC");
+        _catalog.Members.Add(TaskTimer());
+        var menu = new FamilyMenuViewModel(_catalog, _launcher, _hub, [notes, KnownTaskTimer]);
+
+        await menu.RefreshAsync(TestContext.Current.CancellationToken);
+
+        Assert.Equal("tasktimer", menu.Right?.MemberId);
+        Assert.Equal(new FamilySlot(Edge.Bottom, "notes", "Notes Widget", IsInstalled: false), menu.Bottom);
     }
 }

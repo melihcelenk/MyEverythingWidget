@@ -21,6 +21,19 @@ public sealed partial class UriFamilyLauncher(ILogger<UriFamilyLauncher> logger)
         return launched;
     }
 
+    /// <inheritdoc />
+    public async Task<bool> OpenStorePageAsync(string productId)
+    {
+        var uri = new Uri("ms-windows-store://pdp/?ProductId=" + Uri.EscapeDataString(productId));
+        var launched = await Windows.System.Launcher.LaunchUriAsync(uri);
+        if (!launched)
+        {
+            LogLaunchFailed(productId, uri);
+        }
+
+        return launched;
+    }
+
     [LoggerMessage(Level = LogLevel.Warning, Message = "Widget family member {MemberId} could not be opened with {Uri}")]
     private partial void LogLaunchFailed(string memberId, Uri uri);
 }

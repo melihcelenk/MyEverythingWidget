@@ -268,4 +268,7 @@ Ctrl+V로 붙여 넣으세요</value>
   <data name="FamilyEmpty" xml:space="preserve">
     <value>설치된 다른 패밀리 위젯이 없습니다.</value>
   </data>
+  <data name="FamilyGet" xml:space="preserve">
+    <value>{0} 다운로드</value>
+  </data>
 </root>

@@ -268,4 +268,7 @@
   <data name="FamilyEmpty" xml:space="preserve">
     <value>Другие виджеты семейства не установлены.</value>
   </data>
+  <data name="FamilyGet" xml:space="preserve">
+    <value>Скачать {0}</value>
+  </data>
 </root>

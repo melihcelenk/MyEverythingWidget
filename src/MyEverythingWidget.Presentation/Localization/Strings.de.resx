@@ -268,4 +268,7 @@ oder mit Ctrl+V einfügen</value>
   <data name="FamilyEmpty" xml:space="preserve">
     <value>Keine weiteren Widgets der Familie installiert.</value>
   </data>
+  <data name="FamilyGet" xml:space="preserve">
+    <value>{0} herunterladen</value>
+  </data>
 </root>

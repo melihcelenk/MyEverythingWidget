@@ -268,4 +268,7 @@ o pégala con Ctrl+V</value>
   <data name="FamilyEmpty" xml:space="preserve">
     <value>No hay otros widgets de la familia instalados.</value>
   </data>
+  <data name="FamilyGet" xml:space="preserve">
+    <value>Descargar {0}</value>
+  </data>
 </root>

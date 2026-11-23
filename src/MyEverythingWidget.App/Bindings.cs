@@ -1,5 +1,6 @@
 using Microsoft.UI.Xaml.Controls;
 using MyEverythingWidget.Presentation;
+using MyEverythingWidget.Presentation.Localization;
 
 namespace MyEverythingWidget.App;
 
@@ -22,7 +23,12 @@ public static class Bindings
     public static Microsoft.UI.Xaml.Visibility VisibleWhenSlot(FamilySlot? slot) => VisibleWhen(slot is not null);
 
     /// <summary>The name of the family member on a side of the compact icon, or nothing.</summary>
-    public static string SlotName(FamilySlot? slot) => slot?.Name ?? string.Empty;
+    public static string SlotName(FamilySlot? slot) => slot switch
+    {
+        null => string.Empty,
+        { IsInstalled: true } => slot.Name,
+        _ => Strings.FamilyGet(slot.Name),
+    };
 
     /// <summary>Maps a view-model severity to the InfoBar severity.</summary>
     public static InfoBarSeverity ToInfoBarSeverity(StatusSeverity severity) => severity switch

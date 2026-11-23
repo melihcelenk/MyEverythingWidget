@@ -15,6 +15,7 @@ public sealed class WidgetFamilyTests
 {
     private const string AppUserModelIdVariable = "MEW_APP_AUMID";
     private const string MemberUserModelIdVariable = "MEW_MEMBER_AUMID";
+    private const string MemberPackageVariable = "MEW_MEMBER_MSIX";
     private const string MemberName = "Task Timer Widget";
     private const string MemberProcess = "TaskTimerWidget";
 
@@ -226,5 +227,55 @@ public sealed class WidgetFamilyTests
             StopMember();
             ResetHubSettings(hubId);
         }
+    }
+
+    private static void RunPowerShell(string command)
+    {
+        var start = new ProcessStartInfo("powershell.exe") { UseShellExecute = false, CreateNoWindow = true };
+        foreach (var argument in new[] { "-NoProfile", "-Command", command })
+        {
+            start.ArgumentList.Add(argument);
+        }
+
+        using var process = Process.Start(start) ?? throw new InvalidOperationException("PowerShell did not start.");
+        process.WaitForExit();
+        Assert.True(process.ExitCode == 0, $"PowerShell failed: {command}");
+    }
+
+    [Fact]
+    public void FamilyWidgetThatIsNotInstalled_IsOfferedForDownload()
+    {
+        var package = Environment.GetEnvironmentVariable(MemberPackageVariable);
+        Assert.SkipWhen(string.IsNullOrWhiteSpace(package), "The member MSIX package is not available here.");
+        StopMember();
+
+        // Task Timer Widget is taken away for this test and put back afterwards.
+        RunPowerShell("Get-AppxPackage -Name MelihCelenk.TaskTimerWidget | Remove-AppxPackage");
+        try
+        {
+            ShowsTheDownloadOffer();
+        }
+        finally
+        {
+            RunPowerShell($"Add-AppxPackage -AllowUnsigned -Path '{package}'");
+        }
+    }
+
+    private static void ShowsTheDownloadOffer()
+    {
+        using var data = new AppDataFolder();
+        StateFiles.Seed(data, new Dictionary<string, MyEverythingWidget.Core.Grid.GridPlacement>());
+        using var hub = AppSession.Launch(data);
+        var icon = EnterCompactMode(hub);
+        var workArea = Win32.WorkAreaOf(hub.WindowHandle);
+        MoveIconTo(hub, workArea.Left + (workArea.Width / 2));
+
+        RealMouse.RightClick(icon.BoundingRectangle.Center());
+        var slot = Wait.ForElement(() => hub.FindInPopups("FamilySlot_Right"));
+        GridDriver.WaitForUi();
+        Artifacts.CaptureScreen("family-menu-download");
+
+        Assert.Equal("Get " + MemberName, slot.Name);
+        Assert.Null(hub.FindInPopups("FamilyEmpty") is { IsOffscreen: false } empty ? empty : null);
     }
 }

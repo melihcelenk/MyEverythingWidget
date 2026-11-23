@@ -86,6 +86,7 @@ if ($member) {
     Add-AppxPackage -AllowUnsigned -Path $member.FullName
     $installedMember = Get-AppxPackage -Name "MelihCelenk.TaskTimerWidget"
     "$($installedMember.PackageFamilyName)!App" | Set-Content -Encoding ascii "C:\mew\results\member-aumid.txt"
+    $member.FullName | Set-Content -Encoding ascii "C:\mew\results\member-msix.txt"
 }
 '@ | Set-Content -Encoding utf8 (Join-Path $runner "install-msix.ps1")
 
@@ -105,6 +106,7 @@ if not exist "$sandboxRoot\results\aumid.txt" (
 )
 set /p MEW_APP_AUMID=<"$sandboxRoot\results\aumid.txt"
 if exist "$sandboxRoot\results\member-aumid.txt" set /p MEW_MEMBER_AUMID=<"$sandboxRoot\results\member-aumid.txt"
+if exist "$sandboxRoot\results\member-msix.txt" set /p MEW_MEMBER_MSIX=<"$sandboxRoot\results\member-msix.txt"
 set TESTS="$sandboxRoot\tests\MyEverythingWidget.UiTests.exe" -noColor
 set ISOLATED=0
 rem Tests that use the system drag-and-drop loop run first, in their own process (PHASE7.md, 7.6.2).

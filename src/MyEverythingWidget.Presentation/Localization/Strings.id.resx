@@ -268,4 +268,7 @@ atau tempel dengan Ctrl+V</value>
   <data name="FamilyEmpty" xml:space="preserve">
     <value>Tidak ada widget lain dari keluarga yang terpasang.</value>
   </data>
+  <data name="FamilyGet" xml:space="preserve">
+    <value>Unduh {0}</value>
+  </data>
 </root>
