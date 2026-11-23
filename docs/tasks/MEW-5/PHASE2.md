@@ -1,6 +1,6 @@
 # Faz 2 — Task Timer: protokolle açılma, mesaj kanalı, hub varken görev çubuğundan çekilme
 
-> **Durum:** 🟡 Kısmi (2.4'ün Sandbox UI testi Faz 3'te) · **Tamamlanma:** 90% · **Efor:** tahmin yazılmadı · **Task:** MEW-5
+> **Durum:** 🟢 Tamamlandı · **Tamamlanma:** 100% · **Efor:** tahmin yazılmadı · **Task:** MEW-5
 
 Task Timer aile üyesi oldu. Hub onu bulabilir, açabilir ve ona mesaj gönderebilir. Hub çalışırken Task Timer görev
 çubuğunda ayrı bir düğme olarak görünmez; hub kapanınca ya da çökünce açık kalır ve düğmesi geri gelir. Hub yokken
@@ -31,7 +31,7 @@ bugünkü gibi kendi düğmesiyle çalışır. İş TaskTimerWidget reposunda, `
 | 2.1 | Task Timer manifestine aile uzantısı ve protokol eklenir. | 🟢 Tamamlandı |
 | 2.2 | Task Timer protokolle açılır; zaten açıksa mevcut pencere öne gelir. | 🟢 Tamamlandı |
 | 2.3 | Task Timer mesaj kanalını dinler ve gelen mesajlara göre davranır. | 🟢 Tamamlandı |
-| 2.4 | Hub çalışırken Task Timer görev çubuğundan çekilir, hub gidince açık kalıp görev çubuğuna döner. | 🟡 Kısmi (davranış ve pipe testi tamam; iki paketli Sandbox UI testi Faz 3'te) |
+| 2.4 | Hub çalışırken Task Timer görev çubuğundan çekilir, hub gidince açık kalıp görev çubuğuna döner. | 🟢 Tamamlandı |
 | 2.5 | Faz 2'nin değişiklikleri ajan tarafından commit'lenip push edilir. | 🟢 Tamamlandı |
 
 ## Kararlar
@@ -43,14 +43,12 @@ bugünkü gibi kendi düğmesiyle çalışır. İş TaskTimerWidget reposunda, `
 ## Nasıl kontrol edilir
 
 - [ ] `C:\Kodlar\TaskTimerWidget`'ta `dotnet test tests/TaskTimerWidget.Tests/TaskTimerWidget.Tests.csproj` 10 testle yeşil.
-- [ ] Yalnız Task Timer açıkken görev çubuğunda onun düğmesi var (Faz 3'teki Sandbox testinde).
-- [ ] MEW de açılınca Task Timer'ın düğmesi kaybolur; MEW kapanınca geri gelir (Faz 3'teki Sandbox testinde).
+- [ ] Yalnız Task Timer açıkken görev çubuğunda onun düğmesi var.
+- [ ] MEW de açılınca Task Timer'ın düğmesi kaybolur; MEW kapanınca ya da çökünce geri gelir.
 
 ## Kalan
 
-- **2.4:** Gerçek görev çubuğunda doğrulama hub gerektiriyor; MEW hub olunca (Faz 3) iki paket birlikte Windows
-  Sandbox'ta test edilir. Task Timer'ın Store sürümü kullanıcının bilgisayarında kurulu olduğu için geliştirme paketi
-  bu bilgisayara kurulmadı (aynı paket kimliği, kullanıcının verisi).
+- Yok. 2.4 ve tek örnek kuralı Faz 3.5'teki Sandbox testinde gerçek paketlerle doğrulandı.
 
 ## Ayrıntılar
 
@@ -103,9 +101,9 @@ bugünkü gibi kendi düğmesiyle çalışır. İş TaskTimerWidget reposunda, `
   - Birim: `HubArriving_TakesTheWindowOffTheTaskbar`, `HubLeaving_BringsTheWindowBackToTheTaskbar_AndKeepsItOpen`,
     `HubLeavingWhileTheWindowWasHiddenByIt_ShowsTheWindowAgain`.
   - Gerçek pipe: `HubConnectionTests.Window_LeavesTheTaskbarWhileTheHubRuns_AndComesBackWhenItCloses`.
-  - Bekleyen: Sandbox UI testi (MEW açıkken Task Timer düğmesi yok; MEW kapanınca ve süreci öldürülünce düğme geri
-    gelir, zamanlayıcı sayıyor; MEW yeniden açılınca düğme yine kalkar). Hub gerektirdiği için Faz 3'te.
-- **Durum:** 🟡 Kısmi.
+  - Sandbox (Faz 3.5): `WidgetFamilyTests` — Task Timer tek başına görev çubuğunda; MEW açılınca kalkıyor; MEW
+    süreci öldürülünce açık kalıp geri geliyor; ikinci başlatma ikinci pencere açmıyor. Hepsi yeşil.
+- **Durum:** 🟢 Tamamlandı.
 
 ### 2.5 — Faz 2'nin değişiklikleri ajan tarafından commit'lenip push edilir.
 
@@ -119,8 +117,6 @@ bugünkü gibi kendi düğmesiyle çalışır. İş TaskTimerWidget reposunda, `
 
 ### Doğrulanmayan / dikkat edilmesi gereken
 
-- Görev çubuğu ve Alt+Tab'dan gerçekten çekilme ve tek örnek yönlendirmesi henüz gerçek pakette denenmedi (Faz 3
-  Sandbox testi).
 - Task Timer'ın Windows App SDK 1.7'de kalması bu fazı engellemedi.
 - Sonar bu repoyu tanımadığı için çalışmadı; derleme 0 uyarı, 0 hata.
 

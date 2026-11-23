@@ -31,6 +31,24 @@ public sealed class WidgetFamilyTests
         return (hub!, member!);
     }
 
+    /// <summary>
+    /// The packaged hub keeps its settings in the package folder, shared with <see cref="PackagedAppTests"/>; these
+    /// tests leave it in compact mode, so its settings are removed afterwards.
+    /// </summary>
+    private static void ResetHubSettings(string hubUserModelId)
+    {
+        var settings = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "Packages", hubUserModelId.Split('!')[0], "LocalState", "settings.json");
+        foreach (var process in Process.GetProcessesByName("MyEverythingWidget"))
+        {
+            process.Kill();
+            process.WaitForExit(5000);
+        }
+
+        File.Delete(settings);
+    }
+
     private static void StopMember()
     {
         foreach (var process in Process.GetProcessesByName(MemberProcess))
@@ -153,6 +171,7 @@ public sealed class WidgetFamilyTests
         finally
         {
             StopMember();
+            ResetHubSettings(hubId);
         }
     }
 
@@ -205,6 +224,7 @@ public sealed class WidgetFamilyTests
         finally
         {
             StopMember();
+            ResetHubSettings(hubId);
         }
     }
 }

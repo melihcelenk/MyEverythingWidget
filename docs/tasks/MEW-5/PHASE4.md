@@ -1,27 +1,30 @@
 # Faz 4 — Birlikte hareket: hub sürüklenince üyeler kayar, tam ekranda birlikte gizlenir
 
-> **Durum:** ⏳ Bekliyor · **Tamamlanma:** 0% · **Efor:** tahmin yazılmadı · **Task:** MEW-5
+> **Durum:** 🟢 Tamamlandı · **Tamamlanma:** 100% · **Efor:** tahmin yazılmadı · **Task:** MEW-5
 
-Hub'ın yanına yerleşmiş widget'lar hub'la birlikte davranır. Hub sürüklenince onlar da kayar. Tam ekran bir video ya
-da oyun açılınca hub'la birlikte gizlenir. Bu faz isteğe bağlıdır; Faz 3 bittikten sonra gerekip gerekmediğine
-bakılır.
+Simgeden açılan widget'lar simgeyle birlikte davranıyor. Simge sürüklenince onlar da aynı kenarda kalacak şekilde
+kayıyor. Tam ekran bir video ya da oyun açılınca simgeyle birlikte gizleniyor, kapanınca birlikte geri geliyor.
 
 ## Problem
 
-- **Mevcut durum:** Faz 3'ten sonra üye hub'ın yanına yerleşir; ama hub taşınınca yerinde kalır.
-- Tam ekranda hub gizleniyor (MEW-4, T132); yanındaki üye ise görünür kalabilir.
+- **Gereksinim (T6):** İş bitene kadar sürdürülür ve testleri yapılır.
+- **Mevcut durum:** Faz 3'ten sonra üye simgenin yanına yerleşiyordu; simge taşınınca yerinde kalıyordu. Tam ekranda
+  simge gizleniyor (MEW-4, T132), yanındaki üye görünür kalıyordu.
 
 ## Çözüm
 
-- **Hareket:** Hub, konumu değişince yerleşik üyelere konum mesajı gönderir.
-- **Tam ekran:** Hub gizlenince ve geri gelince üyelere gizle/göster mesajı gönderir.
+- **Hareket:** `FamilyMenuViewModel` simgeden açılan üyeleri ve kenarlarını hatırlar. Sürükleme bitince
+  `FollowAsync` her birine yeni konumla `place` mesajı gönderir.
+- **Tam ekran:** Simge gizlenince ve geri gelince `SetHiddenAsync` aynı üyelere `hide` / `show` gönderir.
+- **Kapsam:** Yalnız simgeden açılan üyeler izlenir; kaldırılan ya da kenarını kaybeden üye bir sonraki menü
+  açılışında listeden çıkar.
 
 ## Alt fazlar
 
 | # | Ne yapılıyor | Durum |
 |---|--------------|-------|
-| 4.1 | Hub sürüklenince yanına yerleşmiş üyeler de kayar. | ⏳ Bekliyor (Faz 3) |
-| 4.2 | Tam ekranda üyeler hub'la birlikte gizlenir ve geri gelir. | ⏳ Bekliyor (Faz 3) |
+| 4.1 | Hub sürüklenince yanına yerleşmiş üyeler de kayar. | 🟢 Tamamlandı |
+| 4.2 | Tam ekranda üyeler hub'la birlikte gizlenir ve geri gelir. | 🟢 Tamamlandı (birim testleriyle) |
 
 ## Nasıl kontrol edilir
 
@@ -30,31 +33,37 @@ bakılır.
 
 ## Kalan
 
-- **4.1, 4.2:** Faz 3'ü bekliyor; faz isteğe bağlı.
+- Yok.
 
 ## Ayrıntılar
 
 ### 4.1 — Hub sürüklenince yanına yerleşmiş üyeler de kayar.
 
-- **Mevcut durum:** —
-- **Problem:** Üye hub'dan kopuk kalır.
-- **Çözüm:** Hub'ın konum değişikliğinde yerleşik üyelere konum mesajı.
-- **Dosyalar:** `src/MyEverythingWidget.App/MainWindow.xaml.cs`
-- **Testler:** Sandbox UI testi.
-- **Durum:** ⏳ Bekliyor.
+- **Mevcut durum:** Üye simgeden kopuk kalıyordu.
+- **Problem:** Simge taşınınca üyenin de yanında kalması.
+- **Çözüm:** Sürükleme bırakılınca (`OnCompactPointerReleased`) `MoveFamilyMembersAlong` → `FollowAsync`; mesajı
+  `FamilyHubAdapter` hub üzerinden gönderir.
+- **Dosyalar:** `src/MyEverythingWidget.Presentation/FamilyMenuViewModel.cs`, `src/MyEverythingWidget.Core/Family/FamilyServices.cs`
+  (`IFamilyHub`), `src/MyEverythingWidget.App/FamilyHubAdapter.cs`, `MainWindow.Family.cs`, `MainWindow.xaml.cs`
+- **Testler:** `MovingTheIcon_MovesTheOpenedMemberWithIt`, `MovingTheIcon_LeavesMembersThatWereNotOpenedFromIt`,
+  `UninstalledMember_IsNoLongerFollowed`; Sandbox: `WidgetFamilyTests` (sürükleme adımı) yeşil.
+- **Durum:** 🟢 Tamamlandı.
 
 ### 4.2 — Tam ekranda üyeler hub'la birlikte gizlenir ve geri gelir.
 
-- **Mevcut durum:** Yalnız hub gizleniyor (`FullScreenWatcher`).
-- **Problem:** Üye tam ekranın üstünde kalabilir.
-- **Çözüm:** `OnFullScreenChanged` üyelere gizle/göster mesajı gönderir.
-- **Dosyalar:** `src/MyEverythingWidget.App/MainWindow.xaml.cs`
-- **Testler:** Sandbox UI testi.
-- **Durum:** ⏳ Bekliyor.
+- **Mevcut durum:** Yalnız simge gizleniyordu (`FullScreenWatcher`).
+- **Problem:** Üye tam ekranın üstünde kalabilirdi.
+- **Çözüm:** `OnFullScreenChanged` → `HideFamilyMembers` → `SetHiddenAsync`.
+- **Dosyalar:** `src/MyEverythingWidget.App/MainWindow.xaml.cs`, `MainWindow.Family.cs`
+- **Testler:** `HidingAndShowingTheIcon_HidesAndShowsTheOpenedMembers` (MEW), `HideAndShowMessages_HideAndShowTheWindow`
+  ve `HubLeavingWhileTheWindowWasHiddenByIt_ShowsTheWindowAgain` (Task Timer).
+- **Durum:** 🟢 Tamamlandı.
 
 ### Doğrulanmayan / dikkat edilmesi gereken
 
-- Yok.
+- 4.2 gerçek bir tam ekran uygulamasıyla iki paket birlikte denenmedi; zincirin iki ucu ayrı testlerde doğrulandı.
+- Üye kullanıcı tarafından elle başka yere taşındıysa da simge sürüklenince yanına döner (üye konumunu hub'a
+  bildirmiyor).
 
 ### Referanslar
 

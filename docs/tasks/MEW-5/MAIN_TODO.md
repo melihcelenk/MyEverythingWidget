@@ -68,9 +68,9 @@ GitHub'da anlaşılır olması için çok repolu projelerde yaygın düzen kulla
 | Faz | Başlık | Durum | Tamamlanma | Dosya |
 |-----|--------|-------|------------|-------|
 | 1 | Ortak sözleşme: uzantı adı, protokol adresleri, mesajlar | 🟢 Tamamlandı | 100% | `PHASE1.md` |
-| 2 | Task Timer: protokolle açılma, mesaj kanalı, hub varken görev çubuğundan çekilme | 🟡 Kısmi (2.4 Sandbox testi Faz 3'te) | 90% | `PHASE2.md` |
-| 3 | MEW: aile üyelerini bulma, sağ tıkta dört yön, açma ve kenara yerleştirme | ⏳ Bekliyor | 0% | `PHASE3.md` |
-| 4 | Birlikte hareket: hub sürüklenince üyeler kayar, tam ekranda birlikte gizlenir | ⏳ Bekliyor | 0% | `PHASE4.md` |
+| 2 | Task Timer: protokolle açılma, mesaj kanalı, hub varken görev çubuğundan çekilme | 🟢 Tamamlandı | 100% | `PHASE2.md` |
+| 3 | MEW: aile üyelerini bulma, sağ tıkta dört yön, açma ve kenara yerleştirme | 🟢 Tamamlandı | 100% | `PHASE3.md` |
+| 4 | Birlikte hareket: hub sürüklenince üyeler kayar, tam ekranda birlikte gizlenir | 🟢 Tamamlandı | 100% | `PHASE4.md` |
 
 <!-- Durum ikonları: 🟢 Tamamlandı | 🟡 Kısmi | ⏳ Bekliyor | 🔴 Bloke (bir karar ya da dış bağımlılık bekleniyor) -->
 
@@ -84,7 +84,7 @@ Faz 3'ün sağ tık menüsü kodlanmadan önce görsel taslak gösterilir.
 
 | Bölüm | Durum | Kapsadığı | Son kontrol |
 |-------|-------|-----------|-------------|
-| Genel Dokümanlar | 🔴 Yok | `docs/general/ARCHITECTURE.md` (aile sözleşmesi), `docs/general/DEVELOPMENT.md` (iki paketli Sandbox testi) | — |
+| Genel Dokümanlar | 🟢 Tamam | `docs/general/ARCHITECTURE.md` (aile sözleşmesi), `docs/general/DEVELOPMENT.md` (iki paketli Sandbox testi) | — |
 | Devops Notları | — | Sunucu yok; iki Store paketi ayrı gönderilir | — |
 
 ---
@@ -117,11 +117,11 @@ Faz 3'ün sağ tık menüsü kodlanmadan önce görsel taslak gösterilir.
 
 ### 1.3 Kabul Kriterleri
 
-- [ ] İki uygulama birlikte çalışırken görev çubuğunda yalnız hub'ın düğmesi görünür.
-- [ ] TTW tek başına kuruluysa bugünkü gibi kendi görev çubuğu düğmesiyle çalışır.
-- [ ] Hub, yüklü aile üyelerini kendiliğinden bulur; bir üye kaldırılınca menüden düşer.
-- [ ] Hub'ın sağ tık menüsünden bir üye açılır ve hub'ın ilgili kenarına yerleşir.
-- [ ] Yeni bir widget, kendi manifestine aile bloğu ekleyerek ve sözleşmeyi uygulayarak, hub'da kod değişikliği
+- [x] İki uygulama birlikte çalışırken görev çubuğunda yalnız hub'ın düğmesi görünür.
+- [x] TTW tek başına kuruluysa bugünkü gibi kendi görev çubuğu düğmesiyle çalışır.
+- [x] Hub, yüklü aile üyelerini kendiliğinden bulur; bir üye kaldırılınca menüden düşer.
+- [x] Hub'ın sağ tık menüsünden bir üye açılır ve hub'ın ilgili kenarına yerleşir.
+- [x] Yeni bir widget, kendi manifestine aile bloğu ekleyerek ve sözleşmeyi uygulayarak, hub'da kod değişikliği
   gerektirmeden menüde görünür.
 
 ### 1.4 Test Senaryoları
@@ -175,19 +175,19 @@ Seçilen: S05 → A. Karşılaştırma `WIDGET_FAMILY.md` → 4. bölüm.
 Hub ile üyelerin birbirini nasıl bulduğu, açtığı ve hangi mesajları gönderdiği yazılır ve iki uygulamanın da
 kullanacağı küçük bir kütüphanede (`WidgetFamily` reposu) kodlanır. Kartların MEW-5'e taşınması (T1) ve doküman düzeni (T2) tamamlandı.
 
-### 🟡 Faz 2 — Task Timer tarafı
+### 🟢 Faz 2 — Task Timer tarafı
 
-**Durum:** 🟡 Kısmi (2.4 Sandbox testi Faz 3'te) · **Tamamlanma:** 90% · **Ayrıntı:** [PHASE2.md](PHASE2.md)
+**Durum:** 🟢 Tamamlandı · **Tamamlanma:** 100% · **Ayrıntı:** [PHASE2.md](PHASE2.md)
 Task Timer aile üyesi olur: protokolle açılır, mesaj kanalını dinler, hub çalışırken görev çubuğundan çekilir.
 İş TaskTimerWidget reposunda, `feature/MEW-5-widget-family` branch'inde yapılır.
 
-### ⏳ Faz 3 — MEW tarafı
+### 🟢 Faz 3 — MEW tarafı
 
-**Durum:** ⏳ Bekliyor · **Tamamlanma:** 0% · **Ayrıntı:** [PHASE3.md](PHASE3.md)
+**Durum:** 🟢 Tamamlandı · **Tamamlanma:** 100% · **Ayrıntı:** [PHASE3.md](PHASE3.md)
 MEW'in kompakt simgesi yüklü üyeleri bulur, sağ tıkta dört yanında gösterir; tıklanan üye açılıp o kenara
 yerleşir. Menü kodlanmadan önce görsel taslak gösterilir.
 
-### ⏳ Faz 4 — Birlikte hareket (isteğe bağlı)
+### 🟢 Faz 4 — Birlikte hareket (isteğe bağlı)
 
-**Durum:** ⏳ Bekliyor · **Tamamlanma:** 0% · **Ayrıntı:** [PHASE4.md](PHASE4.md)
+**Durum:** 🟢 Tamamlandı · **Tamamlanma:** 100% · **Ayrıntı:** [PHASE4.md](PHASE4.md)
 Hub sürüklenince yanına yerleşmiş üyeler de kayar; tam ekranda birlikte gizlenir.
