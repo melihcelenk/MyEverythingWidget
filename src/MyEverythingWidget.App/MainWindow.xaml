@@ -32,17 +32,14 @@
                 </MenuFlyoutItem>
             </MenuFlyout>
 
-            <!-- Widget family slots around the compact icon (MEW-5). Sizes are in FamilyRing's row/column sizes. -->
+            <!-- Widget family slots around the compact icon (MEW-5); placed in MainWindow.Family.cs. -->
             <Style x:Key="FamilySlotButtonStyle" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
-                <Setter Property="HorizontalAlignment" Value="Center" />
-                <Setter Property="VerticalAlignment" Value="Center" />
                 <Setter Property="MinWidth" Value="96" />
                 <Setter Property="MinHeight" Value="40" />
                 <Setter Property="Padding" Value="12,6" />
                 <Setter Property="CornerRadius" Value="8" />
             </Style>
             <Style x:Key="FamilySlotBorderStyle" TargetType="Border">
-                <Setter Property="VerticalAlignment" Value="Center" />
                 <Setter Property="Padding" Value="12,8" />
                 <Setter Property="CornerRadius" Value="8" />
                 <Setter Property="Background" Value="{ThemeResource AcrylicInAppFillColorDefaultBrush}" />
@@ -215,62 +212,51 @@
 
         <!--
           Widget family (MEW-5): right-click on the compact icon shows the installed family widgets on its four sides.
-          The popup is larger than the icon window and centred on it: the side columns and rows (168 and 56) are the
-          offsets, the middle cell (64) is the icon (CompactSizeInDips).
+          The slots are placed in code (MainWindow.Family.cs) with the same rule the widgets use to place themselves,
+          so a slot stays on the screen and sits on the side where its widget will open.
         -->
         <Popup x:Name="FamilyPopup"
                IsLightDismissEnabled="True"
-               ShouldConstrainToRootBounds="False"
-               HorizontalOffset="-168"
-               VerticalOffset="-56">
-            <Grid x:Name="FamilyRing" AutomationProperties.AutomationId="FamilyMenu">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="168" />
-                    <ColumnDefinition Width="64" />
-                    <ColumnDefinition Width="168" />
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="56" />
-                    <RowDefinition Height="64" />
-                    <RowDefinition Height="56" />
-                </Grid.RowDefinitions>
-                <Button x:Name="FamilyTop" Grid.Row="0" Grid.ColumnSpan="3"
-                        Style="{StaticResource FamilySlotButtonStyle}" VerticalAlignment="Bottom" Margin="0,0,0,8"
+               ShouldConstrainToRootBounds="False">
+            <Canvas x:Name="FamilyRing" AutomationProperties.AutomationId="FamilyMenu">
+                <Button x:Name="FamilyTop"
+                        Style="{StaticResource FamilySlotButtonStyle}"
                         AutomationProperties.AutomationId="FamilySlot_Top"
                         AutomationProperties.Name="{x:Bind local:Bindings.SlotName(Family.Top), Mode=OneWay}"
                         Content="{x:Bind local:Bindings.SlotName(Family.Top), Mode=OneWay}"
                         Visibility="{x:Bind local:Bindings.VisibleWhenSlot(Family.Top), Mode=OneWay}"
                         Click="OnFamilySlotClicked" />
-                <Button x:Name="FamilyRight" Grid.Row="1" Grid.Column="2"
-                        Style="{StaticResource FamilySlotButtonStyle}" HorizontalAlignment="Left" Margin="8,0,0,0"
+                <Button x:Name="FamilyRight"
+                        Style="{StaticResource FamilySlotButtonStyle}"
                         AutomationProperties.AutomationId="FamilySlot_Right"
                         AutomationProperties.Name="{x:Bind local:Bindings.SlotName(Family.Right), Mode=OneWay}"
                         Content="{x:Bind local:Bindings.SlotName(Family.Right), Mode=OneWay}"
                         Visibility="{x:Bind local:Bindings.VisibleWhenSlot(Family.Right), Mode=OneWay}"
                         Click="OnFamilySlotClicked" />
-                <Button x:Name="FamilyBottom" Grid.Row="2" Grid.ColumnSpan="3"
-                        Style="{StaticResource FamilySlotButtonStyle}" VerticalAlignment="Top" Margin="0,8,0,0"
+                <Button x:Name="FamilyBottom"
+                        Style="{StaticResource FamilySlotButtonStyle}"
                         AutomationProperties.AutomationId="FamilySlot_Bottom"
                         AutomationProperties.Name="{x:Bind local:Bindings.SlotName(Family.Bottom), Mode=OneWay}"
                         Content="{x:Bind local:Bindings.SlotName(Family.Bottom), Mode=OneWay}"
                         Visibility="{x:Bind local:Bindings.VisibleWhenSlot(Family.Bottom), Mode=OneWay}"
                         Click="OnFamilySlotClicked" />
-                <Button x:Name="FamilyLeft" Grid.Row="1" Grid.Column="0"
-                        Style="{StaticResource FamilySlotButtonStyle}" HorizontalAlignment="Right" Margin="0,0,8,0"
+                <Button x:Name="FamilyLeft"
+                        Style="{StaticResource FamilySlotButtonStyle}"
                         AutomationProperties.AutomationId="FamilySlot_Left"
                         AutomationProperties.Name="{x:Bind local:Bindings.SlotName(Family.Left), Mode=OneWay}"
                         Content="{x:Bind local:Bindings.SlotName(Family.Left), Mode=OneWay}"
                         Visibility="{x:Bind local:Bindings.VisibleWhenSlot(Family.Left), Mode=OneWay}"
                         Click="OnFamilySlotClicked" />
-                <Border Grid.Row="1" Grid.Column="2"
-                        Style="{StaticResource FamilySlotBorderStyle}" HorizontalAlignment="Left" Margin="8,0,0,0"
+                <Border x:Name="FamilyEmptyCard"
+                        Style="{StaticResource FamilySlotBorderStyle}"
+                        MaxWidth="220"
                         Visibility="{x:Bind local:Bindings.VisibleUnless(Family.HasMembers), Mode=OneWay}">
                     <TextBlock x:Name="FamilyEmpty"
                                AutomationProperties.AutomationId="FamilyEmpty"
                                Text="{l:Str Key=FamilyEmpty}"
                                TextWrapping="Wrap" />
                 </Border>
-            </Grid>
+            </Canvas>
         </Popup>
     </Grid>
 </Window>

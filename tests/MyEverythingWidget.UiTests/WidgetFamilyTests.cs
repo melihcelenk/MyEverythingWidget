@@ -59,6 +59,29 @@ public sealed class WidgetFamilyTests
         return icon;
     }
 
+    /// <summary>Moves the compact icon so that its left edge is at <paramref name="left"/> and it is centred vertically.</summary>
+    private static void MoveIconTo(AppSession hub, int left)
+    {
+        var workArea = Win32.WorkAreaOf(hub.WindowHandle);
+        var bounds = Win32.GetBounds(hub.WindowHandle);
+        Win32.MoveTo(hub.WindowHandle, left, workArea.Top + ((workArea.Height - (bounds.Bottom - bounds.Top)) / 2));
+        GridDriver.WaitForUi();
+    }
+
+    private static nint WaitForMemberWindow()
+    {
+        nint handle = 0;
+        Assert.True(
+            Wait.Until(
+                () => (handle = Process.GetProcessesByName(MemberProcess).Select(process => process.MainWindowHandle).FirstOrDefault(window => window != 0)) != 0,
+                TimeSpan.FromSeconds(30)),
+            "Task Timer Widget did not open.");
+        return handle;
+    }
+
+    private static bool Inside(System.Drawing.Rectangle area, System.Drawing.Rectangle bounds) =>
+        bounds.Left >= area.Left && bounds.Top >= area.Top && bounds.Right <= area.Right && bounds.Bottom <= area.Bottom;
+
     [Fact]
     public void Member_LeavesTheTaskbarWhileTheHubRuns_OpensNextToItsIcon_AndComesBackWhenTheHubCrashes()
     {
@@ -80,6 +103,8 @@ public sealed class WidgetFamilyTests
 
             // Right-click on the compact icon shows the member on its preferred side; clicking it places it there.
             var icon = EnterCompactMode(hub);
+            var workArea = Win32.WorkAreaOf(hub.WindowHandle);
+            MoveIconTo(hub, workArea.Left + (workArea.Width / 2));
             RealMouse.RightClick(icon.BoundingRectangle.Center());
             var slot = Wait.ForElement(() => hub.FindInPopups("FamilySlot_Right"));
             Artifacts.CaptureScreen("family-menu");
@@ -144,6 +169,38 @@ public sealed class WidgetFamilyTests
 
             Thread.Sleep(TimeSpan.FromSeconds(5));
             Assert.Single(Process.GetProcessesByName(MemberProcess));
+        }
+        finally
+        {
+            StopMember();
+        }
+    }
+
+    [Fact]
+    public void IconAtTheRightEdgeOfTheScreen_ShowsTheMenuOnTheScreen_AndOpensTheMemberOnTheLeft()
+    {
+        var (hubId, _) = Packages();
+        StopMember();
+        try
+        {
+            using var hub = AppSession.LaunchPackaged(hubId);
+            var icon = EnterCompactMode(hub);
+            var workArea = Win32.WorkAreaOf(hub.WindowHandle);
+            var iconBounds = Win32.GetBounds(hub.WindowHandle);
+            MoveIconTo(hub, workArea.Right - (iconBounds.Right - iconBounds.Left) - 4);
+
+            RealMouse.RightClick(icon.BoundingRectangle.Center());
+            var slot = Wait.ForElement(() => hub.FindInPopups("FamilySlot_Right"));
+            GridDriver.WaitForUi();
+            Artifacts.CaptureScreen("family-menu-at-edge");
+            Assert.True(Inside(workArea, slot.BoundingRectangle), $"The menu should stay on the screen {workArea}; it is at {slot.BoundingRectangle}.");
+
+            RealMouse.Click(slot.BoundingRectangle.Center());
+            var member = WaitForMemberWindow();
+            var placedIcon = Win32.GetBounds(hub.WindowHandle);
+            Assert.True(
+                Wait.Until(() => Win32.GetBounds(member).Right <= placedIcon.Left + 16, TimeSpan.FromSeconds(10)),
+                $"With no room on the right, Task Timer Widget should open left of the icon at {placedIcon.Left}; it ends at {Win32.GetBounds(member).Right}.");
         }
         finally
         {
